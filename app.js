@@ -19,19 +19,21 @@ const state = {
   worseningAuto: true,
 };
 
-const ABC_EXCLUSIVE = [
-  ['Regular', 'Laboured'],
-  ['Full sentences', 'Laboured'],
-  ['GCS 15', 'Confused'],
-  ['AOx4', 'Confused'],
-  ['Apyrexial', 'Pyrexia'],
-  ['No injuries', 'Injury found'],
+/** When one disability chip is set abnormal, linked chips flip too. */
+const ABC_DISABILITY_LINKS = [
+  ['GCS 15', 'AOx4'],
 ];
 
-const ABC_TOGGLE_CHIPS = {
-  'Apyrexial|Pyrexia': { normal: 'Apyrexial', abnormal: 'Pyrexia' },
-  'No injuries|Injury found': { normal: 'No injuries', abnormal: 'Injury found' },
-};
+const CONVEY_TRANSFER = [
+  ['Consent to conveyance obtained', 'Consent not obtained / BI pathway only'],
+  ['Continuous monitoring and reassessment', 'Monitoring not maintained'],
+  ['Remained stable throughout', 'Unstable / deteriorated during transfer'],
+  ['Communicated appropriately throughout', 'Communication concerns during transfer'],
+  ['Handover completed with receiving team', 'Handover incomplete / delayed'],
+  ['Pre-alert not given', 'Pre-alert given to receiving unit'],
+  ['No escalation en route', 'Care escalated en route'],
+  ['No clinical change', 'Clinical change during conveyance'],
+];
 
 const PC_WORSENING = {
   'Chest pain': 'Patient advised to call 999 immediately for severe or persistent chest pain, pain radiating to jaw/arm/back, breathlessness, sweating, nausea, or collapse.',
@@ -52,11 +54,41 @@ const OPTIONS = {
 };
 
 const ABCDE = [
-  { key:'A', title:'Airway', chips:[['Patent','normal'],['Self-maintained','normal'],['Obstructed','abnormal'],['Airway sounds','abnormal']], vitals:[], notes:'airwayNotes' },
-  { key:'B', title:'Breathing', chips:[['Regular','normal'],['No cyanosis','normal'],['Full sentences','normal'],['Laboured','abnormal'],['Wheeze','abnormal']], vitals:[['rr','RR /min','16'],['spo2','SpO2 %','98'],['o2Flow','O2 L/min','']], notes:'breathingNotes' },
-  { key:'C', title:'Circulation', chips:[['Good colour','normal'],['Warm to touch','normal'],['Radial palpable','normal'],['CRT <2s','normal'],['Pale','abnormal'],['Cold / clammy','abnormal'],['Haemorrhage','abnormal']], vitals:[['hr','HR bpm','72'],['bp','BP mmHg','120/80'],['bm','BM mmol/L','5.2']], notes:'circulationNotes' },
-  { key:'D', title:'Disability', chips:[['GCS 15','normal'],['AOx4','normal'],['PEARL','normal'],['Speech clear','normal'],['Fully mobile','normal'],['Confused','abnormal']], vitals:[['gcsScore','GCS /15','15'],['pupils','Pupils','3mm equal'],['avpu','AVPU','A']], notes:'disabilityNotes' },
-  { key:'E', title:'Exposure', chips:[['Apyrexial','toggle','Apyrexial|Pyrexia'],['No rigors','normal'],['Normal colour','normal'],['Not clammy','normal'],['Not diaphoretic','normal'],['No injuries','toggle','No injuries|Injury found'],['No rashes','normal']], vitals:[['temp','Temp C','36.8']], notes:'exposureNotes' },
+  { key:'A', title:'Airway', chips:[
+    ['Patent', 'Obstructed'],
+    ['Self-maintained', 'Airway support required'],
+    ['No abnormal sounds', 'Airway sounds present'],
+  ], vitals:[], notes:'airwayNotes' },
+  { key:'B', title:'Breathing', chips:[
+    ['Regular', 'Laboured / irregular'],
+    ['No cyanosis', 'Cyanosis present'],
+    ['Full sentences', 'Unable to complete full sentences'],
+    ['No wheeze', 'Wheeze present'],
+  ], vitals:[['rr','RR /min','16'],['spo2','SpO2 %','98'],['o2Flow','O2 L/min','']], notes:'breathingNotes' },
+  { key:'C', title:'Circulation', chips:[
+    ['Good colour', 'Pale / flushed'],
+    ['Warm to touch', 'Cold / clammy'],
+    ['Radial pulse palpable', 'Radial pulse weak / absent'],
+    ['Regular pulse rhythm', 'Irregular pulses'],
+    ['CRT <2s', 'CRT ≥2s'],
+    ['No haemorrhage', 'Haemorrhage'],
+  ], vitals:[['hr','HR bpm','72'],['bp','BP mmHg','120/80'],['bm','BM mmol/L','5.2']], notes:'circulationNotes' },
+  { key:'D', title:'Disability', chips:[
+    ['GCS 15', 'GCS reduced'],
+    ['AOx4', 'Not orientated x4'],
+    ['PEARL', 'Pupils unequal / unreactive'],
+    ['Speech clear', 'Speech impaired'],
+    ['Fully mobile', 'Reduced mobility'],
+  ], vitals:[['gcsScore','GCS /15','15'],['pupils','Pupils','3mm equal'],['avpu','AVPU','A']], notes:'disabilityNotes' },
+  { key:'E', title:'Exposure', chips:[
+    ['Apyrexial', 'Pyrexia'],
+    ['No rigors', 'Rigors present'],
+    ['Normal skin colour', 'Abnormal skin colour'],
+    ['Not clammy', 'Clammy'],
+    ['Not diaphoretic', 'Diaphoretic'],
+    ['No injuries', 'Injury found'],
+    ['No rash', 'Rash present'],
+  ], vitals:[['temp','Temp C','36.8']], notes:'exposureNotes' },
 ];
 
 const ROS = {
@@ -90,10 +122,12 @@ function init() {
   buildAbcde();
   buildRos();
   buildAuscultation();
+  buildConveyTransferChips();
   bindEvents();
   updateMapTags();
   applyWorseningDefault();
   syncAuscultationOutput();
+  handleConveyanceDisplay();
 }
 
 function buildOptionButtons() {
@@ -119,20 +153,16 @@ function buildAbcde() {
     if (index === 0) details.open = true;
     details.innerHTML = `<summary><span>${section.key} - ${section.title}</span><small>${section.key}</small></summary><div class="section-body"><div class="square-grid abc-grid"></div><div class="vital-grid"></div><label class="field-label" for="${section.notes}">Notes</label><input id="${section.notes}" type="text" /></div>`;
     const chipRoot = $('.abc-grid', details);
-    section.chips.forEach(([label, type, toggleKey]) => {
+    section.chips.forEach(([normal, abnormal]) => {
       const button = document.createElement('button');
       button.type = 'button';
-      const isToggle = type === 'toggle';
-      const isNormal = type === 'normal' || isToggle;
-      button.className = `square-btn abc-chip${isNormal ? ' selected' : ''}`;
-      button.textContent = label;
+      button.className = 'square-btn abc-chip selected';
+      button.textContent = normal;
       button.dataset.abc = section.key;
-      button.dataset.value = label;
-      button.dataset.type = isToggle ? 'normal' : type;
-      if (toggleKey) {
-        button.dataset.toggleKey = toggleKey;
-        button.dataset.value = label;
-      }
+      button.dataset.normal = normal;
+      button.dataset.abnormal = abnormal;
+      button.dataset.abcState = 'normal';
+      button.dataset.value = normal;
       chipRoot.append(button);
     });
     const vitalRoot = $('.vital-grid', details);
@@ -224,9 +254,11 @@ function bindEvents() {
     $('#customWorsening').classList.toggle('hidden', val('worseningMode') !== 'Custom');
   });
   $('#conveyanceDecision').addEventListener('change', () => {
-    $('#nonConveyedFields').classList.toggle('hidden', val('conveyanceDecision') === 'Conveyed');
+    handleConveyanceDisplay();
     applyWorseningDefault();
   });
+  $('#conveyHospital')?.addEventListener('change', handleConveyanceDisplay);
+  $('#conveyDepartment')?.addEventListener('change', handleConveyanceDisplay);
   $('#clearPainButton')?.addEventListener('click', clearPainAssessment);
   $('#generateOeButton').addEventListener('click', generateOe);
   $('#clearOeButton').addEventListener('click', () => $('#oeText').value = '');
@@ -238,6 +270,8 @@ function bindEvents() {
     if (option) return toggleMulti(option);
     const abc = event.target.closest('.abc-chip');
     if (abc) return toggleAbc(abc);
+    const convey = event.target.closest('.convey-chip');
+    if (convey) return toggleConveyChip(convey);
     const ros = event.target.closest('.ros-chip');
     if (ros) return toggleRos(ros);
     const mapTab = event.target.closest('[data-map-mode]');
@@ -285,61 +319,71 @@ function setOtherFactorVisible(stateKey, visible) {
   if (wrapId) $(`#${wrapId}`)?.classList.toggle('hidden', !visible);
 }
 
-function toggleAbc(button) {
-  if (button.dataset.toggleKey) return toggleAbcPair(button);
-  const activating = button.dataset.type === 'normal'
-    ? !button.classList.contains('selected')
-    : !button.classList.contains('abnormal');
-  if (button.dataset.type === 'normal') button.classList.toggle('selected');
-  else button.classList.toggle('abnormal');
-  if (activating) deselectAbcOpposites(button);
-}
-
-function toggleAbcPair(button) {
-  const pair = ABC_TOGGLE_CHIPS[button.dataset.toggleKey];
-  if (!pair) return;
-  const isAbnormal = button.classList.contains('abnormal');
-  button.classList.toggle('selected', isAbnormal);
-  button.classList.toggle('abnormal', !isAbnormal);
-  button.textContent = isAbnormal ? pair.normal : pair.abnormal;
-  button.dataset.value = button.textContent;
-  button.dataset.type = isAbnormal ? 'normal' : 'abnormal';
-}
-
-function deselectAbcOpposites(button) {
-  const value = button.dataset.value;
-  const section = button.dataset.abc;
-  ABC_EXCLUSIVE.forEach(([a, b]) => {
-    const opposite = value === a ? b : value === b ? a : null;
-    if (!opposite) return;
-    const other = findAbcChip(section, opposite);
-    if (!other || other === button) return;
-    resetAbcChip(other);
+function buildConveyTransferChips() {
+  const root = $('#conveyTransferGrid');
+  if (!root) return;
+  CONVEY_TRANSFER.forEach(([normal, abnormal]) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'square-btn convey-chip selected';
+    button.textContent = normal;
+    button.dataset.normal = normal;
+    button.dataset.abnormal = abnormal;
+    button.dataset.conveyState = 'normal';
+    if (abnormal === 'Clinical change during conveyance') button.dataset.clinicalChange = 'true';
+    if (abnormal === 'Care escalated en route') button.dataset.escalated = 'true';
+    root.append(button);
   });
 }
 
-function findAbcChip(section, label) {
-  const direct = $(`.abc-chip[data-abc="${section}"][data-value="${label}"]`);
-  if (direct) return direct;
-  return $$(`.abc-chip[data-abc="${section}"]`).find(chip => {
-    const key = chip.dataset.toggleKey;
-    if (!key) return false;
-    const pair = ABC_TOGGLE_CHIPS[key];
-    return pair && (pair.normal === label || pair.abnormal === label);
-  }) || null;
+function toggleConveyChip(button) {
+  const isAbnormal = button.dataset.conveyState === 'abnormal';
+  const next = isAbnormal ? 'normal' : 'abnormal';
+  button.dataset.conveyState = next;
+  button.classList.toggle('abnormal', next === 'abnormal');
+  button.classList.toggle('selected', next === 'normal');
+  button.textContent = next === 'abnormal' ? button.dataset.abnormal : button.dataset.normal;
+  if (button.dataset.clinicalChange) {
+    $('#conveyChangeWrap')?.classList.toggle('hidden', next !== 'abnormal');
+  }
+  if (button.dataset.escalated) {
+    $('#conveyEscalatedWrap')?.classList.toggle('hidden', next !== 'abnormal');
+  }
+  if (button.dataset.clinicalChange && next === 'abnormal') {
+    const stable = $('.convey-chip[data-normal="Remained stable throughout"]');
+    if (stable?.dataset.conveyState === 'normal') toggleConveyChip(stable);
+  }
 }
 
-function resetAbcChip(button) {
-  button.classList.remove('selected', 'abnormal');
-  if (button.dataset.toggleKey) {
-    const pair = ABC_TOGGLE_CHIPS[button.dataset.toggleKey];
-    button.textContent = pair.normal;
-    button.dataset.value = pair.normal;
-    button.dataset.type = 'normal';
-    button.classList.add('selected');
-    return;
-  }
-  if (button.dataset.type === 'normal') button.classList.add('selected');
+function getConveyTransferText() {
+  return $$('.convey-chip').map(chip => chip.textContent).join('; ');
+}
+
+function toggleAbc(button) {
+  const isAbnormal = button.dataset.abcState === 'abnormal';
+  const next = isAbnormal ? 'normal' : 'abnormal';
+  setAbcChipState(button, next);
+  if (next === 'abnormal') syncDisabilityLinks(button);
+}
+
+function setAbcChipState(button, state) {
+  const isAbnormal = state === 'abnormal';
+  button.dataset.abcState = state;
+  button.classList.toggle('abnormal', isAbnormal);
+  button.classList.toggle('selected', !isAbnormal);
+  button.textContent = isAbnormal ? button.dataset.abnormal : button.dataset.normal;
+  button.dataset.value = button.textContent;
+}
+
+function syncDisabilityLinks(button) {
+  if (button.dataset.abc !== 'D') return;
+  const normalLabel = button.dataset.normal;
+  ABC_DISABILITY_LINKS.forEach(([left, right]) => {
+    const linkedNormal = left === normalLabel ? right : right === normalLabel ? left : null;
+    if (!linkedNormal) return;
+    const linked = $(`.abc-chip[data-abc="D"][data-normal="${linkedNormal}"]`);
+    if (linked && linked.dataset.abcState === 'normal') setAbcChipState(linked, 'abnormal');
+  });
 }
 
 function toggleRos(button) {
@@ -414,7 +458,7 @@ function rosLine(section) {
 }
 
 function abcLine(section) {
-  const values = $$(`[data-abc="${section.key}"]`).filter(button => button.classList.contains('selected') || button.classList.contains('abnormal')).map(button => button.textContent);
+  const values = $$(`[data-abc="${section.key}"]`).map(button => button.textContent);
   const vitals = section.vitals.map(([id, label]) => val(id) ? `${label}: ${val(id)}` : null).filter(Boolean);
   const notes = val(section.notes);
   return `${section.key} - ${section.title}: ${[...values, ...vitals, notes].filter(Boolean).join(', ') || 'assessed'}.`;
@@ -471,17 +515,17 @@ function buildOutputSections() {
     { id: 'pain', title: 'PAIN ASSESSMENT / SOCRATES', body: `Site: ${site}\nOnset: ${val('onsetType') || 'Not documented'}${val('onsetDuration') ? `, duration ${val('onsetDuration')}` : ''}\nCharacter: ${listSet(state.character, 'Not characterised')}\nRadiation: ${radiation}\nAssociated symptoms: ${listSet(state.associated, 'None reported')}\nTiming: ${val('timingSelect') || 'Not documented'}\nExacerbating factors: ${listFactors(state.exacerbating, 'exacerbatingOther', 'None identified')}\nRelieving factors: ${listFactors(state.relieving, 'relievingOther', 'None identified')}\nSeverity: ${val('severity') || 'Not documented'}` },
     { id: 'background', title: 'BACKGROUND', body: `Allergies: ${isChecked('nkda') ? 'NKDA' : val('allergies') || 'Not documented'}\nMedications: ${isChecked('noMeds') ? 'No regular medications' : val('medications') || 'Not documented'}\nPMH: ${isChecked('noPmh') ? 'No significant past medical history' : val('pmh') || 'Not documented'}\nLast oral intake: ${[val('loiWhat'), val('loiTime')].filter(Boolean).join(' at ') || 'Not documented'}\nPrevious episodes: ${val('prevDetails') || 'Not documented'}` },
     { id: 'primary', title: 'PRIMARY SURVEY', body: `OA: ${val('oaFound')}${val('oaLocation') ? ` at ${val('oaLocation')}` : ''}; ${val('oaMobility').toLowerCase()}.\n${ABCDE.map(abcLine).join('\n')}` },
-    { id: 'ros-resp', title: 'REVIEW OF SYSTEMS — RESPIRATORY', body: rosBlock('resp') },
-    { id: 'ros-cvs', title: 'REVIEW OF SYSTEMS — CARDIOVASCULAR', body: rosBlock('cvs') },
-    { id: 'ros-neuro', title: 'REVIEW OF SYSTEMS — NEUROLOGICAL', body: rosBlock('neuro') },
-    { id: 'ros-gi', title: 'REVIEW OF SYSTEMS — GASTROINTESTINAL', body: rosBlock('gi') },
-    { id: 'ros-urine', title: 'REVIEW OF SYSTEMS — URINARY', body: rosBlock('urine') },
-    { id: 'ros-integ', title: 'REVIEW OF SYSTEMS — INTEGUMENTARY', body: rosBlock('integ') },
-    { id: 'ros-msk', title: 'REVIEW OF SYSTEMS — MUSCULOSKELETAL', body: rosBlock('msk') },
-    ...(val('oeText') ? [{ id: 'oe', title: 'SECONDARY SURVEY / ON EXAMINATION', body: val('oeText') }] : []),
-    { id: 'worsening', title: 'WORSENING ADVICE', body: worseningText },
-    { id: 'capacity', title: 'MENTAL CAPACITY / CONSENT', body: buildCapacityText() },
-    { id: 'conveyance', title: 'CONVEYANCE DECISION', body: buildConveyanceText() },
+    { id: 'ros-resp', title: 'ASSESSMENT — RESPIRATORY', body: rosBlock('resp') },
+    { id: 'ros-cvs', title: 'ASSESSMENT — CARDIOVASCULAR', body: rosBlock('cvs') },
+    { id: 'ros-neuro', title: 'ASSESSMENT — NEUROLOGICAL', body: rosBlock('neuro') },
+    { id: 'ros-gi', title: 'ASSESSMENT — GASTROINTESTINAL', body: rosBlock('gi') },
+    { id: 'ros-urine', title: 'ASSESSMENT — URINARY', body: rosBlock('urine') },
+    { id: 'ros-integ', title: 'ASSESSMENT — INTEGUMENTARY', body: rosBlock('integ') },
+    { id: 'ros-msk', title: 'ASSESSMENT — MUSCULOSKELETAL', body: rosBlock('msk') },
+    ...(val('oeText') ? [{ id: 'oe', title: 'ASSESSMENT — ON EXAMINATION', body: val('oeText') }] : []),
+    { id: 'capacity', title: 'ASSESSMENT — MENTAL CAPACITY / CONSENT', body: buildCapacityText() },
+    { id: 'worsening', title: 'PLAN — WORSENING ADVICE', body: worseningText },
+    { id: 'conveyance', title: 'PLAN — CONVEYANCE DECISION', body: buildConveyanceText() },
   ];
 }
 
@@ -562,10 +606,54 @@ function buildCapacityText() {
   return `Patient assessed as having capacity for the relevant decision. MCA elements documented: able to ${tests.join(', ')} information.`;
 }
 
+function handleConveyanceDisplay() {
+  const conveyed = val('conveyanceDecision') === 'Conveyed';
+  $('#conveyedFields')?.classList.toggle('hidden', !conveyed);
+  $('#nonConveyedFields')?.classList.toggle('hidden', conveyed);
+  if (!conveyed) return;
+  $('#hospitalOtherWrap')?.classList.toggle('hidden', val('conveyHospital') !== 'Other hospital');
+  const dept = val('conveyDepartment');
+  $('#wardDetailsWrap')?.classList.toggle('hidden', dept !== 'Ward');
+  $('#departmentOtherWrap')?.classList.toggle('hidden', dept !== 'Other department');
+  const changeChip = $('.convey-chip[data-clinical-change="true"]');
+  $('#conveyChangeWrap')?.classList.toggle('hidden', changeChip?.dataset.conveyState !== 'abnormal');
+  const escalatedChip = $('.convey-chip[data-escalated="true"]');
+  $('#conveyEscalatedWrap')?.classList.toggle('hidden', escalatedChip?.dataset.conveyState !== 'abnormal');
+}
+
+function buildConveyDestination() {
+  const hospital = val('conveyHospital') === 'Other hospital' ? val('conveyHospitalOther') : val('conveyHospital');
+  let department = val('conveyDepartment');
+  if (department === 'Ward') {
+    const ward = val('conveyWard');
+    department = ward ? `Ward — ${ward}` : 'Ward';
+  } else if (department === 'Other department') {
+    department = val('conveyDepartmentOther') || 'Other department';
+  }
+  return [hospital, department].filter(Boolean).join('; ');
+}
+
 function buildConveyanceText() {
   const decision = val('conveyanceDecision');
   const notes = val('conveyanceNotes');
-  if (decision === 'Conveyed') return `Patient conveyed to hospital.${notes ? ' ' + notes : ''}`;
+  if (decision === 'Conveyed') {
+    const destination = buildConveyDestination();
+    const transferText = getConveyTransferText();
+    const changeDetail = val('conveyChangeDetail');
+    const escalatedDetail = val('conveyEscalatedDetail');
+    const extraDetail = [
+      changeDetail ? `Clinical change detail: ${changeDetail}` : null,
+      escalatedDetail ? `Escalation of care detail: ${escalatedDetail}` : null,
+    ].filter(Boolean).join(' ');
+    const lines = [
+      'Conveyance decision: Patient conveyed to hospital for further assessment and/or treatment.',
+      destination ? `Destination: ${destination}.` : 'Destination: Not specified.',
+      transferText ? `Transfer and handover: ${transferText}.${extraDetail ? ` ${extraDetail}` : ''}` : null,
+      val('conveyTransferNotes') ? `Transfer / handover notes: ${val('conveyTransferNotes')}` : null,
+      notes ? `Additional notes: ${notes}` : null,
+    ].filter(Boolean);
+    return lines.join('\n');
+  }
   const checks = [isChecked('riskExplained') && 'risks explained', isChecked('alternativesDiscussed') && 'alternatives discussed', isChecked('understandsRisk') && 'patient understands risks', isChecked('canRecontact') && 'advised they can recontact 999/111'].filter(Boolean).join('; ');
   return `${decision}. Referred/signposted to: ${listSet(state.referrals, 'not documented')}. ${val('followUp') ? val('followUp') + '. ' : ''}${checks ? `Safety netting: ${checks}.` : ''}${notes ? ' ' + notes : ''}`.trim();
 }
