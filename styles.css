@@ -90,6 +90,19 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
 .primary-action, .secondary-action { border: 0; border-radius: 999px; padding: 11px 18px; font-weight: 900; cursor: pointer; }
 .primary-action { background: var(--primary); color: #fff; }
 .secondary-action { background: var(--primary-soft); color: var(--primary); border: 1px solid #d2e2ea; }
+.pain-toolbar { margin-top: 4px; }
+.output-hint { margin: 0 0 12px; color: var(--muted); font-size: 13px; font-weight: 700; }
+.output-sections { display: grid; gap: 12px; }
+.output-card { border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fbfcfd; overflow: hidden; }
+.output-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.output-card-head h3 { margin: 0; font-size: 12px; font-weight: 800; letter-spacing: .03em; color: var(--primary); }
+.output-card-head .secondary-action { padding: 7px 12px; font-size: 12px; }
+.output-snippet { margin: 0; padding: 12px; white-space: pre-wrap; word-break: break-word; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; line-height: 1.55; max-height: 220px; overflow: auto; }
+.auscultation-block { margin-bottom: 12px; }
+.ausc-preview { margin: 8px 0 0; padding: 10px 12px; background: var(--primary-soft); border: 1px solid #d2e2ea; border-radius: var(--radius-sm); font-weight: 800; color: #31586e; font-size: 13px; }
+.ausc-entries { display: grid; gap: 6px; margin-top: 8px; }
+.ausc-entry { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; font-weight: 700; font-size: 13px; }
+.ausc-entry button { border: 0; background: var(--danger-soft); color: var(--danger); border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-weight: 900; }
 .output { min-height: 360px; white-space: pre-wrap; word-break: break-word; background: #fbfcfd; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; line-height: 1.65; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; }
 .toast { position: fixed; left: 50%; bottom: 105px; transform: translateX(-50%) translateY(18px); background: #20333f; color: #fff; border-radius: 999px; padding: 10px 20px; font-weight: 800; opacity: 0; transition: .25s; pointer-events: none; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }

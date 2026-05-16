@@ -124,7 +124,18 @@
           <label class="field-label">Character</label><div class="square-grid multi-group" data-state="character"></div>
           <label class="field-label">Associated symptoms</label><div class="square-grid multi-group" data-state="associated"></div>
           <label class="field-label">Exacerbating factors</label><div class="square-grid multi-group" data-state="exacerbating"></div>
+          <div id="exacerbatingOtherWrap" class="hidden">
+            <label class="field-label" for="exacerbatingOther">Other exacerbating factors</label>
+            <input id="exacerbatingOther" type="text" placeholder="Free text" />
+          </div>
           <label class="field-label">Relieving factors</label><div class="square-grid multi-group" data-state="relieving"></div>
+          <div id="relievingOtherWrap" class="hidden">
+            <label class="field-label" for="relievingOther">Other relieving factors</label>
+            <input id="relievingOther" type="text" placeholder="Free text" />
+          </div>
+          <div class="toolbar pain-toolbar">
+            <button id="clearPainButton" class="secondary-action" type="button">Clear all pain fields</button>
+          </div>
         </div>
       </details>
 
@@ -165,14 +176,22 @@
       </details>
       <details class="section-card">
         <summary><span>Worsening Advice and Conveyance</span><small>Plan</small></summary>
-        <div class="section-body"><div class="grid-2"><div><label class="field-label" for="worseningMode">Worsening advice</label><select id="worseningMode"><option>Standard</option><option>Head injury</option><option>Standard and head injury</option><option>Not applicable</option><option>Custom</option></select></div><div><label class="field-label" for="conveyanceDecision">Conveyance decision</label><select id="conveyanceDecision"><option>Conveyed</option><option>Treated and left</option><option>Declined conveyance</option></select></div></div><textarea id="customWorsening" class="hidden" rows="3" placeholder="Custom worsening advice given"></textarea><div id="nonConveyedFields" class="hidden"><label class="field-label">Referred / signposted to</label><div class="square-grid multi-group" data-state="referrals"></div><label class="field-label" for="followUp">Follow-up arrangements</label><input id="followUp" type="text" /><div class="grid-2 compact"><label class="check-row"><input type="checkbox" id="riskExplained" checked /> Risks explained</label><label class="check-row"><input type="checkbox" id="alternativesDiscussed" checked /> Alternatives discussed</label><label class="check-row"><input type="checkbox" id="understandsRisk" checked /> Patient understands risks</label><label class="check-row"><input type="checkbox" id="canRecontact" checked /> 999/111 recontact advised</label></div></div><label class="field-label" for="conveyanceNotes">Conveyance notes</label><textarea id="conveyanceNotes" rows="2"></textarea></div>
+        <div class="section-body"><div class="grid-2"><div><label class="field-label" for="worseningMode">Worsening advice</label><select id="worseningMode"><option value="Not applicable">Not applicable (conveyed)</option><option value="Standard">Standard</option><option value="Strong">Strong (refusal / high risk)</option><option value="Head injury">Head injury</option><option value="Standard and head injury">Standard and head injury</option><option value="Custom">Custom</option></select></div><div><label class="field-label" for="conveyanceDecision">Conveyance decision</label><select id="conveyanceDecision"><option>Conveyed</option><option>Treated and left</option><option>Declined conveyance</option></select></div></div><textarea id="customWorsening" class="hidden" rows="3" placeholder="Custom worsening advice given"></textarea><div id="nonConveyedFields" class="hidden"><label class="field-label">Referred / signposted to</label><div class="square-grid multi-group" data-state="referrals"></div><label class="field-label" for="followUp">Follow-up arrangements</label><input id="followUp" type="text" /><div class="grid-2 compact"><label class="check-row"><input type="checkbox" id="riskExplained" checked /> Risks explained</label><label class="check-row"><input type="checkbox" id="alternativesDiscussed" checked /> Alternatives discussed</label><label class="check-row"><input type="checkbox" id="understandsRisk" checked /> Patient understands risks</label><label class="check-row"><input type="checkbox" id="canRecontact" checked /> 999/111 recontact advised</label></div></div><label class="field-label" for="conveyanceNotes">Conveyance notes</label><textarea id="conveyanceNotes" rows="2"></textarea></div>
       </details>
     </section>
 
     <section class="panel" id="panel-output">
       <details class="section-card" open>
         <summary><span>Generated PRF</span><small>Output</small></summary>
-        <div class="section-body"><div class="toolbar"><button id="copyButton" class="primary-action" type="button">Generate and copy</button><button id="refreshButton" class="secondary-action" type="button">Refresh preview</button></div><pre id="outputText" class="output">Tap “Refresh preview” or “Generate and copy”.</pre></div>
+        <div class="section-body">
+          <div class="toolbar">
+            <button id="copyButton" class="primary-action" type="button">Generate and copy all</button>
+            <button id="refreshButton" class="secondary-action" type="button">Refresh preview</button>
+          </div>
+          <p class="output-hint">Copy individual sections into separate ePCR pages, or copy everything at once.</p>
+          <div id="outputSections" class="output-sections"></div>
+          <pre id="outputText" class="output hidden">Tap “Refresh preview” or “Generate and copy”.</pre>
+        </div>
       </details>
     </section>
   </main>
