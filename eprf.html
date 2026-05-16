@@ -1,0 +1,2191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#4A8C76">
+  <title>ePRF Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Pastel sage-green palette */
+      --g900: #2A5244;
+      --g800: #3D7263;
+      --g700: #4A8C76;
+      --g600: #60A892;
+      --g400: #8EC4B4;
+      --g200: #BDD9D2;
+      --g150: #D1E8E3;
+      --g100: #E3F2EE;
+      --g50:  #F2F8F6;
+
+      /* Warm red / amber for abnormal — muted */
+      --red:   #A64B55;
+      --red-m: #C26470;
+      --red-l: #FAECED;
+      --red-b: #EFCDD0;
+      --amb:   #A06030;
+      --amb-l: #FDF1E8;
+      --amb-b: #EDCDB0;
+
+      /* Neutrals */
+      --bg:   #F4F7F6;
+      --card: #FFFFFF;
+      --sep:  #E4EDEA;
+      --t1:   #1A2E28;
+      --t2:   #506860;
+      --t3:   #90ABA4;
+
+      --r:  14px;
+      --rs: 10px;
+      --sh: 0 2px 14px rgba(42,82,68,0.10);
+      --ff: 'Nunito', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--ff);
+      background: var(--bg);
+      color: var(--t1);
+      min-height: 100vh;
+      padding-bottom: 100px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── Header ── */
+    .hdr {
+      background: linear-gradient(145deg, var(--g900) 0%, var(--g700) 60%, var(--g600) 100%);
+      padding: 14px 20px 13px;
+      padding-top: calc(14px + env(safe-area-inset-top));
+      position: sticky; top: 0; z-index: 300;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .hdr-icon { font-size: 30px; line-height: 1; }
+    .hdr-text h1 {
+      color: #fff; font-size: 20px; font-weight: 800; letter-spacing: -0.4px;
+    }
+    .hdr-text p { color: rgba(255,255,255,0.65); font-size: 12px; font-weight: 500; margin-top: 1px; }
+    .hdr-reset {
+      margin-left: auto; flex-shrink: 0;
+      background: rgba(255,255,255,0.18); border: 1.5px solid rgba(255,255,255,0.28);
+      color: #fff; border-radius: 22px;
+      padding: 7px 16px; font-size: 13px; font-family: var(--ff); font-weight: 600;
+      cursor: pointer; backdrop-filter: blur(10px);
+    }
+
+    /* ── Tab Bar ── */
+    .tabs {
+      background: rgba(244,247,246,0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1.5px solid var(--sep);
+      display: flex;
+      position: sticky; top: 62px; z-index: 290;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      flex: 1; min-width: 72px; padding: 10px 6px 9px;
+      border: none; background: none; font-family: var(--ff);
+      font-size: 11px; font-weight: 600; color: var(--t3);
+      cursor: pointer; border-bottom: 3px solid transparent;
+      transition: all 0.2s; white-space: nowrap;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+    }
+    .tab-btn .ti { font-size: 18px; }
+    .tab-btn.active { color: var(--g700); border-bottom-color: var(--g600); }
+
+    /* ── Panels ── */
+    .panel { display: none; padding: 16px; max-width: 960px; margin: 0 auto; }
+    .panel.active { display: block; }
+
+    /* ── Cards ── */
+    .card { background: var(--card); border-radius: var(--r); box-shadow: var(--sh); margin-bottom: 16px; overflow: hidden; }
+    .card-hdr {
+      background: linear-gradient(100deg, var(--g800) 0%, var(--g600) 100%);
+      padding: 12px 18px; display: flex; align-items: center; gap: 10px;
+    }
+    .card-hdr h2 { color: #fff; font-size: 15px; font-weight: 700; }
+    .card-hdr .badge {
+      margin-left: auto; background: rgba(255,255,255,0.22);
+      color: #fff; border-radius: 12px; padding: 3px 10px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+    }
+    .card-body { padding: 16px 18px; }
+    .card-body + .card-body { border-top: 1.5px solid var(--sep); }
+
+    /* ── Labels & Fields ── */
+    .sec-lbl {
+      font-size: 11.5px; font-weight: 700; color: var(--g700);
+      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; margin-top: 2px;
+    }
+    .sec-lbl:first-child { margin-top: 0; }
+    .field-lbl {
+      display: block; font-size: 13px; font-weight: 600;
+      color: var(--t2); margin-bottom: 6px; margin-top: 14px;
+    }
+    .field-lbl:first-child { margin-top: 0; }
+
+    input[type="text"], input[type="time"], input[type="number"],
+    select, textarea {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--sep); border-radius: var(--rs);
+      font-family: var(--ff); font-size: 15px; color: var(--t1);
+      background: var(--bg); outline: none; transition: border-color 0.18s, box-shadow 0.18s;
+      -webkit-appearance: none; appearance: none;
+    }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7'%3E%3Cpath d='M1 1l4.5 5L10 1' stroke='%2390ABA4' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 13px center; padding-right: 34px;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--g600); box-shadow: 0 0 0 3px rgba(96,168,146,0.15); background: #fff;
+    }
+    textarea { resize: vertical; min-height: 72px; line-height: 1.6; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+    /* ── "Other" expandable field ── */
+    .other-field { margin-top: 8px; }
+    .other-field input { display: none; }
+    .other-field.show input { display: block; }
+
+    /* ── Chip Grid (ROS) ── */
+    .chip-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 9px; margin-top: 8px;
+    }
+    @media (min-width: 580px) {
+      .chip-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (min-width: 820px) {
+      .chip-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .chip-g {
+      padding: 12px 10px; border-radius: 12px; cursor: pointer;
+      border: 1.5px solid var(--g150); background: var(--g50);
+      font-family: var(--ff); font-size: 13px; font-weight: 600; color: var(--g800);
+      text-align: left; transition: all 0.15s; line-height: 1.3;
+      display: flex; align-items: flex-start; gap: 8px;
+      -webkit-user-select: none; user-select: none;
+    }
+    .chip-g .chip-icon {
+      width: 20px; height: 20px; border-radius: 6px;
+      background: var(--g200); flex-shrink: 0; margin-top: 1px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; color: var(--g700);
+      transition: all 0.15s;
+    }
+    .chip-g .chip-txt { flex: 1; }
+    .chip-g .chip-sub { font-size: 11px; font-weight: 500; color: var(--t3); margin-top: 2px; }
+
+    /* Abnormal state */
+    .chip-g.abn {
+      background: var(--red-l); border-color: var(--red-b); color: var(--red);
+    }
+    .chip-g.abn .chip-icon {
+      background: var(--red-b); color: var(--red);
+    }
+    .chip-g.abn .chip-sub { color: var(--red-m); opacity: 0.7; }
+
+    /* ── SOCRATES chips (inline, no grid) ── */
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+    .chip-s {
+      padding: 8px 14px; border-radius: 20px;
+      border: 1.5px solid var(--sep); background: var(--bg);
+      font-family: var(--ff); font-size: 13px; font-weight: 600; color: var(--t2);
+      cursor: pointer; transition: all 0.15s;
+      -webkit-user-select: none; user-select: none;
+    }
+    .chip-s.sel { background: var(--g100); border-color: var(--g600); color: var(--g800); }
+
+    /* ── Body map ── */
+    .body-map-wrap { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
+    .bm-svg-col { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .bm-lr { display: flex; justify-content: space-between; width: 100%; padding: 0 6px; font-size: 11px; color: var(--t3); font-weight: 600; }
+    .bp {
+      fill: #D8EEEA; stroke: var(--g400); stroke-width: 1.5;
+      cursor: pointer; transition: fill 0.12s;
+    }
+    .bp:hover { fill: var(--g200); }
+    .bp.sel   { fill: var(--g600); stroke: var(--g700); }
+    .bp.rad   { fill: #E8C9A0; stroke: var(--amb); }
+    .bm-info  { flex: 1; min-width: 170px; }
+    .map-mode-btns { display: flex; gap: 8px; margin-bottom: 12px; }
+    .mm-btn {
+      flex: 1; padding: 9px; border-radius: var(--rs);
+      border: 1.5px solid var(--sep); background: var(--bg);
+      font-family: var(--ff); font-size: 13px; font-weight: 600; color: var(--t2);
+      cursor: pointer; transition: all 0.15s; text-align: center;
+    }
+    .mm-btn.ms { background: var(--g100); border-color: var(--g600); color: var(--g800); }
+    .mm-btn.mr { background: var(--amb-l); border-color: var(--amb-b); color: var(--amb); }
+    .selected-parts { display: flex; flex-wrap: wrap; gap: 6px; min-height: 30px; }
+    .pt-tag {
+      background: var(--g600); color: #fff; border-radius: 14px;
+      padding: 4px 10px; font-size: 12px; font-weight: 600;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .pt-tag.r { background: var(--amb); }
+    .pt-tag button {
+      background: none; border: none; color: rgba(255,255,255,0.75);
+      font-size: 16px; cursor: pointer; padding: 0; line-height: 1;
+    }
+
+    /* ── Sliders ── */
+    .slider-wrap { margin-top: 6px; }
+    .slider-val  { font-size: 28px; font-weight: 800; color: var(--g700); text-align: center; margin-bottom: 2px; }
+    .slider-hint { display: flex; justify-content: space-between; font-size: 11px; color: var(--t3); font-weight: 600; margin-bottom: 6px; }
+    input[type="range"] {
+      -webkit-appearance: none; appearance: none; width: 100%; height: 7px; border-radius: 4px;
+      background: linear-gradient(to right, var(--g600) 0%, var(--g600) var(--pct,50%), var(--sep) var(--pct,50%));
+      outline: none; border: none; padding: 0;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 28px; height: 28px; border-radius: 14px;
+      background: var(--g700); border: 3px solid #fff;
+      box-shadow: 0 2px 10px rgba(42,82,68,0.25); cursor: pointer;
+    }
+
+    /* ── Vitals ── */
+    .vitals-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .vital-box {
+      flex: 1; min-width: 80px; background: var(--g50);
+      border: 1.5px solid var(--g150); border-radius: var(--rs);
+      padding: 9px 10px; text-align: center;
+    }
+    .vital-box label { display: block; font-size: 10.5px; font-weight: 700; color: var(--g700); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+    .vital-box input {
+      text-align: center; background: transparent; border: none;
+      border-bottom: 1.5px solid var(--g200); border-radius: 0;
+      padding: 2px 4px; font-size: 17px; font-weight: 700; color: var(--t1); width: 100%;
+      box-shadow: none;
+    }
+    .vital-box input:focus { border-bottom-color: var(--g600); outline: none; box-shadow: none; }
+
+    /* ── Yes/No ── */
+    .yn-row { display: flex; gap: 10px; margin-top: 8px; }
+    .yn-btn {
+      flex: 1; padding: 11px; border-radius: var(--rs);
+      border: 1.5px solid var(--sep); background: var(--bg);
+      font-family: var(--ff); font-size: 15px; font-weight: 600; color: var(--t2);
+      cursor: pointer; text-align: center; transition: all 0.15s;
+    }
+    .yn-btn.sel-y { background: var(--g100); border-color: var(--g600); color: var(--g800); }
+    .yn-btn.sel-n { background: var(--red-l); border-color: var(--red-b); color: var(--red); }
+
+    /* ── ABCDE ── */
+    .abcde-row { display: flex; gap: 14px; margin-bottom: 16px; align-items: flex-start; }
+    .abcde-row:last-child { margin-bottom: 0; }
+    .abc-letter {
+      width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--g800), var(--g600));
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 20px; font-weight: 800;
+    }
+    .abc-content { flex: 1; }
+
+    /* PS chips — smaller inline */
+    .ps-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
+    .ps-chip {
+      padding: 8px 13px; border-radius: 18px;
+      border: 1.5px solid var(--g150); background: var(--g50);
+      font-family: var(--ff); font-size: 13px; font-weight: 600; color: var(--g800);
+      cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 5px;
+    }
+    .ps-chip::before { content: '✓'; color: var(--g600); font-size: 11px; }
+    .ps-chip.off { background: #F6F6F6; border-color: #E0E0E0; color: var(--t3); }
+    .ps-chip.off::before { content: '—'; color: var(--t3); }
+    .ps-chip.flagged { background: var(--red-l); border-color: var(--red-b); color: var(--red); }
+    .ps-chip.flagged::before { content: '!'; color: var(--red); }
+
+    /* ── ROS Sections ── */
+    .ros-sec { border-bottom: 1.5px solid var(--sep); }
+    .ros-sec:last-child { border-bottom: none; }
+    .ros-hdr {
+      display: flex; align-items: center; padding: 14px 18px;
+      cursor: pointer; gap: 10px; transition: background 0.15s;
+    }
+    .ros-hdr:active { background: var(--g50); }
+    .ros-icon { font-size: 20px; flex-shrink: 0; }
+    .ros-title { flex: 1; font-size: 15px; font-weight: 700; color: var(--t1); }
+    .ros-badge {
+      font-size: 11.5px; font-weight: 700; padding: 3px 10px;
+      border-radius: 12px; flex-shrink: 0;
+    }
+    .ros-badge.ok  { background: var(--g100); color: var(--g800); }
+    .ros-badge.abn { background: var(--red-l); color: var(--red); }
+    .ros-chev { color: var(--t3); font-size: 13px; transition: transform 0.2s; }
+    .ros-sec.open .ros-chev { transform: rotate(180deg); }
+    .ros-body { display: none; padding: 16px 18px; }
+    .ros-sec.open .ros-body { display: block; }
+
+    /* ── SOCRATES embedded in ROS ── */
+    #socratesBlock {
+      background: var(--g50); border: 1.5px solid var(--g150);
+      border-radius: var(--r); padding: 16px; margin-bottom: 18px;
+    }
+    #socratesBlock .soc-title {
+      font-size: 13px; font-weight: 800; color: var(--g700);
+      text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+    #socratesBlock .soc-title span {
+      background: var(--g700); color: #fff; border-radius: 7px;
+      padding: 2px 8px; font-size: 11px;
+    }
+    .soc-row { margin-bottom: 14px; }
+    .soc-row:last-child { margin-bottom: 0; }
+    .soc-lbl { font-size: 12px; font-weight: 700; color: var(--t2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.6px; }
+
+    /* ── Dropdown with Other ── */
+    .select-other { }
+    .select-other select { margin-bottom: 0; }
+    .select-other textarea,
+    .select-other input[type="text"] { margin-top: 8px; display: none; }
+    .select-other.show-other textarea,
+    .select-other.show-other input[type="text"] { display: block; }
+
+    /* ── Worsening ── */
+    .worse-opts { display: flex; flex-direction: column; gap: 9px; margin-top: 8px; }
+    .worse-opt {
+      padding: 13px 16px; border-radius: var(--rs);
+      border: 1.5px solid var(--sep); background: var(--bg);
+      font-family: var(--ff); font-size: 14px; font-weight: 600; color: var(--t1);
+      cursor: pointer; text-align: left; transition: all 0.15s;
+    }
+    .worse-opt.sel  { background: var(--g100); border-color: var(--g600); color: var(--g800); }
+    .worse-opt.sel-r{ background: var(--red-l); border-color: var(--red-b); color: var(--red); }
+
+    /* ── Three-option row (capacity / conveyance) ── */
+    .three-row { display: flex; gap: 8px; margin-top: 8px; }
+    .three-btn {
+      flex: 1; padding: 11px 8px; border-radius: var(--rs); text-align: center;
+      border: 1.5px solid var(--sep); background: var(--bg);
+      font-family: var(--ff); font-size: 13px; font-weight: 600; color: var(--t2);
+      cursor: pointer; transition: all 0.15s; line-height: 1.3;
+    }
+    .three-btn.sel-g { background: var(--g100); border-color: var(--g600); color: var(--g800); }
+    .three-btn.sel-a { background: var(--amb-l); border-color: var(--amb-b); color: var(--amb); }
+    .three-btn.sel-r { background: var(--red-l); border-color: var(--red-b); color: var(--red); }
+
+    /* ── Info / alert box ── */
+    .info-box {
+      background: var(--red-l); border: 1.5px solid var(--red-b); border-radius: var(--rs);
+      padding: 12px 14px; font-size: 13px; font-weight: 600; color: var(--red);
+      margin-bottom: 12px; line-height: 1.5;
+    }
+    .info-box.amber { background: var(--amb-l); border-color: var(--amb-b); color: var(--amb); }
+    .info-box.green { background: var(--g100); border-color: var(--g200); color: var(--g800); }
+
+    /* ── Referral chips (reuse chip-s but in a wrap grid) ── */
+    .ref-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 6px; }
+
+    /* ── OE / Secondary Survey ── */
+    .oe-toolbar { display: flex; gap: 9px; margin-bottom: 10px; flex-wrap: wrap; }
+    .oe-btn {
+      padding: 9px 18px; border-radius: 20px; border: none;
+      font-family: var(--ff); font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .oe-btn.primary { background: var(--g700); color: #fff; }
+    .oe-btn.secondary { background: var(--g100); color: var(--g800); border: 1.5px solid var(--g200); }
+
+    /* ── Output ── */
+    .output-toolbar { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .out-btn {
+      padding: 11px 22px; border-radius: 24px; border: none;
+      font-family: var(--ff); font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .out-btn.primary { background: var(--g700); color: #fff; box-shadow: 0 4px 14px rgba(74,140,118,0.3); }
+    .out-btn.secondary { background: var(--g100); color: var(--g800); border: 1.5px solid var(--g200); }
+    .out-btn:active { transform: scale(0.97); }
+    .output-text {
+      font-family: 'Menlo', 'Courier New', monospace;
+      font-size: 12.5px; line-height: 1.75; color: var(--t1);
+      background: var(--g50); border: 1.5px solid var(--g150);
+      border-radius: var(--rs); padding: 18px;
+      white-space: pre-wrap; word-wrap: break-word; min-height: 200px;
+    }
+    .copy-toast {
+      position: fixed; bottom: 110px; left: 50%; transform: translateX(-50%) translateY(16px);
+      background: var(--g900); color: #fff; padding: 11px 24px;
+      border-radius: 24px; font-size: 14px; font-weight: 700;
+      opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 999;
+    }
+    .copy-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── Check rows ── */
+    .check-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+    .check-row:last-child { margin-bottom: 0; }
+    .check-row input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--g600); flex-shrink: 0; }
+    .check-row label { font-size: 14px; font-weight: 500; color: var(--t1); }
+
+    /* ── PC chips ── */
+    .pc-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .pc-chip {
+      padding: 9px 16px; border-radius: 22px;
+      border: 1.5px solid var(--sep); background: var(--card);
+      font-size: 14px; font-weight: 600; color: var(--t1);
+      cursor: pointer; transition: all 0.15s; font-family: var(--ff);
+    }
+    .pc-chip.sel { background: var(--g700); color: #fff; border-color: var(--g700); }
+
+    /* ── Divider ── */
+    .divider { height: 1.5px; background: var(--sep); margin: 14px 0; }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="hdr">
+  <div class="hdr-icon">🚑</div>
+  <div class="hdr-text">
+    <h1>ePRF Assistant</h1>
+    <p>Electronic Patient Report Form</p>
+  </div>
+  <button class="hdr-reset" onclick="resetAll()">New PRF</button>
+</header>
+
+<!-- Tab Bar -->
+<nav class="tabs">
+  <button class="tab-btn active" onclick="switchTab(0)" id="tab0"><span class="ti">📋</span>PC / HPC</button>
+  <button class="tab-btn" onclick="switchTab(1)" id="tab1"><span class="ti">🔍</span>Primary</button>
+  <button class="tab-btn" onclick="switchTab(2)" id="tab2"><span class="ti">🫀</span>ROS</button>
+  <button class="tab-btn" onclick="switchTab(3)" id="tab3"><span class="ti">📄</span>Output</button>
+</nav>
+
+<!-- ══════════════════════════════════
+     SOCRATES BLOCK — moved dynamically
+══════════════════════════════════ -->
+<div id="socratesBlock" style="display:none;">
+  <div class="soc-title">SOCRATES <span>Pain Assessment</span></div>
+
+  <!-- S — Site -->
+  <div class="soc-row">
+    <div class="soc-lbl">S — Site of Pain</div>
+    <div class="body-map-wrap">
+      <div class="bm-svg-col">
+        <div class="bm-lr"><span>← Pt R</span><span>Pt L →</span></div>
+        <svg id="bodyMap" viewBox="0 0 190 410" width="140" height="302" style="display:block;">
+          <ellipse class="bp" id="bp-head"        cx="95" cy="30"  rx="24" ry="26" data-label="Head"/>
+          <rect    class="bp" id="bp-neck"         x="83" y="54"  width="24" height="16" rx="5" data-label="Neck"/>
+          <ellipse class="bp" id="bp-l-shoulder"   cx="62" cy="73"  rx="16" ry="11" data-label="Left Shoulder"/>
+          <ellipse class="bp" id="bp-r-shoulder"   cx="128" cy="73"  rx="16" ry="11" data-label="Right Shoulder"/>
+          <rect    class="bp" id="bp-l-chest"      x="70" y="68"  width="22" height="38" rx="3" data-label="Left Chest"/>
+          <rect    class="bp" id="bp-r-chest"      x="98" y="68"  width="22" height="38" rx="3" data-label="Right Chest"/>
+          <rect    class="bp" id="bp-abdomen"      x="70" y="106" width="50" height="42" rx="3" data-label="Abdomen"/>
+          <rect    class="bp" id="bp-pelvis"       x="70" y="148" width="50" height="28" rx="6" data-label="Pelvis / Groin"/>
+          <rect    class="bp" id="bp-l-upper-arm"  x="49" y="78"  width="18" height="50" rx="8" data-label="Left Upper Arm"/>
+          <rect    class="bp" id="bp-r-upper-arm"  x="123" y="78"  width="18" height="50" rx="8" data-label="Right Upper Arm"/>
+          <rect    class="bp" id="bp-l-forearm"    x="43" y="132" width="16" height="50" rx="7" data-label="Left Forearm"/>
+          <rect    class="bp" id="bp-r-forearm"    x="131" y="132" width="16" height="50" rx="7" data-label="Right Forearm"/>
+          <ellipse class="bp" id="bp-l-hand"       cx="51" cy="196" rx="13" ry="9" data-label="Left Hand"/>
+          <ellipse class="bp" id="bp-r-hand"       cx="139" cy="196" rx="13" ry="9" data-label="Right Hand"/>
+          <rect    class="bp" id="bp-l-thigh"      x="71" y="179" width="21" height="64" rx="8" data-label="Left Thigh"/>
+          <rect    class="bp" id="bp-r-thigh"      x="98" y="179" width="21" height="64" rx="8" data-label="Right Thigh"/>
+          <ellipse class="bp" id="bp-l-knee"       cx="81" cy="251" rx="12" ry="9" data-label="Left Knee"/>
+          <ellipse class="bp" id="bp-r-knee"       cx="109" cy="251" rx="12" ry="9" data-label="Right Knee"/>
+          <rect    class="bp" id="bp-l-lower-leg"  x="72" y="263" width="18" height="65" rx="7" data-label="Left Lower Leg"/>
+          <rect    class="bp" id="bp-r-lower-leg"  x="100" y="263" width="18" height="65" rx="7" data-label="Right Lower Leg"/>
+          <ellipse class="bp" id="bp-l-foot"       cx="81" cy="337" rx="16" ry="8" data-label="Left Foot"/>
+          <ellipse class="bp" id="bp-r-foot"       cx="109" cy="337" rx="16" ry="8" data-label="Right Foot"/>
+        </svg>
+        <small style="color:var(--t3);font-size:11px;font-weight:600;">Tap to select</small>
+      </div>
+      <div class="bm-info">
+        <div class="map-mode-btns">
+          <button class="mm-btn ms" id="modeBtn-site" onclick="setMapMode('site')">📍 Site</button>
+          <button class="mm-btn" id="modeBtn-rad" onclick="setMapMode('rad')">↗️ Radiation</button>
+        </div>
+        <div class="soc-lbl">Pain Site(s)</div>
+        <div class="selected-parts" id="siteParts"><span style="color:var(--t3);font-size:12px;font-weight:500;">Tap body above</span></div>
+        <div style="height:10px;"></div>
+        <div class="soc-lbl">Radiation To</div>
+        <div class="check-row" style="margin-bottom:6px;">
+          <input type="checkbox" id="noRadiation" checked>
+          <label for="noRadiation" style="font-size:13px;">No radiation</label>
+        </div>
+        <div class="selected-parts" id="radParts"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- O — Onset -->
+  <div class="soc-row">
+    <div class="soc-lbl">O — Onset</div>
+    <div class="row2">
+      <div>
+        <label class="field-lbl" style="margin-top:0;">Onset Type</label>
+        <select id="onsetType">
+          <option value="">— select —</option>
+          <option>Sudden</option><option>Gradual</option><option>Insidious</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-lbl" style="margin-top:0;">Duration</label>
+        <div style="display:flex;gap:6px;">
+          <input type="number" id="onsetDur" placeholder="e.g. 2" style="flex:1;">
+          <select id="onsetUnit" style="width:90px;">
+            <option>mins</option><option>hours</option><option>days</option><option>weeks</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C — Character -->
+  <div class="soc-row">
+    <div class="soc-lbl">C — Character</div>
+    <div class="chips" id="charChips"></div>
+  </div>
+
+  <!-- A — Associated -->
+  <div class="soc-row">
+    <div class="soc-lbl">A — Associated Symptoms</div>
+    <div class="chips" id="assocChips"></div>
+  </div>
+
+  <!-- T — Timing -->
+  <div class="soc-row">
+    <div class="soc-lbl">T — Timing</div>
+    <div class="row2">
+      <div>
+        <label class="field-lbl" style="margin-top:0;">Pattern</label>
+        <select id="timingPattern">
+          <option value="">— select —</option>
+          <option>Constant</option><option>Intermittent</option>
+          <option>Episodic</option><option>Waxing and waning</option><option>Colicky</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-lbl" style="margin-top:0;">Episode Duration</label>
+        <input type="text" id="timingDur" placeholder="e.g. 5 mins each">
+      </div>
+    </div>
+  </div>
+
+  <!-- E — Exac / Relieving -->
+  <div class="soc-row">
+    <div class="soc-lbl">E — Exacerbating Factors</div>
+    <div class="chips" id="exacChips"></div>
+    <div class="soc-lbl" style="margin-top:12px;">Relieving Factors</div>
+    <div class="chips" id="relChips"></div>
+  </div>
+
+  <!-- S — Severity -->
+  <div class="soc-row">
+    <div class="soc-lbl">S — Severity (NRS 0–10)</div>
+    <div class="row2">
+      <div>
+        <label class="field-lbl" style="margin-top:0;text-align:center;">At Rest</label>
+        <div class="slider-wrap">
+          <div class="slider-val" id="sevRestVal">5</div>
+          <div class="slider-hint"><span>0 None</span><span>10 Worst</span></div>
+          <input type="range" id="sevRest" min="0" max="10" value="5">
+        </div>
+      </div>
+      <div>
+        <label class="field-lbl" style="margin-top:0;text-align:center;">At Worst</label>
+        <div class="slider-wrap">
+          <div class="slider-val" id="sevWorstVal">7</div>
+          <div class="slider-hint"><span>0 None</span><span>10 Worst</span></div>
+          <input type="range" id="sevWorst" min="0" max="10" value="7">
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /socratesBlock -->
+
+
+<!-- ══════════════════════════════════
+     TAB 0 — PC / HPC
+══════════════════════════════════ -->
+<div class="panel active" id="panel0">
+
+  <!-- PC -->
+  <div class="card">
+    <div class="card-hdr"><h2>Presenting Complaint</h2><span class="badge">PC</span></div>
+    <div class="card-body">
+      <div class="sec-lbl">Common Presentations</div>
+      <div class="pc-grid" id="pcChips"></div>
+      <label class="field-lbl">Free-text / Custom Complaint</label>
+      <input type="text" id="pcCustom" placeholder="e.g. Generalised weakness, wound review…" oninput="clearPcChips()">
+    </div>
+  </div>
+
+  <!-- HPC -->
+  <div class="card">
+    <div class="card-hdr"><h2>History of Presenting Complaint</h2><span class="badge">HPC</span></div>
+    <div class="card-body">
+      <label class="field-lbl" style="margin-top:0;">Events Leading Up to Incident</label>
+      <textarea id="hpcEvents" placeholder="Describe the events leading up to the incident, timeline, mechanism…" rows="4"></textarea>
+      <div class="check-row" style="margin-top:10px;">
+        <input type="checkbox" id="noTravel" checked>
+        <label for="noTravel">No recent travel</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOCRATES placeholder in HPC tab (default location) -->
+  <div id="hpc-socrates-placeholder"></div>
+
+  <!-- Background -->
+  <div class="card">
+    <div class="card-hdr"><h2>Patient Background</h2><span class="badge">Hx</span></div>
+    <div class="card-body">
+      <div class="check-row"><input type="checkbox" id="nkda" checked><label for="nkda">NKDA — No Known Drug Allergies</label></div>
+      <label class="field-lbl">Allergies (if any)</label>
+      <input type="text" id="allergies" placeholder="e.g. Penicillin – rash">
+    </div>
+    <div class="card-body">
+      <div class="check-row"><input type="checkbox" id="noMeds" checked><label for="noMeds">No regular medications</label></div>
+      <label class="field-lbl">Current Medications</label>
+      <textarea id="medications" placeholder="List medications, dose, frequency…" rows="2"></textarea>
+    </div>
+    <div class="card-body">
+      <div class="check-row"><input type="checkbox" id="noPmh" checked><label for="noPmh">No significant past medical history</label></div>
+      <label class="field-lbl">Past Medical History</label>
+      <textarea id="pmh" placeholder="List conditions, surgeries, hospitalisations…" rows="2"></textarea>
+    </div>
+    <div class="card-body">
+      <div class="sec-lbl">Last Oral Intake</div>
+      <div class="row2">
+        <div>
+          <label class="field-lbl" style="margin-top:0;">Time</label>
+          <input type="time" id="loiTime">
+        </div>
+        <div>
+          <label class="field-lbl" style="margin-top:0;">What / How Much</label>
+          <input type="text" id="loiWhat" placeholder="e.g. Light meal, water">
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="sec-lbl">Has This Happened Before?</div>
+      <div class="yn-row">
+        <button class="yn-btn sel-n" id="prevNo" onclick="setPrev(false)">No</button>
+        <button class="yn-btn" id="prevYes" onclick="setPrev(true)">Yes</button>
+      </div>
+      <div id="prevWrap" style="display:none;margin-top:10px;">
+        <label class="field-lbl" style="margin-top:0;">Details of Previous Episodes</label>
+        <textarea id="prevDetails" placeholder="Frequency, prior diagnosis, investigations, outcome…" rows="2"></textarea>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /panel0 -->
+
+
+<!-- ══════════════════════════════════
+     TAB 1 — PRIMARY SURVEY
+══════════════════════════════════ -->
+<div class="panel" id="panel1">
+  <div class="card">
+    <div class="card-hdr"><h2>Primary Survey</h2><span class="badge">ABCDE</span></div>
+    <div class="card-body">
+      <div class="sec-lbl">On Arrival (OA)</div>
+
+      <div class="sec-lbl" style="margin-top:0;">How was patient found / first contact</div>
+      <div class="ps-chips" id="oa-found-chips">
+        <button class="ps-chip sel" id="oa-greet"    onclick="setOAFound('greet',this)">Greeted by patient</button>
+        <button class="ps-chip"     id="oa-chair"    onclick="setOAFound('chair',this)">Found in chair</button>
+        <button class="ps-chip"     id="oa-bed"      onclick="setOAFound('bed',this)">Found in bed</button>
+        <button class="ps-chip"     id="oa-floor"    onclick="setOAFound('floor',this)">Found on floor</button>
+        <button class="ps-chip"     id="oa-standing" onclick="setOAFound('standing',this)">Found standing</button>
+      </div>
+
+      <label class="field-lbl">Location (e.g. living room, front door, bedroom)</label>
+      <input type="text" id="oaLocation" placeholder="e.g. living room">
+
+      <div class="sec-lbl" style="margin-top:14px;">Patient Mobility</div>
+      <div class="ps-chips">
+        <button class="ps-chip sel" id="oa-mob-indep" onclick="setOAMob('indep',this)">Mobilised independently</button>
+        <button class="ps-chip"     id="oa-mob-aid"   onclick="setOAMob('aid',this)">Mobilised with assistance</button>
+        <button class="ps-chip"     id="oa-mob-none"  onclick="setOAMob('none',this)">Non-mobile / carried</button>
+      </div>
+
+      <div class="ps-chips" style="margin-top:12px;">
+        <button class="ps-chip sel" id="oa-noabc"    onclick="toggleOAChip(this,'oaNoABC')">No ABC concerns</button>
+        <button class="ps-chip sel" id="oa-consent"  onclick="toggleOAChip(this,'oaConsent')">Consented to assessment</button>
+      </div>
+
+      <label class="field-lbl">Additional OA notes</label>
+      <textarea id="oaNotes" placeholder="Any other relevant arrival findings…" rows="2"></textarea>
+    </div>
+
+    <!-- A -->
+    <div class="card-body">
+      <div class="abcde-row">
+        <div class="abc-letter">A</div>
+        <div class="abc-content">
+          <div class="sec-lbl">Airway</div>
+          <div class="ps-chips">
+            <button class="ps-chip" id="ps-aPatent"    onclick="togglePs(this,'pos')">Patent</button>
+            <button class="ps-chip" id="ps-aSelfMaint" onclick="togglePs(this,'pos')">Self-maintained</button>
+            <button class="ps-chip off" id="ps-aObs"    onclick="togglePs(this,'neg')">Obstructed</button>
+            <button class="ps-chip off" id="ps-aSounds" onclick="togglePs(this,'neg')">Airway sounds</button>
+          </div>
+          <label class="field-lbl">Notes / Adjuncts Used</label>
+          <input type="text" id="airwayNotes" placeholder="e.g. OPA inserted, suction used…">
+        </div>
+      </div>
+    </div>
+
+    <!-- B -->
+    <div class="card-body">
+      <div class="abcde-row">
+        <div class="abc-letter">B</div>
+        <div class="abc-content">
+          <div class="sec-lbl">Breathing</div>
+          <div class="ps-chips">
+            <button class="ps-chip" id="ps-bRegular"    onclick="togglePs(this,'pos')">Regular</button>
+            <button class="ps-chip" id="ps-bNoCyan"     onclick="togglePs(this,'pos')">No cyanosis</button>
+            <button class="ps-chip" id="ps-bSentences"  onclick="togglePs(this,'pos')">Full sentences</button>
+            <button class="ps-chip off" id="ps-bLaboured" onclick="togglePs(this,'neg')">Laboured</button>
+            <button class="ps-chip off" id="ps-bWheeze"   onclick="togglePs(this,'neg')">Wheeze</button>
+          </div>
+          <div class="vitals-row">
+            <div class="vital-box"><label>RR /min</label><input type="number" id="rr" placeholder="16"></div>
+            <div class="vital-box"><label>SpO₂ %</label><input type="number" id="spo2" placeholder="98"></div>
+            <div class="vital-box"><label>O₂ L/min</label><input type="number" id="o2Flow" placeholder="—"></div>
+          </div>
+          <label class="field-lbl">Notes</label>
+          <input type="text" id="breathNotes" placeholder="Auscultation, interventions…">
+        </div>
+      </div>
+    </div>
+
+    <!-- C -->
+    <div class="card-body">
+      <div class="abcde-row">
+        <div class="abc-letter">C</div>
+        <div class="abc-content">
+          <div class="sec-lbl">Circulation</div>
+          <div class="ps-chips">
+            <button class="ps-chip" id="ps-cColour"  onclick="togglePs(this,'pos')">Good colour</button>
+            <button class="ps-chip" id="ps-cWarm"    onclick="togglePs(this,'pos')">Warm to touch</button>
+            <button class="ps-chip" id="ps-cRadial"  onclick="togglePs(this,'pos')">Radial palpable</button>
+            <button class="ps-chip" id="ps-cCRT"     onclick="togglePs(this,'pos')">CRT &lt;2s</button>
+            <button class="ps-chip off" id="ps-cPale"    onclick="togglePs(this,'neg')">Pale</button>
+            <button class="ps-chip off" id="ps-cCold"    onclick="togglePs(this,'neg')">Cold/clammy</button>
+            <button class="ps-chip off" id="ps-cBleed"   onclick="togglePs(this,'neg')">Haemorrhage</button>
+          </div>
+          <div class="vitals-row">
+            <div class="vital-box"><label>HR bpm</label><input type="number" id="hr" placeholder="72"></div>
+            <div class="vital-box"><label>BP mmHg</label><input type="text" id="bp" placeholder="120/80"></div>
+            <div class="vital-box"><label>BM mmol</label><input type="number" id="bm" placeholder="5.2"></div>
+          </div>
+          <label class="field-lbl">Notes</label>
+          <input type="text" id="circNotes" placeholder="IV access, fluids, haemostasis…">
+        </div>
+      </div>
+    </div>
+
+    <!-- D -->
+    <div class="card-body">
+      <div class="abcde-row">
+        <div class="abc-letter">D</div>
+        <div class="abc-content">
+          <div class="sec-lbl">Disability</div>
+          <div class="ps-chips">
+            <button class="ps-chip" id="ps-dGCS"       onclick="togglePs(this,'pos')">GCS 15</button>
+            <button class="ps-chip" id="ps-dAOx4"      onclick="togglePs(this,'pos')">AOx4</button>
+            <button class="ps-chip" id="ps-dPEARL"     onclick="togglePs(this,'pos')">PEARL</button>
+            <button class="ps-chip" id="ps-dSpeech"    onclick="togglePs(this,'pos')">Speech clear</button>
+            <button class="ps-chip" id="ps-dMobile"    onclick="togglePs(this,'pos')">Fully mobile</button>
+            <button class="ps-chip off" id="ps-dConfused" onclick="togglePs(this,'neg')">Confused</button>
+          </div>
+          <div class="vitals-row">
+            <div class="vital-box"><label>GCS /15</label><input type="number" id="gcsScore" placeholder="15" max="15" min="3"></div>
+            <div class="vital-box"><label>Pupils</label><input type="text" id="pupils" placeholder="3mm eq."></div>
+            <div class="vital-box"><label>AVPU</label><input type="text" id="avpu" placeholder="A"></div>
+          </div>
+          <label class="field-lbl">Notes</label>
+          <input type="text" id="disNotes" placeholder="Neuro deficits, analgesia given…">
+        </div>
+      </div>
+    </div>
+
+    <!-- E -->
+    <div class="card-body">
+      <div class="abcde-row">
+        <div class="abc-letter">E</div>
+        <div class="abc-content">
+          <div class="sec-lbl">Exposure</div>
+          <div class="ps-chips">
+            <button class="ps-chip" id="ps-eNoFever"  onclick="togglePs(this,'pos')">Apyrexial</button>
+            <button class="ps-chip" id="ps-eNoRig"    onclick="togglePs(this,'pos')">No rigors</button>
+            <button class="ps-chip" id="ps-eColour"   onclick="togglePs(this,'pos')">Normal colour</button>
+            <button class="ps-chip" id="ps-eNotCl"    onclick="togglePs(this,'pos')">Not clammy</button>
+            <button class="ps-chip" id="ps-eNotSw"    onclick="togglePs(this,'pos')">Not diaphoretic</button>
+            <button class="ps-chip" id="ps-eNoInj"    onclick="togglePs(this,'pos')">No injuries</button>
+            <button class="ps-chip" id="ps-eNoRash"   onclick="togglePs(this,'pos')">No rashes</button>
+            <button class="ps-chip" id="ps-eNoBruise" onclick="togglePs(this,'pos')">No bruising</button>
+            <button class="ps-chip off" id="ps-eFever"  onclick="togglePs(this,'neg')">Pyrexia</button>
+            <button class="ps-chip off" id="ps-eInj"    onclick="togglePs(this,'neg')">Injury found</button>
+          </div>
+          <div class="vitals-row" style="margin-top:10px;">
+            <div class="vital-box"><label>Temp °C</label><input type="number" id="temp" placeholder="36.8"></div>
+          </div>
+          <label class="field-lbl">Exposure Notes</label>
+          <textarea id="expNotes" placeholder="Describe injuries, wounds, or findings in detail…" rows="2"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /panel1 -->
+
+
+<!-- ══════════════════════════════════
+     TAB 2 — ROS
+══════════════════════════════════ -->
+<div class="panel" id="panel2">
+  <div class="card" style="overflow:visible;">
+    <div class="card-hdr"><h2>Review of Systems</h2><span class="badge">ROS</span></div>
+
+    <!-- Respiratory -->
+    <div class="ros-sec open" id="ros-resp">
+      <div class="ros-hdr" onclick="toggleRos('ros-resp')">
+        <span class="ros-icon">🫁</span>
+        <span class="ros-title">Respiratory</span>
+        <span class="ros-badge ok" id="rbadge-resp">All normal</span>
+        <span class="ros-chev">▼</span>
+      </div>
+      <div class="ros-body">
+        <div id="soc-placeholder-resp"></div>
+        <div class="chip-grid" id="chips-resp"></div>
+        <label class="field-lbl">Cough</label>
+        <select id="coughType">
+          <option value="none">No cough</option>
+          <option value="dry">Dry cough present</option>
+          <option value="productive">Productive cough present</option>
+        </select>
+        <label class="field-lbl">On Auscultation</label>
+        <div class="select-other" id="so-respAus">
+          <select onchange="handleOther(this,'so-respAus','respAusOther')">
+            <option>Equal and clear bilateral air entry</option>
+            <option>Reduced air entry — right base</option>
+            <option>Reduced air entry — left base</option>
+            <option>Reduced air entry — bilateral</option>
+            <option>Wheeze throughout</option>
+            <option>Expiratory wheeze</option>
+            <option>Inspiratory wheeze</option>
+            <option>Coarse crackles — bilateral bases</option>
+            <option>Coarse crackles — right base</option>
+            <option>Coarse crackles — left base</option>
+            <option>Fine crackles at bases</option>
+            <option>Pleural rub</option>
+            <option>Absent breath sounds — right</option>
+            <option>Absent breath sounds — left</option>
+            <option value="other">Other (free text)</option>
+          </select>
+          <input type="text" id="respAusOther" placeholder="Describe auscultation findings…">
+        </div>
+        <label class="field-lbl">Additional Notes</label>
+        <textarea id="respNotes" placeholder="Further respiratory findings…" rows="2"></textarea>
+      </div>
+    </div>
+
+    <!-- Cardiovascular -->
+    <div class="ros-sec" id="ros-cvs">
+      <div class="ros-hdr" onclick="toggleRos('ros-cvs')">
+        <span class="ros-icon">🫀</span>
+        <span class="ros-title">Cardiovascular</span>
+        <span class="ros-badge ok" id="rbadge-cvs">All normal</span>
+        <span class="ros-chev">▼</span>
+      </div>
+      <div class="ros-body">
+        <div id="soc-placeholder-cvs"></div>
+        <div class="chip-grid" id="chips-cvs"></div>
+        <label class="field-lbl">Blood Pressure Status</label>
+        <select id="bpStatus">
+          <option value="normo">Normotensive</option>
+          <option value="hypo">Hypotensive</option>
+          <option value="hyper">Hypertensive</option>
+        </select>
+        <label class="field-lbl">ECG Findings</label>
+        <div class="select-other" id="so-ecg">
+          <select onchange="handleOther(this,'so-ecg','ecgOther')">
+            <option>Nil acute</option>
+            <option>Sinus rhythm — nil acute</option>
+            <option>Sinus tachycardia</option>
+            <option>Sinus bradycardia</option>
+            <option>AF — rate controlled</option>
+            <option>AF — fast ventricular response</option>
+            <option>ST elevation (STEMI pattern)</option>
+            <option>ST depression</option>
+            <option>T wave changes</option>
+            <option>Left bundle branch block (LBBB)</option>
+            <option>Right bundle branch block (RBBB)</option>
+            <option>Prolonged QT</option>
+            <option>1st degree heart block</option>
+            <option>2nd degree heart block</option>
+            <option>3rd degree heart block</option>
+            <option>Supraventricular tachycardia (SVT)</option>
+            <option>Ventricular tachycardia (VT)</option>
+            <option>Not performed</option>
+            <option value="other">Other (free text)</option>
+          </select>
+          <input type="text" id="ecgOther" placeholder="Describe ECG findings…">
+        </div>
+        <label class="field-lbl">Additional Notes</label>
+        <textarea id="cvsNotes" placeholder="Further cardiovascular findings…" rows="2"></textarea>
+      </div>
+    </div>
+
+    <!-- Neurological -->
+    <div class="ros-sec" id="ros-neuro">
+      <div class="ros-hdr" onclick="toggleRos('ros-neuro')">
+        <span class="ros-icon">🧠</span>
+        <span class="ros-title">Neurological</span>
+        <span class="ros-badge ok" id="rbadge-neuro">All normal</span>
+        <span class="ros-chev">▼</span>
+      </div>
+      <div class="ros-body">
+        <div id="soc-placeholder-neuro"></div>
+        <div class="chip-grid" id="chips-neuro"></div>
+        <label class="field-lbl">Additional Notes</label>
+        <textarea id="neuroNotes" placeholder="Further neurological findings…" rows="2"></textarea>
+      </div>
+    </div>
+
+    <!-- Gastrointestinal -->
+    <div class="ros-sec" id="ros-gi">
+      <div class="ros-hdr" onclick="toggleRos('ros-gi')">
+        <span class="ros-icon">🫃</span>
+        <span class="ros-title">Gastrointestinal</span>
+        <span class="ros-badge ok" id="rbadge-gi">All normal</span>
+        <span class="ros-chev">▼</span>
+      </div>
+      <div class="ros-body">
+        <div id="soc-placeholder-gi"></div>
+        <div class="chip-grid" id="chips-gi"></div>
+        <label class="field-lbl">Bowel Sounds</label>
+        <div class="select-other" id="so-bowel">
+          <select onchange="handleOther(this,'so-bowel','bowelOther')">
+            <option>Present and normal</option>
+            <option>Present — hyperactive</option>
+            <option>Present — hypoactive</option>
+            <option>Absent</option>
+            <option>Tinkling</option>
+            <option value="other">Other (free text)</option>
+          </select>
+          <input type="text" id="bowelOther" placeholder="Describe bowel sounds…">
+        </div>
+        <label class="field-lbl" style="margin-top:14px;">On Palpation</label>
+        <div class="chip-grid" id="chips-gi-palp"></div>
+        <label class="field-lbl">Additional Notes</label>
+        <textarea id="giNotes" placeholder="Further GI findings…" rows="2"></textarea>
+      </div>
+    </div>
+
+    <!-- Urinary -->
+    <div class="ros-sec" id="ros-urine">
+      <div class="ros-hdr" onclick="toggleRos('ros-urine')">
+        <span class="ros-icon">💧</span>
+        <span class="ros-title">Urinary</span>
+        <span class="ros-badge ok" id="rbadge-urine">All normal</span>
+        <span class="ros-chev">▼</span>
+      </div>
+      <div class="ros-body">
+        <div id="soc-placeholder-urine"></div>
+        <div class="chip-grid" id="chips-urine"></div>
+        <label class="field-lbl">Additional Notes</label>
+        <textarea id="urineNotes" placeholder="Further urinary findings…" rows="2"></textarea>
+      </div>
+    </div>
+
+    <!-- Integumentary -->
+    <div class="ros-sec" id="ros-integ">
+      <div class="ros-hdr" onclick="toggleRos('ros-integ')">
+        <span class="ros-icon">🩺</span>
+        <span class="ros-title">Integumentary</span>
+        <span class="ros-badge ok" id="rbadge-integ">All normal</span>
+        <span class="ros-chev">▼</span>
+      </div>
+      <div class="ros-body">
+        <div class="chip-grid" id="chips-integ"></div>
+        <label class="field-lbl">Additional Notes</label>
+        <textarea id="integNotes" placeholder="Describe skin findings, wounds…" rows="2"></textarea>
+      </div>
+    </div>
+
+    <!-- Musculoskeletal -->
+    <div class="ros-sec" id="ros-msk">
+      <div class="ros-hdr" onclick="toggleRos('ros-msk')">
+        <span class="ros-icon">🦴</span>
+        <span class="ros-title">Musculoskeletal</span>
+        <span class="ros-badge ok" id="rbadge-msk">All normal</span>
+        <span class="ros-chev">▼</span>
+      </div>
+      <div class="ros-body">
+        <div id="soc-placeholder-msk"></div>
+        <div class="chip-grid" id="chips-msk"></div>
+        <label class="field-lbl">Additional Notes</label>
+        <textarea id="mskNotes" placeholder="Further MSK findings…" rows="2"></textarea>
+      </div>
+    </div>
+
+  </div><!-- /card -->
+
+  <!-- Secondary Survey / OE -->
+  <div class="card">
+    <div class="card-hdr"><h2>Secondary Survey / OE</h2><span class="badge">SS</span></div>
+    <div class="card-body">
+      <div class="oe-toolbar">
+        <button class="oe-btn primary" onclick="loadOETemplate()">⚕️ Generate OE from Findings</button>
+        <button class="oe-btn secondary" onclick="clearOE()">Clear</button>
+      </div>
+      <textarea id="oeText" placeholder="On Examination: Document secondary survey and clinical findings here, or tap Generate above…" rows="10"></textarea>
+    </div>
+  </div>
+
+  <!-- Worsening -->
+  <div class="card">
+    <div class="card-hdr"><h2>Worsening Advice</h2><span class="badge">Wx</span></div>
+    <div class="card-body">
+      <div class="worse-opts">
+        <button class="worse-opt sel" id="worse-standard" onclick="setWorse('standard')">✅ Standard worsening advice given</button>
+        <button class="worse-opt" id="worse-head" onclick="setWorse('head')">⚠️ Head injury worsening advice given</button>
+        <button class="worse-opt" id="worse-both" onclick="setWorse('both')">⚠️ Both — standard + head injury advice given</button>
+        <button class="worse-opt" id="worse-none" onclick="setWorse('none')">— Not applicable / not given</button>
+        <button class="worse-opt" id="worse-custom" onclick="setWorse('custom')">✏️ Custom</button>
+      </div>
+      <div id="customWorseWrap" style="display:none;margin-top:10px;">
+        <textarea id="customWorse" placeholder="Custom worsening advice given…" rows="3"></textarea>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Mental Capacity Assessment -->
+  <div class="card">
+    <div class="card-hdr"><h2>Mental Capacity Assessment</h2><span class="badge">MCA</span></div>
+    <div class="card-body">
+      <div class="sec-lbl">Capacity Status</div>
+      <div class="three-row">
+        <button class="three-btn sel-g" id="cap-has"  onclick="setCapacity('cap')">✓ Has Capacity</button>
+        <button class="three-btn"       id="cap-none" onclick="setCapacity('nocap')">✗ Lacks Capacity</button>
+        <button class="three-btn"       id="cap-na"   onclick="setCapacity('na')">— Not Applicable</button>
+      </div>
+    </div>
+
+    <div class="card-body" id="mca-test-wrap">
+      <div class="sec-lbl">MCA 4-Point Test</div>
+      <div class="check-row"><input type="checkbox" id="mca1" checked><label for="mca1">Can <strong>understand</strong> information relevant to the decision</label></div>
+      <div class="check-row"><input type="checkbox" id="mca2" checked><label for="mca2">Can <strong>retain</strong> information long enough to make the decision</label></div>
+      <div class="check-row"><input type="checkbox" id="mca3" checked><label for="mca3">Can <strong>weigh up</strong> information and use it to make the decision</label></div>
+      <div class="check-row"><input type="checkbox" id="mca4" checked><label for="mca4">Can <strong>communicate</strong> their decision (verbally, written, or other)</label></div>
+    </div>
+
+    <div class="card-body" id="best-interests-wrap" style="display:none;">
+      <div class="info-box">⚠️ Patient lacks capacity — document best interests decision below.</div>
+      <label class="field-lbl" style="margin-top:0;">Best Interests Decision / Notes</label>
+      <textarea id="bestInterests" placeholder="Document best interests decision, who was consulted, actions taken…" rows="3"></textarea>
+    </div>
+  </div>
+
+  <!-- Conveyance Decision -->
+  <div class="card">
+    <div class="card-hdr"><h2>Conveyance Decision</h2><span class="badge">DC</span></div>
+    <div class="card-body">
+      <div class="three-row">
+        <button class="three-btn sel-g" id="conv-yes"      onclick="setConvey('conveyed')">🏥 Conveyed</button>
+        <button class="three-btn"       id="conv-left"     onclick="setConvey('left')">🏠 Treated &amp; Left</button>
+        <button class="three-btn sel-r" id="conv-declined" onclick="setConvey('declined')" style="display:none">✗ Declined</button>
+      </div>
+      <button class="three-btn" id="conv-declined-tog" style="margin-top:8px;width:100%;display:block;" onclick="setConvey('declined')">✗ Patient Declined Conveyance</button>
+    </div>
+
+    <!-- Leaving at home / not conveying -->
+    <div class="card-body" id="leaving-wrap" style="display:none;">
+      <div class="sec-lbl">Referred / Signposted To</div>
+      <div class="ref-chips" id="ref-chips">
+        <button class="chip-s" id="ref-gp"        onclick="toggleRef(this,'GP')">GP</button>
+        <button class="chip-s" id="ref-111"        onclick="toggleRef(this,'111')">111</button>
+        <button class="chip-s" id="ref-walkin"     onclick="toggleRef(this,'Walk-in centre')">Walk-in centre</button>
+        <button class="chip-s" id="ref-selfpres"   onclick="toggleRef(this,'Self-present to ED')">Self-present ED</button>
+        <button class="chip-s" id="ref-community"  onclick="toggleRef(this,'Community nursing')">Community nursing</button>
+        <button class="chip-s" id="ref-pharmacy"   onclick="toggleRef(this,'Pharmacy')">Pharmacy</button>
+        <button class="chip-s" id="ref-selfcare"   onclick="toggleRef(this,'Self-care')">Self-care</button>
+      </div>
+      <label class="field-lbl">Follow-up / Other Arrangement</label>
+      <input type="text" id="followUp" placeholder="e.g. GP appointment booked, district nurse to review tomorrow…">
+
+      <div class="sec-lbl" style="margin-top:14px;">Patient Information &amp; Safety Netting</div>
+      <div class="check-row"><input type="checkbox" id="lv1" checked><label for="lv1">Risks of not attending hospital fully explained</label></div>
+      <div class="check-row"><input type="checkbox" id="lv2" checked><label for="lv2">Alternatives to ED discussed</label></div>
+      <div class="check-row"><input type="checkbox" id="lv3" checked><label for="lv3">Patient understands and accepts the risks</label></div>
+      <div class="check-row"><input type="checkbox" id="lv4" checked><label for="lv4">Patient aware they may call 999 / 111 at any time</label></div>
+      <div class="check-row"><input type="checkbox" id="lv5" checked><label for="lv5">Right to change mind and seek help at any time explained</label></div>
+      <div class="check-row"><input type="checkbox" id="lv6" checked><label for="lv6">Worsening advice given (see above)</label></div>
+    </div>
+
+    <!-- Refusal-specific extras -->
+    <div class="card-body" id="refusal-wrap" style="display:none;">
+      <div class="info-box">⚠️ Informed refusal — ensure capacity is confirmed above.</div>
+      <div class="sec-lbl">Refusal Documentation</div>
+      <div class="check-row"><input type="checkbox" id="rf1" checked><label for="rf1">Capacity confirmed prior to refusal (MCA 4-point test passed)</label></div>
+      <div class="check-row"><input type="checkbox" id="rf2" checked><label for="rf2">Patient fully informed of working diagnosis / differential and associated risks</label></div>
+      <div class="check-row"><input type="checkbox" id="rf3" checked><label for="rf3">Patient not acting under duress or undue influence</label></div>
+      <div class="check-row"><input type="checkbox" id="rf4" checked><label for="rf4">Verbal refusal obtained — patient declined to sign paperwork</label></div>
+    </div>
+
+    <div class="card-body">
+      <label class="field-lbl" style="margin-top:0;">Conveyance Notes</label>
+      <textarea id="conveyNotes" placeholder="Any further conveyance details, handover summary, hospital destination…" rows="2"></textarea>
+    </div>
+  </div>
+
+</div><!-- /panel2 -->
+
+
+<!-- ══════════════════════════════════
+     TAB 3 — OUTPUT
+══════════════════════════════════ -->
+<div class="panel" id="panel3">
+  <div class="card">
+    <div class="card-hdr"><h2>Generated PRF</h2><span class="badge">Output</span></div>
+    <div class="card-body">
+      <div class="output-toolbar">
+        <button class="out-btn primary" onclick="generateAndCopy()">📋 Generate &amp; Copy</button>
+        <button class="out-btn secondary" onclick="generateOutput()">🔄 Refresh Preview</button>
+      </div>
+      <div class="output-text" id="outputText">Tap "Refresh Preview" or "Generate &amp; Copy" to build your PRF documentation.</div>
+    </div>
+  </div>
+</div>
+
+<div class="copy-toast" id="copyToast">Copied to clipboard ✓</div>
+
+<!-- ══════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════ -->
+<script>
+
+// ── Data ──────────────────────────────────────────
+
+const PC_OPTIONS = [
+  'Chest Pain','Shortness of Breath','Abdominal Pain','Headache',
+  'Dizziness / Vertigo','Fall','Collapse / Syncope','Seizure',
+  'Stroke / FAST +ve','Trauma / Injury','Allergic Reaction',
+  'Diabetic Emergency','Cardiac Arrest','Overdose / Poisoning',
+  'Back Pain','Nausea & Vomiting','Palpitations','Fever / Pyrexia',
+  'Limb Pain / Swelling','Mental Health Crisis','Wound / Laceration','Other'
+];
+
+// Maps PC to the ROS section that should contain SOCRATES
+const PC_SOCRATES_MAP = {
+  'Chest Pain':          'cvs',
+  'Palpitations':        'cvs',
+  'Shortness of Breath': 'resp',
+  'Abdominal Pain':      'gi',
+  'Nausea & Vomiting':   'gi',
+  'Back Pain':           'gi',
+  'Headache':            'neuro',
+  'Dizziness / Vertigo': 'neuro',
+  'Collapse / Syncope':  'neuro',
+  'Seizure':             'neuro',
+  'Stroke / FAST +ve':   'neuro',
+  'Limb Pain / Swelling':'msk',
+  'Trauma / Injury':     'msk',
+  'Fall':                'msk',
+};
+
+const CHAR_OPTIONS = ['Sharp','Dull','Aching','Burning','Crushing / Pressure','Stabbing','Throbbing','Colicky','Tearing','Tight','Cramping','Squeezing'];
+const ASSOC_OPTIONS = ['Nausea','Vomiting','Sweating','Dizziness','SOB','Palpitations','Headache','Fever','Fatigue','Numbness','Tingling','Weakness','Visual changes','Syncope','Back pain','Chest tightness'];
+const EXAC_OPTIONS  = ['Movement','Deep breathing','Palpation','Eating','Exertion','Lying flat','Standing','Coughing','Swallowing','Heat','Cold','Stress'];
+const REL_OPTIONS   = ['Rest','Analgesia','Sitting forward','Antacids','Ice','Heat','Positional change','Eating','Vomiting','GTN'];
+
+// ROS item definitions
+const ROS_DEFS = {
+  resp: [
+    { id:'brRate',     label:'Breathing Rate',     sub:'Normal rate',           neg:'Breathing rate normal',           pos:'Tachypnoea noted' },
+    { id:'cyanosis',   label:'Cyanosis',            sub:'No cyanosis',           neg:'No cyanosis',                     pos:'Cyanosis present' },
+    { id:'wheeze',     label:'Wheeze',              sub:'No wheeze',             neg:'No wheeze',                       pos:'Wheeze noted' },
+    { id:'haemopt',    label:'Haemoptysis',         sub:'No haemoptysis',        neg:'No haemoptysis',                  pos:'Haemoptysis present' },
+    { id:'sob',        label:'SOB',                 sub:'No shortness of breath',neg:'No shortness of breath',         pos:'Shortness of breath present' },
+    { id:'dib',        label:'DIB',                 sub:'No difficulty breathing',neg:'No difficulty in breathing',    pos:'Difficulty in breathing noted' },
+    { id:'iwob',       label:'IWOB',                sub:'No increased WOB',      neg:'No increased work of breathing',  pos:'Increased work of breathing noted' },
+    { id:'accessory',  label:'Accessory Muscles',   sub:'Not in use',            neg:'No use of accessory muscles',    pos:'Accessory muscle use present' },
+  ],
+  cvs: [
+    { id:'colour',     label:'Colour',              sub:'Good colour',           neg:'Good colour',                     pos:'Poor colour noted' },
+    { id:'warmTouch',  label:'Warm to Touch',       sub:'Warm peripheries',      neg:'Warm to touch',                   pos:'Cool/cold peripheries' },
+    { id:'periPulse',  label:'Peripheral Pulses',   sub:'Palpable',              neg:'Peripheral pulses palpable',      pos:'Peripheral pulses absent/weak' },
+    { id:'crt',        label:'CRT',                 sub:'< 2 seconds',           neg:'CRT <2s',                         pos:'CRT ≥2s' },
+    { id:'chestPain',  label:'Chest Pain',          sub:'No chest pain',         neg:'No chest pain',                   pos:'Chest pain present' },
+    { id:'palpits',    label:'Palpitations',        sub:'No palpitations',       neg:'No palpitations',                 pos:'Palpitations reported' },
+    { id:'oedema',     label:'Oedema',              sub:'No oedema',             neg:'No oedema',                       pos:'Oedema present' },
+    { id:'calfPain',   label:'Calf Pain / DVT',     sub:'No calf pain',          neg:'No calf pain or tenderness',      pos:'Calf pain / tenderness noted' },
+    { id:'posHypo',    label:'Postural Hypotension',sub:'None',                  neg:'No postural hypotension',         pos:'Postural hypotension noted' },
+  ],
+  neuro: [
+    { id:'aox4',       label:'AOx4',                sub:'Fully orientated',      neg:'Alert and orientated ×4',         pos:'Not fully orientated' },
+    { id:'gcs15',      label:'GCS 15',              sub:'GCS 15/15',             neg:'GCS 15/15',                       pos:'GCS reduced' },
+    { id:'pearl',      label:'PEARL',               sub:'Equal & reactive',      neg:'PEARL',                           pos:'Pupils unequal or unreactive' },
+    { id:'fastNeg',    label:'FAST',                sub:'Negative',              neg:'FAST negative',                   pos:'FAST positive' },
+    { id:'confusion',  label:'Confusion',           sub:'No confusion',          neg:'No confusion',                    pos:'Confusion noted' },
+    { id:'headache',   label:'Headache',            sub:'No headache',           neg:'No headaches',                    pos:'Headache present' },
+    { id:'dizziness',  label:'Dizziness',           sub:'No dizziness',          neg:'No dizziness',                    pos:'Dizziness present' },
+    { id:'drowsiness', label:'Drowsiness',          sub:'No drowsiness',         neg:'No drowsiness',                   pos:'Drowsiness noted' },
+    { id:'visualDist', label:'Visual Disturbance',  sub:'No disturbance',        neg:'No visual disturbance',           pos:'Visual disturbance reported' },
+    { id:'photophobia',label:'Photophobia',         sub:'No photophobia',        neg:'No photophobia',                  pos:'Photophobia present' },
+    { id:'neckStiff',  label:'Neck Stiffness',      sub:'No stiffness',          neg:'No neck stiffness',               pos:'Neck stiffness present' },
+    { id:'weakness',   label:'Weakness',            sub:'No weakness',           neg:'No focal weakness',               pos:'Weakness noted' },
+    { id:'numbness',   label:'Numbness',            sub:'No numbness',           neg:'No numbness or altered sensation', pos:'Numbness / altered sensation noted' },
+    { id:'loc',        label:'LOC',                 sub:'No loss of consciousness',neg:'No loss of consciousness',     pos:'Loss of consciousness reported' },
+    { id:'fits',       label:'Seizures',            sub:'No fits',               neg:'No seizure activity',             pos:'Seizure activity reported' },
+    { id:'speech',     label:'Speech',              sub:'Clear & coherent',      neg:'Speech clear and coherent',       pos:'Speech difficulty noted' },
+  ],
+  gi: [
+    { id:'abdoPain',   label:'Abdominal Pain',      sub:'No pain',               neg:'No abdominal pain',               pos:'Abdominal pain present' },
+    { id:'backPain',   label:'Back Pain',           sub:'No back pain',          neg:'No back pain',                    pos:'Back pain present' },
+    { id:'nausea',     label:'Nausea',              sub:'No nausea',             neg:'No nausea',                       pos:'Nausea present' },
+    { id:'vomiting',   label:'Vomiting',            sub:'No vomiting',           neg:'No vomiting',                     pos:'Vomiting reported' },
+    { id:'haematemesis',label:'Haematemesis',       sub:'None',                  neg:'No haematemesis',                 pos:'Haematemesis reported' },
+    { id:'dysphagia',  label:'Dysphagia',           sub:'No dysphagia',          neg:'No dysphagia',                    pos:'Dysphagia reported' },
+    { id:'bowelChg',   label:'Bowel Habits',        sub:'Unchanged',             neg:'Bowel habits unchanged',          pos:'Change in bowel habit' },
+    { id:'dietChg',    label:'Diet / Appetite',     sub:'Unchanged',             neg:'Diet and appetite unchanged',     pos:'Change in diet / appetite' },
+    { id:'fluidChg',   label:'Fluid Intake',        sub:'Unchanged',             neg:'Fluid intake unchanged',          pos:'Change in fluid intake' },
+    { id:'distension', label:'Distension',          sub:'No distension',         neg:'No distension',                   pos:'Abdominal distension noted' },
+  ],
+  'gi-palp': [
+    { id:'soft',       label:'Abdomen Soft',        sub:'Non-rigid',             neg:'Abdomen soft',                    pos:'Abdomen rigid' },
+    { id:'tender',     label:'Non-tender',          sub:'No tenderness',         neg:'Non-tender',                      pos:'Tenderness on palpation' },
+    { id:'rebound',    label:'Rebound Tenderness',  sub:'Absent',                neg:'No rebound tenderness',           pos:'Rebound tenderness present' },
+    { id:'guarding',   label:'Guarding',            sub:'No guarding',           neg:'No guarding',                     pos:'Guarding present' },
+    { id:'masses',     label:'Palpable Masses',     sub:'None felt',             neg:'No masses palpable',              pos:'Palpable mass noted' },
+    { id:'organomeg',  label:'Organomegaly',        sub:'None',                  neg:'No organomegaly',                 pos:'Organomegaly suspected' },
+    { id:'pulsating',  label:'Pulsatile Mass',      sub:'None',                  neg:'No pulsating masses',             pos:'Pulsatile mass noted' },
+  ],
+  urine: [
+    { id:'freq',       label:'Frequency',           sub:'No change',             neg:'No change to urinary frequency',  pos:'Change in urinary frequency' },
+    { id:'vol',        label:'Volume',              sub:'Unchanged',             neg:'Volume unchanged',                pos:'Change in urinary volume' },
+    { id:'dysuria',    label:'Dysuria',             sub:'No pain',               neg:'No pain on micturition',          pos:'Dysuria / pain on micturition' },
+    { id:'haematuria', label:'Haematuria',          sub:'None',                  neg:'No haematuria',                   pos:'Haematuria present' },
+    { id:'odour',      label:'Offensive Odour',     sub:'None',                  neg:'No offensive odours',             pos:'Offensive urinary odour noted' },
+    { id:'colour',     label:'Colour Change',       sub:'Unchanged',             neg:'No change in urine colour',       pos:'Change in urine colour noted' },
+    { id:'incontinence',label:'Incontinence',       sub:'None',                  neg:'No urinary incontinence',         pos:'Urinary incontinence reported' },
+  ],
+  integ: [
+    { id:'fever',      label:'Fever',               sub:'Apyrexial',             neg:'No fever',                        pos:'Pyrexia present' },
+    { id:'rigors',     label:'Rigors',              sub:'No rigors',             neg:'No rigors',                       pos:'Rigors reported' },
+    { id:'fatigue',    label:'Fatigue',             sub:'No fatigue',            neg:'No fatigue',                      pos:'Fatigue reported' },
+    { id:'colour',     label:'Colour',              sub:'Normal',                neg:'Normal colour',                   pos:'Abnormal colour noted' },
+    { id:'clammy',     label:'Clammy',              sub:'Not clammy',            neg:'Not clammy',                      pos:'Clammy skin noted' },
+    { id:'diaphoretic',label:'Diaphoresis',         sub:'Not diaphoretic',       neg:'Not diaphoretic',                 pos:'Diaphoresis present' },
+    { id:'bruising',   label:'Bruising',            sub:'No bruising',           neg:'No bruising',                     pos:'Bruising noted' },
+    { id:'lacerations',label:'Lacerations',         sub:'None',                  neg:'No lacerations',                  pos:'Laceration(s) present' },
+    { id:'rashes',     label:'Rashes',              sub:'No rashes',             neg:'No rashes',                       pos:'Rash noted' },
+    { id:'turgor',     label:'Skin Turgor',         sub:'Normal',                neg:'Normal skin turgor',              pos:'Reduced skin turgor' },
+  ],
+  msk: [
+    { id:'jointPain',  label:'Joint Pain',          sub:'No pain',               neg:'No joint pain',                   pos:'Joint pain present' },
+    { id:'stiffness',  label:'Stiffness',           sub:'No stiffness',          neg:'No stiffness',                    pos:'Stiffness reported' },
+    { id:'swelling',   label:'Swelling',            sub:'No swelling',           neg:'No swelling',                     pos:'Swelling noted' },
+    { id:'injury',     label:'Signs of Injury',     sub:'None found',            neg:'No obvious signs of injury',      pos:'Signs of injury present' },
+    { id:'rom',        label:'Range of Motion',     sub:'Full ROM',              neg:'Full range of movement of all limbs', pos:'Reduced range of motion noted' },
+    { id:'powerTone',  label:'Power & Tone',        sub:'Normal',                neg:'Normal power and tone throughout', pos:'Reduced power or altered tone' },
+  ],
+};
+
+// ── State ─────────────────────────────────────────
+
+const S = {
+  pc: '',
+  mapMode: 'site',
+  siteParts: new Set(),
+  radParts: new Set(),
+  charChips: new Set(),
+  assocChips: new Set(),
+  exacChips: new Set(),
+  relChips: new Set(),
+  prevEpisodes: false,
+  worseMode: 'standard',
+  ros: {}, // sectionKey_itemId → 'neg' | 'pos'
+
+  // OA
+  oaFound:   'greet',
+  oaMob:     'indep',
+  oaNoABC:   true,
+  oaConsent: true,
+
+  // Capacity
+  capacity: 'cap',  // 'cap' | 'nocap' | 'na'
+
+  // Conveyance
+  convey:  'conveyed',  // 'conveyed' | 'left' | 'declined'
+  referTo: new Set(),
+};
+
+// ── Init ──────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', () => {
+  buildPcChips();
+  buildSocratesChips();
+  buildAllRosChips();
+  initBodyMap();
+  initSliders();
+  placeSocrates(null); // default: HPC tab
+});
+
+// ── PC Chips ──────────────────────────────────────
+
+function buildPcChips() {
+  const el = document.getElementById('pcChips');
+  PC_OPTIONS.forEach(pc => {
+    const b = document.createElement('button');
+    b.className = 'pc-chip';
+    b.textContent = pc;
+    b.onclick = () => selectPc(b, pc);
+    el.appendChild(b);
+  });
+}
+
+function selectPc(btn, pc) {
+  document.querySelectorAll('.pc-chip').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  S.pc = pc;
+  document.getElementById('pcCustom').value = '';
+  const target = PC_SOCRATES_MAP[pc] || null;
+  placeSocrates(target);
+}
+
+function clearPcChips() {
+  document.querySelectorAll('.pc-chip').forEach(b => b.classList.remove('sel'));
+  S.pc = '';
+  placeSocrates(null);
+}
+
+// ── SOCRATES Placement ────────────────────────────
+
+function placeSocrates(targetSection) {
+  const block = document.getElementById('socratesBlock');
+  block.style.display = 'block';
+
+  if (targetSection) {
+    const ph = document.getElementById('soc-placeholder-' + targetSection);
+    if (ph) {
+      ph.appendChild(block);
+      // Auto-open that ROS section
+      const rosEl = document.getElementById('ros-' + targetSection);
+      if (rosEl && !rosEl.classList.contains('open')) {
+        rosEl.classList.add('open');
+      }
+      return;
+    }
+  }
+  // Default: place in HPC tab
+  document.getElementById('hpc-socrates-placeholder').appendChild(block);
+}
+
+// ── SOCRATES Multi-select Chips ───────────────────
+
+function buildSocratesChips() {
+  buildSelectChips('charChips',  CHAR_OPTIONS,  'charChips');
+  buildSelectChips('assocChips', ASSOC_OPTIONS, 'assocChips');
+  buildSelectChips('exacChips',  EXAC_OPTIONS,  'exacChips');
+  buildSelectChips('relChips',   REL_OPTIONS,   'relChips');
+}
+
+function buildSelectChips(containerId, options, stateKey) {
+  const el = document.getElementById(containerId);
+  options.forEach(opt => {
+    const b = document.createElement('button');
+    b.className = 'chip-s';
+    b.textContent = opt;
+    b.onclick = () => {
+      if (S[stateKey].has(opt)) {
+        S[stateKey].delete(opt);
+        b.classList.remove('sel');
+      } else {
+        S[stateKey].add(opt);
+        b.classList.add('sel');
+      }
+    };
+    el.appendChild(b);
+  });
+}
+
+// ── ROS Grid Chips ────────────────────────────────
+
+function buildAllRosChips() {
+  Object.keys(ROS_DEFS).forEach(sec => {
+    const containerId = 'chips-' + sec;
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    ROS_DEFS[sec].forEach(item => {
+      const stateId = sec + '_' + item.id;
+      S.ros[stateId] = 'neg';
+      const b = document.createElement('button');
+      b.className = 'chip-g';
+      b.dataset.sid = stateId;
+      b.dataset.sec = sec;
+      b.innerHTML = `
+        <div class="chip-icon">✓</div>
+        <div class="chip-txt">
+          <div>${item.label}</div>
+          <div class="chip-sub">${item.sub}</div>
+        </div>`;
+      b.onclick = () => toggleRosChip(b, stateId, sec);
+      el.appendChild(b);
+    });
+  });
+}
+
+function toggleRosChip(btn, stateId, sec) {
+  const cur = S.ros[stateId];
+  const next = cur === 'neg' ? 'pos' : 'neg';
+  S.ros[stateId] = next;
+
+  const icon = btn.querySelector('.chip-icon');
+  if (next === 'pos') {
+    btn.classList.add('abn');
+    if (icon) icon.textContent = '!';
+    // Update sub text
+    const item = findRosItem(sec, stateId);
+    if (item) btn.querySelector('.chip-sub').textContent = item.pos;
+  } else {
+    btn.classList.remove('abn');
+    if (icon) icon.textContent = '✓';
+    const item = findRosItem(sec, stateId);
+    if (item) btn.querySelector('.chip-sub').textContent = item.sub;
+  }
+  updateRosBadge(sec);
+}
+
+function findRosItem(sec, stateId) {
+  const id = stateId.replace(sec + '_', '');
+  return ROS_DEFS[sec] ? ROS_DEFS[sec].find(i => i.id === id) : null;
+}
+
+function updateRosBadge(sec) {
+  // For gi-palp, update gi badge
+  const badgeSec = sec === 'gi-palp' ? 'gi' : sec;
+  const badge = document.getElementById('rbadge-' + badgeSec);
+  if (!badge) return;
+  const relevant = Object.keys(S.ros).filter(k => k.startsWith(sec + '_') || (sec === 'gi' && k.startsWith('gi-palp_')));
+  const hasAbn = relevant.some(k => S.ros[k] === 'pos');
+  badge.className = hasAbn ? 'ros-badge abn' : 'ros-badge ok';
+  badge.textContent = hasAbn ? 'Abnormal' : 'All normal';
+}
+
+// ── Body Map ──────────────────────────────────────
+
+function initBodyMap() {
+  document.querySelectorAll('.bp').forEach(p => {
+    p.addEventListener('click', () => handleBp(p));
+  });
+}
+
+function handleBp(part) {
+  const id = part.id.replace('bp-', '');
+  if (S.mapMode === 'site') {
+    if (S.siteParts.has(id)) { S.siteParts.delete(id); part.classList.remove('sel'); }
+    else { S.siteParts.add(id); S.radParts.delete(id); part.classList.remove('rad'); part.classList.add('sel'); }
+  } else {
+    if (S.radParts.has(id)) { S.radParts.delete(id); part.classList.remove('rad'); }
+    else { S.radParts.add(id); S.siteParts.delete(id); part.classList.remove('sel'); part.classList.add('rad'); }
+    document.getElementById('noRadiation').checked = S.radParts.size === 0;
+  }
+  renderPartTags();
+}
+
+function renderPartTags() {
+  const sEl = document.getElementById('siteParts');
+  const rEl = document.getElementById('radParts');
+
+  sEl.innerHTML = S.siteParts.size === 0
+    ? '<span style="color:var(--t3);font-size:12px;font-weight:500;">Tap body above</span>'
+    : '';
+  S.siteParts.forEach(id => {
+    const p = document.getElementById('bp-' + id);
+    if (!p) return;
+    const tag = document.createElement('span');
+    tag.className = 'pt-tag';
+    tag.innerHTML = `${p.dataset.label}<button onclick="removePart('${id}','site')">×</button>`;
+    sEl.appendChild(tag);
+  });
+
+  rEl.innerHTML = '';
+  S.radParts.forEach(id => {
+    const p = document.getElementById('bp-' + id);
+    if (!p) return;
+    const tag = document.createElement('span');
+    tag.className = 'pt-tag r';
+    tag.innerHTML = `${p.dataset.label}<button onclick="removePart('${id}','rad')">×</button>`;
+    rEl.appendChild(tag);
+  });
+}
+
+function removePart(id, type) {
+  const p = document.getElementById('bp-' + id);
+  if (type === 'site') { S.siteParts.delete(id); p && p.classList.remove('sel'); }
+  else { S.radParts.delete(id); p && p.classList.remove('rad'); document.getElementById('noRadiation').checked = S.radParts.size === 0; }
+  renderPartTags();
+}
+
+function setMapMode(mode) {
+  S.mapMode = mode;
+  document.getElementById('modeBtn-site').className = 'mm-btn' + (mode === 'site' ? ' ms' : '');
+  document.getElementById('modeBtn-rad').className  = 'mm-btn' + (mode === 'rad'  ? ' mr' : '');
+}
+
+// ── Sliders ───────────────────────────────────────
+
+function initSliders() {
+  ['sevRest','sevWorst'].forEach(id => {
+    const el = document.getElementById(id);
+    const vId = id === 'sevRest' ? 'sevRestVal' : 'sevWorstVal';
+    updateSlider(el, vId);
+    el.addEventListener('input', () => updateSlider(el, vId));
+  });
+}
+
+function updateSlider(el, vId) {
+  const pct = (el.value / el.max) * 100;
+  el.style.setProperty('--pct', pct + '%');
+  document.getElementById(vId).textContent = el.value;
+}
+
+// ── UI Helpers ────────────────────────────────────
+
+function switchTab(idx) {
+  ['panel0','panel1','panel2','panel3'].forEach((id, i) => {
+    document.getElementById(id).classList.toggle('active', i === idx);
+  });
+  ['tab0','tab1','tab2','tab3'].forEach((id, i) => {
+    document.getElementById(id).classList.toggle('active', i === idx);
+  });
+  if (idx === 3) generateOutput();
+}
+
+function toggleRos(id) { document.getElementById(id).classList.toggle('open'); }
+
+function setPrev(val) {
+  S.prevEpisodes = val;
+  document.getElementById('prevNo').className  = 'yn-btn' + (!val ? ' sel-n' : '');
+  document.getElementById('prevYes').className = 'yn-btn' + (val  ? ' sel-y' : '');
+  document.getElementById('prevWrap').style.display = val ? 'block' : 'none';
+}
+
+function setWorse(mode) {
+  S.worseMode = mode;
+  const isRed = mode === 'head' || mode === 'both';
+  ['standard','head','both','none','custom'].forEach(m => {
+    const el = document.getElementById('worse-' + m);
+    if (!el) return;
+    if (m === mode) el.className = 'worse-opt ' + (isRed && (m === 'head' || m === 'both') ? 'sel-r' : 'sel');
+    else el.className = 'worse-opt';
+  });
+  document.getElementById('customWorseWrap').style.display = mode === 'custom' ? 'block' : 'none';
+}
+
+function handleOther(sel, wrapperId, otherId) {
+  const wrap = document.getElementById(wrapperId);
+  const other = document.getElementById(otherId);
+  if (sel.value === 'other') {
+    wrap.classList.add('show-other');
+    if (other) { other.style.display = 'block'; other.focus(); }
+  } else {
+    wrap.classList.remove('show-other');
+    if (other) other.style.display = 'none';
+  }
+}
+
+// PS chip toggle: chips starting as 'pos' state (normal finding) or 'neg' state (abnormal)
+function togglePs(btn, defaultState) {
+  if (defaultState === 'pos') {
+    // Normal finding chip — toggle off
+    btn.classList.toggle('off');
+  } else {
+    // Abnormal finding chip — toggle on (flagged)
+    btn.classList.toggle('flagged');
+  }
+}
+
+// ── OE Template Generator ─────────────────────────
+
+function loadOETemplate() {
+  // Vitals
+  const rr    = gv('rr');
+  const spo2  = gv('spo2');
+  const o2    = gv('o2Flow');
+  const hr    = gv('hr');
+  const bp    = gv('bp');
+  const temp  = gv('temp');
+  const bm    = gv('bm');
+  const gcs   = gv('gcsScore') || '15';
+  const pupils = gv('pupils');
+  const avpu  = gv('avpu') || 'A';
+
+  // BP status label
+  const bpStat = gv('bpStatus') || 'normo';
+  const bpStatStr = bpStat === 'hypo' ? 'hypotensive' : bpStat === 'hyper' ? 'hypertensive' : 'normotensive';
+
+  // Auscultation / bowel sounds
+  const respAusSel = document.querySelector('#so-respAus select');
+  const respAus = (respAusSel && respAusSel.value !== 'other') ? respAusSel.value : (gv('respAusOther') || 'equal and clear bilateral air entry');
+  const bowelSel = document.querySelector('#so-bowel select');
+  const bowelSounds = (bowelSel && bowelSel.value !== 'other') ? bowelSel.value : (gv('bowelOther') || 'present and normal');
+
+  // Chip states (neg = normal)
+  const neg = id => S.ros[id] !== 'pos';
+
+  const aox4     = neg('neuro_aox4');
+  const pearl    = neg('neuro_pearl');
+  const fastNeg  = neg('neuro_fastNeg');
+  const speech   = neg('neuro_speech');
+  const noFocal  = neg('neuro_weakness') && neg('neuro_numbness');
+
+  const noCyan   = neg('resp_cyanosis');
+  const noIWOB   = neg('resp_iwob');
+  const noAcc    = neg('resp_accessory');
+
+  const noOedema = neg('cvs_oedema');
+  const crt      = neg('cvs_crt');
+  const periPulse= neg('cvs_periPulse');
+
+  // GI palpation — collect any abnormal findings
+  const palpItems = ROS_DEFS['gi-palp'];
+  const palpAbnormal = palpItems.filter(i => S.ros['gi-palp_' + i.id] === 'pos').map(i => i.pos);
+  const palpNormal   = palpItems.filter(i => S.ros['gi-palp_' + i.id] !== 'pos').map(i => i.neg);
+
+  // Integumentary
+  const normColour  = neg('integ_colour');
+  const notClammy   = neg('integ_clammy');
+  const notDiaph    = neg('integ_diaphoretic');
+  const noBruise    = neg('integ_bruising');
+  const noLac       = neg('integ_lacerations');
+  const noRash      = neg('integ_rashes');
+
+  // MSK
+  const fullROM     = neg('msk_rom');
+  const normalPT    = neg('msk_powerTone');
+  const noInj       = neg('msk_injury');
+
+  let oe = 'OE:\n\n';
+
+  // OA + ABC from primary survey
+  oe += `OA: ${buildOAText()}\n\n`;
+  oe += buildA() + '\n';
+  oe += buildB() + '\n';
+  oe += buildC() + '\n\n';
+
+  // Opening — general status with key neuro markers (no repetition in sections below)
+  oe += `Patient AOx4, GCS ${gcs}/15 (AVPU: ${avpu}), comfortable at rest and in no acute distress.`;
+  if (temp) oe += ` Temp ${temp}°C.`;
+  if (bm)   oe += ` BM ${bm}mmol/L.`;
+  oe += '\n\n';
+
+  // CVS
+  oe += `CVS: HS I+II heard, no added sounds or murmurs. `;
+  oe += `${periPulse ? 'Peripheral pulses palpable bilaterally' : 'Peripheral pulses reduced/absent'}. `;
+  oe += `${crt ? 'CRT <2s.' : 'CRT ≥2s.'} `;
+  oe += `${noOedema ? 'No peripheral oedema.' : 'Peripheral oedema present.'}`;
+  if (hr) oe += ` HR ${hr}bpm.`;
+  if (bp) oe += ` BP ${bp}mmHg — ${bpStatStr}.`;
+  oe += '\n\n';
+
+  // Resp
+  oe += `Resp: Chest wall symmetrical with equal expansion bilaterally. `;
+  oe += `${noCyan ? 'No cyanosis.' : 'Cyanosis noted.'} `;
+  oe += `${(noIWOB && noAcc) ? 'No increased WOB or accessory muscle use.' : 'Increased WOB noted.'} `;
+  oe += `On auscultation: ${respAus}.`;
+  if (rr)   oe += ` RR ${rr}/min.`;
+  if (spo2) oe += ` SpO₂ ${spo2}%${o2 ? ` on ${o2}L/min O₂` : ' on air'}.`;
+  oe += '\n\n';
+
+  // Abdo
+  oe += `Abdo: `;
+  if (palpAbnormal.length === 0) {
+    oe += `Soft, non-tender on palpation. No guarding, rigidity, or rebound tenderness. No masses or organomegaly. `;
+  } else {
+    oe += palpNormal.join(', ') + '. ' + palpAbnormal.join(', ') + '. ';
+  }
+  oe += `BS ${bowelSounds}.\n\n`;
+
+  // Neuro — GCS/AOx4 already stated above, so focus on the rest
+  oe += `Neuro: ${pearl ? 'PEARL.' : (pupils ? `Pupils ${pupils}.` : 'Pupils assessed.')} `;
+  oe += `${fastNeg ? 'FAST –ve.' : 'FAST +ve — focal deficit noted.'} `;
+  oe += `${noFocal ? 'No focal neurological deficit.' : 'Focal neurological deficit present.'} `;
+  oe += `${speech ? 'Speech clear and coherent.' : 'Speech difficulty noted.'}\n\n`;
+
+  // MSK
+  oe += `MSK: ${noInj ? 'No deformity, crepitus, or swelling.' : 'Deformity/swelling noted.'} `;
+  oe += `${fullROM ? 'Full ROM all limbs.' : 'Reduced ROM noted.'} `;
+  oe += `${normalPT ? 'Normal power and tone throughout.' : 'Reduced power or altered tone noted.'}\n\n`;
+
+  // Skin — concise single line
+  const skinFindings = [];
+  if (normColour && notClammy && notDiaph) skinFindings.push('normal colour, not clammy, not diaphoretic');
+  else {
+    if (!normColour) skinFindings.push('abnormal colour'); if (!notClammy) skinFindings.push('clammy');
+    if (!notDiaph)   skinFindings.push('diaphoretic');
+  }
+  if (noRash && noBruise && noLac) skinFindings.push('no rashes, bruising, or lacerations');
+  else {
+    if (!noRash)   skinFindings.push('rash noted');
+    if (!noBruise) skinFindings.push('bruising noted');
+    if (!noLac)    skinFindings.push('laceration(s) present');
+  }
+  oe += `Skin: ${skinFindings.join(', ')}.`;
+
+  const oeText = document.getElementById('oeText');
+  oeText.value = oe;
+  oeText.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function clearOE() { document.getElementById('oeText').value = ''; }
+
+// ── OA Builder ────────────────────────────────────
+
+function setOAFound(val, btn) {
+  S.oaFound = val;
+  document.querySelectorAll('#oa-found-chips .ps-chip').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+
+function setOAMob(val, btn) {
+  S.oaMob = val;
+  ['oa-mob-indep','oa-mob-aid','oa-mob-none'].forEach(id => {
+    document.getElementById(id).classList.remove('sel');
+  });
+  btn.classList.add('sel');
+}
+
+function toggleOAChip(btn, key) {
+  S[key] = !S[key];
+  btn.classList.toggle('sel', S[key]);
+}
+
+function buildOAText() {
+  const loc = gv('oaLocation');
+  const notes = gv('oaNotes');
+  let parts = [];
+
+  const foundMap = {
+    greet:    `Greeted by patient${loc ? ` at ${loc}` : ''}`,
+    chair:    `Patient found seated in chair${loc ? ` in ${loc}` : ''}`,
+    bed:      `Patient found in bed${loc ? ` in ${loc}` : ''}`,
+    floor:    `Patient found on floor${loc ? ` in ${loc}` : ''}`,
+    standing: `Patient found standing${loc ? ` in ${loc}` : ''}`,
+  };
+  parts.push(foundMap[S.oaFound] || 'Patient found');
+
+  const mobMap = {
+    indep: `patient mobilised independently${S.oaFound === 'greet' && loc ? ` to ${loc}` : ''}`,
+    aid:   'patient mobilised with crew assistance',
+    none:  'patient non-mobile',
+  };
+  parts.push(mobMap[S.oaMob]);
+
+  if (S.oaNoABC)   parts.push('no ABC concerns on arrival');
+  if (S.oaConsent) parts.push('patient consented to crew assessment');
+  if (notes)       parts.push(notes);
+
+  // Capitalise first letter of each part, join with '. '
+  return parts
+    .map((p, i) => i === 0 ? p.charAt(0).toUpperCase() + p.slice(1) : p)
+    .join('. ')
+    .replace(/\.\.+/g, '.') + '.';
+}
+
+// ── Capacity ──────────────────────────────────────
+
+function setCapacity(val) {
+  S.capacity = val;
+  ['cap-has','cap-none','cap-na'].forEach(id => {
+    document.getElementById(id).className = 'three-btn';
+  });
+  const selMap = { cap: ['cap-has','sel-g'], nocap: ['cap-none','sel-r'], na: ['cap-na','sel-a'] };
+  const [btnId, cls] = selMap[val];
+  document.getElementById(btnId).classList.add(cls);
+
+  document.getElementById('mca-test-wrap').style.display       = val === 'nocap' ? 'none' : 'block';
+  document.getElementById('best-interests-wrap').style.display = val === 'nocap' ? 'block' : 'none';
+}
+
+// ── Conveyance ────────────────────────────────────
+
+function setConvey(val) {
+  S.convey = val;
+
+  // Reset all buttons — conv-declined lives hidden in the three-row until selected
+  ['conv-yes','conv-left','conv-declined'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.className = 'three-btn';
+      el.style.display = id === 'conv-declined' ? 'none' : '';
+    }
+  });
+  const tog = document.getElementById('conv-declined-tog');
+
+  if (val === 'conveyed') {
+    document.getElementById('conv-yes').classList.add('sel-g');
+    tog.style.display = 'block';
+  } else if (val === 'left') {
+    document.getElementById('conv-left').classList.add('sel-a');
+    tog.style.display = 'block';
+  } else {
+    // declined — show it in the three-row, hide the standalone button
+    document.getElementById('conv-declined').style.display = '';
+    document.getElementById('conv-declined').classList.add('sel-r');
+    tog.style.display = 'none';
+  }
+
+  const show = val === 'left' || val === 'declined';
+  document.getElementById('leaving-wrap').style.display  = show ? 'block' : 'none';
+  document.getElementById('refusal-wrap').style.display  = val === 'declined' ? 'block' : 'none';
+}
+
+function toggleRef(btn, label) {
+  if (S.referTo.has(label)) { S.referTo.delete(label); btn.classList.remove('sel'); }
+  else                       { S.referTo.add(label);    btn.classList.add('sel'); }
+}
+
+// ── Build capacity + conveyance output text ───────
+
+function buildCapacityText() {
+  if (S.capacity === 'na') return null;
+  if (S.capacity === 'nocap') {
+    const bi = gv('bestInterests');
+    return `Patient assessed as lacking capacity to make decisions regarding their care at this time. Decision made in patient\'s best interests.${bi ? ' ' + bi : ''}`;
+  }
+  // Has capacity
+  const all4 = gc('mca1') && gc('mca2') && gc('mca3') && gc('mca4');
+  const failed = [
+    !gc('mca1') && 'understand information',
+    !gc('mca2') && 'retain information',
+    !gc('mca3') && 'weigh up information',
+    !gc('mca4') && 'communicate their decision',
+  ].filter(Boolean);
+
+  if (all4) {
+    return `Patient assessed as having capacity to make informed decisions regarding their care (MCA 4-point test satisfied: patient able to understand, retain, weigh, and communicate their decision).`;
+  } else {
+    return `Capacity assessment: patient unable to ${failed.join(', ')}. Review and document further.`;
+  }
+}
+
+function buildConveyanceText() {
+  const notes = gv('conveyNotes');
+
+  if (S.convey === 'conveyed') {
+    return `Patient conveyed to hospital.${notes ? ' ' + notes : ''}`;
+  }
+
+  const refs = Array.from(S.referTo);
+  const followUp = gv('followUp');
+
+  const checks = [
+    gc('lv1') && 'risks of non-attendance fully explained',
+    gc('lv2') && 'alternatives to ED discussed',
+    gc('lv3') && 'patient understands and accepts the risks',
+    gc('lv4') && 'patient aware they may call 999/111 at any time',
+    gc('lv5') && 'right to change mind explained',
+    gc('lv6') && 'worsening advice given',
+  ].filter(Boolean);
+
+  let t = '';
+
+  if (S.convey === 'declined') {
+    t += `Patient declined conveyance to hospital following full assessment. `;
+
+    const rfChecks = [
+      gc('rf1') && 'capacity confirmed (MCA 4-point test satisfied)',
+      gc('rf2') && 'patient fully informed of working diagnosis/differential and associated risks',
+      gc('rf3') && 'patient not acting under duress or undue influence',
+      gc('rf4') && 'verbal refusal obtained',
+    ].filter(Boolean);
+
+    if (rfChecks.length) t += `Informed refusal documented: ${rfChecks.join('; ')}. `;
+  } else {
+    t += `Patient treated and assessed at scene. Clinically appropriate to leave at home following full assessment. `;
+  }
+
+  if (refs.length)  t += `Referred/signposted to: ${refs.join(', ')}. `;
+  if (followUp)     t += `${followUp}. `;
+  if (checks.length) t += `Safety netting: ${checks.join('; ')}.`;
+  if (notes)        t += ` ${notes}`;
+
+  return t.trim();
+}
+
+// ── Helper getters ────────────────────────────────
+
+function gv(id) { const e = document.getElementById(id); return e ? e.value.trim() : ''; }
+function gc(id) { const e = document.getElementById(id); return e ? e.checked : false; }
+
+function getSelectOrOther(selectWrapperId, otherId) {
+  const wrap = document.getElementById(selectWrapperId);
+  if (!wrap) return '';
+  const sel = wrap.querySelector('select');
+  if (sel && sel.value === 'other') return gv(otherId);
+  return sel ? sel.value : '';
+}
+
+function rosLine(sec) {
+  const items = ROS_DEFS[sec];
+  if (!items) return '';
+  return items
+    .map(i => S.ros[sec + '_' + i.id] === 'pos' ? i.pos : i.neg)
+    .join('. ') + '.';
+}
+
+// ── PS Chip state helpers ─────────────────────────
+
+function psIsOn(id) {
+  const el = document.getElementById(id);
+  if (!el) return false;
+  // 'pos' default chips: active = NOT off, inactive = off class
+  // 'neg' default chips: active = flagged class
+  return !el.classList.contains('off') && !el.classList.contains('flagged');
+}
+function psIsFlagged(id) {
+  const el = document.getElementById(id);
+  return el ? el.classList.contains('flagged') : false;
+}
+
+// ── Build Primary Survey lines ────────────────────
+
+function buildA() {
+  const patent = psIsOn('ps-aPatent'); const selfMaint = psIsOn('ps-aSelfMaint');
+  const obs = psIsFlagged('ps-aObs'); const sounds = psIsFlagged('ps-aSounds');
+  const n = gv('airwayNotes');
+  let parts = [];
+  if (patent) parts.push('patent'); if (selfMaint) parts.push('self-maintained');
+  if (obs) parts.push('obstructed'); if (sounds) parts.push('airway sounds noted');
+  let line = `A — Airway ${parts.join(', ') || 'assessed'}`;
+  if (n) line += `. ${n}`;
+  return line + '.';
+}
+
+function buildB() {
+  const regular = psIsOn('ps-bRegular'); const noCyan = psIsOn('ps-bNoCyan');
+  const sentences = psIsOn('ps-bSentences'); const laboured = psIsFlagged('ps-bLaboured');
+  const wheeze = psIsFlagged('ps-bWheeze');
+  const rr = gv('rr'); const spo2 = gv('spo2'); const o2 = gv('o2Flow');
+  const n = gv('breathNotes');
+  let parts = [regular ? 'Regular' : 'Irregular breathing', noCyan ? 'no cyanosis' : 'cyanosis noted'];
+  if (sentences) parts.push('speaking in full sentences');
+  if (laboured) parts.push('laboured breathing');
+  if (wheeze) parts.push('wheeze noted');
+  if (rr) parts.push(`RR ${rr}/min`);
+  if (spo2) parts.push(`SpO₂ ${spo2}%${o2 ? ` on ${o2}L/min O₂` : ' on air'}`);
+  let line = `B — ${parts.join(', ')}`;
+  if (n) line += `. ${n}`;
+  return line + '.';
+}
+
+function buildC() {
+  const colour = psIsOn('ps-cColour'); const warm = psIsOn('ps-cWarm');
+  const radial = psIsOn('ps-cRadial'); const crt = psIsOn('ps-cCRT');
+  const pale = psIsFlagged('ps-cPale'); const cold = psIsFlagged('ps-cCold');
+  const bleed = psIsFlagged('ps-cBleed');
+  const hr = gv('hr'); const bp = gv('bp'); const bm = gv('bm'); const n = gv('circNotes');
+  let parts = [colour ? 'Good colour' : 'Poor colour', warm ? 'warm to touch' : 'cool peripheries'];
+  if (pale) parts.push('pallor noted'); if (cold) parts.push('clammy');
+  parts.push(radial ? 'radial pulse palpable' : 'radial pulse absent');
+  parts.push(crt ? 'CRT <2s' : 'CRT ≥2s');
+  if (bleed) parts.push('haemorrhage noted');
+  if (hr) parts.push(`HR ${hr}bpm`); if (bp) parts.push(`BP ${bp}mmHg`); if (bm) parts.push(`BM ${bm}mmol/L`);
+  let line = `C — ${parts.join(', ')}`; if (n) line += `. ${n}`; return line + '.';
+}
+
+function buildD() {
+  const gcs = psIsOn('ps-dGCS'); const aox4 = psIsOn('ps-dAOx4');
+  const pearl = psIsOn('ps-dPEARL'); const speech = psIsOn('ps-dSpeech');
+  const mobile = psIsOn('ps-dMobile'); const confused = psIsFlagged('ps-dConfused');
+  const gcsV = gv('gcsScore') || '15'; const pupils = gv('pupils'); const avpu = gv('avpu');
+  const n = gv('disNotes');
+  let parts = [`GCS ${gcsV}/15`, aox4 ? 'AOx4' : 'disoriented'];
+  parts.push(pearl ? 'PEARL' : (pupils ? `Pupils: ${pupils}` : 'pupils assessed'));
+  if (confused) parts.push('confusion noted');
+  parts.push(speech ? 'speech clear and coherent' : 'speech difficulty noted');
+  if (mobile) parts.push('fully mobile'); if (avpu) parts.push(`AVPU: ${avpu}`);
+  let line = `D — ${parts.join(', ')}`; if (n) line += `. ${n}`; return line + '.';
+}
+
+function buildE() {
+  const noFever = psIsOn('ps-eNoFever'); const noRig = psIsOn('ps-eNoRig');
+  const normCol = psIsOn('ps-eColour'); const notCl = psIsOn('ps-eNotCl');
+  const notSw = psIsOn('ps-eNotSw'); const noInj = psIsOn('ps-eNoInj');
+  const noRash = psIsOn('ps-eNoRash'); const noBruise = psIsOn('ps-eNoBruise');
+  const fever = psIsFlagged('ps-eFever'); const inj = psIsFlagged('ps-eInj');
+  const temp = gv('temp'); const n = gv('expNotes');
+  let parts = [];
+  parts.push(fever ? 'Pyrexia present' : 'Apyrexial');
+  if (temp) parts.push(`Temp ${temp}°C`);
+  parts.push(noRig ? 'no rigors' : 'rigors present');
+  parts.push(normCol ? 'normal colour' : 'abnormal colour');
+  parts.push(notCl ? 'not clammy' : 'clammy');
+  parts.push(notSw ? 'not diaphoretic' : 'diaphoretic');
+  if (inj) parts.push('injuries noted'); else if (noInj) parts.push('no obvious injuries');
+  parts.push(noRash ? 'no rashes' : 'rash noted');
+  parts.push(noBruise ? 'no bruising' : 'bruising noted');
+  let line = `E — ${parts.join(', ')}`; if (n) line += `. ${n}`; return line + '.';
+}
+
+// ── Output Generation ─────────────────────────────
+
+function generateOutput() {
+  const pc = gv('pcCustom') || S.pc || '(Not specified)';
+  const hpcEvents = gv('hpcEvents');
+  const noTravel = gc('noTravel');
+
+  // SOCRATES
+  const site = S.siteParts.size > 0
+    ? Array.from(S.siteParts).map(id => { const e = document.getElementById('bp-'+id); return e ? e.dataset.label : id; }).join(', ')
+    : 'Not localised';
+  const noRad = gc('noRadiation');
+  const rad = S.radParts.size > 0
+    ? Array.from(S.radParts).map(id => { const e = document.getElementById('bp-'+id); return e ? e.dataset.label : id; }).join(', ')
+    : null;
+  const onset = gv('onsetType'); const dur = gv('onsetDur'); const durUnit = gv('onsetUnit');
+  const chars = Array.from(S.charChips); const assoc = Array.from(S.assocChips);
+  const timing = gv('timingPattern'); const timingDur = gv('timingDur');
+  const exac = Array.from(S.exacChips); const relief = Array.from(S.relChips);
+  const sevRest = document.getElementById('sevRest').value;
+  const sevWorst = document.getElementById('sevWorst').value;
+
+  // Background
+  const nkda = gc('nkda'); const allergies = gv('allergies');
+  const noMeds = gc('noMeds'); const meds = gv('medications');
+  const noPmh = gc('noPmh'); const pmh = gv('pmh');
+  const loiTime = gv('loiTime'); const loiWhat = gv('loiWhat');
+  const prevDet = gv('prevDetails');
+
+  // ROS
+  const cough = gv('coughType');
+  const coughStr = cough === 'none' ? 'No cough.' : cough === 'dry' ? 'Dry cough present.' : 'Productive cough present.';
+  const respAus = getSelectOrOther('so-respAus','respAusOther') || 'Equal and clear bilateral air entry';
+  const respNotes = gv('respNotes');
+  const bpStat = gv('bpStatus');
+  const bpStatStr = bpStat === 'hypo' ? 'Hypotensive.' : bpStat === 'hyper' ? 'Hypertensive.' : 'Normotensive.';
+  const ecg = getSelectOrOther('so-ecg','ecgOther') || 'Nil acute';
+  const cvsNotes = gv('cvsNotes');
+  const neuroNotes = gv('neuroNotes');
+  const bowel = getSelectOrOther('so-bowel','bowelOther') || 'present and normal';
+  const giNotes = gv('giNotes');
+  const urineNotes = gv('urineNotes');
+  const integNotes = gv('integNotes');
+  const mskNotes = gv('mskNotes');
+  const oe = gv('oeText');
+
+  // Worsening text
+  const WSTD = `Patient advised that if any new or worsening symptoms develop — including increased pain not settling with rest or analgesia, difficulty in breathing, chest pain, severe dizziness, fainting, weakness, confusion, difficulty speaking, worsening level of consciousness, uncontrolled bleeding, or signs of infection — to call 111 for advice or 999 if symptoms feel like an emergency.`;
+  const WHDI = `Patient advised to call 999 immediately if they experience: multiple episodes of vomiting, a worsening headache, new confusion, increasing drowsiness or agitation, slurred speech, or any new weakness in the arms or legs.`;
+  let worse = '';
+  if (S.worseMode === 'standard') worse = WSTD;
+  else if (S.worseMode === 'head') worse = WHDI;
+  else if (S.worseMode === 'both') worse = WSTD + '\n\n' + WHDI;
+  else if (S.worseMode === 'none') worse = 'Not applicable.';
+  else worse = gv('customWorse') || 'Worsening advice given.';
+
+  let out = '';
+
+  out += `PRESENTING COMPLAINT:\n${pc}\n`;
+
+  out += `\nHISTORY OF PRESENTING COMPLAINT:\n`;
+  if (hpcEvents) out += `${hpcEvents}`;
+  if (hpcEvents && noTravel) out += ' No recent travel.';
+  else if (noTravel) out += 'No recent travel.';
+  if (hpcEvents || noTravel) out += '\n';
+
+  out += `\nSOCRATES:\n`;
+  out += `• Site:                 ${site}\n`;
+  out += `• Onset:                ${onset || 'Not documented'}${dur ? `, approximately ${dur} ${durUnit} ago` : ''}\n`;
+  out += `• Character:            ${chars.length ? chars.join(', ') : 'Not characterised'}\n`;
+  out += `• Radiation:            ${noRad && !rad ? 'No radiation' : rad ? `Radiates to ${rad}` : 'Not assessed'}\n`;
+  out += `• Associated symptoms:  ${assoc.length ? assoc.join(', ') : 'None reported'}\n`;
+  out += `• Timing:               ${timing || 'Not documented'}${timingDur ? ` — ${timingDur}` : ''}\n`;
+  out += `• Exacerbating factors: ${exac.length ? exac.join(', ') : 'None identified'}\n`;
+  out += `• Relieving factors:    ${relief.length ? relief.join(', ') : 'None identified'}\n`;
+  out += `• Severity:             ${sevRest}/10 at rest, ${sevWorst}/10 at worst\n`;
+
+  out += `\nALLERGIES:            ${nkda ? 'NKDA — No Known Drug Allergies' : (allergies || 'Not documented')}\n`;
+  out += `MEDICATIONS:          ${noMeds ? 'None' : (meds || 'Not documented')}\n`;
+  out += `PAST MEDICAL HISTORY: ${noPmh ? 'No significant past medical history' : (pmh || 'Not documented')}\n`;
+  out += `LAST ORAL INTAKE:     ${loiTime && loiWhat ? `${loiWhat} at ${loiTime}` : loiWhat || loiTime || 'Not documented'}\n`;
+  out += `PREVIOUS EPISODES:    ${S.prevEpisodes ? `Yes — ${prevDet || 'details not documented'}` : 'No'}\n`;
+
+  out += `\n${'─'.repeat(46)}\nPRIMARY SURVEY\n${'─'.repeat(46)}\n\n`;
+  out += `OA: ${buildOAText()}\n\n`;
+  out += buildA() + '\n';
+  out += buildB() + '\n';
+  out += buildC() + '\n';
+  out += buildD() + '\n';
+  out += buildE() + '\n';
+
+  out += `\n${'─'.repeat(46)}\nREVIEW OF SYSTEMS\n${'─'.repeat(46)}\n`;
+
+  out += `\nRespiratory:\n${rosLine('resp')} ${coughStr}\nOn auscultation: ${respAus}.\n`;
+  if (respNotes) out += `${respNotes}\n`;
+
+  out += `\nCardiovascular:\n${rosLine('cvs')} ${bpStatStr}\nECG: ${ecg}.\n`;
+  if (cvsNotes) out += `${cvsNotes}\n`;
+
+  out += `\nNeurological:\n${rosLine('neuro')}\n`;
+  if (neuroNotes) out += `${neuroNotes}\n`;
+
+  out += `\nGastrointestinal:\n${rosLine('gi')}\nOn auscultation: Bowel sounds ${bowel}.\n`;
+  out += `On palpation: ${rosLine('gi-palp')}\n`;
+  if (giNotes) out += `${giNotes}\n`;
+
+  out += `\nUrinary:\n${rosLine('urine')}\n`;
+  if (urineNotes) out += `${urineNotes}\n`;
+
+  out += `\nIntegumentary:\n${rosLine('integ')}\n`;
+  if (integNotes) out += `${integNotes}\n`;
+
+  out += `\nMusculoskeletal:\n${rosLine('msk')}\n`;
+  if (mskNotes) out += `${mskNotes}\n`;
+
+  if (oe) {
+    out += `\n${'─'.repeat(46)}\nSECONDARY SURVEY / ON EXAMINATION\n${'─'.repeat(46)}\n${oe}\n`;
+  }
+
+  out += `\n${'─'.repeat(46)}\nWORSENING ADVICE\n${'─'.repeat(46)}\n${worse}\n`;
+
+  const capText = buildCapacityText();
+  if (capText) {
+    out += `\n${'─'.repeat(46)}\nMENTAL CAPACITY ASSESSMENT\n${'─'.repeat(46)}\n${capText}\n`;
+  }
+
+  out += `\n${'─'.repeat(46)}\nCONVEYANCE DECISION\n${'─'.repeat(46)}\n${buildConveyanceText()}\n`;
+
+  document.getElementById('outputText').textContent = out;
+}
+
+async function generateAndCopy() {
+  generateOutput();
+  const text = document.getElementById('outputText').textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const el = Object.assign(document.createElement('textarea'), { value: text });
+    Object.assign(el.style, { position:'fixed', opacity:'0' });
+    document.body.appendChild(el); el.focus(); el.select();
+    document.execCommand('copy'); document.body.removeChild(el);
+  }
+  const t = document.getElementById('copyToast');
+  t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function resetAll() {
+  if (!confirm('Clear all data and start a new PRF?')) return;
+  location.reload();
+}
+
+</script>
+</body>
+</html>
