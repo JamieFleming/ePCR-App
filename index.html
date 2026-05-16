@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#f8fafc" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#f7f9fb" />
   <title>ePRF Assistant</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,245 +14,170 @@
 </head>
 <body>
   <header class="app-header">
-    <div class="app-icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24" role="img"><path d="M4 15V8.8c0-.9.7-1.6 1.6-1.6h7.2c.9 0 1.6.7 1.6 1.6V15"/><path d="M14.4 10.2h2.9l2.7 3.1V15h-5.6"/><path d="M6.8 17.8a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6Zm10.7 0a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6Z"/><path d="M8.8 9.1v4.1M6.7 11.15h4.2"/></svg>
+    <div class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 32 32"><path d="M6 20V10.8A2.8 2.8 0 0 1 8.8 8h10.4a2.8 2.8 0 0 1 2.8 2.8V20"/><path d="M22 13h3.6l3.4 4v3h-7"/><path d="M11 23.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Zm13 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/><path d="M14 11v6M11 14h6"/></svg>
     </div>
     <div>
       <h1>ePRF Assistant</h1>
-      <p>Clinical documentation support tool</p>
+      <p>Clinical documentation support</p>
     </div>
-    <button class="pill-button ghost" id="resetButton" type="button">New PRF</button>
+    <button class="ghost-button" id="resetButton" type="button">New PRF</button>
   </header>
 
-  <nav class="tabs" aria-label="ePRF sections">
-    <button class="tab active" type="button" data-tab="pc"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4h8l1 2h2v14H5V6h2l1-2Z"/><path d="M8 10h8M8 14h8M8 18h5"/></svg></span>PC / HPC</button>
-    <button class="tab" type="button" data-tab="primary"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 4.5 4.5"/></svg></span>Primary</button>
-    <button class="tab" type="button" data-tab="ros"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/><path d="M8 12h2l1-2 2 5 1-3h2"/></svg></span>ROS / Plan</button>
-    <button class="tab" type="button" data-tab="output"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7V3Z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span>Output</button>
+  <nav class="tabs" aria-label="Main sections">
+    <button class="tab active" data-tab="history" type="button">History</button>
+    <button class="tab" data-tab="primary" type="button">Primary Survey</button>
+    <button class="tab" data-tab="review" type="button">Review / Plan</button>
+    <button class="tab" data-tab="output" type="button">Output</button>
   </nav>
 
   <main>
-    <section class="panel active" id="panel-pc">
-      <article class="notice green">
-        This tool is for drafting clear records only. Use local trust policies, JRCALC/NICE guidance, and clinical judgement for decisions.
-      </article>
+    <section class="panel active" id="panel-history">
+      <div class="notice">Documentation support only. Record contemporaneously, use local policy, and apply clinical judgement.</div>
 
-      <article class="card">
-        <header class="card-header"><h2>Presenting Complaint</h2><span>PC</span></header>
-        <div class="card-body">
-          <label class="field-label">Common presentations</label>
-          <div class="pc-grid" id="pcChips"></div>
-          <label class="field-label" for="pcCustom">Free-text / custom complaint</label>
-          <input id="pcCustom" type="text" placeholder="e.g. Generalised weakness, wound review" />
+      <details class="section-card" open>
+        <summary><span>Presenting Complaint</span><small>PC</small></summary>
+        <div class="section-body">
+          <label class="field-label" for="pcSelect">Common presentation</label>
+          <select id="pcSelect">
+            <option value="">Select a presentation</option>
+            <optgroup label="Cardiovascular">
+              <option>Chest pain</option><option>Palpitations</option><option>Collapse / syncope</option><option>Hypertension</option><option>Hypotension</option><option>Cardiac arrest</option>
+            </optgroup>
+            <optgroup label="Respiratory">
+              <option>Shortness of breath</option><option>Asthma / COPD exacerbation</option><option>Chest infection symptoms</option><option>Respiratory arrest</option><option>Choking / airway problem</option>
+            </optgroup>
+            <optgroup label="Neurological">
+              <option>Headache</option><option>Dizziness / vertigo</option><option>Seizure</option><option>Stroke / FAST positive</option><option>Reduced consciousness</option><option>Confusion / delirium</option>
+            </optgroup>
+            <optgroup label="Gastrointestinal / Urinary">
+              <option>Abdominal pain</option><option>Nausea / vomiting</option><option>Diarrhoea</option><option>Haematemesis / melaena</option><option>Urinary symptoms</option><option>Catheter problem</option>
+            </optgroup>
+            <optgroup label="Trauma / Musculoskeletal">
+              <option>Fall</option><option>Trauma / injury</option><option>Back pain</option><option>Limb pain / swelling</option><option>Wound / laceration</option><option>Burns / scalds</option><option>Head injury</option>
+            </optgroup>
+            <optgroup label="Medical / Other">
+              <option>Allergic reaction</option><option>Diabetic emergency</option><option>Fever / pyrexia</option><option>Sepsis concern</option><option>Overdose / poisoning</option><option>Mental health crisis</option><option>Social concern / welfare check</option><option>Other</option>
+            </optgroup>
+          </select>
+          <div id="pcOtherWrap" class="hidden">
+            <label class="field-label" for="pcOther">Other presentation</label>
+            <input id="pcOther" type="text" placeholder="Enter presenting complaint" />
+          </div>
         </div>
-      </article>
+      </details>
 
-      <article class="card">
-        <header class="card-header"><h2>History of Presenting Complaint</h2><span>HPC</span></header>
-        <div class="card-body">
+      <details class="section-card" open>
+        <summary><span>History of Presenting Complaint</span><small>HPC</small></summary>
+        <div class="section-body">
           <label class="field-label" for="hpcEvents">Events leading up to incident</label>
-          <textarea id="hpcEvents" rows="4" placeholder="Include timeline, mechanism, symptoms, relevant negatives, actions taken before arrival..."></textarea>
+          <textarea id="hpcEvents" rows="5" placeholder="Timeline, mechanism, symptoms, relevant negatives, prior actions, collateral history..."></textarea>
           <label class="check-row"><input type="checkbox" id="noTravel" checked /> No recent travel</label>
         </div>
-      </article>
+      </details>
 
-      <div id="socratesHome"></div>
-
-      <article class="card">
-        <header class="card-header"><h2>Patient Background</h2><span>Hx</span></header>
-        <div class="card-body grid-2">
-          <div>
-            <label class="check-row"><input type="checkbox" id="nkda" checked /> NKDA</label>
-            <label class="field-label" for="allergies">Allergies</label>
-            <input id="allergies" type="text" placeholder="e.g. Penicillin – rash" />
-          </div>
-          <div>
-            <label class="check-row"><input type="checkbox" id="noMeds" checked /> No regular medications</label>
-            <label class="field-label" for="medications">Current medications</label>
-            <textarea id="medications" rows="2" placeholder="Medication, dose, frequency"></textarea>
-          </div>
-          <div>
-            <label class="check-row"><input type="checkbox" id="noPmh" checked /> No significant PMH</label>
-            <label class="field-label" for="pmh">Past medical history</label>
-            <textarea id="pmh" rows="2" placeholder="Conditions, surgery, admissions"></textarea>
-          </div>
-          <div>
-            <label class="field-label" for="loiWhat">Last oral intake</label>
-            <div class="split">
-              <input id="loiWhat" type="text" placeholder="Food / fluids" />
-              <input id="loiTime" type="time" />
+      <details class="section-card" id="painDetails" open>
+        <summary><span>Pain Assessment</span><small>SOCRATES</small></summary>
+        <div class="section-body">
+          <div class="body-map-layout">
+            <div class="body-map-panel">
+              <div class="map-tabs">
+                <button class="mini-tab active" data-map-mode="site" type="button">Site</button>
+                <button class="mini-tab" data-map-mode="radiation" type="button">Radiation</button>
+              </div>
+              <svg id="bodyMap" class="body-map" viewBox="0 0 190 410" role="img" aria-label="Body map for pain location">
+                <ellipse class="body-part" id="head" cx="95" cy="30" rx="24" ry="26" data-label="Head" />
+                <rect class="body-part" id="neck" x="83" y="54" width="24" height="16" rx="5" data-label="Neck" />
+                <ellipse class="body-part" id="left-shoulder" cx="62" cy="73" rx="16" ry="11" data-label="Left shoulder" />
+                <ellipse class="body-part" id="right-shoulder" cx="128" cy="73" rx="16" ry="11" data-label="Right shoulder" />
+                <rect class="body-part" id="left-chest" x="70" y="68" width="22" height="38" rx="3" data-label="Left chest" />
+                <rect class="body-part" id="right-chest" x="98" y="68" width="22" height="38" rx="3" data-label="Right chest" />
+                <rect class="body-part" id="abdomen" x="70" y="106" width="50" height="42" rx="3" data-label="Abdomen" />
+                <rect class="body-part" id="pelvis" x="70" y="148" width="50" height="28" rx="6" data-label="Pelvis / groin" />
+                <rect class="body-part" id="left-upper-arm" x="49" y="78" width="18" height="50" rx="8" data-label="Left upper arm" />
+                <rect class="body-part" id="right-upper-arm" x="123" y="78" width="18" height="50" rx="8" data-label="Right upper arm" />
+                <rect class="body-part" id="left-forearm" x="43" y="132" width="16" height="50" rx="7" data-label="Left forearm" />
+                <rect class="body-part" id="right-forearm" x="131" y="132" width="16" height="50" rx="7" data-label="Right forearm" />
+                <ellipse class="body-part" id="left-hand" cx="51" cy="196" rx="13" ry="9" data-label="Left hand" />
+                <ellipse class="body-part" id="right-hand" cx="139" cy="196" rx="13" ry="9" data-label="Right hand" />
+                <rect class="body-part" id="left-thigh" x="71" y="179" width="21" height="64" rx="8" data-label="Left thigh" />
+                <rect class="body-part" id="right-thigh" x="98" y="179" width="21" height="64" rx="8" data-label="Right thigh" />
+                <ellipse class="body-part" id="left-knee" cx="81" cy="251" rx="12" ry="9" data-label="Left knee" />
+                <ellipse class="body-part" id="right-knee" cx="109" cy="251" rx="12" ry="9" data-label="Right knee" />
+                <rect class="body-part" id="left-lower-leg" x="72" y="263" width="18" height="65" rx="7" data-label="Left lower leg" />
+                <rect class="body-part" id="right-lower-leg" x="100" y="263" width="18" height="65" rx="7" data-label="Right lower leg" />
+                <ellipse class="body-part" id="left-foot" cx="81" cy="337" rx="16" ry="8" data-label="Left foot" />
+                <ellipse class="body-part" id="right-foot" cx="109" cy="337" rx="16" ry="8" data-label="Right foot" />
+              </svg>
             </div>
-            <label class="field-label">Has this happened before?</label>
-            <div class="segmented" role="group" aria-label="Previous episodes">
-              <button type="button" data-toggle="previous" data-value="no" class="selected danger">No</button>
-              <button type="button" data-toggle="previous" data-value="yes">Yes</button>
+            <div class="selected-panel">
+              <label class="field-label">Pain site</label><div class="selected-tags" id="siteTags">Not selected</div>
+              <label class="field-label">Radiation</label><div class="selected-tags" id="radiationTags">No radiation selected</div>
             </div>
-            <textarea id="prevDetails" class="hidden" rows="2" placeholder="Frequency, prior diagnosis, outcome"></textarea>
           </div>
+          <div class="grid-2">
+            <div><label class="field-label" for="onsetType">Onset</label><select id="onsetType"><option value="">Select</option><option>Sudden</option><option>Gradual</option><option>Insidious</option></select></div>
+            <div><label class="field-label" for="onsetDuration">Duration</label><input id="onsetDuration" type="text" placeholder="e.g. 30 minutes" /></div>
+            <div><label class="field-label" for="timingSelect">Timing</label><select id="timingSelect"><option value="">Select</option><option>Constant</option><option>Intermittent</option><option>Episodic</option><option>Waxing and waning</option><option>Colicky</option><option>Only on movement</option><option>Only on exertion</option></select></div>
+            <div><label class="field-label" for="severity">Severity</label><input id="severity" type="text" placeholder="e.g. 5/10 now, 8/10 worst" /></div>
+          </div>
+          <label class="field-label">Character</label><div class="square-grid multi-group" data-state="character"></div>
+          <label class="field-label">Associated symptoms</label><div class="square-grid multi-group" data-state="associated"></div>
+          <label class="field-label">Exacerbating factors</label><div class="square-grid multi-group" data-state="exacerbating"></div>
+          <label class="field-label">Relieving factors</label><div class="square-grid multi-group" data-state="relieving"></div>
         </div>
-      </article>
+      </details>
+
+      <details class="section-card">
+        <summary><span>Background</span><small>Hx</small></summary>
+        <div class="section-body grid-2">
+          <div><label class="check-row"><input type="checkbox" id="nkda" checked /> NKDA</label><label class="field-label" for="allergies">Allergies</label><input id="allergies" type="text" /></div>
+          <div><label class="check-row"><input type="checkbox" id="noMeds" checked /> No regular medications</label><label class="field-label" for="medications">Medications</label><textarea id="medications" rows="2"></textarea></div>
+          <div><label class="check-row"><input type="checkbox" id="noPmh" checked /> No significant PMH</label><label class="field-label" for="pmh">Past medical history</label><textarea id="pmh" rows="2"></textarea></div>
+          <div><label class="field-label">Last oral intake</label><div class="split"><input id="loiWhat" type="text" placeholder="Food / fluid" /><input id="loiTime" type="time" /></div><label class="field-label" for="prevDetails">Previous episodes</label><textarea id="prevDetails" rows="2" placeholder="If applicable"></textarea></div>
+        </div>
+      </details>
     </section>
 
     <section class="panel" id="panel-primary">
-      <article class="card">
-        <header class="card-header"><h2>On Arrival / Primary Survey</h2><span>ABCDE</span></header>
-        <div class="card-body">
-          <label class="field-label">First contact</label>
-          <div class="chip-row choice-group" data-state="oaFound">
-            <button type="button" data-value="Greeted by patient" class="chip selected">Greeted by patient</button>
-            <button type="button" data-value="Found seated in chair" class="chip">Found in chair</button>
-            <button type="button" data-value="Found in bed" class="chip">Found in bed</button>
-            <button type="button" data-value="Found on floor" class="chip">Found on floor</button>
-            <button type="button" data-value="Found standing" class="chip">Found standing</button>
-          </div>
-          <label class="field-label" for="oaLocation">Location</label>
-          <input id="oaLocation" type="text" placeholder="e.g. living room" />
-          <label class="field-label">Mobility</label>
-          <div class="chip-row choice-group" data-state="oaMobility">
-            <button type="button" data-value="mobilised independently" class="chip selected">Independent</button>
-            <button type="button" data-value="mobilised with assistance" class="chip">With assistance</button>
-            <button type="button" data-value="non-mobile / carried" class="chip">Non-mobile</button>
-          </div>
-          <div class="grid-2 compact">
-            <label class="check-row"><input type="checkbox" id="oaConsent" checked /> Consented to assessment</label>
-            <label class="check-row"><input type="checkbox" id="oaNoABC" checked /> No immediate ABC concerns</label>
-          </div>
-          <label class="field-label" for="oaNotes">Additional OA notes</label>
-          <textarea id="oaNotes" rows="2"></textarea>
+      <details class="section-card" open>
+        <summary><span>On Arrival</span><small>OA</small></summary>
+        <div class="section-body">
+          <div class="grid-2"><div><label class="field-label" for="oaFound">First contact</label><select id="oaFound"><option>Greeted by patient</option><option>Found seated in chair</option><option>Found in bed</option><option>Found on floor</option><option>Found standing</option></select></div><div><label class="field-label" for="oaLocation">Location</label><input id="oaLocation" type="text" placeholder="e.g. living room" /></div><div><label class="field-label" for="oaMobility">Mobility</label><select id="oaMobility"><option>Mobilised independently</option><option>Mobilised with assistance</option><option>Non-mobile / carried</option></select></div><div><label class="field-label" for="oaNotes">Additional notes</label><input id="oaNotes" type="text" /></div></div>
+          <div class="grid-2 compact"><label class="check-row"><input type="checkbox" id="oaConsent" checked /> Consented to assessment</label><label class="check-row"><input type="checkbox" id="oaNoABC" checked /> No immediate ABC concerns</label></div>
         </div>
-
-        <div class="abcde" id="abcdeBlocks"></div>
-      </article>
+      </details>
+      <div id="abcdeContainer"></div>
     </section>
 
-    <section class="panel" id="panel-ros">
-      <article class="card">
-        <header class="card-header"><h2>Review of Systems</h2><span>ROS</span></header>
-        <div id="rosSections"></div>
-      </article>
-
-      <article class="card">
-        <header class="card-header"><h2>Secondary Survey / On Examination</h2><span>OE</span></header>
-        <div class="card-body">
-          <div class="toolbar">
-            <button class="primary-action" id="generateOeButton" type="button">Generate OE from findings</button>
-            <button class="secondary-action" id="clearOeButton" type="button">Clear</button>
-          </div>
-          <textarea id="oeText" rows="10" placeholder="On examination / secondary survey..."></textarea>
-        </div>
-      </article>
-
-      <article class="card">
-        <header class="card-header"><h2>Mental Capacity / Consent</h2><span>MCA</span></header>
-        <div class="card-body">
-          <div class="segmented" role="group" aria-label="Capacity">
-            <button type="button" data-toggle="capacity" data-value="has" class="selected success">Has capacity</button>
-            <button type="button" data-toggle="capacity" data-value="lacks">Lacks capacity</button>
-            <button type="button" data-toggle="capacity" data-value="na">N/A</button>
-          </div>
-          <div id="capacityChecks">
-            <label class="check-row"><input type="checkbox" id="mcaUnderstand" checked /> Understands relevant information</label>
-            <label class="check-row"><input type="checkbox" id="mcaRetain" checked /> Retains information long enough</label>
-            <label class="check-row"><input type="checkbox" id="mcaWeigh" checked /> Weighs/uses information to decide</label>
-            <label class="check-row"><input type="checkbox" id="mcaCommunicate" checked /> Communicates decision</label>
-          </div>
-          <textarea id="bestInterests" class="hidden" rows="3" placeholder="Best interests decision, who was consulted, rationale"></textarea>
-        </div>
-      </article>
-
-      <article class="card">
-        <header class="card-header"><h2>Worsening Advice & Conveyance</h2><span>Plan</span></header>
-        <div class="card-body">
-          <label class="field-label">Worsening advice</label>
-          <div class="segmented wrap" role="group" aria-label="Worsening advice">
-            <button type="button" data-toggle="worsening" data-value="standard" class="selected success">Standard</button>
-            <button type="button" data-toggle="worsening" data-value="head">Head injury</button>
-            <button type="button" data-toggle="worsening" data-value="both">Both</button>
-            <button type="button" data-toggle="worsening" data-value="none">N/A</button>
-            <button type="button" data-toggle="worsening" data-value="custom">Custom</button>
-          </div>
-          <textarea id="customWorsening" class="hidden" rows="3" placeholder="Custom advice given"></textarea>
-
-          <label class="field-label">Conveyance decision</label>
-          <div class="segmented wrap" role="group" aria-label="Conveyance decision">
-            <button type="button" data-toggle="conveyance" data-value="conveyed" class="selected success">Conveyed</button>
-            <button type="button" data-toggle="conveyance" data-value="left">Treated & left</button>
-            <button type="button" data-toggle="conveyance" data-value="declined">Declined conveyance</button>
-          </div>
-          <div id="nonConveyedFields" class="hidden">
-            <label class="field-label">Referred / signposted to</label>
-            <div class="chip-row multi-group" data-state="referrals">
-              <button type="button" data-value="GP" class="chip">GP</button>
-              <button type="button" data-value="111" class="chip">111</button>
-              <button type="button" data-value="Urgent treatment centre" class="chip">UTC</button>
-              <button type="button" data-value="Pharmacy" class="chip">Pharmacy</button>
-              <button type="button" data-value="Community nursing" class="chip">Community nursing</button>
-              <button type="button" data-value="Self-care" class="chip">Self-care</button>
-            </div>
-            <label class="field-label" for="followUp">Follow-up / arrangements</label>
-            <input id="followUp" type="text" placeholder="e.g. GP appointment arranged" />
-            <div class="grid-2 compact">
-              <label class="check-row"><input type="checkbox" id="riskExplained" checked /> Risks explained</label>
-              <label class="check-row"><input type="checkbox" id="alternativesDiscussed" checked /> Alternatives discussed</label>
-              <label class="check-row"><input type="checkbox" id="understandsRisk" checked /> Patient understands risks</label>
-              <label class="check-row"><input type="checkbox" id="canRecontact" checked /> 999/111 recontact advised</label>
-            </div>
-          </div>
-          <label class="field-label" for="conveyanceNotes">Conveyance notes</label>
-          <textarea id="conveyanceNotes" rows="2" placeholder="Destination, handover, reason for non-conveyance/refusal"></textarea>
-        </div>
-      </article>
+    <section class="panel" id="panel-review">
+      <details class="section-card" open>
+        <summary><span>Review of Systems</span><small>ROS</small></summary>
+        <div id="rosContainer" class="nested-sections"></div>
+      </details>
+      <details class="section-card">
+        <summary><span>Secondary Survey / On Examination</span><small>OE</small></summary>
+        <div class="section-body"><div class="toolbar"><button id="generateOeButton" class="primary-action" type="button">Generate OE from findings</button><button id="clearOeButton" class="secondary-action" type="button">Clear</button></div><textarea id="oeText" rows="10" placeholder="On examination / secondary survey..."></textarea></div>
+      </details>
+      <details class="section-card">
+        <summary><span>Mental Capacity and Consent</span><small>MCA</small></summary>
+        <div class="section-body"><label class="field-label" for="capacityStatus">Capacity status</label><select id="capacityStatus"><option>Has capacity</option><option>Lacks capacity</option><option>Not applicable</option></select><div id="capacityChecks" class="grid-2 compact"><label class="check-row"><input type="checkbox" id="mcaUnderstand" checked /> Understands</label><label class="check-row"><input type="checkbox" id="mcaRetain" checked /> Retains</label><label class="check-row"><input type="checkbox" id="mcaWeigh" checked /> Weighs information</label><label class="check-row"><input type="checkbox" id="mcaCommunicate" checked /> Communicates decision</label></div><textarea id="bestInterests" class="hidden" rows="3" placeholder="Best interests decision / rationale"></textarea></div>
+      </details>
+      <details class="section-card">
+        <summary><span>Worsening Advice and Conveyance</span><small>Plan</small></summary>
+        <div class="section-body"><div class="grid-2"><div><label class="field-label" for="worseningMode">Worsening advice</label><select id="worseningMode"><option>Standard</option><option>Head injury</option><option>Standard and head injury</option><option>Not applicable</option><option>Custom</option></select></div><div><label class="field-label" for="conveyanceDecision">Conveyance decision</label><select id="conveyanceDecision"><option>Conveyed</option><option>Treated and left</option><option>Declined conveyance</option></select></div></div><textarea id="customWorsening" class="hidden" rows="3" placeholder="Custom worsening advice given"></textarea><div id="nonConveyedFields" class="hidden"><label class="field-label">Referred / signposted to</label><div class="square-grid multi-group" data-state="referrals"></div><label class="field-label" for="followUp">Follow-up arrangements</label><input id="followUp" type="text" /><div class="grid-2 compact"><label class="check-row"><input type="checkbox" id="riskExplained" checked /> Risks explained</label><label class="check-row"><input type="checkbox" id="alternativesDiscussed" checked /> Alternatives discussed</label><label class="check-row"><input type="checkbox" id="understandsRisk" checked /> Patient understands risks</label><label class="check-row"><input type="checkbox" id="canRecontact" checked /> 999/111 recontact advised</label></div></div><label class="field-label" for="conveyanceNotes">Conveyance notes</label><textarea id="conveyanceNotes" rows="2"></textarea></div>
+      </details>
     </section>
 
     <section class="panel" id="panel-output">
-      <article class="card">
-        <header class="card-header"><h2>Generated PRF</h2><span>Output</span></header>
-        <div class="card-body">
-          <div class="toolbar">
-            <button class="primary-action" id="copyButton" type="button">Generate & Copy</button>
-            <button class="secondary-action" id="refreshButton" type="button">Refresh Preview</button>
-          </div>
-          <pre id="outputText" class="output">Tap “Refresh Preview” or “Generate & Copy”.</pre>
-        </div>
-      </article>
+      <details class="section-card" open>
+        <summary><span>Generated PRF</span><small>Output</small></summary>
+        <div class="section-body"><div class="toolbar"><button id="copyButton" class="primary-action" type="button">Generate and copy</button><button id="refreshButton" class="secondary-action" type="button">Refresh preview</button></div><pre id="outputText" class="output">Tap “Refresh preview” or “Generate and copy”.</pre></div>
+      </details>
     </section>
   </main>
 
-  <template id="socratesTemplate">
-    <article class="card socrates-card" id="socratesBlock">
-      <header class="card-header"><h2>SOCRATES Pain Assessment</h2><span>Pain</span></header>
-      <div class="card-body">
-        <div class="grid-2">
-          <div>
-            <label class="field-label" for="painSite">Site</label>
-            <input id="painSite" type="text" placeholder="e.g. central chest, LUQ abdomen" />
-          </div>
-          <div>
-            <label class="field-label" for="radiation">Radiation</label>
-            <input id="radiation" type="text" placeholder="e.g. left arm / no radiation" />
-          </div>
-          <div>
-            <label class="field-label" for="onsetType">Onset</label>
-            <select id="onsetType"><option value="">Select</option><option>Sudden</option><option>Gradual</option><option>Insidious</option></select>
-          </div>
-          <div>
-            <label class="field-label" for="onsetDuration">Duration</label>
-            <input id="onsetDuration" type="text" placeholder="e.g. 30 minutes" />
-          </div>
-        </div>
-        <label class="field-label">Character</label><div class="chip-row multi-group" data-state="character"></div>
-        <label class="field-label">Associated symptoms</label><div class="chip-row multi-group" data-state="associated"></div>
-        <div class="grid-2">
-          <div><label class="field-label" for="timing">Timing</label><input id="timing" type="text" placeholder="constant / intermittent" /></div>
-          <div><label class="field-label" for="severity">Severity</label><input id="severity" type="text" placeholder="e.g. 5/10 now, 8/10 worst" /></div>
-        </div>
-        <label class="field-label">Exacerbating factors</label><div class="chip-row multi-group" data-state="exacerbating"></div>
-        <label class="field-label">Relieving factors</label><div class="chip-row multi-group" data-state="relieving"></div>
-      </div>
-    </article>
-  </template>
-
-  <div class="toast" id="toast" role="status" aria-live="polite">Copied ✓</div>
+  <div class="toast" id="toast">Copied</div>
   <script src="app.js" defer></script>
 </body>
 </html>

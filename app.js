@@ -3,17 +3,12 @@
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const val = id => ($(`#${id}`)?.value || '').trim();
-const checked = id => Boolean($(`#${id}`)?.checked);
+const isChecked = id => Boolean($(`#${id}`)?.checked);
 
 const state = {
-  tab: 'pc',
-  pc: '',
-  previous: 'no',
-  capacity: 'has',
-  worsening: 'standard',
-  conveyance: 'conveyed',
-  oaFound: 'Greeted by patient',
-  oaMobility: 'mobilised independently',
+  mapMode: 'site',
+  siteParts: new Set(),
+  radiationParts: new Set(),
   character: new Set(),
   associated: new Set(),
   exacerbating: new Set(),
@@ -22,369 +17,332 @@ const state = {
   ros: {},
 };
 
-const PC_OPTIONS = [
-  'Chest Pain','Shortness of Breath','Abdominal Pain','Headache','Dizziness / Vertigo','Fall','Collapse / Syncope','Seizure','Stroke / FAST +ve','Trauma / Injury','Allergic Reaction','Diabetic Emergency','Cardiac Arrest','Overdose / Poisoning','Back Pain','Nausea & Vomiting','Palpitations','Fever / Pyrexia','Limb Pain / Swelling','Mental Health Crisis','Wound / Laceration','Other'
-];
-
-const PC_SOCRATES_TARGET = {
-  'Chest Pain': 'cvs', Palpitations: 'cvs', 'Shortness of Breath': 'resp',
-  'Abdominal Pain': 'gi', 'Nausea & Vomiting': 'gi', 'Back Pain': 'msk',
-  Headache: 'neuro', 'Dizziness / Vertigo': 'neuro', 'Collapse / Syncope': 'neuro', Seizure: 'neuro', 'Stroke / FAST +ve': 'neuro',
-  'Limb Pain / Swelling': 'msk', 'Trauma / Injury': 'msk', Fall: 'msk'
-};
-
-const CHIP_OPTIONS = {
+const OPTIONS = {
   character: ['Sharp','Dull','Aching','Burning','Crushing / pressure','Stabbing','Throbbing','Colicky','Tearing','Tight','Cramping','Squeezing'],
-  associated: ['Nausea','Vomiting','Sweating','Dizziness','SOB','Palpitations','Headache','Fever','Fatigue','Numbness','Tingling','Weakness','Visual changes','Syncope','Back pain','Chest tightness'],
+  associated: ['Nausea','Vomiting','Sweating','Dizziness','Shortness of breath','Palpitations','Headache','Fever','Fatigue','Numbness','Tingling','Weakness','Visual change','Syncope','Back pain','Chest tightness'],
   exacerbating: ['Movement','Deep breathing','Palpation','Eating','Exertion','Lying flat','Standing','Coughing','Swallowing','Heat','Cold','Stress'],
-  relieving: ['Rest','Analgesia','Sitting forward','Antacids','Ice','Heat','Positional change','Eating','Vomiting','GTN'],
+  relieving: ['Rest','Analgesia','Sitting forward','Antacids','Ice','Heat','Position change','Eating','Vomiting','GTN'],
+  referrals: ['GP','111','Urgent treatment centre','Pharmacy','Community nursing','Self-care','Falls team','Mental health crisis team','Safeguarding referral'],
 };
-
-
-const ICONS = {
-  resp: '<svg viewBox="0 0 24 24"><path d="M10 5v14M14 5v14"/><path d="M10 9C7 7 4.5 8.8 4 12.3c-.5 3.2.9 6 3.8 6.7 1.3.3 2.2-.5 2.2-1.8V9Z"/><path d="M14 9c3-2 5.5-.2 6 3.3.5 3.2-.9 6-3.8 6.7-1.3.3-2.2-.5-2.2-1.8V9Z"/></svg>',
-  cvs: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/><path d="M8 12h2l1-2 2 5 1-3h2"/></svg>',
-  neuro: '<svg viewBox="0 0 24 24"><path d="M8 18a4 4 0 0 1-1.6-7.7A4.3 4.3 0 0 1 14 6.4a3.7 3.7 0 0 1 3.6 4.6A3.6 3.6 0 0 1 16 18H8Z"/><path d="M11 6v12M8 11h6M9 15h5"/></svg>',
-  gi: '<svg viewBox="0 0 24 24"><path d="M8 4c3 1 5 2.7 5 6.2 0 2.8-1.5 4-3.3 5.1-1.4.9-2.2 1.8-1.7 3.7"/><path d="M15 5c2.4 1.3 3.5 3.2 3.2 5.7-.3 2.4-2 3.7-4.1 4.7-1.2.6-2 1.3-2.1 2.6"/><path d="M7 8h4M13 11h5"/></svg>',
-  urine: '<svg viewBox="0 0 24 24"><path d="M12 3s6 6.4 6 11a6 6 0 0 1-12 0c0-4.6 6-11 6-11Z"/><path d="M9 15a3 3 0 0 0 3 3"/></svg>',
-  integ: '<svg viewBox="0 0 24 24"><path d="M12 3v18M5 8h14M6.5 16h11"/><path d="M8 5c0 2 8 2 8 0M8 19c0-2 8-2 8 0"/></svg>',
-  msk: '<svg viewBox="0 0 24 24"><path d="M7.5 8.5a2.5 2.5 0 1 1 3.5-3.5l8 8a2.5 2.5 0 1 1-3.5 3.5l-8-8Z"/><path d="M5 19l14-14"/></svg>',
-};
-
-function iconSvg(key) {
-  return `<span class="ros-icon" aria-hidden="true">${ICONS[key] || ICONS.resp}</span>`;
-}
 
 const ABCDE = [
-  { key:'A', title:'Airway', chips:[['patent','Patent','normal'],['selfMaintained','Self-maintained','normal'],['obstructed','Obstructed','abnormal'],['airwaySounds','Airway sounds','abnormal']], notes:'airwayNotes' },
-  { key:'B', title:'Breathing', chips:[['regular','Regular','normal'],['noCyanosis','No cyanosis','normal'],['sentences','Full sentences','normal'],['laboured','Laboured','abnormal'],['wheeze','Wheeze','abnormal']], vitals:[['rr','RR /min','16'],['spo2','SpO₂ %','98'],['o2Flow','O₂ L/min','—']], notes:'breathingNotes' },
-  { key:'C', title:'Circulation', chips:[['goodColour','Good colour','normal'],['warm','Warm','normal'],['radial','Radial palpable','normal'],['crt','CRT <2s','normal'],['pale','Pale','abnormal'],['cold','Cold/clammy','abnormal'],['bleed','Haemorrhage','abnormal']], vitals:[['hr','HR bpm','72'],['bp','BP mmHg','120/80'],['bm','BM mmol','5.2']], notes:'circulationNotes' },
-  { key:'D', title:'Disability', chips:[['gcs15','GCS 15','normal'],['aox4','AOx4','normal'],['pearl','PEARL','normal'],['speech','Speech clear','normal'],['mobile','Fully mobile','normal'],['confused','Confused','abnormal']], vitals:[['gcsScore','GCS /15','15'],['pupils','Pupils','3mm equal'],['avpu','AVPU','A']], notes:'disabilityNotes' },
-  { key:'E', title:'Exposure', chips:[['apyrexial','Apyrexial','normal'],['noRigors','No rigors','normal'],['normalSkin','Normal colour','normal'],['notClammy','Not clammy','normal'],['notDiaphoretic','Not diaphoretic','normal'],['noInjuries','No injuries','normal'],['noRash','No rashes','normal'],['pyrexia','Pyrexia','abnormal'],['injury','Injury found','abnormal']], vitals:[['temp','Temp °C','36.8']], notes:'exposureNotes' },
+  { key:'A', title:'Airway', chips:[['Patent','normal'],['Self-maintained','normal'],['Obstructed','abnormal'],['Airway sounds','abnormal']], vitals:[], notes:'airwayNotes' },
+  { key:'B', title:'Breathing', chips:[['Regular','normal'],['No cyanosis','normal'],['Full sentences','normal'],['Laboured','abnormal'],['Wheeze','abnormal']], vitals:[['rr','RR /min','16'],['spo2','SpO2 %','98'],['o2Flow','O2 L/min','']], notes:'breathingNotes' },
+  { key:'C', title:'Circulation', chips:[['Good colour','normal'],['Warm to touch','normal'],['Radial palpable','normal'],['CRT <2s','normal'],['Pale','abnormal'],['Cold / clammy','abnormal'],['Haemorrhage','abnormal']], vitals:[['hr','HR bpm','72'],['bp','BP mmHg','120/80'],['bm','BM mmol/L','5.2']], notes:'circulationNotes' },
+  { key:'D', title:'Disability', chips:[['GCS 15','normal'],['AOx4','normal'],['PEARL','normal'],['Speech clear','normal'],['Fully mobile','normal'],['Confused','abnormal']], vitals:[['gcsScore','GCS /15','15'],['pupils','Pupils','3mm equal'],['avpu','AVPU','A']], notes:'disabilityNotes' },
+  { key:'E', title:'Exposure', chips:[['Apyrexial','normal'],['No rigors','normal'],['Normal colour','normal'],['Not clammy','normal'],['Not diaphoretic','normal'],['No injuries','normal'],['No rashes','normal'],['Pyrexia','abnormal'],['Injury found','abnormal']], vitals:[['temp','Temp C','36.8']], notes:'exposureNotes' },
 ];
 
 const ROS = {
-  resp: { icon:'resp', title:'Respiratory', items:[
-    ['brRate','Breathing rate','Normal rate','Breathing rate normal','Tachypnoea noted'], ['cyanosis','Cyanosis','No cyanosis','No cyanosis','Cyanosis present'], ['wheeze','Wheeze','No wheeze','No wheeze','Wheeze noted'], ['haemoptysis','Haemoptysis','None','No haemoptysis','Haemoptysis present'], ['sob','SOB','No SOB','No shortness of breath','Shortness of breath present'], ['iwob','Increased WOB','None','No increased work of breathing','Increased work of breathing noted'], ['accessory','Accessory muscles','Not in use','No use of accessory muscles','Accessory muscle use present']
-  ], extras: '<label class="field-label" for="coughType">Cough</label><select id="coughType"><option>No cough</option><option>Dry cough present</option><option>Productive cough present</option></select><label class="field-label" for="respAus">On auscultation</label><input id="respAus" type="text" placeholder="Equal and clear bilateral air entry"><label class="field-label" for="respNotes">Additional notes</label><textarea id="respNotes" rows="2"></textarea>' },
-  cvs: { icon:'cvs', title:'Cardiovascular', items:[
-    ['colour','Colour','Good colour','Good colour','Poor colour noted'], ['warmTouch','Warm to touch','Warm peripheries','Warm to touch','Cool/cold peripheries'], ['pulse','Peripheral pulses','Palpable','Peripheral pulses palpable','Peripheral pulses weak/absent'], ['crt','CRT','<2 seconds','CRT <2s','CRT ≥2s'], ['chestPain','Chest pain','No chest pain','No chest pain','Chest pain present'], ['palpitations','Palpitations','No palpitations','No palpitations','Palpitations reported'], ['oedema','Oedema','No oedema','No oedema','Oedema present'], ['calfPain','Calf pain / DVT','No calf pain','No calf pain or tenderness','Calf pain/tenderness noted']
-  ], extras: '<label class="field-label" for="bpStatus">Blood pressure status</label><select id="bpStatus"><option>Normotensive</option><option>Hypotensive</option><option>Hypertensive</option></select><label class="field-label" for="ecg">ECG findings</label><input id="ecg" type="text" placeholder="Sinus rhythm – nil acute / not performed"><label class="field-label" for="cvsNotes">Additional notes</label><textarea id="cvsNotes" rows="2"></textarea>' },
-  neuro: { icon:'neuro', title:'Neurological', items:[
-    ['aox4','AOx4','Fully orientated','Alert and orientated ×4','Not fully orientated'], ['gcs15','GCS 15','GCS 15/15','GCS 15/15','GCS reduced'], ['pearl','PEARL','Equal and reactive','PEARL','Pupils unequal/unreactive'], ['fast','FAST','Negative','FAST negative','FAST positive'], ['confusion','Confusion','No confusion','No confusion','Confusion noted'], ['headache','Headache','No headache','No headache','Headache present'], ['dizziness','Dizziness','No dizziness','No dizziness','Dizziness present'], ['weakness','Weakness','No weakness','No focal weakness','Weakness noted'], ['numbness','Numbness','No numbness','No numbness/altered sensation','Numbness/altered sensation noted'], ['loc','LOC','No LOC','No loss of consciousness','Loss of consciousness reported'], ['seizure','Seizure','No seizure','No seizure activity','Seizure activity reported'], ['speech','Speech','Clear','Speech clear and coherent','Speech difficulty noted']
+  resp: { title:'Respiratory', items:[
+    ['breathingRate','Breathing rate normal','Tachypnoea noted'],['cyanosis','No cyanosis','Cyanosis present'],['wheeze','No wheeze','Wheeze noted'],['haemoptysis','No haemoptysis','Haemoptysis present'],['sob','No shortness of breath','Shortness of breath present'],['iwob','No increased work of breathing','Increased work of breathing noted'],['accessory','No accessory muscle use','Accessory muscle use present']
+  ], extras:'<label class="field-label" for="coughType">Cough</label><select id="coughType"><option>No cough</option><option>Dry cough present</option><option>Productive cough present</option></select><label class="field-label" for="respAus">On auscultation</label><input id="respAus" type="text" placeholder="Equal and clear bilateral air entry"><label class="field-label" for="respNotes">Additional notes</label><textarea id="respNotes" rows="2"></textarea>' },
+  cvs: { title:'Cardiovascular', items:[
+    ['colour','Good colour','Poor colour noted'],['warm','Warm to touch','Cool / cold peripheries'],['pulses','Peripheral pulses palpable','Peripheral pulses weak / absent'],['crt','CRT <2s','CRT >=2s'],['chestPain','No chest pain','Chest pain present'],['palpitations','No palpitations','Palpitations reported'],['oedema','No oedema','Oedema present'],['calfPain','No calf pain or tenderness','Calf pain / tenderness noted']
+  ], extras:'<label class="field-label" for="bpStatus">Blood pressure status</label><select id="bpStatus"><option>Normotensive</option><option>Hypotensive</option><option>Hypertensive</option></select><label class="field-label" for="ecg">ECG findings</label><input id="ecg" type="text" placeholder="Sinus rhythm - nil acute / not performed"><label class="field-label" for="cvsNotes">Additional notes</label><textarea id="cvsNotes" rows="2"></textarea>' },
+  neuro: { title:'Neurological', items:[
+    ['aox4','Alert and orientated x4','Not fully orientated'],['gcs15','GCS 15/15','GCS reduced'],['pearl','PEARL','Pupils unequal / unreactive'],['fast','FAST negative','FAST positive'],['confusion','No confusion','Confusion noted'],['headache','No headache','Headache present'],['dizziness','No dizziness','Dizziness present'],['weakness','No focal weakness','Weakness noted'],['numbness','No numbness / altered sensation','Numbness / altered sensation noted'],['loc','No loss of consciousness','Loss of consciousness reported'],['seizure','No seizure activity','Seizure activity reported'],['speech','Speech clear and coherent','Speech difficulty noted']
   ], extras:'<label class="field-label" for="neuroNotes">Additional notes</label><textarea id="neuroNotes" rows="2"></textarea>' },
-  gi: { icon:'gi', title:'Gastrointestinal', items:[
-    ['abdoPain','Abdominal pain','No pain','No abdominal pain','Abdominal pain present'], ['backPain','Back pain','No back pain','No back pain','Back pain present'], ['nausea','Nausea','No nausea','No nausea','Nausea present'], ['vomiting','Vomiting','No vomiting','No vomiting','Vomiting reported'], ['haematemesis','Haematemesis','None','No haematemesis','Haematemesis reported'], ['bowel','Bowel habits','Unchanged','Bowel habits unchanged','Change in bowel habit'], ['distension','Distension','No distension','No distension','Abdominal distension noted'], ['soft','Abdomen soft','Non-rigid','Abdomen soft','Abdomen rigid'], ['tender','Non-tender','No tenderness','Non-tender','Tenderness on palpation'], ['guarding','Guarding','Absent','No guarding','Guarding present'], ['rebound','Rebound tenderness','Absent','No rebound tenderness','Rebound tenderness present']
+  gi: { title:'Gastrointestinal', items:[
+    ['abdoPain','No abdominal pain','Abdominal pain present'],['backPain','No back pain','Back pain present'],['nausea','No nausea','Nausea present'],['vomiting','No vomiting','Vomiting reported'],['haematemesis','No haematemesis','Haematemesis reported'],['bowelHabit','Bowel habits unchanged','Change in bowel habit'],['distension','No distension','Abdominal distension noted'],['soft','Abdomen soft','Abdomen rigid'],['tender','Non-tender','Tenderness on palpation'],['guarding','No guarding','Guarding present'],['rebound','No rebound tenderness','Rebound tenderness present']
   ], extras:'<label class="field-label" for="bowelSounds">Bowel sounds</label><input id="bowelSounds" type="text" placeholder="Present and normal"><label class="field-label" for="giNotes">Additional notes</label><textarea id="giNotes" rows="2"></textarea>' },
-  urine: { icon:'urine', title:'Urinary', items:[
-    ['frequency','Frequency','No change','No change to urinary frequency','Change in urinary frequency'], ['volume','Volume','Unchanged','Volume unchanged','Change in urinary volume'], ['dysuria','Dysuria','No pain','No pain on micturition','Dysuria/pain on micturition'], ['haematuria','Haematuria','None','No haematuria','Haematuria present'], ['odour','Offensive odour','None','No offensive odour','Offensive urinary odour noted'], ['colour','Colour change','Unchanged','No change in urine colour','Change in urine colour noted'], ['incontinence','Incontinence','None','No urinary incontinence','Urinary incontinence reported']
+  urine: { title:'Urinary', items:[
+    ['frequency','No change to urinary frequency','Change in urinary frequency'],['volume','Volume unchanged','Change in urinary volume'],['dysuria','No pain on micturition','Dysuria / pain on micturition'],['haematuria','No haematuria','Haematuria present'],['odour','No offensive odour','Offensive urinary odour noted'],['colour','No change in urine colour','Change in urine colour noted'],['incontinence','No urinary incontinence','Urinary incontinence reported']
   ], extras:'<label class="field-label" for="urineNotes">Additional notes</label><textarea id="urineNotes" rows="2"></textarea>' },
-  integ: { icon:'integ', title:'Integumentary', items:[
-    ['fever','Fever','Apyrexial','No fever','Pyrexia present'], ['rigors','Rigors','No rigors','No rigors','Rigors reported'], ['fatigue','Fatigue','No fatigue','No fatigue','Fatigue reported'], ['colour','Colour','Normal','Normal colour','Abnormal colour noted'], ['clammy','Clammy','Not clammy','Not clammy','Clammy skin noted'], ['diaphoretic','Diaphoresis','Not diaphoretic','Not diaphoretic','Diaphoresis present'], ['bruising','Bruising','No bruising','No bruising','Bruising noted'], ['lacerations','Lacerations','None','No lacerations','Lacerations present'], ['rash','Rash','No rash','No rash','Rash noted'], ['turgor','Skin turgor','Normal','Normal skin turgor','Reduced skin turgor']
+  integ: { title:'Integumentary', items:[
+    ['fever','No fever','Pyrexia present'],['rigors','No rigors','Rigors reported'],['fatigue','No fatigue','Fatigue reported'],['colour','Normal colour','Abnormal colour noted'],['clammy','Not clammy','Clammy skin noted'],['diaphoresis','Not diaphoretic','Diaphoresis present'],['bruising','No bruising','Bruising noted'],['laceration','No lacerations','Lacerations present'],['rash','No rash','Rash noted'],['turgor','Normal skin turgor','Reduced skin turgor']
   ], extras:'<label class="field-label" for="integNotes">Additional notes</label><textarea id="integNotes" rows="2"></textarea>' },
-  msk: { icon:'msk', title:'Musculoskeletal', items:[
-    ['jointPain','Joint pain','No pain','No joint pain','Joint pain present'], ['stiffness','Stiffness','No stiffness','No stiffness','Stiffness reported'], ['swelling','Swelling','No swelling','No swelling','Swelling noted'], ['injury','Signs of injury','None found','No obvious signs of injury','Signs of injury present'], ['rom','Range of motion','Full ROM','Full range of movement of all limbs','Reduced range of motion noted'], ['powerTone','Power and tone','Normal','Normal power and tone throughout','Reduced power/altered tone']
+  msk: { title:'Musculoskeletal', items:[
+    ['jointPain','No joint pain','Joint pain present'],['stiffness','No stiffness','Stiffness reported'],['swelling','No swelling','Swelling noted'],['injury','No obvious signs of injury','Signs of injury present'],['rom','Full range of movement of all limbs','Reduced range of movement noted'],['powerTone','Normal power and tone throughout','Reduced power / altered tone']
   ], extras:'<label class="field-label" for="mskNotes">Additional notes</label><textarea id="mskNotes" rows="2"></textarea>' },
 };
 
+document.addEventListener('DOMContentLoaded', init);
+
 function init() {
-  buildPcChips();
-  buildSocrates();
+  buildOptionButtons();
   buildAbcde();
   buildRos();
   bindEvents();
-  placeSocrates(null);
+  updateMapTags();
 }
 
-document.addEventListener('DOMContentLoaded', init);
-
-function buildPcChips() {
-  const container = $('#pcChips');
-  PC_OPTIONS.forEach(label => {
-    const button = chip(label);
-    button.addEventListener('click', () => {
-      $$('.chip', container).forEach(item => item.classList.remove('selected'));
-      button.classList.add('selected');
-      state.pc = label;
-      $('#pcCustom').value = '';
-      placeSocrates(PC_SOCRATES_TARGET[label] || null);
+function buildOptionButtons() {
+  Object.entries(OPTIONS).forEach(([key, options]) => {
+    const container = $(`[data-state="${key}"]`);
+    if (!container) return;
+    options.forEach(option => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'square-btn';
+      button.textContent = option;
+      button.dataset.value = option;
+      container.append(button);
     });
-    container.append(button);
-  });
-}
-
-function buildSocrates() {
-  const template = $('#socratesTemplate').content.cloneNode(true);
-  document.body.append(template);
-  Object.entries(CHIP_OPTIONS).forEach(([key, options]) => {
-    const container = $(`[data-state="${key}"]`, $('#socratesBlock'));
-    options.forEach(option => container.append(chip(option)));
   });
 }
 
 function buildAbcde() {
-  const root = $('#abcdeBlocks');
-  ABCDE.forEach(section => {
-    const wrapper = document.createElement('section');
-    wrapper.className = 'abcde-section';
-    wrapper.innerHTML = `<div class="abc-letter">${section.key}</div><div><label class="field-label">${section.title}</label><div class="chip-row abc-chips" data-abc="${section.key}"></div><div class="vital-grid"></div><label class="field-label" for="${section.notes}">Notes</label><input id="${section.notes}" type="text"></div>`;
-    const chipRoot = $('.abc-chips', wrapper);
-    section.chips.forEach(([id, label, type]) => {
-      const button = chip(label);
-      button.dataset.id = `${section.key}_${id}`;
+  const root = $('#abcdeContainer');
+  ABCDE.forEach((section, index) => {
+    const details = document.createElement('details');
+    details.className = 'section-card';
+    if (index === 0) details.open = true;
+    details.innerHTML = `<summary><span>${section.key} - ${section.title}</span><small>${section.key}</small></summary><div class="section-body"><div class="square-grid abc-grid"></div><div class="vital-grid"></div><label class="field-label" for="${section.notes}">Notes</label><input id="${section.notes}" type="text" /></div>`;
+    const chipRoot = $('.abc-grid', details);
+    section.chips.forEach(([label, type]) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `square-btn abc-chip ${type === 'normal' ? 'selected' : ''}`;
+      button.textContent = label;
+      button.dataset.abc = section.key;
+      button.dataset.value = label;
       button.dataset.type = type;
-      if (type === 'normal') button.classList.add('selected');
-      button.addEventListener('click', () => {
-        if (type === 'normal') button.classList.toggle('selected');
-        else button.classList.toggle('abnormal');
-      });
       chipRoot.append(button);
     });
-    const vitalRoot = $('.vital-grid', wrapper);
-    (section.vitals || []).forEach(([id, label, placeholder]) => {
+    const vitalRoot = $('.vital-grid', details);
+    section.vitals.forEach(([id, label, placeholder]) => {
       const box = document.createElement('div');
       box.className = 'vital';
       box.innerHTML = `<label for="${id}">${label}</label><input id="${id}" type="text" placeholder="${placeholder}">`;
       vitalRoot.append(box);
     });
-    if (!section.vitals) vitalRoot.remove();
-    root.append(wrapper);
+    if (!section.vitals.length) vitalRoot.remove();
+    root.append(details);
   });
 }
 
 function buildRos() {
-  const root = $('#rosSections');
+  const root = $('#rosContainer');
   Object.entries(ROS).forEach(([key, section], index) => {
-    const wrapper = document.createElement('section');
-    wrapper.className = `ros-section${index === 0 ? ' open' : ''}`;
-    wrapper.id = `ros-${key}`;
-    wrapper.innerHTML = `<button class="ros-header" type="button">${iconSvg(section.icon)}<span>${section.title}</span><span class="badge" id="badge-${key}">All normal</span><span>⌄</span></button><div class="ros-body"><div id="socTarget-${key}"></div><div class="ros-grid"></div>${section.extras}</div>`;
-    $('.ros-header', wrapper).addEventListener('click', () => wrapper.classList.toggle('open'));
-    const grid = $('.ros-grid', wrapper);
-    section.items.forEach(([id, label, sub, normal, abnormal]) => {
+    const details = document.createElement('details');
+    details.className = 'section-card';
+    if (index === 0) details.open = true;
+    details.innerHTML = `<summary><span>${section.title}</span><small id="badge-${key}" class="status-pill">All normal</small></summary><div class="section-body"><div class="square-grid ros-grid"></div>${section.extras}</div>`;
+    const grid = $('.ros-grid', details);
+    section.items.forEach(([id, normal, abnormal]) => {
       const stateId = `${key}_${id}`;
       state.ros[stateId] = 'normal';
       const button = document.createElement('button');
-      button.className = 'ros-chip';
       button.type = 'button';
-      button.innerHTML = `<span class="mark">✓</span><span>${label}<small>${sub}</small></span>`;
-      button.addEventListener('click', () => {
-        const isAbnormal = state.ros[stateId] === 'abnormal';
-        state.ros[stateId] = isAbnormal ? 'normal' : 'abnormal';
-        button.classList.toggle('abnormal', !isAbnormal);
-        $('.mark', button).textContent = isAbnormal ? '✓' : '!';
-        $('small', button).textContent = isAbnormal ? sub : abnormal;
-        updateRosBadge(key);
-      });
+      button.className = 'square-btn ros-chip selected';
+      button.textContent = normal;
+      button.dataset.section = key;
+      button.dataset.stateId = stateId;
+      button.dataset.normal = normal;
+      button.dataset.abnormal = abnormal;
       grid.append(button);
     });
-    root.append(wrapper);
+    root.append(details);
   });
 }
 
 function bindEvents() {
   $$('.tab').forEach(tab => tab.addEventListener('click', () => switchTab(tab.dataset.tab)));
-  $('#pcCustom').addEventListener('input', () => {
-    state.pc = '';
-    $$('#pcChips .chip').forEach(item => item.classList.remove('selected'));
-    placeSocrates(null);
-  });
-  document.addEventListener('click', event => {
-    const choiceButton = event.target.closest('.choice-group .chip');
-    if (choiceButton) return handleChoice(choiceButton);
-    const multiButton = event.target.closest('.multi-group .chip');
-    if (multiButton) return handleMulti(multiButton);
-    const toggleButton = event.target.closest('[data-toggle]');
-    if (toggleButton) return handleToggle(toggleButton);
-  });
+  $('#resetButton').addEventListener('click', () => { if (confirm('Clear all data and start a new PRF?')) location.reload(); });
+  $('#pcSelect').addEventListener('change', () => $('#pcOtherWrap').classList.toggle('hidden', val('pcSelect') !== 'Other'));
+  $('#capacityStatus').addEventListener('change', handleCapacityDisplay);
+  $('#worseningMode').addEventListener('change', () => $('#customWorsening').classList.toggle('hidden', val('worseningMode') !== 'Custom'));
+  $('#conveyanceDecision').addEventListener('change', () => $('#nonConveyedFields').classList.toggle('hidden', val('conveyanceDecision') === 'Conveyed'));
   $('#generateOeButton').addEventListener('click', generateOe);
   $('#clearOeButton').addEventListener('click', () => $('#oeText').value = '');
   $('#refreshButton').addEventListener('click', generateOutput);
   $('#copyButton').addEventListener('click', copyOutput);
-  $('#resetButton').addEventListener('click', () => { if (confirm('Clear all data and start a new PRF?')) location.reload(); });
-}
 
-function placeSocrates(target) {
-  const block = $('#socratesBlock');
-  const parent = target ? $(`#socTarget-${target}`) : $('#socratesHome');
-  parent.append(block);
-  if (target) $(`#ros-${target}`)?.classList.add('open');
-}
-
-function chip(label) {
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.className = 'chip';
-  button.textContent = label;
-  button.dataset.value = label;
-  return button;
-}
-
-function handleChoice(button) {
-  const group = button.closest('.choice-group');
-  $$('.chip', group).forEach(item => item.classList.remove('selected'));
-  button.classList.add('selected');
-  state[group.dataset.state] = button.dataset.value;
-}
-
-function handleMulti(button) {
-  const key = button.closest('.multi-group').dataset.state;
-  const value = button.dataset.value;
-  button.classList.toggle('selected');
-  if (state[key].has(value)) state[key].delete(value);
-  else state[key].add(value);
-}
-
-function handleToggle(button) {
-  const key = button.dataset.toggle;
-  const value = button.dataset.value;
-  $$(`[data-toggle="${key}"]`).forEach(item => item.classList.remove('selected', 'success', 'danger'));
-  button.classList.add('selected');
-  state[key] = value;
-  if (key === 'previous') $('#prevDetails').classList.toggle('hidden', value !== 'yes');
-  if (key === 'capacity') {
-    $('#capacityChecks').classList.toggle('hidden', value !== 'has');
-    $('#bestInterests').classList.toggle('hidden', value !== 'lacks');
-  }
-  if (key === 'worsening') $('#customWorsening').classList.toggle('hidden', value !== 'custom');
-  if (key === 'conveyance') $('#nonConveyedFields').classList.toggle('hidden', value === 'conveyed');
-}
-
-function switchTab(tab) {
-  state.tab = tab;
-  $$('.tab').forEach(item => item.classList.toggle('active', item.dataset.tab === tab));
-  $$('.panel').forEach(item => item.classList.toggle('active', item.id === `panel-${tab}`));
-  if (tab === 'output') generateOutput();
-}
-
-function updateRosBadge(key) {
-  const hasAbnormal = Object.keys(state.ros).some(id => id.startsWith(`${key}_`) && state.ros[id] === 'abnormal');
-  const badge = $(`#badge-${key}`);
-  badge.classList.toggle('abnormal', hasAbnormal);
-  badge.textContent = hasAbnormal ? 'Abnormal' : 'All normal';
-}
-
-function selectedAbc(sectionKey) {
-  return $$(`[data-abc="${sectionKey}"] .chip`).filter(button => button.classList.contains('selected') || button.classList.contains('abnormal')).map(button => button.textContent);
-}
-
-function buildOaText() {
-  const parts = [state.oaFound];
-  if (val('oaLocation')) parts[0] += ` at ${val('oaLocation')}`;
-  parts.push(state.oaMobility);
-  if (checked('oaNoABC')) parts.push('no immediate ABC concerns on arrival');
-  if (checked('oaConsent')) parts.push('patient consented to assessment');
-  if (val('oaNotes')) parts.push(val('oaNotes'));
-  return `${parts.join('. ')}.`;
-}
-
-function buildAbcdeText() {
-  const lines = [`OA: ${buildOaText()}`];
-  ABCDE.forEach(section => {
-    const findings = selectedAbc(section.key);
-    let line = `${section.key} — ${section.title}: ${findings.length ? findings.join(', ') : 'assessed'}`;
-    const vitals = (section.vitals || []).map(([id, label]) => val(id) ? `${label.replace(/\s.*$/, '')} ${val(id)}` : '').filter(Boolean);
-    if (vitals.length) line += `. ${vitals.join(', ')}`;
-    if (val(section.notes)) line += `. ${val(section.notes)}`;
-    lines.push(`${line}.`);
+  document.addEventListener('click', event => {
+    const option = event.target.closest('.multi-group .square-btn');
+    if (option) return toggleMulti(option);
+    const abc = event.target.closest('.abc-chip');
+    if (abc) return toggleAbc(abc);
+    const ros = event.target.closest('.ros-chip');
+    if (ros) return toggleRos(ros);
+    const mapTab = event.target.closest('[data-map-mode]');
+    if (mapTab) return setMapMode(mapTab.dataset.mapMode);
+    const part = event.target.closest('.body-part');
+    if (part) return toggleBodyPart(part);
+    const remove = event.target.closest('[data-remove-part]');
+    if (remove) return removeBodyPart(remove.dataset.removePart, remove.dataset.partType);
   });
-  return lines.join('\n');
 }
 
-function rosLine(key) {
-  return ROS[key].items.map(([id,, , normal, abnormal]) => state.ros[`${key}_${id}`] === 'abnormal' ? abnormal : normal).join('. ') + '.';
+function switchTab(tabName) {
+  $$('.tab').forEach(tab => tab.classList.toggle('active', tab.dataset.tab === tabName));
+  $$('.panel').forEach(panel => panel.classList.toggle('active', panel.id === `panel-${tabName}`));
+  if (tabName === 'output') generateOutput();
+}
+
+function toggleMulti(button) {
+  const stateKey = button.closest('.multi-group').dataset.state;
+  const set = state[stateKey];
+  const value = button.dataset.value;
+  if (set.has(value)) { set.delete(value); button.classList.remove('selected'); }
+  else { set.add(value); button.classList.add('selected'); }
+}
+
+function toggleAbc(button) {
+  if (button.dataset.type === 'normal') button.classList.toggle('selected');
+  else button.classList.toggle('abnormal');
+}
+
+function toggleRos(button) {
+  const isAbnormal = state.ros[button.dataset.stateId] === 'abnormal';
+  state.ros[button.dataset.stateId] = isAbnormal ? 'normal' : 'abnormal';
+  button.classList.toggle('abnormal', !isAbnormal);
+  button.classList.toggle('selected', isAbnormal);
+  button.textContent = isAbnormal ? button.dataset.normal : button.dataset.abnormal;
+  updateRosBadge(button.dataset.section);
+}
+
+function updateRosBadge(section) {
+  const hasAbnormal = Object.entries(state.ros).some(([key, value]) => key.startsWith(`${section}_`) && value === 'abnormal');
+  const badge = $(`#badge-${section}`);
+  badge.textContent = hasAbnormal ? 'Findings' : 'All normal';
+  badge.classList.toggle('flagged', hasAbnormal);
+}
+
+function setMapMode(mode) {
+  state.mapMode = mode;
+  $$('.mini-tab').forEach(btn => btn.classList.toggle('active', btn.dataset.mapMode === mode));
+}
+
+function toggleBodyPart(part) {
+  const targetSet = state.mapMode === 'site' ? state.siteParts : state.radiationParts;
+  const otherSet = state.mapMode === 'site' ? state.radiationParts : state.siteParts;
+  const id = part.id;
+  if (targetSet.has(id)) targetSet.delete(id);
+  else { targetSet.add(id); otherSet.delete(id); }
+  part.classList.toggle('site', state.siteParts.has(id));
+  part.classList.toggle('radiation', state.radiationParts.has(id));
+  updateMapTags();
+}
+
+function removeBodyPart(id, type) {
+  const set = type === 'site' ? state.siteParts : state.radiationParts;
+  set.delete(id);
+  $(`#${CSS.escape(id)}`)?.classList.remove(type);
+  updateMapTags();
+}
+
+function updateMapTags() {
+  renderPartTags('siteTags', state.siteParts, 'site', 'Not selected');
+  renderPartTags('radiationTags', state.radiationParts, 'radiation', 'No radiation selected');
+}
+
+function renderPartTags(containerId, set, type, emptyText) {
+  const container = $(`#${containerId}`);
+  container.innerHTML = '';
+  if (!set.size) { container.textContent = emptyText; return; }
+  set.forEach(id => {
+    const part = $(`#${CSS.escape(id)}`);
+    const tag = document.createElement('span');
+    tag.className = `tag ${type}`;
+    tag.innerHTML = `${part?.dataset.label || id}<button type="button" data-remove-part="${id}" data-part-type="${type}" aria-label="Remove ${part?.dataset.label || id}">×</button>`;
+    container.append(tag);
+  });
+}
+
+function handleCapacityDisplay() {
+  const status = val('capacityStatus');
+  $('#capacityChecks').classList.toggle('hidden', status === 'Lacks capacity' || status === 'Not applicable');
+  $('#bestInterests').classList.toggle('hidden', status !== 'Lacks capacity');
+}
+
+function getSelectedParts(set) {
+  return [...set].map(id => $(`#${CSS.escape(id)}`)?.dataset.label || id).join(', ');
+}
+
+function rosLine(section) {
+  return ROS[section].items.map(([id, normal, abnormal]) => state.ros[`${section}_${id}`] === 'abnormal' ? abnormal : normal).join('. ') + '.';
+}
+
+function abcLine(section) {
+  const values = $$(`[data-abc="${section.key}"]`).filter(button => button.classList.contains('selected') || button.classList.contains('abnormal')).map(button => button.textContent);
+  const vitals = section.vitals.map(([id, label]) => val(id) ? `${label}: ${val(id)}` : null).filter(Boolean);
+  const notes = val(section.notes);
+  return `${section.key} - ${section.title}: ${[...values, ...vitals, notes].filter(Boolean).join(', ') || 'assessed'}.`;
 }
 
 function generateOe() {
-  const gcs = val('gcsScore') || '15';
-  const avpu = val('avpu') || 'A';
-  const lines = [
-    'OE:', '',
-    `OA: ${buildOaText()}`, '',
-    buildAbcdeText(), '',
-    `General: Patient alert, ${state.ros.neuro_aox4 === 'abnormal' ? 'not fully orientated' : 'AOx4'}, GCS ${gcs}/15, AVPU ${avpu}.`,
-    `Resp: ${rosLine('resp')} On auscultation: ${val('respAus') || 'equal and clear bilateral air entry'}.`,
-    `CVS: ${rosLine('cvs')} ECG: ${val('ecg') || 'not documented'}.`,
-    `Abdo/GI: ${rosLine('gi')} Bowel sounds ${val('bowelSounds') || 'not documented'}.`,
+  const oe = [
+    'OE:',
+    '',
+    `OA: ${val('oaFound')}${val('oaLocation') ? ` at ${val('oaLocation')}` : ''}; ${val('oaMobility').toLowerCase()}. ${isChecked('oaConsent') ? 'Consented to assessment. ' : ''}${isChecked('oaNoABC') ? 'No immediate ABC concerns. ' : ''}${val('oaNotes')}`.trim(),
+    '',
+    ABCDE.map(abcLine).join('\n'),
+    '',
+    `Resp: ${rosLine('resp')} ${val('respAus') ? `Auscultation: ${val('respAus')}.` : ''}`,
+    `CVS: ${rosLine('cvs')} ${val('ecg') ? `ECG: ${val('ecg')}.` : ''}`,
     `Neuro: ${rosLine('neuro')}`,
+    `Abdo/GI: ${rosLine('gi')} ${val('bowelSounds') ? `Bowel sounds: ${val('bowelSounds')}.` : ''}`,
+    `Urinary: ${rosLine('urine')}`,
     `Skin: ${rosLine('integ')}`,
     `MSK: ${rosLine('msk')}`,
-  ];
-  $('#oeText').value = lines.join('\n');
+  ].join('\n');
+  $('#oeText').value = oe;
 }
 
 function generateOutput() {
-  const pc = val('pcCustom') || state.pc || '(not specified)';
+  const pc = val('pcSelect') === 'Other' ? val('pcOther') || 'Other' : val('pcSelect') || 'Not specified';
+  const site = getSelectedParts(state.siteParts) || 'Not localised';
+  const radiation = getSelectedParts(state.radiationParts) || 'No radiation selected';
+  const worseningText = buildWorseningText();
   const output = [];
-  output.push('PRESENTING COMPLAINT:', pc, '');
-  output.push('HISTORY OF PRESENTING COMPLAINT:');
-  output.push([val('hpcEvents'), checked('noTravel') ? 'No recent travel.' : ''].filter(Boolean).join(' ') || 'Not documented.');
-  output.push('', 'SOCRATES:');
-  output.push(`• Site: ${val('painSite') || 'Not documented'}`);
-  output.push(`• Onset: ${[val('onsetType'), val('onsetDuration')].filter(Boolean).join(', ') || 'Not documented'}`);
-  output.push(`• Character: ${list(state.character) || 'Not characterised'}`);
-  output.push(`• Radiation: ${val('radiation') || 'Not documented'}`);
-  output.push(`• Associated symptoms: ${list(state.associated) || 'None reported'}`);
-  output.push(`• Timing: ${val('timing') || 'Not documented'}`);
-  output.push(`• Exacerbating factors: ${list(state.exacerbating) || 'None identified'}`);
-  output.push(`• Relieving factors: ${list(state.relieving) || 'None identified'}`);
-  output.push(`• Severity: ${val('severity') || 'Not documented'}`);
-  output.push('', `ALLERGIES: ${checked('nkda') ? 'NKDA' : val('allergies') || 'Not documented'}`);
-  output.push(`MEDICATIONS: ${checked('noMeds') ? 'None reported' : val('medications') || 'Not documented'}`);
-  output.push(`PAST MEDICAL HISTORY: ${checked('noPmh') ? 'No significant PMH reported' : val('pmh') || 'Not documented'}`);
-  output.push(`LAST ORAL INTAKE: ${[val('loiWhat'), val('loiTime') && `at ${val('loiTime')}`].filter(Boolean).join(' ') || 'Not documented'}`);
-  output.push(`PREVIOUS EPISODES: ${state.previous === 'yes' ? `Yes — ${val('prevDetails') || 'details not documented'}` : 'No'}`);
-  output.push('', divider('PRIMARY SURVEY'), buildAbcdeText());
-  output.push('', divider('REVIEW OF SYSTEMS'));
-  Object.keys(ROS).forEach(key => {
-    output.push('', `${ROS[key].title}:`, rosLine(key));
-    const notesId = `${key === 'resp' ? 'resp' : key}Notes`;
-    if (val(notesId)) output.push(val(notesId));
-  });
-  if (val('oeText')) output.push('', divider('SECONDARY SURVEY / ON EXAMINATION'), val('oeText'));
-  output.push('', divider('WORSENING ADVICE'), worseningText());
-  const capacity = capacityText();
-  if (capacity) output.push('', divider('MENTAL CAPACITY ASSESSMENT'), capacity);
-  output.push('', divider('CONVEYANCE DECISION'), conveyanceText());
-  $('#outputText').textContent = output.join('\n');
+
+  output.push(`PRESENTING COMPLAINT:\n${pc}`);
+  output.push(`HISTORY OF PRESENTING COMPLAINT:\n${val('hpcEvents') || 'Not documented'}${isChecked('noTravel') ? '\nNo recent travel.' : ''}`);
+  output.push(`PAIN ASSESSMENT / SOCRATES:\nSite: ${site}\nOnset: ${val('onsetType') || 'Not documented'}${val('onsetDuration') ? `, duration ${val('onsetDuration')}` : ''}\nCharacter: ${listSet(state.character, 'Not characterised')}\nRadiation: ${radiation}\nAssociated symptoms: ${listSet(state.associated, 'None reported')}\nTiming: ${val('timingSelect') || 'Not documented'}\nExacerbating factors: ${listSet(state.exacerbating, 'None identified')}\nRelieving factors: ${listSet(state.relieving, 'None identified')}\nSeverity: ${val('severity') || 'Not documented'}`);
+  output.push(`BACKGROUND:\nAllergies: ${isChecked('nkda') ? 'NKDA' : val('allergies') || 'Not documented'}\nMedications: ${isChecked('noMeds') ? 'No regular medications' : val('medications') || 'Not documented'}\nPMH: ${isChecked('noPmh') ? 'No significant past medical history' : val('pmh') || 'Not documented'}\nLast oral intake: ${[val('loiWhat'), val('loiTime')].filter(Boolean).join(' at ') || 'Not documented'}\nPrevious episodes: ${val('prevDetails') || 'Not documented'}`);
+  output.push(`PRIMARY SURVEY:\nOA: ${val('oaFound')}${val('oaLocation') ? ` at ${val('oaLocation')}` : ''}; ${val('oaMobility').toLowerCase()}.\n${ABCDE.map(abcLine).join('\n')}`);
+  output.push(`REVIEW OF SYSTEMS:\nRespiratory: ${rosLine('resp')} ${val('coughType')}. ${val('respAus') ? `Auscultation: ${val('respAus')}.` : ''} ${val('respNotes')}\nCardiovascular: ${rosLine('cvs')} ${val('bpStatus')}. ${val('ecg') ? `ECG: ${val('ecg')}.` : ''} ${val('cvsNotes')}\nNeurological: ${rosLine('neuro')} ${val('neuroNotes')}\nGastrointestinal: ${rosLine('gi')} ${val('bowelSounds') ? `Bowel sounds: ${val('bowelSounds')}.` : ''} ${val('giNotes')}\nUrinary: ${rosLine('urine')} ${val('urineNotes')}\nIntegumentary: ${rosLine('integ')} ${val('integNotes')}\nMusculoskeletal: ${rosLine('msk')} ${val('mskNotes')}`);
+  if (val('oeText')) output.push(`SECONDARY SURVEY / ON EXAMINATION:\n${val('oeText')}`);
+  output.push(`WORSENING ADVICE:\n${worseningText}`);
+  output.push(`MENTAL CAPACITY / CONSENT:\n${buildCapacityText()}`);
+  output.push(`CONVEYANCE DECISION:\n${buildConveyanceText()}`);
+
+  $('#outputText').textContent = output.join('\n\n' + '─'.repeat(46) + '\n\n');
 }
 
-function list(set) { return [...set].join(', '); }
-function divider(label) { return `${'─'.repeat(46)}\n${label}\n${'─'.repeat(46)}`; }
+function listSet(set, fallback) {
+  return set.size ? [...set].join(', ') : fallback;
+}
 
-function worseningText() {
-  const standard = 'Patient advised that if any new or worsening symptoms develop — including increased pain, difficulty breathing, chest pain, severe dizziness/fainting, weakness, confusion, difficulty speaking, worsening consciousness, uncontrolled bleeding, or signs of infection — to seek further advice via 111 or call 999 in an emergency.';
-  const head = 'Head injury advice given: call 999 for repeated vomiting, worsening headache, new confusion, increasing drowsiness/agitation, slurred speech, seizure, or new weakness/numbness.';
-  if (state.worsening === 'head') return head;
-  if (state.worsening === 'both') return `${standard}\n\n${head}`;
-  if (state.worsening === 'none') return 'Not applicable / not given.';
-  if (state.worsening === 'custom') return val('customWorsening') || 'Custom worsening advice given.';
+function buildWorseningText() {
+  const mode = val('worseningMode');
+  const standard = 'Patient given safety-netting advice and advised to seek further help via 111 or 999 if symptoms worsen or new concerning symptoms develop.';
+  const head = 'Head injury advice given, including to call 999 for repeated vomiting, worsening headache, confusion, drowsiness, seizure, slurred speech, or new limb weakness.';
+  if (mode === 'Head injury') return head;
+  if (mode === 'Standard and head injury') return `${standard}\n${head}`;
+  if (mode === 'Not applicable') return 'Not applicable.';
+  if (mode === 'Custom') return val('customWorsening') || 'Custom worsening advice given.';
   return standard;
 }
 
-function capacityText() {
-  if (state.capacity === 'na') return '';
-  if (state.capacity === 'lacks') return `Patient assessed as lacking capacity regarding this decision at this time. Best interests decision documented. ${val('bestInterests')}`.trim();
-  const pass = checked('mcaUnderstand') && checked('mcaRetain') && checked('mcaWeigh') && checked('mcaCommunicate');
-  return pass ? 'Patient assessed as having capacity for decisions regarding care: able to understand, retain, weigh/use relevant information, and communicate their decision.' : 'Capacity assessment incomplete/failed — review, escalate, and document rationale.';
+function buildCapacityText() {
+  const status = val('capacityStatus');
+  if (status === 'Not applicable') return 'Not applicable.';
+  if (status === 'Lacks capacity') return `Patient assessed as lacking capacity for the relevant decision at this time. Best interests decision documented. ${val('bestInterests')}`.trim();
+  const tests = [isChecked('mcaUnderstand') && 'understand', isChecked('mcaRetain') && 'retain', isChecked('mcaWeigh') && 'weigh/use', isChecked('mcaCommunicate') && 'communicate'].filter(Boolean);
+  return `Patient assessed as having capacity for the relevant decision. MCA elements documented: able to ${tests.join(', ')} information.`;
 }
 
-function conveyanceText() {
+function buildConveyanceText() {
+  const decision = val('conveyanceDecision');
   const notes = val('conveyanceNotes');
-  if (state.conveyance === 'conveyed') return `Patient conveyed to hospital.${notes ? ' ' + notes : ''}`;
-  const base = state.conveyance === 'declined' ? 'Patient declined conveyance after assessment and discussion of risks.' : 'Patient treated/assessed at scene and left at home following assessment.';
-  const safety = [checked('riskExplained') && 'risks explained', checked('alternativesDiscussed') && 'alternatives discussed', checked('understandsRisk') && 'patient understands risks', checked('canRecontact') && 'advised may call 999/111 if needed'].filter(Boolean).join('; ');
-  return [base, list(state.referrals) && `Referred/signposted to: ${list(state.referrals)}.`, val('followUp'), safety && `Safety netting: ${safety}.`, notes].filter(Boolean).join(' ');
+  if (decision === 'Conveyed') return `Patient conveyed to hospital.${notes ? ' ' + notes : ''}`;
+  const checks = [isChecked('riskExplained') && 'risks explained', isChecked('alternativesDiscussed') && 'alternatives discussed', isChecked('understandsRisk') && 'patient understands risks', isChecked('canRecontact') && 'advised they can recontact 999/111'].filter(Boolean).join('; ');
+  return `${decision}. Referred/signposted to: ${listSet(state.referrals, 'not documented')}. ${val('followUp') ? val('followUp') + '. ' : ''}${checks ? `Safety netting: ${checks}.` : ''}${notes ? ' ' + notes : ''}`.trim();
 }
 
 async function copyOutput() {
   generateOutput();
   try { await navigator.clipboard.writeText($('#outputText').textContent); }
   catch {
-    const box = document.createElement('textarea');
-    box.value = $('#outputText').textContent;
-    box.style.position = 'fixed'; box.style.opacity = '0';
-    document.body.append(box); box.select(); document.execCommand('copy'); box.remove();
+    const textArea = document.createElement('textarea');
+    textArea.value = $('#outputText').textContent;
+    document.body.append(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    textArea.remove();
   }
   $('#toast').classList.add('show');
   setTimeout(() => $('#toast').classList.remove('show'), 1800);
