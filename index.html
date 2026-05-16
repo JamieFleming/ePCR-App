@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#4a8c76" />
+  <title>ePRF Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="app-icon" aria-hidden="true">🚑</div>
+    <div>
+      <h1>ePRF Assistant</h1>
+      <p>Clinical documentation support tool</p>
+    </div>
+    <button class="pill-button ghost" id="resetButton" type="button">New PRF</button>
+  </header>
+
+  <nav class="tabs" aria-label="ePRF sections">
+    <button class="tab active" type="button" data-tab="pc"><span>📋</span>PC / HPC</button>
+    <button class="tab" type="button" data-tab="primary"><span>🔍</span>Primary</button>
+    <button class="tab" type="button" data-tab="ros"><span>🫀</span>ROS / Plan</button>
+    <button class="tab" type="button" data-tab="output"><span>📄</span>Output</button>
+  </nav>
+
+  <main>
+    <section class="panel active" id="panel-pc">
+      <article class="notice green">
+        This tool is for drafting clear records only. Use local trust policies, JRCALC/NICE guidance, and clinical judgement for decisions.
+      </article>
+
+      <article class="card">
+        <header class="card-header"><h2>Presenting Complaint</h2><span>PC</span></header>
+        <div class="card-body">
+          <label class="field-label">Common presentations</label>
+          <div class="chip-row" id="pcChips"></div>
+          <label class="field-label" for="pcCustom">Free-text / custom complaint</label>
+          <input id="pcCustom" type="text" placeholder="e.g. Generalised weakness, wound review" />
+        </div>
+      </article>
+
+      <article class="card">
+        <header class="card-header"><h2>History of Presenting Complaint</h2><span>HPC</span></header>
+        <div class="card-body">
+          <label class="field-label" for="hpcEvents">Events leading up to incident</label>
+          <textarea id="hpcEvents" rows="4" placeholder="Include timeline, mechanism, symptoms, relevant negatives, actions taken before arrival..."></textarea>
+          <label class="check-row"><input type="checkbox" id="noTravel" checked /> No recent travel</label>
+        </div>
+      </article>
+
+      <div id="socratesHome"></div>
+
+      <article class="card">
+        <header class="card-header"><h2>Patient Background</h2><span>Hx</span></header>
+        <div class="card-body grid-2">
+          <div>
+            <label class="check-row"><input type="checkbox" id="nkda" checked /> NKDA</label>
+            <label class="field-label" for="allergies">Allergies</label>
+            <input id="allergies" type="text" placeholder="e.g. Penicillin – rash" />
+          </div>
+          <div>
+            <label class="check-row"><input type="checkbox" id="noMeds" checked /> No regular medications</label>
+            <label class="field-label" for="medications">Current medications</label>
+            <textarea id="medications" rows="2" placeholder="Medication, dose, frequency"></textarea>
+          </div>
+          <div>
+            <label class="check-row"><input type="checkbox" id="noPmh" checked /> No significant PMH</label>
+            <label class="field-label" for="pmh">Past medical history</label>
+            <textarea id="pmh" rows="2" placeholder="Conditions, surgery, admissions"></textarea>
+          </div>
+          <div>
+            <label class="field-label" for="loiWhat">Last oral intake</label>
+            <div class="split">
+              <input id="loiWhat" type="text" placeholder="Food / fluids" />
+              <input id="loiTime" type="time" />
+            </div>
+            <label class="field-label">Has this happened before?</label>
+            <div class="segmented" role="group" aria-label="Previous episodes">
+              <button type="button" data-toggle="previous" data-value="no" class="selected danger">No</button>
+              <button type="button" data-toggle="previous" data-value="yes">Yes</button>
+            </div>
+            <textarea id="prevDetails" class="hidden" rows="2" placeholder="Frequency, prior diagnosis, outcome"></textarea>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel" id="panel-primary">
+      <article class="card">
+        <header class="card-header"><h2>On Arrival / Primary Survey</h2><span>ABCDE</span></header>
+        <div class="card-body">
+          <label class="field-label">First contact</label>
+          <div class="chip-row choice-group" data-state="oaFound">
+            <button type="button" data-value="Greeted by patient" class="chip selected">Greeted by patient</button>
+            <button type="button" data-value="Found seated in chair" class="chip">Found in chair</button>
+            <button type="button" data-value="Found in bed" class="chip">Found in bed</button>
+            <button type="button" data-value="Found on floor" class="chip">Found on floor</button>
+            <button type="button" data-value="Found standing" class="chip">Found standing</button>
+          </div>
+          <label class="field-label" for="oaLocation">Location</label>
+          <input id="oaLocation" type="text" placeholder="e.g. living room" />
+          <label class="field-label">Mobility</label>
+          <div class="chip-row choice-group" data-state="oaMobility">
+            <button type="button" data-value="mobilised independently" class="chip selected">Independent</button>
+            <button type="button" data-value="mobilised with assistance" class="chip">With assistance</button>
+            <button type="button" data-value="non-mobile / carried" class="chip">Non-mobile</button>
+          </div>
+          <div class="grid-2 compact">
+            <label class="check-row"><input type="checkbox" id="oaConsent" checked /> Consented to assessment</label>
+            <label class="check-row"><input type="checkbox" id="oaNoABC" checked /> No immediate ABC concerns</label>
+          </div>
+          <label class="field-label" for="oaNotes">Additional OA notes</label>
+          <textarea id="oaNotes" rows="2"></textarea>
+        </div>
+
+        <div class="abcde" id="abcdeBlocks"></div>
+      </article>
+    </section>
+
+    <section class="panel" id="panel-ros">
+      <article class="card">
+        <header class="card-header"><h2>Review of Systems</h2><span>ROS</span></header>
+        <div id="rosSections"></div>
+      </article>
+
+      <article class="card">
+        <header class="card-header"><h2>Secondary Survey / On Examination</h2><span>OE</span></header>
+        <div class="card-body">
+          <div class="toolbar">
+            <button class="primary-action" id="generateOeButton" type="button">Generate OE from findings</button>
+            <button class="secondary-action" id="clearOeButton" type="button">Clear</button>
+          </div>
+          <textarea id="oeText" rows="10" placeholder="On examination / secondary survey..."></textarea>
+        </div>
+      </article>
+
+      <article class="card">
+        <header class="card-header"><h2>Mental Capacity / Consent</h2><span>MCA</span></header>
+        <div class="card-body">
+          <div class="segmented" role="group" aria-label="Capacity">
+            <button type="button" data-toggle="capacity" data-value="has" class="selected success">Has capacity</button>
+            <button type="button" data-toggle="capacity" data-value="lacks">Lacks capacity</button>
+            <button type="button" data-toggle="capacity" data-value="na">N/A</button>
+          </div>
+          <div id="capacityChecks">
+            <label class="check-row"><input type="checkbox" id="mcaUnderstand" checked /> Understands relevant information</label>
+            <label class="check-row"><input type="checkbox" id="mcaRetain" checked /> Retains information long enough</label>
+            <label class="check-row"><input type="checkbox" id="mcaWeigh" checked /> Weighs/uses information to decide</label>
+            <label class="check-row"><input type="checkbox" id="mcaCommunicate" checked /> Communicates decision</label>
+          </div>
+          <textarea id="bestInterests" class="hidden" rows="3" placeholder="Best interests decision, who was consulted, rationale"></textarea>
+        </div>
+      </article>
+
+      <article class="card">
+        <header class="card-header"><h2>Worsening Advice & Conveyance</h2><span>Plan</span></header>
+        <div class="card-body">
+          <label class="field-label">Worsening advice</label>
+          <div class="segmented wrap" role="group" aria-label="Worsening advice">
+            <button type="button" data-toggle="worsening" data-value="standard" class="selected success">Standard</button>
+            <button type="button" data-toggle="worsening" data-value="head">Head injury</button>
+            <button type="button" data-toggle="worsening" data-value="both">Both</button>
+            <button type="button" data-toggle="worsening" data-value="none">N/A</button>
+            <button type="button" data-toggle="worsening" data-value="custom">Custom</button>
+          </div>
+          <textarea id="customWorsening" class="hidden" rows="3" placeholder="Custom advice given"></textarea>
+
+          <label class="field-label">Conveyance decision</label>
+          <div class="segmented wrap" role="group" aria-label="Conveyance decision">
+            <button type="button" data-toggle="conveyance" data-value="conveyed" class="selected success">Conveyed</button>
+            <button type="button" data-toggle="conveyance" data-value="left">Treated & left</button>
+            <button type="button" data-toggle="conveyance" data-value="declined">Declined conveyance</button>
+          </div>
+          <div id="nonConveyedFields" class="hidden">
+            <label class="field-label">Referred / signposted to</label>
+            <div class="chip-row multi-group" data-state="referrals">
+              <button type="button" data-value="GP" class="chip">GP</button>
+              <button type="button" data-value="111" class="chip">111</button>
+              <button type="button" data-value="Urgent treatment centre" class="chip">UTC</button>
+              <button type="button" data-value="Pharmacy" class="chip">Pharmacy</button>
+              <button type="button" data-value="Community nursing" class="chip">Community nursing</button>
+              <button type="button" data-value="Self-care" class="chip">Self-care</button>
+            </div>
+            <label class="field-label" for="followUp">Follow-up / arrangements</label>
+            <input id="followUp" type="text" placeholder="e.g. GP appointment arranged" />
+            <div class="grid-2 compact">
+              <label class="check-row"><input type="checkbox" id="riskExplained" checked /> Risks explained</label>
+              <label class="check-row"><input type="checkbox" id="alternativesDiscussed" checked /> Alternatives discussed</label>
+              <label class="check-row"><input type="checkbox" id="understandsRisk" checked /> Patient understands risks</label>
+              <label class="check-row"><input type="checkbox" id="canRecontact" checked /> 999/111 recontact advised</label>
+            </div>
+          </div>
+          <label class="field-label" for="conveyanceNotes">Conveyance notes</label>
+          <textarea id="conveyanceNotes" rows="2" placeholder="Destination, handover, reason for non-conveyance/refusal"></textarea>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel" id="panel-output">
+      <article class="card">
+        <header class="card-header"><h2>Generated PRF</h2><span>Output</span></header>
+        <div class="card-body">
+          <div class="toolbar">
+            <button class="primary-action" id="copyButton" type="button">Generate & Copy</button>
+            <button class="secondary-action" id="refreshButton" type="button">Refresh Preview</button>
+          </div>
+          <pre id="outputText" class="output">Tap “Refresh Preview” or “Generate & Copy”.</pre>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <template id="socratesTemplate">
+    <article class="card socrates-card" id="socratesBlock">
+      <header class="card-header"><h2>SOCRATES Pain Assessment</h2><span>Pain</span></header>
+      <div class="card-body">
+        <div class="grid-2">
+          <div>
+            <label class="field-label" for="painSite">Site</label>
+            <input id="painSite" type="text" placeholder="e.g. central chest, LUQ abdomen" />
+          </div>
+          <div>
+            <label class="field-label" for="radiation">Radiation</label>
+            <input id="radiation" type="text" placeholder="e.g. left arm / no radiation" />
+          </div>
+          <div>
+            <label class="field-label" for="onsetType">Onset</label>
+            <select id="onsetType"><option value="">Select</option><option>Sudden</option><option>Gradual</option><option>Insidious</option></select>
+          </div>
+          <div>
+            <label class="field-label" for="onsetDuration">Duration</label>
+            <input id="onsetDuration" type="text" placeholder="e.g. 30 minutes" />
+          </div>
+        </div>
+        <label class="field-label">Character</label><div class="chip-row multi-group" data-state="character"></div>
+        <label class="field-label">Associated symptoms</label><div class="chip-row multi-group" data-state="associated"></div>
+        <div class="grid-2">
+          <div><label class="field-label" for="timing">Timing</label><input id="timing" type="text" placeholder="constant / intermittent" /></div>
+          <div><label class="field-label" for="severity">Severity</label><input id="severity" type="text" placeholder="e.g. 5/10 now, 8/10 worst" /></div>
+        </div>
+        <label class="field-label">Exacerbating factors</label><div class="chip-row multi-group" data-state="exacerbating"></div>
+        <label class="field-label">Relieving factors</label><div class="chip-row multi-group" data-state="relieving"></div>
+      </div>
+    </article>
+  </template>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">Copied ✓</div>
+  <script src="app.js" defer></script>
+</body>
+</html>
