@@ -706,7 +706,36 @@ const ROS = {
 	},
 };
 
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener("DOMContentLoaded", () => {
+	init();
+	initDashboard();
+});
+
+function showDashboard() {
+	$("#dashboard")?.classList.remove("hidden");
+	$("#prf-tool")?.classList.add("hidden");
+	$("#backButton")?.classList.add("hidden");
+	$("#resetButton")?.classList.add("hidden");
+}
+
+function showFeature(feature) {
+	if (feature === "eprf") {
+		$("#dashboard")?.classList.add("hidden");
+		$("#prf-tool")?.classList.remove("hidden");
+		$("#backButton")?.classList.remove("hidden");
+		$("#resetButton")?.classList.remove("hidden");
+	}
+}
+
+function initDashboard() {
+	$$(".feature-card:not(.coming-soon)").forEach((card) => {
+		card.addEventListener("click", () => showFeature(card.dataset.feature));
+		card.addEventListener("keydown", (e) => {
+			if (e.key === "Enter" || e.key === " ") showFeature(card.dataset.feature);
+		});
+	});
+	$("#backButton")?.addEventListener("click", showDashboard);
+}
 
 function init() {
 	buildOptionButtons();

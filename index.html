@@ -24,6 +24,7 @@
 	</head>
 	<body>
 		<header class="app-header">
+			<button class="back-button hidden" id="backButton" type="button" aria-label="Back to dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg> Back</button>
 			<!-- <div class="brand-mark" aria-hidden="true">
       <svg viewBox="0 0 32 32"><path d="M6 20V10.8A2.8 2.8 0 0 1 8.8 8h10.4a2.8 2.8 0 0 1 2.8 2.8V20"/><path d="M22 13h3.6l3.4 4v3h-7"/><path d="M11 23.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Zm13 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/><path d="M14 11v6M11 14h6"/></svg>
     </div> -->
@@ -37,12 +38,125 @@
 				<h1>CrewMate</h1>
 				<p>Save Fives Not Lives</p>
 			</div>
-			<button class="ghost-button" id="resetButton" type="button">
+			<button class="ghost-button hidden" id="resetButton" type="button">
 				New PRF
 			</button>
 		</header>
 
-		<nav class="tabs" aria-label="Main sections">
+		<!-- Dashboard -->
+		<div id="dashboard">
+			<div class="dashboard-intro">
+				<h2>What would you like to do?</h2>
+				<p>Select a tool to get started</p>
+			</div>
+			<div class="dashboard-grid">
+
+				<!-- ePRF Assistant — featured full-width -->
+				<div class="feature-card featured" data-feature="eprf" role="button" tabindex="0">
+					<div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="3.5" rx="1.2"/><path d="M16.5 3.5H18a2 2 0 0 1 2 2V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5.5a2 2 0 0 1 2-2h1.5"/><line x1="8.5" y1="12" x2="15.5" y2="12"/><line x1="8.5" y1="16" x2="13" y2="16"/></svg></div>
+					<div class="card-body">
+						<h3 class="card-title">ePRF Assistant</h3>
+						<p class="card-desc">Full patient documentation — history, assessment, interventions and handover</p>
+						<span class="card-badge live" style="margin-top:8px">Live</span>
+					</div>
+					<div class="card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+				</div>
+
+				<!-- Resp Timer -->
+				<div class="feature-card coming-soon" data-feature="resp-timer">
+					<div class="card-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.5" r="7.5"/><polyline points="12 10 12 13.5 14.5 16"/><line x1="10" y1="2.5" x2="14" y2="2.5"/><line x1="12" y1="2.5" x2="12" y2="6"/></svg></div>
+					<div class="card-body">
+						<h3 class="card-title">Resp Timer</h3>
+						<p class="card-desc">Count and time respiratory rates accurately</p>
+					</div>
+					<span class="card-badge soon">Coming soon</span>
+				</div>
+
+				<!-- NEWS2 Score -->
+				<div class="feature-card coming-soon" data-feature="news2">
+					<div class="card-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="20" x2="21" y2="20"/><rect x="4" y="14" width="3.5" height="6" rx="0.8"/><rect x="10.25" y="9" width="3.5" height="11" rx="0.8"/><rect x="16.5" y="4" width="3.5" height="16" rx="0.8"/></svg></div>
+					<div class="card-body">
+						<h3 class="card-title">NEWS2 Score</h3>
+						<p class="card-desc">National Early Warning Score calculator with auto-escalation</p>
+					</div>
+					<span class="card-badge soon">Coming soon</span>
+				</div>
+
+				<!-- Obs Recorder -->
+				<div class="feature-card coming-soon" data-feature="obs-recorder">
+					<div class="card-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 12 5.5 12 7.5 6 10.5 18 13 9 15 14 17 12 22 12"/></svg></div>
+					<div class="card-body">
+						<h3 class="card-title">Obs Recorder</h3>
+						<p class="card-desc">Track and trend vital signs over time on scene</p>
+					</div>
+					<span class="card-badge soon">Coming soon</span>
+				</div>
+
+				<!-- METHANE -->
+				<div class="feature-card coming-soon" data-feature="methane">
+					<div class="card-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+					<div class="card-body">
+						<h3 class="card-title">METHANE</h3>
+						<p class="card-desc">Major incident declaration and communication tool</p>
+					</div>
+					<span class="card-badge soon">Coming soon</span>
+				</div>
+
+				<!-- Scoring Systems -->
+				<div class="feature-card coming-soon" data-feature="scoring">
+					<div class="card-icon indigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+					<div class="card-body">
+						<h3 class="card-title">Scoring Systems</h3>
+						<p class="card-desc">GCS, CPSS, PEARL, APGAR and other clinical scores</p>
+					</div>
+					<span class="card-badge soon">Coming soon</span>
+				</div>
+
+				<!-- Falls Guide -->
+				<div class="feature-card coming-soon" data-feature="falls-guide">
+					<div class="card-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg></div>
+					<div class="card-body">
+						<h3 class="card-title">Falls Guide</h3>
+						<p class="card-desc">Falls risk assessment guidance and interventions</p>
+					</div>
+					<span class="card-badge soon">Coming soon</span>
+				</div>
+
+				<!-- Acronyms & Definitions -->
+				<div class="feature-card coming-soon" data-feature="acronyms">
+					<div class="card-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="13" y2="11"/></svg></div>
+					<div class="card-body">
+						<h3 class="card-title">Acronyms</h3>
+						<p class="card-desc">Clinical acronyms, definitions and terminology reference</p>
+					</div>
+					<span class="card-badge soon">Coming soon</span>
+				</div>
+
+				<!-- Drug Finder -->
+				<div class="feature-card coming-soon" data-feature="drug-finder">
+					<div class="card-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20.5L3.5 13.5a5 5 0 1 1 7-7l7 7a5 5 0 1 1-7 7z"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg></div>
+					<div class="card-body">
+						<h3 class="card-title">Drug Finder</h3>
+						<p class="card-desc">Quick reference for drugs, doses, routes and indications</p>
+					</div>
+					<span class="card-badge soon">Coming soon</span>
+				</div>
+
+				<!-- Paediatric PRF -->
+				<div class="feature-card coming-soon" data-feature="paeds-prf">
+					<div class="card-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3.5"/><path d="M3 21v-1a6 6 0 0 1 12 0v1"/><line x1="18" y1="9" x2="18" y2="19"/><line x1="13" y1="14" x2="23" y2="14"/></svg></div>
+					<div class="card-body">
+						<h3 class="card-title">Paediatric PRF</h3>
+						<p class="card-desc">Age-appropriate assessment, weight estimation and paeds-specific documentation</p>
+					</div>
+					<span class="card-badge soon">Coming soon</span>
+				</div>
+
+			</div><!-- /.dashboard-grid -->
+		</div><!-- /#dashboard -->
+
+		<div id="prf-tool" class="hidden">
+			<nav class="tabs" aria-label="Main sections">
 			<button class="tab active" data-tab="history" type="button">
 				History
 			</button>
@@ -2116,6 +2230,7 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 			</div>
 		</footer>
 
+		</div><!-- /#prf-tool -->
 		<div class="toast" id="toast">Copied</div>
 		<script src="app.js" defer></script>
 	</body>
