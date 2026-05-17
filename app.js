@@ -365,6 +365,7 @@ function init() {
 	applyWorseningDefault();
 	syncAuscultationOutput();
 	handleConveyanceDisplay();
+	enhanceSectionCards();
 }
 
 function buildOptionButtons() {
@@ -1218,4 +1219,54 @@ async function copySectionById(sectionId) {
 	const text = body?.dataset.plaintext || body?.innerText?.trim();
 
 	if (text) await copyText(text);
+}
+
+function enhanceSectionCards() {
+	const descriptions = {
+		"Presenting Complaint": [
+			"pc",
+			"Record the patient’s main reason for assessment.",
+		],
+		"History of Presenting Complaint": [
+			"hpc",
+			"Events, symptoms and relevant history.",
+		],
+		"Pain Assessment": [
+			"pain",
+			"SOCRATES assessment and pain characteristics.",
+		],
+		Background: ["hx", "Allergies, medications, PMH and relevant background."],
+		"On Arrival": ["default", "First contact, location, consent and mobility."],
+		"Review of Systems": ["default", "System-by-system clinical review."],
+		"Secondary Survey / On Examination": [
+			"default",
+			"Generate or document examination findings.",
+		],
+		"Mental Capacity and Consent": [
+			"default",
+			"Capacity, consent and best interests notes.",
+		],
+		"Worsening Advice": ["default", "Safety-netting and advice given."],
+		Conveyance: ["default", "Destination, transfer and handover details."],
+		"Generated PRF": ["default", "Copy sections into your ePCR."],
+	};
+
+	document.querySelectorAll(".section-card > summary").forEach((summary) => {
+		if (summary.dataset.enhanced === "true") return;
+
+		const title = summary.querySelector("span")?.textContent?.trim();
+		const [icon, desc] = descriptions[title] || [
+			"default",
+			"Complete this section as required.",
+		];
+
+		summary.parentElement.dataset.sectionIcon = icon;
+
+		const titleSpan = summary.querySelector("span");
+		if (titleSpan && !titleSpan.querySelector(".section-desc")) {
+			titleSpan.innerHTML = `${title}<small class="section-desc">${desc}</small>`;
+		}
+
+		summary.dataset.enhanced = "true";
+	});
 }
