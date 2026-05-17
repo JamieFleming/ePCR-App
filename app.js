@@ -38,6 +38,7 @@ const state = {
 	woundInterventions: new Set(),
 	manualHandling: new Set(),
 	otherInterventions: new Set(),
+	clinicalChanges: [],
 	ros: {},
 	respAusc: { normal: true, entries: [] },
 	worseningAuto: true,
@@ -59,23 +60,6 @@ const CONVEY_TRANSFER = [
 	["No escalation en route", "Care escalated en route"],
 	["No clinical change", "Clinical change during conveyance"],
 ];
-
-const PC_WORSENING = {
-	"Chest pain":
-		"Patient advised to call 999 immediately for severe or persistent chest pain, pain radiating to jaw/arm/back, breathlessness, sweating, nausea, or collapse.",
-	"Shortness of breath":
-		"Patient advised to call 999 if breathlessness worsens, they are unable to speak in full sentences, develop chest pain, cyanosis, or reduced consciousness.",
-	"Head injury":
-		"Head injury advice given: call 999 for repeated vomiting, worsening headache, confusion, drowsiness, seizure, slurred speech, or new limb weakness.",
-	"Stroke / FAST positive":
-		"Patient advised to call 999 immediately if any new weakness, facial droop, speech difficulty, or sudden confusion develops.",
-	Seizure:
-		"Patient advised to call 999 if a further seizure occurs, injury is sustained, consciousness does not recover, or breathing difficulty develops.",
-	"Abdominal pain":
-		"Patient advised to seek urgent review if pain worsens, becomes rigid, is associated with vomiting blood, black stools, or fever.",
-	"Allergic reaction":
-		"Patient advised to call 999 for worsening rash, lip/tongue swelling, wheeze, or breathing difficulty.",
-};
 
 const WORSENING_GENERIC = [
 	"chest pain or pressure",
@@ -1043,33 +1027,82 @@ function buildInjuryText() {
 		.join("\n");
 }
 
+function buildButtonGrid(containerId, items, groupAttr, groupKey, valueAttr) {
+	const grid = $(`#${containerId}`);
+	if (!grid) return;
+	items.forEach((item) => {
+		const btn = document.createElement("button");
+		btn.type = "button";
+		btn.className = "square-btn";
+		btn.textContent = item;
+		btn.dataset[groupAttr] = groupKey;
+		btn.dataset[valueAttr] = item;
+		grid.append(btn);
+	});
+}
+
 function buildTreatmentSection() {
-	const buildGrid = (containerId, items, groupKey) => {
-		const grid = $(`#${containerId}`);
-		if (!grid) return;
-		items.forEach((item) => {
-			const btn = document.createElement("button");
-			btn.type = "button";
-			btn.className = "square-btn";
-			btn.textContent = item;
-			btn.dataset.txGroup = groupKey;
-			btn.dataset.txValue = item;
-			grid.append(btn);
-		});
-	};
-	buildGrid("airwayInterventionGrid", TX_AIRWAY, "airway");
-	buildGrid("woundInterventionGrid", TX_WOUND, "wound");
-	buildGrid("manualHandlingGrid", TX_MANUAL, "manual");
-	buildGrid("otherInterventionGrid", TX_OTHER, "other");
+	buildButtonGrid("airwayInterventionGrid", TX_AIRWAY, "txGroup", "airway", "txValue");
+	buildButtonGrid("woundInterventionGrid", TX_WOUND, "txGroup", "wound", "txValue");
+	buildButtonGrid("manualHandlingGrid", TX_MANUAL, "txGroup", "manual", "txValue");
+	buildButtonGrid("otherInterventionGrid", TX_OTHER, "txGroup", "other", "txValue");
 
 	$("#addVaButton")?.addEventListener("click", addIvEntry);
 	$("#addDrugButton")?.addEventListener("click", addDrugEntry);
+	$("#addChangeButton")?.addEventListener("click", addChangeEntry);
 
 	$("#vaType")?.addEventListener("change", () => {
 		const isIv = val("vaType") === "IV Cannula";
 		$("#vaGaugeWrap")?.classList.toggle("hidden", !isIv);
 	});
 }
+
+function makeEntryManager(stateKey, containerId, formatFn, removeAttr) {
+	const render = () => {
+		const root = $(`#${containerId}`);
+		if (!root) return;
+		root.innerHTML = "";
+		state[stateKey].forEach((entry, index) => {
+			const row = document.createElement("div");
+			row.className = "ausc-entry";
+			row.innerHTML = `<span>${formatFn(entry)}</span><button type="button" data-${removeAttr}="${index}" aria-label="Remove">×</button>`;
+			root.append(row);
+		});
+	};
+	const remove = (index) => { state[stateKey].splice(index, 1); render(); };
+	return { render, remove };
+}
+
+const { render: renderIvEntries, remove: removeIvEntry } = makeEntryManager(
+	"ivEntries", "vaEntries",
+	(e) => {
+		const parts = [e.type];
+		if (e.gauge) parts.push(e.gauge);
+		if (e.site) parts.push(`— ${e.site}`);
+		if (e.outcome) parts.push(`(${e.outcome})`);
+		if (e.fluids) parts.push(`• ${e.fluids}`);
+		return parts.join(" ");
+	},
+	"remove-va"
+);
+
+const { render: renderDrugEntries, remove: removeDrugEntry } = makeEntryManager(
+	"drugEntries", "drugEntries",
+	(e) => {
+		const parts = [e.drug];
+		if (e.dose) parts.push(e.dose);
+		if (e.route) parts.push(`via ${e.route}`);
+		if (e.time) parts.push(`at ${e.time}`);
+		return parts.join(" ");
+	},
+	"remove-drug"
+);
+
+const { render: renderChangeEntries, remove: removeChangeEntry } = makeEntryManager(
+	"clinicalChanges", "changeEntries",
+	(e) => e.time ? `[${e.time}] ${e.desc}` : e.desc,
+	"remove-change"
+);
 
 function addIvEntry() {
 	const type = val("vaType");
@@ -1082,35 +1115,9 @@ function addIvEntry() {
 		outcome: val("vaOutcome"),
 		fluids: val("vaFluids"),
 	});
-	$("#vaType").value = "";
-	$("#vaGauge").value = "";
-	$("#vaSite").value = "";
-	$("#vaOutcome").value = "";
-	$("#vaFluids").value = "";
+	["vaType", "vaGauge", "vaSite", "vaOutcome", "vaFluids"].forEach((id) => { const el = $(`#${id}`); if (el) el.value = ""; });
 	$("#vaGaugeWrap")?.classList.add("hidden");
 	renderIvEntries();
-}
-
-function removeIvEntry(index) {
-	state.ivEntries.splice(index, 1);
-	renderIvEntries();
-}
-
-function renderIvEntries() {
-	const root = $("#vaEntries");
-	if (!root) return;
-	root.innerHTML = "";
-	state.ivEntries.forEach((entry, index) => {
-		const row = document.createElement("div");
-		row.className = "ausc-entry";
-		const parts = [entry.type];
-		if (entry.gauge) parts.push(entry.gauge);
-		if (entry.site) parts.push(`— ${entry.site}`);
-		if (entry.outcome) parts.push(`(${entry.outcome})`);
-		if (entry.fluids) parts.push(`• ${entry.fluids}`);
-		row.innerHTML = `<span>${parts.join(" ")}</span><button type="button" data-remove-va="${index}" aria-label="Remove">×</button>`;
-		root.append(row);
-	});
 }
 
 function addDrugEntry() {
@@ -1122,32 +1129,29 @@ function addDrugEntry() {
 		route: val("drugRoute"),
 		time: val("drugTime"),
 	});
-	$("#drugName").value = "";
-	$("#drugDose").value = "";
-	$("#drugRoute").value = "";
-	$("#drugTime").value = "";
+	["drugName", "drugDose", "drugRoute", "drugTime"].forEach((id) => { const el = $(`#${id}`); if (el) el.value = ""; });
 	renderDrugEntries();
 }
 
-function removeDrugEntry(index) {
-	state.drugEntries.splice(index, 1);
-	renderDrugEntries();
+function addChangeEntry() {
+	const desc = val("changeDesc");
+	if (!desc) return;
+	state.clinicalChanges.push({ time: val("changeTime"), desc });
+	["changeDesc", "changeTime"].forEach((id) => { const el = $(`#${id}`); if (el) el.value = ""; });
+	renderChangeEntries();
 }
 
-function renderDrugEntries() {
-	const root = $("#drugEntries");
-	if (!root) return;
-	root.innerHTML = "";
-	state.drugEntries.forEach((entry, index) => {
-		const row = document.createElement("div");
-		row.className = "ausc-entry";
-		const parts = [entry.drug];
-		if (entry.dose) parts.push(entry.dose);
-		if (entry.route) parts.push(`via ${entry.route}`);
-		if (entry.time) parts.push(`at ${entry.time}`);
-		row.innerHTML = `<span>${parts.join(" ")}</span><button type="button" data-remove-drug="${index}" aria-label="Remove">×</button>`;
-		root.append(row);
-	});
+function buildChangesText() {
+	const lines = [];
+	if (state.clinicalChanges.length) {
+		lines.push("Clinical changes noted during assessment:");
+		state.clinicalChanges.forEach((e) => {
+			lines.push(`  • ${e.time ? `[${e.time}] ` : ""}${e.desc}`);
+		});
+	}
+	const additional = val("additionalInfo");
+	if (additional) lines.push(`Additional information: ${additional}`);
+	return lines.join("\n");
 }
 
 function buildTreatmentText() {
@@ -1194,24 +1198,11 @@ function buildTreatmentText() {
 }
 
 function buildSeizureSection() {
-	const buildGrid = (id, items, group) => {
-		const grid = $(`#${id}`);
-		if (!grid) return;
-		items.forEach((item) => {
-			const btn = document.createElement("button");
-			btn.type = "button";
-			btn.className = "square-btn";
-			btn.textContent = item;
-			btn.dataset.szGroup = group;
-			btn.dataset.szValue = item;
-			grid.append(btn);
-		});
-	};
-	buildGrid("seizureTypeGrid", SEIZURE_TYPES, "type");
-	buildGrid("seizureFeaturesGrid", SEIZURE_FEATURES, "features");
-	buildGrid("seizureFindingsGrid", SEIZURE_FINDINGS, "findings");
-	buildGrid("seizurePrecipitantsGrid", SEIZURE_PRECIPITANTS, "precipitants");
-	buildGrid("aedComplianceGrid", AED_COMPLIANCE, "aed");
+	buildButtonGrid("seizureTypeGrid", SEIZURE_TYPES, "szGroup", "type", "szValue");
+	buildButtonGrid("seizureFeaturesGrid", SEIZURE_FEATURES, "szGroup", "features", "szValue");
+	buildButtonGrid("seizureFindingsGrid", SEIZURE_FINDINGS, "szGroup", "findings", "szValue");
+	buildButtonGrid("seizurePrecipitantsGrid", SEIZURE_PRECIPITANTS, "szGroup", "precipitants", "szValue");
+	buildButtonGrid("aedComplianceGrid", AED_COMPLIANCE, "szGroup", "aed", "szValue");
 }
 
 function buildSeizureText() {
@@ -1248,24 +1239,11 @@ function buildSeizureText() {
 }
 
 function buildMhSection() {
-	const buildGrid = (id, items, group) => {
-		const grid = $(`#${id}`);
-		if (!grid) return;
-		items.forEach((item) => {
-			const btn = document.createElement("button");
-			btn.type = "button";
-			btn.className = "square-btn";
-			btn.textContent = item;
-			btn.dataset.mhGroup = group;
-			btn.dataset.mhValue = item;
-			grid.append(btn);
-		});
-	};
-	buildGrid("mhIntentGrid", MH_INTENT, "intent");
-	buildGrid("mhPlanningGrid", MH_PLANNING, "planning");
-	buildGrid("odPrescribedGrid", OD_PRESCRIBED, "odPrescribed");
-	buildGrid("shMethodGrid", SH_METHOD, "shMethod");
-	buildGrid("shDepthGrid", SH_DEPTH, "shDepth");
+	buildButtonGrid("mhIntentGrid", MH_INTENT, "mhGroup", "intent", "mhValue");
+	buildButtonGrid("mhPlanningGrid", MH_PLANNING, "mhGroup", "planning", "mhValue");
+	buildButtonGrid("odPrescribedGrid", OD_PRESCRIBED, "mhGroup", "odPrescribed", "mhValue");
+	buildButtonGrid("shMethodGrid", SH_METHOD, "mhGroup", "shMethod", "mhValue");
+	buildButtonGrid("shDepthGrid", SH_DEPTH, "mhGroup", "shDepth", "mhValue");
 }
 
 function buildMhAssessmentText() {
@@ -1489,6 +1467,9 @@ function bindEvents() {
 		const removeDrug = event.target.closest("[data-remove-drug]");
 		if (removeDrug)
 			return removeDrugEntry(Number(removeDrug.dataset.removeDrug));
+		const removeChange = event.target.closest("[data-remove-change]");
+		if (removeChange)
+			return removeChangeEntry(Number(removeChange.dataset.removeChange));
 		const copySectionBtn = event.target.closest("[data-copy-section]");
 		if (copySectionBtn)
 			return copySectionById(copySectionBtn.dataset.copySection);
@@ -2149,6 +2130,19 @@ function buildOutputSections() {
 					]
 				: [];
 		})(),
+		...(() => {
+			const hasChanges =
+				state.clinicalChanges.length || val("additionalInfo");
+			return hasChanges
+				? [
+						{
+							id: "changes",
+							title: "CLINICAL CHANGES & ADDITIONAL INFORMATION",
+							body: buildChangesText(),
+						},
+					]
+				: [];
+		})(),
 		{
 			id: "capacity",
 			title: "ASSESSMENT — MENTAL CAPACITY / CONSENT",
@@ -2570,13 +2564,9 @@ async function copyOutput() {
 
 async function copySectionById(sectionId) {
 	generateOutput();
-
 	const card = $(`[data-copy-section="${sectionId}"]`)?.closest(".output-card");
-
 	const body = card?.querySelector(".output-snippet");
-
 	const text = body?.dataset.plaintext || body?.innerText?.trim();
-
 	if (text) await copyText(text);
 }
 
