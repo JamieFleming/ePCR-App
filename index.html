@@ -14,7 +14,7 @@
 		<link
 			href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
 			rel="stylesheet" />
-		<link rel="stylesheet" href="styles_professional_seamless.css" />
+		<link rel="stylesheet" href="styles.css" />
 		<link rel="icon" type="image/png" href="assets/favicon.png" />
 		<link rel="apple-touch-icon" href="assets/favicon.png" />
 	</head>
@@ -410,9 +410,7 @@
 								<label class="field-label" for="pcOther"
 									>Other presentation</label
 								>
-								<input
-									id="pcOther"
-									placeholder="Enter presenting complaint" />
+								<input id="pcOther" placeholder="Enter presenting complaint" />
 							</div>
 						</div>
 					</details>
@@ -745,9 +743,7 @@
 									<label class="field-label" for="seizureTime"
 										>Time of onset</label
 									>
-									<input
-										id="seizureTime"
-										placeholder="e.g. 14:20" />
+									<input id="seizureTime" placeholder="e.g. 14:20" />
 								</div>
 								<div
 									style="
@@ -913,9 +909,7 @@
 										<label class="field-label" for="odAmount"
 											>Amount / estimated dose</label
 										>
-										<input
-											id="odAmount"
-											placeholder="e.g. Up to 16 tablets" />
+										<input id="odAmount" placeholder="e.g. Up to 16 tablets" />
 									</div>
 									<div>
 										<label class="field-label" for="odTime">Time taken</label>
@@ -1530,9 +1524,7 @@
 									<div>
 										<label class="field-label" for="onsetDuration"
 											>Duration</label
-										><input
-											id="onsetDuration"
-											placeholder="e.g. 30 minutes" />
+										><input id="onsetDuration" placeholder="e.g. 30 minutes" />
 									</div>
 									<div>
 										<label class="field-label" for="timingSelect">Timing</label
@@ -1576,9 +1568,7 @@
 									<label class="field-label" for="exacerbatingOther"
 										>Other exacerbating factors</label
 									>
-									<input
-										id="exacerbatingOther"
-										placeholder="Free text" />
+									<input id="exacerbatingOther" placeholder="Free text" />
 								</div>
 							</div>
 							<div class="socrates-group">
@@ -1590,9 +1580,7 @@
 									<label class="field-label" for="relievingOther"
 										>Other relieving factors</label
 									>
-									<input
-										id="relievingOther"
-										placeholder="Free text" />
+									<input id="relievingOther" placeholder="Free text" />
 								</div>
 							</div>
 							<div class="toolbar pain-toolbar">
@@ -1633,9 +1621,7 @@
 							<div>
 								<label class="field-label">Last oral intake</label>
 								<div class="split">
-									<input
-										id="loiWhat"
-										placeholder="Food / fluid" /><input
+									<input id="loiWhat" placeholder="Food / fluid" /><input
 										id="loiTime"
 										type="time" />
 								</div>
@@ -1687,9 +1673,7 @@
 								</div>
 								<div>
 									<label class="field-label" for="oaLocation">Location</label
-									><input
-										id="oaLocation"
-										placeholder="e.g. living room" />
+									><input id="oaLocation" placeholder="e.g. living room" />
 								</div>
 								<div>
 									<label class="field-label" for="oaMobility">Mobility</label
@@ -1974,9 +1958,7 @@
 								</div>
 								<div>
 									<label class="field-label" for="drugDose">Dose</label>
-									<input
-										id="drugDose"
-										placeholder="e.g. 5mg, 2 puffs" />
+									<input id="drugDose" placeholder="e.g. 5mg, 2 puffs" />
 								</div>
 							</div>
 							<div class="grid-2">
@@ -2059,20 +2041,44 @@
 
 					<details class="section-card">
 						<summary>
-							<span>Clinical Changes &amp; Additional Information</span><small>Changes</small>
+							<span>Clinical Changes &amp; Additional Information</span
+							><small>Changes</small>
 						</summary>
 						<div class="section-body">
-							<p class="field-label" style="margin-bottom:4px">Document clinical changes observed during assessment</p>
-							<div class="entry-form grid-2" style="gap:8px;margin-bottom:8px">
-								<input type="time" id="changeTime" placeholder="Time (optional)" />
-								<div style="display:flex;gap:6px;grid-column:span 1">
-									<input id="changeDesc" placeholder="Describe change…" style="flex:1" />
-									<button type="button" id="addChangeButton" class="secondary-action">Add</button>
+							<p class="field-label" style="margin-bottom: 4px">
+								Document clinical changes observed during assessment
+							</p>
+							<div
+								class="entry-form grid-2"
+								style="gap: 8px; margin-bottom: 8px">
+								<input
+									type="time"
+									id="changeTime"
+									placeholder="Time (optional)" />
+								<div style="display: flex; gap: 6px; grid-column: span 1">
+									<input
+										id="changeDesc"
+										placeholder="Describe change…"
+										style="flex: 1" />
+									<button
+										type="button"
+										id="addChangeButton"
+										class="secondary-action">
+										Add
+									</button>
 								</div>
 							</div>
 							<div id="changeEntries" class="entry-list"></div>
-							<label class="field-label" for="additionalInfo" style="margin-top:12px;display:block">Additional information</label>
-							<textarea id="additionalInfo" rows="3" placeholder="Any additional information not captured elsewhere…"></textarea>
+							<label
+								class="field-label"
+								for="additionalInfo"
+								style="margin-top: 12px; display: block"
+								>Additional information</label
+							>
+							<textarea
+								id="additionalInfo"
+								rows="3"
+								placeholder="Any additional information not captured elsewhere…"></textarea>
 						</div>
 					</details>
 
@@ -2329,16 +2335,12 @@
 							</select>
 							<div id="handoverEtaWrap">
 								<label class="field-label" for="handoverEta">ETA</label
-								><input
-									id="handoverEta"
-									placeholder="e.g. 10 minutes" />
+								><input id="handoverEta" placeholder="e.g. 10 minutes" />
 							</div>
 							<div id="incidentTimeWrap" class="hidden">
 								<label class="field-label" for="incidentTime"
 									>Time of incident</label
-								><input
-									id="incidentTime"
-									placeholder="e.g. 14:30" />
+								><input id="incidentTime" placeholder="e.g. 14:30" />
 							</div>
 							<label class="field-label" for="handoverNotes"
 								>Additional notes</label
