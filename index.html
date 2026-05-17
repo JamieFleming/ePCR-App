@@ -63,7 +63,7 @@
 					policy, and apply clinical judgement.
 				</div>
 
-				<details class="section-card" open>
+				<details class="section-card">
 					<summary><span>Presenting Complaint</span><small>PC</small></summary>
 					<div class="section-body">
 						<label class="field-label" for="pcSelect"
@@ -118,6 +118,7 @@
 								<option>Sepsis concern</option>
 								<option>Overdose / poisoning</option>
 								<option>Mental health crisis</option>
+								<option>Self-harm</option>
 								<option>Social concern / welfare check</option>
 								<option>Other</option>
 							</optgroup>
@@ -134,7 +135,7 @@
 					</div>
 				</details>
 
-				<details class="section-card" open>
+				<details class="section-card">
 					<summary>
 						<span>History of Presenting Complaint</span><small>HPC</small>
 					</summary>
@@ -322,7 +323,391 @@
 					</div>
 				</details>
 
-				<details class="section-card" id="painDetails" open>
+				<details class="section-card hidden" id="headInjuryCard">
+					<summary>
+						<span>Head Injury Assessment</span><small>NICE CG176</small>
+					</summary>
+					<div class="section-body">
+						<div class="socrates-group">
+							<label class="field-label">Mechanism</label>
+							<div
+								class="square-grid multi-group"
+								data-state="headMechanism"></div>
+							<input
+								id="headMechanismDetail"
+								type="text"
+								placeholder="e.g. fell 3 metres onto concrete, unrestrained passenger"
+								style="margin-top: 8px" />
+						</div>
+						<div class="socrates-group">
+							<label class="field-label"
+								>Loss of consciousness &amp; amnesia</label
+							>
+							<div class="grid-2">
+								<div>
+									<label class="check-row"
+										><input type="checkbox" id="headLOC" /> Loss of
+										consciousness</label
+									>
+									<div
+										id="headLOCDurationWrap"
+										class="hidden"
+										style="margin-top: 8px">
+										<label class="field-label" for="headLOCDuration"
+											>Duration of LOC</label
+										><select id="headLOCDuration">
+											<option value="">Unknown</option>
+											<option>Brief (&lt; 5 minutes)</option>
+											<option>5–15 minutes</option>
+											<option>15–30 minutes</option>
+											<option>&gt; 30 minutes</option>
+										</select>
+									</div>
+								</div>
+								<div>
+									<label class="check-row"
+										><input type="checkbox" id="headRetrograde" /> Retrograde
+										amnesia</label
+									>
+									<div
+										id="headRetroDurationWrap"
+										class="hidden"
+										style="margin-top: 8px">
+										<label class="field-label" for="headRetroDuration"
+											>Duration</label
+										><select id="headRetroDuration">
+											<option value="">&lt; 30 minutes</option>
+											<option>&gt; 30 minutes</option>
+										</select>
+									</div>
+									<label class="check-row" style="margin-top: 10px"
+										><input type="checkbox" id="headAnterograde" /> Anterograde
+										amnesia</label
+									>
+								</div>
+							</div>
+						</div>
+						<div class="socrates-group">
+							<label class="field-label">Symptoms</label>
+							<div
+								class="square-grid multi-group"
+								data-state="headSymptoms"></div>
+							<div style="margin-top: 10px">
+								<label class="field-label" for="headVomitingCount"
+									>Vomiting episodes</label
+								><select id="headVomitingCount">
+									<option value="">None / not reported</option>
+									<option>1 episode</option>
+									<option>2 episodes</option>
+									<option>3 or more episodes</option>
+								</select>
+							</div>
+						</div>
+						<div class="socrates-group">
+							<label class="field-label">Clinical findings</label>
+							<div class="square-grid multi-group" data-state="headSigns"></div>
+							<div class="grid-2 compact" style="margin-top: 12px">
+								<label class="check-row"
+									><input type="checkbox" id="headGcsReduced" /> GCS &lt;15 (at
+									assessment or 2 hrs)</label
+								><label class="check-row"
+									><input type="checkbox" id="headAnticoag" /> On
+									anticoagulants</label
+								>
+							</div>
+						</div>
+						<div class="socrates-group">
+							<label class="field-label" for="headInjuryNotes"
+								>Additional notes</label
+							><textarea id="headInjuryNotes" rows="2"></textarea>
+						</div>
+					</div>
+				</details>
+
+				<details class="section-card hidden" id="seizureAssessmentCard">
+					<summary>
+						<span>Seizure Assessment</span><small>Seizure</small>
+					</summary>
+					<div class="section-body">
+						<label class="field-label">Seizure type</label>
+						<div class="square-grid" id="seizureTypeGrid"></div>
+
+						<div class="grid-2" style="margin-top: 12px">
+							<div>
+								<label class="field-label" for="seizureCount"
+									>Number of seizures</label
+								>
+								<select id="seizureCount">
+									<option value="">Select</option>
+									<option>1</option>
+									<option>2</option>
+									<option>3</option>
+									<option>4</option>
+									<option>5 or more</option>
+								</select>
+							</div>
+							<div>
+								<label class="field-label" for="seizureDuration"
+									>Duration of seizure</label
+								>
+								<input
+									id="seizureDuration"
+									type="text"
+									placeholder="e.g. approx 2 minutes" />
+							</div>
+						</div>
+
+						<div class="grid-2" style="margin-top: 8px">
+							<div>
+								<label class="field-label" for="seizureTime"
+									>Time of onset</label
+								>
+								<input id="seizureTime" type="text" placeholder="e.g. 14:20" />
+							</div>
+							<div
+								style="
+									display: flex;
+									flex-direction: column;
+									gap: 6px;
+									padding-top: 20px;
+								">
+								<label class="check-row">
+									<input type="checkbox" id="seizureWitnessed" /> Witnessed
+								</label>
+								<label class="check-row">
+									<input type="checkbox" id="seizureLOC" /> Loss of
+									consciousness
+								</label>
+							</div>
+						</div>
+
+						<div id="seizureWitnessedByWrap">
+							<label class="field-label" for="seizureWitnessedBy"
+								>Witnessed by</label
+							>
+							<input
+								id="seizureWitnessedBy"
+								type="text"
+								placeholder="e.g. Family member, bystander, crew" />
+						</div>
+
+						<label class="field-label" style="margin-top: 12px"
+							>Features during seizure</label
+						>
+						<div class="square-grid" id="seizureFeaturesGrid"></div>
+
+						<label class="field-label" style="margin-top:12px">Post-seizure findings on examination</label>
+						<div class="square-grid" id="seizureFindingsGrid"></div>
+
+						<div class="grid-2" style="margin-top: 12px">
+							<div>
+								<label class="check-row">
+									<input type="checkbox" id="seizurePostictal" /> Postictal
+									phase observed
+								</label>
+								<input
+									id="seizurePostictalDuration"
+									type="text"
+									placeholder="Postictal duration"
+									style="margin-top: 6px" />
+							</div>
+							<div>
+								<label class="field-label" for="seizureRecovery"
+									>Recovery to baseline</label
+								>
+								<select id="seizureRecovery">
+									<option value="">Select</option>
+									<option>Full recovery</option>
+									<option>Partial recovery</option>
+									<option>Not recovered at handover</option>
+									<option>Unclear</option>
+								</select>
+							</div>
+						</div>
+
+						<div style="margin-top: 14px">
+							<label class="check-row">
+								<input type="checkbox" id="seizureKnownEpileptic" /> Known
+								epileptic
+							</label>
+						</div>
+						<div id="seizureEpilepsyWrap" style="margin-top: 8px">
+							<div class="grid-2">
+								<div>
+									<label class="field-label" for="seizureEpilepsyDiagnosis"
+										>Epilepsy diagnosis / type</label
+									>
+									<input
+										id="seizureEpilepsyDiagnosis"
+										type="text"
+										placeholder="e.g. JME, temporal lobe epilepsy" />
+								</div>
+								<div>
+									<label class="field-label" for="seizureLastPrior"
+										>Last seizure prior to today</label
+									>
+									<input
+										id="seizureLastPrior"
+										type="text"
+										placeholder="e.g. 3 weeks ago" />
+								</div>
+							</div>
+							<div style="margin-top: 8px">
+								<label class="field-label" for="seizureUsualPattern"
+									>Usual seizure pattern</label
+								>
+								<input
+									id="seizureUsualPattern"
+									type="text"
+									placeholder="e.g. Same as usual / atypical — more prolonged" />
+							</div>
+							<label class="field-label" style="margin-top: 10px"
+								>AED compliance</label
+							>
+							<div class="square-grid" id="aedComplianceGrid"></div>
+						</div>
+
+						<label class="field-label" style="margin-top: 14px"
+							>Precipitating factors</label
+						>
+						<div class="square-grid" id="seizurePrecipitantsGrid"></div>
+
+						<label
+							class="field-label"
+							for="seizureNotes"
+							style="margin-top: 12px"
+							>Notes</label
+						>
+						<textarea id="seizureNotes" rows="2"></textarea>
+					</div>
+				</details>
+
+				<details class="section-card hidden" id="mhAssessmentCard">
+					<summary>
+						<span>Mental Health Assessment</span><small>MH / OD / SH</small>
+					</summary>
+					<div class="section-body">
+						<label class="field-label">Intent</label>
+						<div class="square-grid" id="mhIntentGrid"></div>
+
+						<label class="field-label" style="margin-top: 12px"
+							>Nature of act</label
+						>
+						<div class="square-grid" id="mhPlanningGrid"></div>
+
+						<div style="margin-top: 12px">
+							<label class="field-label" for="mhTriggers"
+								>Triggers / precipitants</label
+							>
+							<input
+								id="mhTriggers"
+								type="text"
+								placeholder="e.g. Relationship breakdown, financial stress, bereavement" />
+						</div>
+
+						<label class="check-row" style="margin-top: 12px">
+							<input type="checkbox" id="mhPrevious" /> Previous episodes of
+							self-harm / overdose
+						</label>
+						<textarea
+							id="mhPreviousDetails"
+							rows="2"
+							placeholder="Details of previous episodes..."></textarea>
+
+						<!-- Overdose-specific -->
+						<div id="odDetailsWrap" class="hidden" style="margin-top: 14px">
+							<p
+								class="field-label"
+								style="font-weight: 600; margin-bottom: 8px">
+								Overdose details
+							</p>
+							<label class="field-label" for="odSubstance"
+								>Substance(s) taken</label
+							>
+							<input
+								id="odSubstance"
+								type="text"
+								placeholder="e.g. Paracetamol, alcohol, ibuprofen" />
+							<div class="grid-2" style="margin-top: 8px">
+								<div>
+									<label class="field-label" for="odAmount"
+										>Amount / estimated dose</label
+									>
+									<input
+										id="odAmount"
+										type="text"
+										placeholder="e.g. Up to 16 tablets" />
+								</div>
+								<div>
+									<label class="field-label" for="odTime">Time taken</label>
+									<input
+										id="odTime"
+										type="text"
+										placeholder="e.g. 22:00, approx 2 hours ago" />
+								</div>
+							</div>
+							<div class="grid-2" style="margin-top: 8px">
+								<div>
+									<label class="field-label" for="odRoute">Route</label>
+									<select id="odRoute">
+										<option value="">Select</option>
+										<option>Oral (ingested)</option>
+										<option>IV / injected</option>
+										<option>Inhalation</option>
+										<option>Topical / transdermal</option>
+										<option>Other / unknown</option>
+									</select>
+								</div>
+								<div
+									style="display: flex; align-items: center; padding-top: 20px">
+									<label class="check-row">
+										<input type="checkbox" id="odAlcohol" /> Alcohol
+										co-ingestion
+									</label>
+								</div>
+							</div>
+							<label class="field-label" style="margin-top: 8px"
+								>Medication source</label
+							>
+							<div class="square-grid" id="odPrescribedGrid"></div>
+						</div>
+
+						<!-- Self-harm specific -->
+						<div id="shDetailsWrap" class="hidden" style="margin-top: 14px">
+							<p
+								class="field-label"
+								style="font-weight: 600; margin-bottom: 8px">
+								Self-harm details
+							</p>
+							<label class="field-label">Method</label>
+							<div class="square-grid" id="shMethodGrid"></div>
+							<label class="field-label" style="margin-top: 10px"
+								>Wound depth</label
+							>
+							<div class="square-grid" id="shDepthGrid"></div>
+						</div>
+
+						<div style="margin-top: 14px">
+							<label class="field-label" for="mhCurrentServices"
+								>Current MH services / care team</label
+							>
+							<input
+								id="mhCurrentServices"
+								type="text"
+								placeholder="e.g. CMHT, Crisis team, Psychiatry — Dr Smith" />
+						</div>
+						<!-- <div style="margin-top:8px">
+							<label class="field-label" for="mhS136">S136 / MHA considerations</label>
+							<textarea id="mhS136" rows="2" placeholder="e.g. S136 invoked, conveyed to Place of Safety..."></textarea>
+						</div> -->
+						<div style="margin-top: 8px">
+							<label class="field-label" for="mhNotes">Additional notes</label>
+							<textarea id="mhNotes" rows="2"></textarea>
+						</div>
+					</div>
+				</details>
+
+				<details class="section-card" id="painDetails">
 					<summary><span>Pain Assessment</span><small>SOCRATES</small></summary>
 					<div class="section-body">
 						<label class="check-row"
@@ -948,7 +1333,7 @@
 			</section>
 
 			<section class="panel" id="panel-primary">
-				<details class="section-card" open>
+				<details class="section-card">
 					<summary><span>On Arrival</span><small>OA</small></summary>
 					<div class="section-body">
 						<div class="grid-2">
@@ -992,9 +1377,13 @@
 							<div>
 								<label class="field-label" for="oaMobility">Mobility</label
 								><select id="oaMobility">
+									<option>Fully mobile</option>
 									<option>Mobilised independently</option>
 									<option>Mobilised with assistance</option>
+									<option>Non-mobile / unable to weight bear</option>
 									<option>Non-mobile / carried</option>
+									<option>Confined to bed</option>
+									<option>Wheelchair user (baseline)</option>
 								</select>
 							</div>
 							<div>
@@ -1017,6 +1406,8 @@
 							><label class="check-row"
 								><input type="checkbox" id="oaNoABC" checked /> No immediate ABC
 								concerns</label
+							><label class="check-row"
+								><input type="checkbox" id="oaNormalPresentation" checked /> Normal presentation on arrival</label
 							>
 						</div>
 					</div>
@@ -1025,7 +1416,7 @@
 			</section>
 
 			<section class="panel" id="panel-assessment">
-				<details class="section-card" open>
+				<details class="section-card">
 					<summary><span>Review of Systems</span><small>ROS</small></summary>
 					<div id="rosContainer" class="nested-sections"></div>
 				</details>
@@ -1053,6 +1444,302 @@
 							placeholder="On examination / secondary survey..."></textarea>
 					</div>
 				</details>
+				<details class="section-card">
+					<summary><span>Injury Assessment</span><small>Trauma</small></summary>
+					<div class="section-body">
+						<div class="grid-2">
+							<div>
+								<label class="field-label" for="injuryRegion">Body region</label
+								><select id="injuryRegion">
+									<option value="">Select region</option>
+									<optgroup label="Head and neck">
+										<option>Head</option>
+										<option>Face / scalp</option>
+										<option>Neck</option>
+									</optgroup>
+									<optgroup label="Trunk">
+										<option>Left chest</option>
+										<option>Right chest</option>
+										<option>Sternum</option>
+										<option>Abdomen</option>
+										<option>Pelvis / groin</option>
+										<option>Upper back</option>
+										<option>Lower back</option>
+									</optgroup>
+									<optgroup label="Upper limb (left)">
+										<option>Left shoulder</option>
+										<option>Left upper arm</option>
+										<option>Left elbow</option>
+										<option>Left forearm</option>
+										<option>Left wrist</option>
+										<option>Left hand</option>
+									</optgroup>
+									<optgroup label="Upper limb (right)">
+										<option>Right shoulder</option>
+										<option>Right upper arm</option>
+										<option>Right elbow</option>
+										<option>Right forearm</option>
+										<option>Right wrist</option>
+										<option>Right hand</option>
+									</optgroup>
+									<optgroup label="Lower limb (left)">
+										<option>Left hip</option>
+										<option>Left thigh</option>
+										<option>Left knee</option>
+										<option>Left lower leg</option>
+										<option>Left ankle</option>
+										<option>Left foot</option>
+									</optgroup>
+									<optgroup label="Lower limb (right)">
+										<option>Right hip</option>
+										<option>Right thigh</option>
+										<option>Right knee</option>
+										<option>Right lower leg</option>
+										<option>Right ankle</option>
+										<option>Right foot</option>
+									</optgroup>
+								</select>
+							</div>
+							<div>
+								<label class="field-label" for="injuryNv"
+									>Neurovascular status</label
+								><input
+									id="injuryNv"
+									type="text"
+									placeholder="e.g. distal pulse present, sensation intact, full movement" />
+							</div>
+						</div>
+						<label class="field-label">Injury type</label>
+						<div class="square-grid" id="injuryTypeGrid"></div>
+						<label class="field-label">Interventions</label>
+						<div class="square-grid" id="injuryInterventionGrid"></div>
+						<button
+							id="addInjuryButton"
+							type="button"
+							class="secondary-action"
+							style="margin-top: 10px">
+							Add injury
+						</button>
+						<div id="injuryEntries"></div>
+					</div>
+				</details>
+
+				<details class="section-card">
+					<summary>
+						<span>Treatments &amp; Interventions</span><small>Rx</small>
+					</summary>
+					<div class="section-body">
+						<label class="field-label">Airway / breathing interventions</label>
+						<div class="square-grid" id="airwayInterventionGrid"></div>
+
+						<label class="field-label" style="margin-top: 14px"
+							>Vascular access</label
+						>
+						<div class="grid-2">
+							<div>
+								<label class="field-label" for="vaType">Type</label>
+								<select id="vaType">
+									<option value="">Select type</option>
+									<option>IV Cannula</option>
+									<option>IO Access</option>
+								</select>
+							</div>
+							<div id="vaGaugeWrap" class="hidden">
+								<label class="field-label" for="vaGauge">Gauge</label>
+								<select id="vaGauge">
+									<option value="">Select</option>
+									<option>14G (Orange)</option>
+									<option>16G (Grey)</option>
+									<option>18G (Green)</option>
+									<option>20G (Pink)</option>
+									<option>22G (Blue)</option>
+									<option>24G (Yellow)</option>
+								</select>
+							</div>
+						</div>
+						<div class="grid-2">
+							<div>
+								<label class="field-label" for="vaSite">Site</label>
+								<select id="vaSite">
+									<option value="">Select site</option>
+									<optgroup label="IV sites">
+										<option>L ACF</option>
+										<option>R ACF</option>
+										<option>L forearm</option>
+										<option>R forearm</option>
+										<option>L hand</option>
+										<option>R hand</option>
+										<option>L cephalic</option>
+										<option>R cephalic</option>
+										<option>L basilic</option>
+										<option>R basilic</option>
+										<option>L EJ</option>
+										<option>R EJ</option>
+										<option>L foot</option>
+										<option>R foot</option>
+									</optgroup>
+									<optgroup label="IO sites">
+										<option>L prox tibia</option>
+										<option>R prox tibia</option>
+										<option>L prox humerus</option>
+										<option>R prox humerus</option>
+										<option>Sternal</option>
+									</optgroup>
+								</select>
+							</div>
+							<div>
+								<label class="field-label" for="vaOutcome">Outcome</label>
+								<select id="vaOutcome">
+									<option value="">Select</option>
+									<option>Successful — patent and flushed</option>
+									<option>Successful — not flushed</option>
+									<option>Failed attempt</option>
+									<option>In-situ (pre-existing)</option>
+								</select>
+							</div>
+						</div>
+						<div>
+							<label class="field-label" for="vaFluids">Fluids / flushes</label>
+							<input
+								id="vaFluids"
+								type="text"
+								placeholder="e.g. 10ml NaCl flush, 500ml NaCl 0.9%" />
+						</div>
+						<button
+							id="addVaButton"
+							type="button"
+							class="secondary-action"
+							style="margin-top: 10px">
+							Add access
+						</button>
+						<div id="vaEntries"></div>
+
+						<label class="field-label" style="margin-top: 14px"
+							>Medications given</label
+						>
+						<div class="grid-2">
+							<div>
+								<label class="field-label" for="drugName">Drug</label>
+								<input
+									id="drugName"
+									type="text"
+									list="drugList"
+									placeholder="Drug name" />
+								<datalist id="drugList">
+									<option>Aspirin 300mg</option>
+									<option>GTN 400mcg</option>
+									<option>Morphine</option>
+									<option>Paracetamol</option>
+									<option>Ibuprofen</option>
+									<option>Ondansetron</option>
+									<option>Salbutamol</option>
+									<option>Ipratropium</option>
+									<option>Adrenaline</option>
+									<!-- <option>Midazolam</option> -->
+									<option>Diazepam</option>
+									<option>Glucagon</option>
+									<option>Glucose 10%</option>
+									<option>Naloxone</option>
+									<option>Tranexamic acid</option>
+									<option>Sodium chloride 0.9%</option>
+									<option>Amiodarone</option>
+									<option>Atropine</option>
+									<option>Entonox</option>
+									<option>Oxygen</option>
+									<option>Dexamethasone</option>
+									<option>Hydrocortisone</option>
+									<option>Chlorphenamine</option>
+								</datalist>
+							</div>
+							<div>
+								<label class="field-label" for="drugDose">Dose</label>
+								<input
+									id="drugDose"
+									type="text"
+									placeholder="e.g. 5mg, 2 puffs" />
+							</div>
+						</div>
+						<div class="grid-2">
+							<div>
+								<label class="field-label" for="drugRoute">Route</label>
+								<select id="drugRoute">
+									<option value="">Select route</option>
+									<option>IV</option>
+									<option>IM</option>
+									<option>IN (intranasal)</option>
+									<option>Oral</option>
+									<option>Sublingual</option>
+									<option>PR (rectal)</option>
+									<option>SC (subcutaneous)</option>
+									<option>Nebulised</option>
+									<option>Inhaled</option>
+									<option>IO</option>
+									<option>ETT</option>
+									<option>Topical</option>
+									<option>Buccal</option>
+									<option>Transdermal</option>
+								</select>
+							</div>
+							<div>
+								<label class="field-label" for="drugTime">Time given</label>
+								<input id="drugTime" type="text" placeholder="e.g. 14:32" />
+							</div>
+						</div>
+						<button
+							id="addDrugButton"
+							type="button"
+							class="secondary-action"
+							style="margin-top: 10px">
+							Add medication
+						</button>
+						<div id="drugEntries"></div>
+
+						<label class="field-label" style="margin-top: 14px"
+							>Wound management</label
+						>
+						<div class="square-grid" id="woundInterventionGrid"></div>
+						<div id="woundOtherWrap" class="hidden">
+							<input
+								id="woundOther"
+								type="text"
+								placeholder="Describe wound intervention"
+								style="margin-top: 8px" />
+						</div>
+
+						<label class="field-label" style="margin-top: 14px"
+							>Manual handling</label
+						>
+						<div class="square-grid" id="manualHandlingGrid"></div>
+						<div id="manualOtherWrap" class="hidden">
+							<input
+								id="manualOther"
+								type="text"
+								placeholder="Describe handling method"
+								style="margin-top: 8px" />
+						</div>
+
+						<label class="field-label" style="margin-top: 14px"
+							>Other interventions</label
+						>
+						<div class="square-grid" id="otherInterventionGrid"></div>
+						<div id="otherIntOtherWrap" class="hidden">
+							<input
+								id="otherIntOther"
+								type="text"
+								placeholder="Describe intervention"
+								style="margin-top: 8px" />
+						</div>
+
+						<label
+							class="field-label"
+							for="treatmentNotes"
+							style="margin-top: 14px"
+							>Treatment notes</label
+						>
+						<textarea id="treatmentNotes" rows="2"></textarea>
+					</div>
+				</details>
+
 				<details class="section-card">
 					<summary>
 						<span>Mental Capacity and Consent</span><small>MCA</small>
@@ -1089,7 +1776,7 @@
 			</section>
 
 			<section class="panel" id="panel-plan">
-				<details class="section-card" open>
+				<details class="section-card">
 					<summary><span>Conveyance</span><small>Plan</small></summary>
 					<div class="section-body">
 						<label class="field-label" for="conveyanceDecision"
@@ -1247,14 +1934,19 @@
 					<div class="section-body">
 						<label class="field-label" for="worseningMode">Advice mode</label
 						><select id="worseningMode">
-							<option value="Standard">Standard (auto — based on presenting complaint)</option>
+							<option value="Standard">
+								Standard (auto — based on presenting complaint)
+							</option>
 							<option value="Custom">Custom</option>
 							<option value="Not applicable">Not applicable</option>
 						</select>
 						<div id="worseningScriptWrap">
-							<p class="field-label" style="margin-top:16px">What to say to the patient</p>
+							<p class="field-label" style="margin-top: 16px">
+								What to say to the patient
+							</p>
 							<pre id="worseningScriptDisplay" class="patient-script"></pre>
-							<label class="field-label" for="customWorsening">Additional / custom advice</label
+							<label class="field-label" for="customWorsening"
+								>Additional / custom advice</label
 							><textarea
 								id="customWorsening"
 								rows="3"
@@ -1262,7 +1954,7 @@
 						</div>
 					</div>
 				</details>
-				<details class="section-card" open>
+				<details class="section-card">
 					<summary><span>Handover</span><small>HO</small></summary>
 					<div class="section-body">
 						<div class="grid-2">
@@ -1313,7 +2005,7 @@
 			</section>
 
 			<section class="panel" id="panel-output">
-				<details class="section-card" open>
+				<details class="section-card">
 					<summary><span>Generated PRF</span><small>Output</small></summary>
 					<div class="section-body">
 						<div class="toolbar">

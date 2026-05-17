@@ -494,6 +494,12 @@ select {
 	gap: 10px;
 }
 
+.abdo-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 8px;
+}
+
 .square-btn {
 	border: 1.5px solid var(--line);
 	background: linear-gradient(180deg, #ffffff 0%, var(--surface-2) 100%);
