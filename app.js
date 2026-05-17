@@ -14,6 +14,9 @@ const state = {
 	exacerbating: new Set(),
 	relieving: new Set(),
 	referrals: new Set(),
+	fallsSymptoms: new Set(),
+	fallsActivity: new Set(),
+	fallsInjuries: new Set(),
 	ros: {},
 	respAusc: { normal: true, entries: [] },
 	worseningAuto: true,
@@ -51,6 +54,238 @@ const PC_WORSENING = {
 		"Patient advised to seek urgent review if pain worsens, becomes rigid, is associated with vomiting blood, black stools, or fever.",
 	"Allergic reaction":
 		"Patient advised to call 999 for worsening rash, lip/tongue swelling, wheeze, or breathing difficulty.",
+};
+
+const WORSENING_GENERIC = [
+	"chest pain or pressure",
+	"sudden difficulty breathing or shortness of breath",
+	"FAST symptoms — face drooping, arm weakness, or difficulty speaking",
+	"loss of consciousness or collapse",
+	"new seizure or fitting",
+	"severe allergic reaction — throat swelling or breathing difficulty",
+	"heavy uncontrolled bleeding",
+];
+
+const WORSENING_PC = {
+	"Chest pain": {
+		items: [
+			"return or worsening of chest pain",
+			"pain spreading to jaw, left arm, or back",
+			"sweating, nausea, or vomiting alongside chest pain",
+			"worsening breathlessness or palpitations",
+		],
+	},
+	"Palpitations": {
+		items: [
+			"palpitations becoming more frequent or prolonged",
+			"chest pain or breathlessness with palpitations",
+			"dizziness or collapse during palpitations",
+		],
+	},
+	"Shortness of breath": {
+		items: [
+			"worsening breathlessness or inability to speak in full sentences",
+			"new or worsening blue lips or fingertips",
+			"increasing confusion or drowsiness",
+		],
+	},
+	"Asthma / COPD exacerbation": {
+		items: [
+			"wheeze or breathlessness not responding to inhaler",
+			"unable to speak in full sentences",
+			"using accessory muscles to breathe",
+			"oxygen saturation falling below their usual level",
+		],
+	},
+	"Headache": {
+		items: [
+			"sudden severe 'thunderclap' headache — worst headache of their life",
+			"headache with fever and neck stiffness",
+			"headache with a non-blanching rash",
+			"headache with vision changes, vomiting, or new neurological symptoms",
+		],
+	},
+	"Head injury": {
+		items: [
+			"repeated vomiting after the injury",
+			"worsening or new severe headache",
+			"increasing confusion, drowsiness, or difficulty staying awake",
+			"slurred speech or difficulty speaking",
+			"new weakness in face, arms, or legs",
+			"clear fluid from nose or ear",
+			"unequal pupils",
+		],
+	},
+	"Seizure": {
+		items: [
+			"further seizure activity",
+			"seizure lasting more than 5 minutes",
+			"consciousness not recovering after a seizure",
+			"injury sustained during a seizure",
+			"breathing difficulty after a seizure",
+		],
+	},
+	"Stroke / FAST positive": {
+		items: [
+			"any return of FAST symptoms — facial drooping, arm weakness, speech difficulty",
+			"new or worsening weakness, numbness, or vision changes",
+			"sudden severe headache",
+			"confusion or reduced consciousness",
+		],
+	},
+	"Dizziness / vertigo": {
+		items: [
+			"worsening dizziness or inability to mobilise safely",
+			"FAST symptoms — face, arm, or speech changes",
+			"persistent vomiting or inability to keep fluids down",
+		],
+	},
+	"Collapse / syncope": {
+		items: [
+			"further episodes of blackout or near-collapse",
+			"chest pain or palpitations before collapsing",
+			"prolonged loss of consciousness",
+			"injury from a collapse",
+		],
+	},
+	"Reduced consciousness": {
+		items: [
+			"any further reduction in level of consciousness",
+			"new neurological symptoms",
+			"breathing difficulty",
+		],
+	},
+	"Abdominal pain": {
+		items: [
+			"worsening or severe abdominal pain",
+			"rigid or board-like abdomen",
+			"vomiting blood or passing black or tarry stools",
+			"fever above 38°C with abdominal pain",
+			"inability to pass urine",
+		],
+	},
+	"Nausea / vomiting": {
+		items: [
+			"unable to keep any fluids down for more than 6 hours",
+			"blood in the vomit",
+			"signs of dehydration — dry mouth, dizziness on standing, reduced urine output",
+		],
+	},
+	"Haematemesis / melaena": {
+		items: [
+			"further blood in vomit or black tarry stools",
+			"dizziness on standing or feeling faint",
+			"severe or worsening abdominal pain",
+		],
+	},
+	"Urinary symptoms": {
+		items: [
+			"worsening pain or fever with urinary symptoms",
+			"inability to pass urine",
+			"confusion — especially in older patients",
+			"blood in urine with loin or back pain",
+		],
+	},
+	"Allergic reaction": {
+		items: [
+			"return of rash, hives, or swelling",
+			"swelling of lips, tongue, or throat",
+			"wheeze or difficulty breathing",
+			"dizziness or collapse",
+			"if adrenaline auto-injector (EpiPen) used — call 999 immediately regardless",
+		],
+	},
+	"Diabetic emergency": {
+		items: [
+			"recurrence of hypoglycaemia symptoms — shakiness, sweating, confusion",
+			"blood glucose not responding to treatment",
+			"vomiting preventing oral intake",
+			"confusion, drowsiness, or unresponsiveness",
+		],
+	},
+	"Fall": {
+		items: [
+			"another fall",
+			"inability to bear weight or mobilise",
+			"new or worsening weakness or numbness in the legs",
+			"loss of bladder or bowel control — call 999 immediately",
+			"numbness or tingling in the saddle area (inner thighs, groin, or back passage) — call 999 immediately",
+			"severe worsening pain at any injury site",
+		],
+		redFlags: "Cauda equina red flags explained: loss of bladder or bowel control, saddle anaesthesia (numbness of inner thighs, genitals, or back passage), progressive bilateral leg weakness or numbness — these require an immediate 999 call and should not be waited on.",
+	},
+	"Back pain": {
+		items: [
+			"worsening pain not responding to prescribed analgesia",
+			"loss of bladder or bowel control — call 999 immediately",
+			"numbness or tingling in the saddle area (inner thighs, groin, or back passage) — call 999 immediately",
+			"new or worsening weakness or numbness in both legs",
+			"inability to stand or walk",
+		],
+		redFlags: "Cauda equina red flags explained: loss of bladder or bowel control, saddle anaesthesia (numbness of inner thighs, genitals, or back passage), progressive bilateral leg weakness or numbness — these require an immediate 999 call.",
+	},
+	"Trauma / injury": {
+		items: [
+			"increasing pain, swelling, or bruising at the injury site",
+			"loss of sensation or movement below the injury",
+			"severe increasing pain with tightness in a limb — possible compartment syndrome, call 999",
+			"signs of wound infection — redness, warmth, discharge, or fever",
+		],
+	},
+	"Limb pain / swelling": {
+		items: [
+			"worsening swelling, redness, or warmth in the limb",
+			"new numbness, weakness, or colour change",
+			"severe pain with tightness — possible compartment syndrome, call 999",
+			"calf swelling or redness with breathlessness — possible DVT/PE, call 999",
+		],
+	},
+	"Wound / laceration": {
+		items: [
+			"wound re-opening or bleeding not controlled with direct pressure",
+			"signs of infection — redness, warmth, swelling, discharge, or fever",
+			"loss of sensation or movement near the wound",
+		],
+	},
+	"Sepsis concern": {
+		items: [
+			"worsening fever, rigors, or feeling very unwell",
+			"increasing confusion or agitation",
+			"rapid breathing or difficulty breathing",
+			"mottled, pale, or blue-tinged skin",
+			"reduced urine output or dark urine",
+		],
+	},
+	"Fever / pyrexia": {
+		items: [
+			"temperature above 39.5°C not responding to analgesia",
+			"rigors, severe confusion, or very rapid breathing",
+			"non-blanching rash with fever — call 999 immediately",
+			"signs of sepsis: rapid breathing, mottled skin, confusion, reduced urine",
+		],
+	},
+	"Overdose / poisoning": {
+		items: [
+			"any deterioration in consciousness or breathing",
+			"further substances taken",
+			"confusion, agitation, or hallucinations",
+		],
+	},
+	"Mental health crisis": {
+		items: [
+			"risk to self or others escalating",
+			"feeling unable to keep themselves safe",
+			"any immediate risk to life — call 999",
+		],
+		extra: "Samaritans helpline: 116 123 (free, 24/7). Local crisis line signposted if available.",
+	},
+	"Confusion / delirium": {
+		items: [
+			"worsening confusion or agitation",
+			"fever, rigors, or new physical symptoms",
+			"inability to keep safe at home",
+		],
+	},
 };
 
 const OPTIONS = {
@@ -124,6 +359,47 @@ const OPTIONS = {
 		"Falls team",
 		"Mental health crisis team",
 		"Safeguarding referral",
+	],
+	fallsSymptoms: [
+		"Dizziness",
+		"Pre-syncope",
+		"Palpitations",
+		"Chest pain",
+		"Shortness of breath",
+		"Sudden weakness",
+		"Leg gave way",
+		"Blurred vision",
+		"Tripped",
+		"Slipped",
+		"Mechanical",
+		"No warning",
+		"Cannot recall",
+	],
+	fallsActivity: [
+		"Walking",
+		"Getting up from chair",
+		"Getting up from bed",
+		"Going to toilet",
+		"On stairs",
+		"Reaching / bending",
+		"Exertion",
+		"Standing still",
+		"Unknown",
+	],
+	fallsInjuries: [
+		"Head",
+		"Face",
+		"Neck / spine",
+		"Upper back",
+		"Lower back",
+		"Shoulder",
+		"Chest / ribs",
+		"Wrist",
+		"Hip",
+		"Pelvis",
+		"Knee",
+		"Lower leg",
+		"No injury found",
 	],
 };
 
@@ -224,7 +500,7 @@ const ROS = {
 			["accessory", "No accessory muscle use", "Accessory muscle use present"],
 		],
 		extras:
-			'<div class="auscultation-block"><label class="field-label">Auscultation findings</label><div class="square-grid ausc-grid" id="auscSoundGrid"></div><div id="auscLocationPanel" class="hidden"><div id="auscOtherWrap" class="hidden"><label class="field-label" for="auscOtherText">Describe finding</label><input id="auscOtherText" type="text" placeholder="e.g. pleural rub" /></div><label class="field-label">Location</label><div class="square-grid ausc-loc-grid" id="auscLocGrid"></div></div><div id="auscEntries" class="ausc-entries"></div><input id="respAus" type="hidden" /><p id="auscPreview" class="ausc-preview">Equal and clear bilateral air entry</p></div><label class="field-label" for="coughType">Cough</label><select id="coughType"><option>No cough</option><option>Dry cough present</option><option>Productive cough present</option></select><label class="field-label" for="respNotes">Additional notes</label><textarea id="respNotes" rows="2"></textarea>',
+			'<div class="auscultation-block"><label class="field-label">Auscultation findings</label><div class="square-grid ausc-grid" id="auscSoundGrid"></div><div id="auscLocationPanel" class="hidden"><div id="auscOtherWrap" class="hidden"><label class="field-label" for="auscOtherText">Describe finding</label><input id="auscOtherText" type="text" placeholder="e.g. pleural rub" /></div><label class="field-label">Location <span class="field-hint" style="display:inline;font-size:11px">(tap one or more, then add)</span></label><div class="square-grid ausc-loc-grid" id="auscLocGrid"></div><button id="auscAddButton" type="button" class="secondary-action" style="margin-top:8px">Add finding</button></div><div id="auscEntries" class="ausc-entries"></div><input id="respAus" type="hidden" /><p id="auscPreview" class="ausc-preview">Equal and clear bilateral air entry</p></div><label class="field-label" for="coughType">Cough</label><select id="coughType"><option>No cough</option><option>Dry cough present</option><option>Productive cough present</option></select><label class="field-label" for="respNotes">Additional notes</label><textarea id="respNotes" rows="2"></textarea>',
 	},
 	cvs: {
 		title: "Cardiovascular",
@@ -363,6 +639,7 @@ function init() {
 	bindEvents();
 	updateMapTags();
 	applyWorseningDefault();
+	updateWorseningScript();
 	syncAuscultationOutput();
 	handleConveyanceDisplay();
 	enhanceSectionCards();
@@ -453,6 +730,7 @@ function buildAuscultation() {
 		button.dataset.location = id;
 		locGrid.append(button);
 	});
+	$("#auscAddButton")?.addEventListener("click", commitAuscLocations);
 }
 
 function buildRos() {
@@ -489,16 +767,15 @@ function bindEvents() {
 	});
 	$("#pcSelect").addEventListener("change", () => {
 		$("#pcOtherWrap").classList.toggle("hidden", val("pcSelect") !== "Other");
-		if (val("conveyanceDecision") === "Treated and left" && state.worseningAuto)
-			applyWorseningDefault();
+		$("#fallsAssessmentCard").classList.toggle("hidden", val("pcSelect") !== "Fall");
+		if (state.worseningAuto) applyWorseningDefault();
+		else updateWorseningScript();
 	});
 	$("#capacityStatus").addEventListener("change", handleCapacityDisplay);
 	$("#worseningMode").addEventListener("change", () => {
 		state.worseningAuto = false;
-		$("#customWorsening").classList.toggle(
-			"hidden",
-			val("worseningMode") !== "Custom",
-		);
+		$("#customWorsening").classList.toggle("hidden", val("worseningMode") !== "Custom");
+		updateWorseningScript();
 	});
 	$("#conveyanceDecision").addEventListener("change", () => {
 		handleConveyanceDisplay();
@@ -508,6 +785,11 @@ function bindEvents() {
 	$("#conveyDepartment")?.addEventListener("change", handleConveyanceDisplay);
 	$("#clearPainButton")?.addEventListener("click", clearPainAssessment);
 	$("#clearBodyMapButton")?.addEventListener("click", clearBodyMap);
+	$("#noPain").addEventListener("change", () => {
+		const noPain = $("#noPain").checked;
+		$("#painBodyMapWrap").classList.toggle("hidden", noPain);
+		$("#painCharacterGroup").classList.toggle("hidden", noPain);
+	});
 	$("#oaFound").addEventListener("change", () => {
 		const notPatient = $("#oaFound").value !== "Greeted by patient";
 		$("#oaPatientContactWrap").style.display = notPatient ? "" : "none";
@@ -547,7 +829,7 @@ function bindEvents() {
 		const auscSound = event.target.closest(".ausc-sound");
 		if (auscSound) return selectAuscSound(auscSound);
 		const auscLoc = event.target.closest(".ausc-loc");
-		if (auscLoc) return addAuscEntry(auscLoc);
+		if (auscLoc) return toggleAuscLocation(auscLoc);
 		const removeAusc = event.target.closest("[data-remove-ausc]");
 		if (removeAusc)
 			return removeAuscEntry(Number(removeAusc.dataset.removeAusc));
@@ -834,7 +1116,11 @@ function buildHandoverText() {
 	const sexLabel = sex && sex !== "Not specified" ? sex.toLowerCase() : "";
 	const pt = [age ? `${age}yo` : "", sexLabel].filter(Boolean).join(" ");
 	const pc = getPc();
-	const hpc = val("hpcEvents") || "";
+	const hpcCaller = val("hpcCaller");
+	const hpcCat = val("hpcCategory");
+	const hpcCatWord = hpcCat === "C4" ? "generated" : "dispatched";
+	const hpcCallLine = hpcCaller && hpcCat ? `${hpcCaller}, ${hpcCat} ${hpcCatWord}` : hpcCaller || (hpcCat ? `${hpcCat} ${hpcCatWord}` : "");
+	const hpc = [val("hpcEvents"), hpcCallLine].filter(Boolean).join(". ") || "";
 	const pmh = isChecked("noPmh")
 		? "No significant PMH"
 		: val("pmh") || "Not documented";
@@ -875,7 +1161,7 @@ function buildHandoverText() {
 			`A — Age: ${age || "Not documented"}`,
 			`S — Sex: ${sex || "Not specified"}`,
 			`H — History: ${pc}. ${hpc ? hpc + ". " : ""}PMH: ${pmh}. Medications: ${meds}. Allergies: ${allergies}.`,
-			`I — Illness/Injury: ${pc}${val("onsetType") ? `. Onset: ${val("onsetType")}` : ""}.`,
+			`I — Illness/Injury: ${pc}${val("onsetType") ? `. Onset: ${val("onsetType")}${val("onsetTime") ? `, ${val("onsetTime")}` : ""}` : ""}.`,
 			`C — Condition: ${vitalsLine}.`,
 			`E — ETA: ${val("handoverEta") || "Not given"}`,
 			...(extraNotes ? ["", extraNotes] : []),
@@ -907,6 +1193,28 @@ function buildHandoverText() {
 	return "";
 }
 
+function buildFallsText() {
+	const symptoms = listSet(state.fallsSymptoms, "Not documented");
+	const loc = val("fallsLocation") || "Not documented";
+	const surface = val("fallsSurface");
+	const activity = listSet(state.fallsActivity, "Not documented");
+	const time = val("fallsTime") || "Not documented";
+	const lieTime = val("fallsLieTime") || "Unknown";
+	const injuries = listSet(state.fallsInjuries, "No injury documented");
+	const prevCount = val("fallsPreviousCount") || "Not asked";
+	const locLine = [loc, surface ? `(${surface})` : ""].filter(Boolean).join(" ");
+	const longLie = ["1–2 hours", "2–4 hours", "4–8 hours", "> 8 hours"].includes(lieTime);
+	return [
+		`S — Symptoms: ${symptoms}. ${isChecked("fallsLOC") ? "LOC reported." : "No LOC reported."} ${isChecked("fallsWitnessed") ? "Witnessed." : "Unwitnessed."}`.trim(),
+		`P — Previous falls: ${prevCount}.${isChecked("fallsPreviousInjury") ? " Previous fall-related injury." : ""}`,
+		`L — Location: ${locLine}.`,
+		`A — Activity: ${activity}.`,
+		`T — Time: ${time}. On floor: ${lieTime}.${longLie ? " Long lie." : ""}`,
+		`T — Trauma: ${injuries}.${isChecked("fallsHeadStrike") ? " Head strike." : ""}${isChecked("fallsAnticoag") ? " On anticoagulants." : ""}`,
+		...(val("fallsNotes") ? [`Notes: ${val("fallsNotes")}`] : []),
+	].join("\n");
+}
+
 function buildOutputSections() {
 	const pc = getPc();
 	const site = getSelectedParts(state.siteParts) || "Not localised";
@@ -918,8 +1226,21 @@ function buildOutputSections() {
 		{
 			id: "hpc",
 			title: "HISTORY OF PRESENTING COMPLAINT",
-			body: `${val("hpcEvents") || "Not documented"}${isChecked("noTravel") ? "\nNo recent travel." : ""}`,
+			body: (() => {
+				const events = val("hpcEvents") || "Not documented";
+				const caller = val("hpcCaller");
+				const cat = val("hpcCategory");
+				const catWord = cat === "C4" ? "generated" : "dispatched";
+				const callLine = caller && cat ? `${caller}, ${cat} ${catWord}.`
+					: caller ? `${caller}.`
+					: cat ? `${cat} ${catWord}.`
+					: "";
+				return [events, callLine, isChecked("noTravel") ? "No recent travel." : ""].filter(Boolean).join("\n");
+			})(),
 		},
+		...(val("pcSelect") === "Fall"
+			? [{ id: "falls", title: "FALLS ASSESSMENT — SPLATT", body: buildFallsText() }]
+			: []),
 		{
 			id: "background",
 			title: "BACKGROUND",
@@ -934,8 +1255,27 @@ function buildOutputSections() {
 		},
 		{
 			id: "pain",
-			title: "PAIN ASSESSMENT / SOCRATES",
-			body: `Site: ${site}\nOnset: ${val("onsetType") || "Not documented"}${val("onsetDuration") ? `, duration ${val("onsetDuration")}` : ""}\nCharacter: ${listSet(state.character, "Not characterised")}\nRadiation: ${radiation}\nAssociated symptoms: ${listSet(state.associated, "None reported")}\nTiming: ${val("timingSelect") || "Not documented"}\nExacerbating factors: ${listFactors(state.exacerbating, "exacerbatingOther", "None identified")}\nRelieving factors: ${listFactors(state.relieving, "relievingOther", "None identified")}\nSeverity: ${val("severity") || "Not documented"}`,
+			title: isChecked("noPain") ? "SOCRATES / SYMPTOM ASSESSMENT" : "PAIN ASSESSMENT / SOCRATES",
+			body: isChecked("noPain")
+				? [
+						`Onset: ${val("onsetType") || "Not documented"}${val("onsetTime") ? `, ${val("onsetTime")}` : ""}${val("onsetDuration") ? `, duration ${val("onsetDuration")}` : ""}`,
+						`Associated symptoms: ${listSet(state.associated, "None reported")}`,
+						`Timing: ${val("timingSelect") || "Not documented"}`,
+						`Exacerbating factors: ${listFactors(state.exacerbating, "exacerbatingOther", "None identified")}`,
+						`Relieving factors: ${listFactors(state.relieving, "relievingOther", "None identified")}`,
+						`Severity: ${val("severity") || "Not documented"}`,
+					].join("\n")
+				: [
+						`Site: ${site}`,
+						`Onset: ${val("onsetType") || "Not documented"}${val("onsetTime") ? `, ${val("onsetTime")}` : ""}${val("onsetDuration") ? `, duration ${val("onsetDuration")}` : ""}`,
+						`Character: ${listSet(state.character, "Not characterised")}`,
+						`Radiation: ${radiation}`,
+						`Associated symptoms: ${listSet(state.associated, "None reported")}`,
+						`Timing: ${val("timingSelect") || "Not documented"}`,
+						`Exacerbating factors: ${listFactors(state.exacerbating, "exacerbatingOther", "None identified")}`,
+						`Relieving factors: ${listFactors(state.relieving, "relievingOther", "None identified")}`,
+						`Severity: ${val("severity") || "Not documented"}`,
+					].join("\n"),
 		},
 		{
 			id: "ros-resp",
@@ -1033,48 +1373,64 @@ function applyWorseningDefault() {
 	if (!state.worseningAuto) return;
 	const decision = val("conveyanceDecision");
 	const select = $("#worseningMode");
-	let mode = "Not applicable";
-	if (decision === "Treated and left") {
-		const pc = getPc();
-		if (pc.includes("Head injury")) mode = "Head injury";
-		else if (pc === "Stroke / FAST positive") mode = "Standard";
-		else mode = "Standard";
-	} else if (decision === "Declined conveyance") {
-		mode = "Strong";
+	select.value = decision === "Conveyed" ? "Not applicable" : "Standard";
+	updateWorseningScript();
+}
+
+function buildPatientScript(declined) {
+	const pc = getPc();
+	const pcData = WORSENING_PC[pc];
+	const genericLines = WORSENING_GENERIC.map((i) => `• ${i}`).join("\n");
+	const specificLines = pcData?.items.map((i) => `• ${i}`).join("\n") || "";
+	const redFlags = pcData?.redFlags ? `\nImportant — call 999 immediately for:\n${pcData.redFlags}` : "";
+	const extra = pcData?.extra ? `\n${pcData.extra}` : "";
+	const declinedLine = declined
+		? "\nYou have declined conveyance to hospital today. You have the right to refuse treatment and transport, but please do not hesitate to call 999 again if you change your mind or feel worse at any time."
+		: "";
+	return `"Before I leave, I want to go through some important warning signs with you.
+
+Please call 999 immediately if you notice:
+${genericLines}
+
+${specificLines ? `Specific to your condition today (${pc}), also call 999 for:\n${specificLines}\n` : ""}${redFlags}${extra}${declinedLine}
+
+For anything less urgent, please contact your GP or call 111. If you are ever unsure whether something is an emergency, always call 999 — it is better to call and check."`;
+}
+
+function updateWorseningScript() {
+	const mode = val("worseningMode");
+	const wrap = $("#worseningScriptWrap");
+	const display = $("#worseningScriptDisplay");
+	if (!wrap || !display) return;
+	const hidden = mode === "Not applicable";
+	wrap.classList.toggle("hidden", hidden);
+	if (!hidden && mode !== "Custom") {
+		const declined = val("conveyanceDecision") === "Declined conveyance";
+		display.textContent = buildPatientScript(declined);
 	}
-	select.value = mode;
-	$("#customWorsening").classList.add("hidden");
 }
 
 function buildWorseningText() {
 	const mode = val("worseningMode");
 	const decision = val("conveyanceDecision");
 	const pc = getPc();
-	const pcAdvice = PC_WORSENING[pc] || "";
-	const standard =
-		"Patient given safety-netting advice and advised to seek further help via 111 or 999 if symptoms worsen or new concerning symptoms develop.";
-	const strong =
-		"Patient strongly advised to call 999 without delay if symptoms worsen, new concerning symptoms develop, or they feel unsafe. Risks of declining conveyance were explained. Patient aware they may recontact emergency services at any time.";
-	const head =
-		"Head injury advice given, including to call 999 for repeated vomiting, worsening headache, confusion, drowsiness, seizure, slurred speech, or new limb weakness.";
-	if (mode === "Custom")
-		return val("customWorsening") || "Custom worsening advice given.";
-	if (
-		mode === "Not applicable" ||
-		(decision === "Conveyed" && mode === "Not applicable")
-	) {
-		return "Patient conveyed to hospital; no community worsening advice required.";
-	}
-	if (mode === "Strong" || decision === "Declined conveyance") {
-		return [strong, pcAdvice].filter(Boolean).join("\n");
-	}
-	if (mode === "Head injury")
-		return [head, pcAdvice].filter(Boolean).join("\n");
-	if (mode === "Standard and head injury")
-		return [standard, head, pcAdvice].filter(Boolean).join("\n");
-	if (decision === "Treated and left")
-		return [standard, pcAdvice].filter(Boolean).join("\n");
-	return [standard, pcAdvice].filter(Boolean).join("\n");
+	const pcData = WORSENING_PC[pc];
+	const custom = val("customWorsening");
+
+	if (mode === "Not applicable" || decision === "Conveyed")
+		return "Patient conveyed to hospital; community worsening advice not applicable.";
+
+	const declined = decision === "Declined conveyance";
+	const allItems = [...WORSENING_GENERIC, ...(pcData?.items || [])];
+	const adviceLine = `Worsening advice given${declined ? " (declined conveyance)" : ""}. Patient${declined ? " and any bystanders" : ""} advised to call 999 for: ${allItems.join("; ")}.`;
+	const redFlagLine = pcData?.redFlags ? ` ${pcData.redFlags}` : "";
+	const extraLine = pcData?.extra ? ` ${pcData.extra}` : "";
+	const customLine = custom ? ` Additional advice: ${custom}` : "";
+	const confirmedLine = " Advice confirmed understood.";
+
+	if (mode === "Custom") return custom || "Custom worsening advice given.";
+
+	return `${adviceLine}${redFlagLine}${extraLine}${customLine}${confirmedLine}`;
 }
 
 function buildCapacityText() {
@@ -1095,6 +1451,8 @@ function handleConveyanceDisplay() {
 	const conveyed = val("conveyanceDecision") === "Conveyed";
 	$("#conveyedFields")?.classList.toggle("hidden", !conveyed);
 	$("#nonConveyedFields")?.classList.toggle("hidden", conveyed);
+	$("#worseningSection")?.classList.toggle("hidden", conveyed);
+	updateWorseningScript();
 	if (!conveyed) return;
 	$("#hospitalOtherWrap")?.classList.toggle(
 		"hidden",
@@ -1242,17 +1600,37 @@ function selectAuscSound(button) {
 	}
 }
 
-function addAuscEntry(button) {
+function toggleAuscLocation(button) {
 	if (!pendingAuscSound) return;
-	const entry = { sound: pendingAuscSound, location: button.dataset.location };
-	if (pendingAuscSound === "other") {
-		entry.text = ($("#auscOtherText")?.value || "").trim() || "other";
-		$("#auscOtherWrap")?.classList.add("hidden");
+	const loc = button.dataset.location;
+	if (loc === "bilateral") {
+		const alreadySelected = button.classList.contains("selected");
+		$$(".ausc-loc").forEach((item) => item.classList.remove("selected"));
+		if (!alreadySelected) button.classList.add("selected");
+	} else {
+		$(".ausc-loc[data-location='bilateral']")?.classList.remove("selected");
+		button.classList.toggle("selected");
 	}
-	state.respAusc.entries.push(entry);
+}
+
+function commitAuscLocations() {
+	if (!pendingAuscSound) return;
+	const selectedLocs = $$(".ausc-loc.selected");
+	if (!selectedLocs.length) return;
+	const otherText =
+		pendingAuscSound === "other"
+			? ($("#auscOtherText")?.value || "").trim() || "other"
+			: null;
+	selectedLocs.forEach((locBtn) => {
+		const entry = { sound: pendingAuscSound, location: locBtn.dataset.location };
+		if (otherText) entry.text = otherText;
+		state.respAusc.entries.push(entry);
+	});
 	pendingAuscSound = null;
 	$$(".ausc-sound").forEach((item) => item.classList.remove("selected"));
+	$$(".ausc-loc").forEach((item) => item.classList.remove("selected"));
 	$("#auscLocationPanel")?.classList.add("hidden");
+	$("#auscOtherWrap")?.classList.add("hidden");
 	renderAuscEntries();
 	syncAuscultationOutput();
 }
@@ -1297,11 +1675,26 @@ function formatAuscEntry(entry) {
 }
 
 function buildAuscText() {
-	if (state.respAusc.normal && !state.respAusc.entries.length)
-		return "Equal and clear bilateral air entry";
-	if (!state.respAusc.entries.length)
-		return "Equal and clear bilateral air entry";
-	return state.respAusc.entries.map(formatAuscEntry).join("; ");
+	if (!state.respAusc.entries.length) return "Equal and clear bilateral air entry";
+	const groups = new Map();
+	state.respAusc.entries.forEach((entry) => {
+		const key = entry.sound === "other" ? (entry.text || "other") : formatAuscSound(entry.sound);
+		if (!groups.has(key)) groups.set(key, []);
+		groups.get(key).push(entry.location);
+	});
+	return [...groups.entries()]
+		.map(([sound, locs]) => {
+			const locLabels = locs.map((loc) => {
+				if (loc === "bilateral") return "bilateral";
+				const side = loc.startsWith("L") ? "L" : "R";
+				const zone = loc.split("-")[1];
+				return `${side}-sided ${zone}`;
+			});
+			if (locLabels.length === 1 && locLabels[0] === "bilateral")
+				return `Bilateral ${sound}`;
+			return `${sound.charAt(0).toUpperCase() + sound.slice(1)}: ${locLabels.join(", ")}`;
+		})
+		.join("; ");
 }
 
 function syncAuscultationOutput() {

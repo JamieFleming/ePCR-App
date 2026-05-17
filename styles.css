@@ -1471,3 +1471,17 @@ select {
 		transition-duration: 0.001ms !important;
 	}
 }
+
+.patient-script {
+	background: var(--surface-2, #f8f8fa);
+	border: 1px solid var(--line);
+	border-radius: 10px;
+	padding: 12px 14px;
+	font-family: inherit;
+	font-size: 13px;
+	line-height: 1.6;
+	white-space: pre-wrap;
+	word-break: break-word;
+	color: var(--text);
+	margin: 4px 0 12px;
+}

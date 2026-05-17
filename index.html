@@ -15,6 +15,12 @@
 			href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
 			rel="stylesheet" />
 		<link rel="stylesheet" href="styles.css" />
+		<!-- CrewMate Favicon + App Icon -->
+		<link rel="icon" type="image/png" href="assets/favicon.png" />
+		<link rel="apple-touch-icon" href="assets/favicon.png" />
+
+		<!-- Mobile Browser / Installed App Theme -->
+		<meta name="theme-color" content="#075985" />
 	</head>
 	<body>
 		<header class="app-header">
@@ -29,7 +35,7 @@
 			</div>
 			<div>
 				<h1>CrewMate</h1>
-				<p>Less typing. More caring.</p>
+				<p>Save Fives Not Lives</p>
 			</div>
 			<button class="ghost-button" id="resetButton" type="button">
 				New PRF
@@ -140,6 +146,47 @@
 							id="hpcEvents"
 							rows="5"
 							placeholder="Timeline, mechanism, symptoms, relevant negatives, prior actions, collateral history..."></textarea>
+						<div class="grid-2">
+							<div>
+								<label class="field-label" for="hpcCaller"
+									>Called / referred by</label
+								><select id="hpcCaller">
+									<option value="">Not documented</option>
+									<optgroup label="Emergency line">
+										<option>Patient called 999</option>
+										<option>Bystander called 999</option>
+										<option>Carer / relative called 999</option>
+										<option>Patient called 111</option>
+										<option>Carer / relative called 111</option>
+									</optgroup>
+									<optgroup label="Clinical referral">
+										<option>GP referral</option>
+										<option>HCP referral</option>
+										<option>Community nurse referral</option>
+										<option>District nurse referral</option>
+										<option>Care home referral</option>
+										<option>Mental health team referral</option>
+									</optgroup>
+									<optgroup label="Other">
+										<option>Self-presented</option>
+										<option>Police request</option>
+										<option>Fire service request</option>
+										<option>Other service referral</option>
+									</optgroup>
+								</select>
+							</div>
+							<div>
+								<label class="field-label" for="hpcCategory"
+									>Response category</label
+								><select id="hpcCategory">
+									<option value="">Not documented</option>
+									<option>C1</option>
+									<option>C2</option>
+									<option>C3</option>
+									<option>C4</option>
+								</select>
+							</div>
+						</div>
 						<label class="check-row"
 							><input type="checkbox" id="noTravel" checked /> No recent
 							travel</label
@@ -147,10 +194,142 @@
 					</div>
 				</details>
 
+				<details class="section-card hidden" id="fallsAssessmentCard">
+					<summary><span>Falls Assessment</span><small>SPLATT</small></summary>
+					<div class="section-body">
+						<div class="socrates-group">
+							<label class="field-label"
+								>S — Symptoms / precipitating factors</label
+							>
+							<div
+								class="square-grid multi-group"
+								data-state="fallsSymptoms"></div>
+							<div class="grid-2 compact" style="margin-top: 12px">
+								<label class="check-row"
+									><input type="checkbox" id="fallsLOC" /> Loss of
+									consciousness</label
+								>
+								<label class="check-row"
+									><input type="checkbox" id="fallsWitnessed" />
+									Witnessed</label
+								>
+							</div>
+						</div>
+						<div class="socrates-group">
+							<label class="field-label">P — Previous falls</label>
+							<div class="grid-2">
+								<div>
+									<label class="field-label" for="fallsPreviousCount"
+										>Falls in past year</label
+									><select id="fallsPreviousCount">
+										<option value="">Not asked</option>
+										<option>None — first fall</option>
+										<option>1 previous fall</option>
+										<option>2–3 previous falls</option>
+										<option>4 or more falls</option>
+									</select>
+								</div>
+								<div>
+									<label class="check-row" style="margin-top: 36px"
+										><input type="checkbox" id="fallsPreviousInjury" /> Previous
+										fall-related injury</label
+									>
+								</div>
+							</div>
+						</div>
+						<div class="socrates-group">
+							<label class="field-label">L — Location</label>
+							<div class="grid-2">
+								<div>
+									<label class="field-label" for="fallsLocation"
+										>Where did the fall occur?</label
+									><select id="fallsLocation">
+										<option value="">Not documented</option>
+										<option>Bedroom</option>
+										<option>Bathroom / toilet</option>
+										<option>Kitchen</option>
+										<option>Living room</option>
+										<option>Hallway / stairs</option>
+										<option>Garden / outside</option>
+										<option>Care home</option>
+										<option>Public place</option>
+										<option>Other</option>
+									</select>
+								</div>
+								<div>
+									<label class="field-label" for="fallsSurface"
+										>Surface / environment</label
+									><input
+										id="fallsSurface"
+										type="text"
+										placeholder="e.g. wet floor, ice" />
+								</div>
+							</div>
+						</div>
+						<div class="socrates-group">
+							<label class="field-label">A — Activity at time of fall</label>
+							<div
+								class="square-grid multi-group"
+								data-state="fallsActivity"></div>
+						</div>
+						<div class="socrates-group">
+							<label class="field-label">T — Time</label>
+							<div class="grid-2">
+								<div>
+									<label class="field-label" for="fallsTime">Time of fall</label
+									><input
+										id="fallsTime"
+										type="text"
+										placeholder="e.g. 14:30, this morning" />
+								</div>
+								<div>
+									<label class="field-label" for="fallsLieTime"
+										>Time on floor</label
+									><select id="fallsLieTime">
+										<option value="">Unknown</option>
+										<option>Just fell</option>
+										<option>&lt; 30 minutes</option>
+										<option>30 min – 1 hour</option>
+										<option>1–2 hours</option>
+										<option>2–4 hours</option>
+										<option>4–8 hours</option>
+										<option>&gt; 8 hours</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="socrates-group">
+							<label class="field-label">T — Trauma / injuries</label>
+							<div
+								class="square-grid multi-group"
+								data-state="fallsInjuries"></div>
+							<div class="grid-2 compact" style="margin-top: 12px">
+								<label class="check-row"
+									><input type="checkbox" id="fallsHeadStrike" /> Head
+									strike</label
+								>
+								<label class="check-row"
+									><input type="checkbox" id="fallsAnticoag" /> On
+									anticoagulants</label
+								>
+							</div>
+						</div>
+						<div class="socrates-group">
+							<label class="field-label" for="fallsNotes"
+								>Additional notes</label
+							><textarea id="fallsNotes" rows="2"></textarea>
+						</div>
+					</div>
+				</details>
+
 				<details class="section-card" id="painDetails" open>
 					<summary><span>Pain Assessment</span><small>SOCRATES</small></summary>
 					<div class="section-body">
-						<div class="body-map-layout">
+						<label class="check-row"
+							><input type="checkbox" id="noPain" /> No pain / not
+							applicable</label
+						>
+						<div id="painBodyMapWrap" class="body-map-layout">
 							<div class="body-map-panel">
 								<p class="body-map-label">Front</p>
 								<div class="map-tabs">
@@ -614,6 +793,30 @@
 							<label class="field-label">Onset, timing &amp; severity</label>
 							<div class="grid-2">
 								<div>
+									<label class="field-label" for="onsetTime"
+										>Approximate time</label
+									><select id="onsetTime">
+										<option value="">Unknown / not documented</option>
+										<option>Just now</option>
+										<option>~5 minutes ago</option>
+										<option>~10 minutes ago</option>
+										<option>~15 minutes ago</option>
+										<option>~20 minutes ago</option>
+										<option>~30 minutes ago</option>
+										<option>~45 minutes ago</option>
+										<option>~1 hour ago</option>
+										<option>~90 minutes ago</option>
+										<option>~2 hours ago</option>
+										<option>~3 hours ago</option>
+										<option>~4 hours ago</option>
+										<option>~6 hours ago</option>
+										<option>~12 hours ago</option>
+										<option>~24 hours ago</option>
+										<option>Earlier today</option>
+										<option>Yesterday</option>
+									</select>
+								</div>
+								<div>
 									<label class="field-label" for="onsetType">Onset</label
 									><select id="onsetType">
 										<option value="">Select</option>
@@ -651,7 +854,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="socrates-group">
+						<div class="socrates-group" id="painCharacterGroup">
 							<label class="field-label">Character</label>
 							<div class="square-grid multi-group" data-state="character"></div>
 						</div>
@@ -799,9 +1002,13 @@
 								><input id="oaNotes" type="text" />
 							</div>
 						</div>
-						<div id="oaPatientContactWrap" style="display:none">
-							<label class="field-label" for="oaPatientFoundHow">On reaching patient</label
-							><input id="oaPatientFoundHow" type="text" placeholder="e.g. sat in chair, lying in bed" />
+						<div id="oaPatientContactWrap" style="display: none">
+							<label class="field-label" for="oaPatientFoundHow"
+								>On reaching patient</label
+							><input
+								id="oaPatientFoundHow"
+								type="text"
+								placeholder="e.g. sat in chair, lying in bed" />
 						</div>
 						<div class="grid-2 compact">
 							<label class="check-row"
@@ -882,29 +1089,6 @@
 			</section>
 
 			<section class="panel" id="panel-plan">
-				<details class="section-card" open>
-					<summary><span>Worsening Advice</span><small>Advice</small></summary>
-					<div class="section-body">
-						<label class="field-label" for="worseningMode"
-							>Worsening advice</label
-						>
-						<select id="worseningMode">
-							<option value="Not applicable">Not applicable (conveyed)</option>
-							<option value="Standard">Standard</option>
-							<option value="Strong">Strong (refusal / high risk)</option>
-							<option value="Head injury">Head injury</option>
-							<option value="Standard and head injury">
-								Standard and head injury
-							</option>
-							<option value="Custom">Custom</option>
-						</select>
-						<textarea
-							id="customWorsening"
-							class="hidden"
-							rows="3"
-							placeholder="Custom worsening advice given"></textarea>
-					</div>
-				</details>
 				<details class="section-card" open>
 					<summary><span>Conveyance</span><small>Plan</small></summary>
 					<div class="section-body">
@@ -1058,6 +1242,26 @@
 						<textarea id="conveyanceNotes" rows="2"></textarea>
 					</div>
 				</details>
+				<details class="section-card hidden" id="worseningSection">
+					<summary><span>Worsening Advice</span><small>Advice</small></summary>
+					<div class="section-body">
+						<label class="field-label" for="worseningMode">Advice mode</label
+						><select id="worseningMode">
+							<option value="Standard">Standard (auto — based on presenting complaint)</option>
+							<option value="Custom">Custom</option>
+							<option value="Not applicable">Not applicable</option>
+						</select>
+						<div id="worseningScriptWrap">
+							<p class="field-label" style="margin-top:16px">What to say to the patient</p>
+							<pre id="worseningScriptDisplay" class="patient-script"></pre>
+							<label class="field-label" for="customWorsening">Additional / custom advice</label
+							><textarea
+								id="customWorsening"
+								rows="3"
+								placeholder="Any additional advice given to the patient..."></textarea>
+						</div>
+					</div>
+				</details>
 				<details class="section-card" open>
 					<summary><span>Handover</span><small>HO</small></summary>
 					<div class="section-body">
@@ -1094,13 +1298,12 @@
 								placeholder="e.g. 10 minutes" />
 						</div>
 						<div id="incidentTimeWrap" class="hidden">
-							<label class="field-label" for="incidentTime">Time of incident</label
-							><input
-								id="incidentTime"
-								type="text"
-								placeholder="e.g. 14:30" />
+							<label class="field-label" for="incidentTime"
+								>Time of incident</label
+							><input id="incidentTime" type="text" placeholder="e.g. 14:30" />
 						</div>
-						<label class="field-label" for="handoverNotes">Additional notes</label
+						<label class="field-label" for="handoverNotes"
+							>Additional notes</label
 						><textarea
 							id="handoverNotes"
 							rows="2"
