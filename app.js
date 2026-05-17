@@ -224,7 +224,7 @@ const ROS = {
 			["accessory", "No accessory muscle use", "Accessory muscle use present"],
 		],
 		extras:
-			'<div class="auscultation-block"><label class="field-label">Auscultation findings</label><div class="square-grid ausc-grid" id="auscSoundGrid"></div><div id="auscLocationPanel" class="hidden"><label class="field-label">Location</label><div class="square-grid ausc-loc-grid" id="auscLocGrid"></div></div><div id="auscEntries" class="ausc-entries"></div><input id="respAus" type="hidden" /><p id="auscPreview" class="ausc-preview">Equal and clear bilateral air entry</p></div><label class="field-label" for="coughType">Cough</label><select id="coughType"><option>No cough</option><option>Dry cough present</option><option>Productive cough present</option></select><label class="field-label" for="respNotes">Additional notes</label><textarea id="respNotes" rows="2"></textarea>',
+			'<div class="auscultation-block"><label class="field-label">Auscultation findings</label><div class="square-grid ausc-grid" id="auscSoundGrid"></div><div id="auscLocationPanel" class="hidden"><div id="auscOtherWrap" class="hidden"><label class="field-label" for="auscOtherText">Describe finding</label><input id="auscOtherText" type="text" placeholder="e.g. pleural rub" /></div><label class="field-label">Location</label><div class="square-grid ausc-loc-grid" id="auscLocGrid"></div></div><div id="auscEntries" class="ausc-entries"></div><input id="respAus" type="hidden" /><p id="auscPreview" class="ausc-preview">Equal and clear bilateral air entry</p></div><label class="field-label" for="coughType">Cough</label><select id="coughType"><option>No cough</option><option>Dry cough present</option><option>Productive cough present</option></select><label class="field-label" for="respNotes">Additional notes</label><textarea id="respNotes" rows="2"></textarea>',
 	},
 	cvs: {
 		title: "Cardiovascular",
@@ -421,6 +421,7 @@ const AUSC_SOUNDS = [
 	["crackles", "Crackles"],
 	["reduced", "Reduced air entry"],
 	["bronchial", "Bronchial breathing"],
+	["other", "Other"],
 ];
 const AUSC_LOCATIONS = [
 	["R-upper", "R upper"],
@@ -506,6 +507,19 @@ function bindEvents() {
 	$("#conveyHospital")?.addEventListener("change", handleConveyanceDisplay);
 	$("#conveyDepartment")?.addEventListener("change", handleConveyanceDisplay);
 	$("#clearPainButton")?.addEventListener("click", clearPainAssessment);
+	$("#clearBodyMapButton")?.addEventListener("click", clearBodyMap);
+	$("#oaFound").addEventListener("change", () => {
+		const notPatient = $("#oaFound").value !== "Greeted by patient";
+		$("#oaPatientContactWrap").style.display = notPatient ? "" : "none";
+		if (!notPatient) {
+			$("#oaPatientFoundHow").value = "";
+		}
+	});
+	$("#handoverFormat").addEventListener("change", () => {
+		const fmt = $("#handoverFormat").value;
+		$("#handoverEtaWrap").classList.toggle("hidden", fmt !== "ASHICE");
+		$("#incidentTimeWrap").classList.toggle("hidden", fmt !== "ATMIST");
+	});
 	$("#generateOeButton").addEventListener("click", generateOe);
 	$("#clearOeButton").addEventListener(
 		"click",
@@ -765,7 +779,7 @@ function abcLine(section) {
 		.map(([id, label]) => (val(id) ? `${label}: ${val(id)}` : null))
 		.filter(Boolean);
 	const notes = val(section.notes);
-	return `${section.key} - ${section.title}: ${[...values, ...vitals, notes].filter(Boolean).join(", ") || "assessed"}.`;
+	return `${section.key} - ${[...values, ...vitals, notes].filter(Boolean).join(", ") || "assessed"}.`;
 }
 
 function generateOe() {
@@ -773,7 +787,7 @@ function generateOe() {
 	const oe = [
 		"OE:",
 		"",
-		`OA: ${val("oaFound")}${val("oaLocation") ? ` at ${val("oaLocation")}` : ""}; ${val("oaMobility").toLowerCase()}. ${isChecked("oaConsent") ? "Consented to assessment. " : ""}${isChecked("oaNoABC") ? "No immediate ABC concerns. " : ""}${val("oaNotes")}`.trim(),
+		`OA: ${val("oaFound")}${val("oaLocation") ? ` at ${val("oaLocation")}` : ""}; ${val("oaMobility").toLowerCase()}. ${val("oaFound") !== "Greeted by patient" && val("oaPatientFoundHow") ? `On reaching patient: ${val("oaPatientFoundHow")}. ` : ""}${isChecked("oaConsent") ? "Consented to assessment. " : ""}${isChecked("oaNoABC") ? "No immediate ABC concerns. " : ""}${val("oaNotes")}`.trim(),
 		"",
 		ABCDE.map(abcLine).join("\n"),
 		"",
@@ -813,6 +827,86 @@ function rosBlock(section) {
 	return `${rosLine(section)} ${extras[section]?.() || val(`${section}Notes`) || ""}`.trim();
 }
 
+function buildHandoverText() {
+	const format = val("handoverFormat") || "ASHICE";
+	const age = val("ptAge");
+	const sex = val("ptSex");
+	const sexLabel = sex && sex !== "Not specified" ? sex.toLowerCase() : "";
+	const pt = [age ? `${age}yo` : "", sexLabel].filter(Boolean).join(" ");
+	const pc = getPc();
+	const hpc = val("hpcEvents") || "";
+	const pmh = isChecked("noPmh")
+		? "No significant PMH"
+		: val("pmh") || "Not documented";
+	const meds = isChecked("noMeds")
+		? "No regular medications"
+		: val("medications") || "Not documented";
+	const allergies = isChecked("nkda")
+		? "NKDA"
+		: val("allergies") || "Not documented";
+	const extraNotes = val("handoverNotes");
+
+	const vitalParts = [
+		val("gcsScore")
+			? `GCS ${val("gcsScore")}`
+			: val("avpu")
+				? `AVPU ${val("avpu")}`
+				: "",
+		val("hr") ? `HR ${val("hr")}` : "",
+		val("bp") ? `BP ${val("bp")}` : "",
+		val("spo2") ? `SpO2 ${val("spo2")}%` : "",
+		val("rr") ? `RR ${val("rr")}` : "",
+		val("temp") ? `Temp ${val("temp")}°C` : "",
+	].filter(Boolean);
+	const vitalsLine = vitalParts.length
+		? vitalParts.join(", ")
+		: "Not documented";
+
+	const treatmentParts = ABCDE.flatMap((s) => {
+		const n = val(s.notes);
+		return n ? [n] : [];
+	});
+	const treatment = treatmentParts.length
+		? treatmentParts.join(". ")
+		: "None documented";
+
+	if (format === "ASHICE") {
+		return [
+			`A — Age: ${age || "Not documented"}`,
+			`S — Sex: ${sex || "Not specified"}`,
+			`H — History: ${pc}. ${hpc ? hpc + ". " : ""}PMH: ${pmh}. Medications: ${meds}. Allergies: ${allergies}.`,
+			`I — Illness/Injury: ${pc}${val("onsetType") ? `. Onset: ${val("onsetType")}` : ""}.`,
+			`C — Condition: ${vitalsLine}.`,
+			`E — ETA: ${val("handoverEta") || "Not given"}`,
+			...(extraNotes ? ["", extraNotes] : []),
+		].join("\n");
+	}
+
+	if (format === "SBAR") {
+		return [
+			`S — Situation: ${pt ? pt + " " : ""}presenting with ${pc.toLowerCase()}${hpc ? `. ${hpc}` : ""}.`,
+			`B — Background: PMH: ${pmh}. Medications: ${meds}. Allergies: ${allergies}.`,
+			`A — Assessment:\n${ABCDE.map(abcLine).join("\n")}`,
+			`R — Recommendation: ${buildConveyanceText()}`,
+			...(extraNotes ? ["", extraNotes] : []),
+		].join("\n\n");
+	}
+
+	if (format === "ATMIST") {
+		return [
+			`A — Age: ${age || "Not documented"}`,
+			`T — Time: ${val("incidentTime") || "Not documented"}`,
+			`M — Mechanism: ${hpc || val("onsetType") || "Not documented"}`,
+			`I — Injuries/Illness: ${pc}`,
+			`S — Signs: ${vitalsLine}`,
+			`T — Treatment: ${treatment}`,
+			...(extraNotes ? ["", extraNotes] : []),
+		].join("\n");
+	}
+
+	return "";
+}
+
 function buildOutputSections() {
 	const pc = getPc();
 	const site = getSelectedParts(state.siteParts) || "Not localised";
@@ -827,11 +921,6 @@ function buildOutputSections() {
 			body: `${val("hpcEvents") || "Not documented"}${isChecked("noTravel") ? "\nNo recent travel." : ""}`,
 		},
 		{
-			id: "pain",
-			title: "PAIN ASSESSMENT / SOCRATES",
-			body: `Site: ${site}\nOnset: ${val("onsetType") || "Not documented"}${val("onsetDuration") ? `, duration ${val("onsetDuration")}` : ""}\nCharacter: ${listSet(state.character, "Not characterised")}\nRadiation: ${radiation}\nAssociated symptoms: ${listSet(state.associated, "None reported")}\nTiming: ${val("timingSelect") || "Not documented"}\nExacerbating factors: ${listFactors(state.exacerbating, "exacerbatingOther", "None identified")}\nRelieving factors: ${listFactors(state.relieving, "relievingOther", "None identified")}\nSeverity: ${val("severity") || "Not documented"}`,
-		},
-		{
 			id: "background",
 			title: "BACKGROUND",
 			body: `Allergies: ${isChecked("nkda") ? "NKDA" : val("allergies") || "Not documented"}\nMedications: ${isChecked("noMeds") ? "No regular medications" : val("medications") || "Not documented"}\nPMH: ${isChecked("noPmh") ? "No significant past medical history" : val("pmh") || "Not documented"}\nLast oral intake: ${[val("loiWhat"), val("loiTime")].filter(Boolean).join(" at ") || "Not documented"}\nPrevious episodes: ${val("prevDetails") || "Not documented"}`,
@@ -839,7 +928,14 @@ function buildOutputSections() {
 		{
 			id: "primary",
 			title: "PRIMARY SURVEY",
-			body: `OA: ${val("oaFound")}${val("oaLocation") ? ` at ${val("oaLocation")}` : ""}; ${val("oaMobility").toLowerCase()}.\n${ABCDE.map(abcLine).join("\n")}`,
+			body:
+				`OA: ${val("oaFound")}${val("oaLocation") ? ` at ${val("oaLocation")}` : ""}; ${val("oaMobility").toLowerCase()}. ${val("oaFound") !== "Greeted by patient" && val("oaPatientMet") ? `First saw patient ${val("oaPatientMet")}. ` : ""}${val("oaFound") !== "Greeted by patient" && val("oaPatientFoundHow") ? `On reaching patient: ${val("oaPatientFoundHow")}.` : ""}`.trimEnd() +
+				`\n${ABCDE.map(abcLine).join("\n")}`,
+		},
+		{
+			id: "pain",
+			title: "PAIN ASSESSMENT / SOCRATES",
+			body: `Site: ${site}\nOnset: ${val("onsetType") || "Not documented"}${val("onsetDuration") ? `, duration ${val("onsetDuration")}` : ""}\nCharacter: ${listSet(state.character, "Not characterised")}\nRadiation: ${radiation}\nAssociated symptoms: ${listSet(state.associated, "None reported")}\nTiming: ${val("timingSelect") || "Not documented"}\nExacerbating factors: ${listFactors(state.exacerbating, "exacerbatingOther", "None identified")}\nRelieving factors: ${listFactors(state.relieving, "relievingOther", "None identified")}\nSeverity: ${val("severity") || "Not documented"}`,
 		},
 		{
 			id: "ros-resp",
@@ -892,6 +988,11 @@ function buildOutputSections() {
 			title: "PLAN — CONVEYANCE DECISION",
 			body: buildConveyanceText(),
 		},
+		{
+			id: "handover",
+			title: `HANDOVER — ${val("handoverFormat") || "ASHICE"}`,
+			body: buildHandoverText(),
+		},
 	];
 }
 
@@ -905,7 +1006,7 @@ function renderOutputSections(sections) {
 		card.innerHTML = `<div class="output-card-head"><h3>${section.title}</h3><button type="button" class="secondary-action" data-copy-section="${section.id}">Copy</button></div>`;
 		const pre = document.createElement("pre");
 		pre.className = "output-snippet";
-		pre.textContent = `${section.title}:\n${section.body}`;
+		pre.textContent = section.body;
 		pre.dataset.plaintext = pre.textContent;
 		card.append(pre);
 		root.append(card);
@@ -917,7 +1018,7 @@ function generateOutput() {
 	const sections = buildOutputSections();
 	renderOutputSections(sections);
 	const fullText = sections
-		.map((section) => `${section.title}:\n${section.body}`)
+		.map((section) => section.body)
 		.join("\n\n" + "─".repeat(46) + "\n\n");
 	const legacy = $("#outputText");
 	if (legacy) legacy.textContent = fullText;
@@ -1072,6 +1173,15 @@ function buildConveyanceText() {
 	return `${decision}. Referred/signposted to: ${listSet(state.referrals, "not documented")}. ${val("followUp") ? val("followUp") + ". " : ""}${checks ? `Safety netting: ${checks}.` : ""}${notes ? " " + notes : ""}`.trim();
 }
 
+function clearBodyMap() {
+	state.siteParts.clear();
+	state.radiationParts.clear();
+	$$(".body-part").forEach((part) =>
+		part.classList.remove("site", "radiation"),
+	);
+	updateMapTags();
+}
+
 function clearPainAssessment() {
 	state.siteParts.clear();
 	state.radiationParts.clear();
@@ -1110,6 +1220,7 @@ function selectAuscSound(button) {
 			item.classList.toggle("selected", item.dataset.sound === "normal"),
 		);
 		$("#auscLocationPanel")?.classList.add("hidden");
+		$("#auscOtherWrap")?.classList.add("hidden");
 		renderAuscEntries();
 		syncAuscultationOutput();
 		return;
@@ -1121,14 +1232,24 @@ function selectAuscSound(button) {
 	);
 	$("#auscLocationPanel")?.classList.remove("hidden");
 	$$(".ausc-loc").forEach((item) => item.classList.remove("selected"));
+	const otherWrap = $("#auscOtherWrap");
+	if (otherWrap) {
+		otherWrap.classList.toggle("hidden", sound !== "other");
+		if (sound === "other") {
+			$("#auscOtherText").value = "";
+			setTimeout(() => $("#auscOtherText")?.focus(), 50);
+		}
+	}
 }
 
 function addAuscEntry(button) {
 	if (!pendingAuscSound) return;
-	state.respAusc.entries.push({
-		sound: pendingAuscSound,
-		location: button.dataset.location,
-	});
+	const entry = { sound: pendingAuscSound, location: button.dataset.location };
+	if (pendingAuscSound === "other") {
+		entry.text = ($("#auscOtherText")?.value || "").trim() || "other";
+		$("#auscOtherWrap")?.classList.add("hidden");
+	}
+	state.respAusc.entries.push(entry);
 	pendingAuscSound = null;
 	$$(".ausc-sound").forEach((item) => item.classList.remove("selected"));
 	$("#auscLocationPanel")?.classList.add("hidden");
@@ -1162,16 +1283,17 @@ function formatAuscSound(sound) {
 			crackles: "crackles",
 			reduced: "reduced air entry",
 			bronchial: "bronchial breathing",
+			other: "other:",
 		}[sound] || sound
 	);
 }
 
 function formatAuscEntry(entry) {
-	if (entry.location === "bilateral")
-		return `Bilateral ${formatAuscSound(entry.sound)}`;
+	const sound = entry.sound === "other" ? (entry.text || "other") : formatAuscSound(entry.sound);
+	if (entry.location === "bilateral") return `Bilateral ${sound}`;
 	const side = entry.location.startsWith("L") ? "L" : "R";
 	const zone = entry.location.split("-")[1];
-	return `${side}-sided ${zone} ${formatAuscSound(entry.sound)}`;
+	return `${side}-sided ${zone} ${sound}`;
 }
 
 function buildAuscText() {

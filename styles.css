@@ -533,9 +533,9 @@ select {
 /* Body map */
 .body-map-layout {
 	display: grid;
-	grid-template-columns: 220px 1fr;
-	gap: 18px;
-	align-items: start;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px;
+	align-items: stretch;
 }
 
 .body-map-panel,
@@ -545,6 +545,23 @@ select {
 	border-radius: var(--radius);
 	padding: 14px;
 	box-shadow: var(--shadow-soft);
+}
+
+.selected-panel {
+	grid-column: 1 / -1;
+}
+
+.body-map-label {
+	display: block;
+	text-align: center;
+	font-size: 11px;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 0.07em;
+	color: var(--muted);
+	margin: 0 0 8px;
+	padding: 3px 0;
+	border-bottom: 1px solid var(--line);
 }
 
 .map-tabs {
@@ -573,8 +590,25 @@ select {
 
 .body-map {
 	width: 100%;
-	max-height: 360px;
+	max-width: 210px;
 	display: block;
+	margin: 0 auto;
+}
+
+@media (min-width: 600px) {
+	.body-map {
+		max-width: 260px;
+	}
+}
+
+@media (max-width: 599px) {
+	.body-map-layout {
+		grid-template-columns: 1fr;
+	}
+
+	.selected-panel {
+		grid-column: auto;
+	}
 }
 
 .body-part {
@@ -745,6 +779,19 @@ select {
 
 .secondary-action:hover {
 	background: var(--primary-soft-2);
+}
+
+.socrates-group {
+	border-top: 1px solid var(--line);
+	padding-top: 16px;
+	margin-top: 20px;
+}
+
+.socrates-group > .field-label {
+	margin-top: 0;
+	font-size: 15px;
+	color: var(--text);
+	font-weight: 800;
 }
 
 .pain-toolbar {
