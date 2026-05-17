@@ -4,6 +4,8 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const val = (id) => ($(`#${id}`)?.value || "").trim();
 const isChecked = (id) => Boolean($(`#${id}`)?.checked);
+const onsetTime = () =>
+	val("onsetTime") === "Other" ? val("onsetTimeOther") : val("onsetTime");
 
 const state = {
 	mapMode: "site",
@@ -34,13 +36,22 @@ const state = {
 	odPrescribed: new Set(),
 	shMethod: new Set(),
 	shDepth: new Set(),
+	mseAppearance: new Set(),
+	mseBehaviour: new Set(),
+	mseSpeech: new Set(),
+	mseThoughtContent: new Set(),
+	mseAffect: new Set(),
+	mseThoughtForm: new Set(),
+	msePerception: new Set(),
+	mseInsight: new Set(),
 	airwayInterventions: new Set(),
 	woundInterventions: new Set(),
 	manualHandling: new Set(),
-	otherInterventions: new Set(),
 	clinicalChanges: [],
+	ecgFindings: new Set(),
+	ecgLeads: new Set(),
 	ros: {},
-	respAusc: { normal: true, entries: [] },
+	respAusc: { normal: false, notAuscultated: true, entries: [] },
 	worseningAuto: true,
 };
 
@@ -48,7 +59,7 @@ const state = {
 const ABC_DISABILITY_LINKS = [["GCS 15", "AOx4"]];
 
 const CONVEY_TRANSFER = [
-	["Consent to conveyance obtained", "Consent not obtained / BI pathway only"],
+	["Consent to conveyance obtained", "Consent not obtained"],
 	["Continuous monitoring and reassessment", "Monitoring not maintained"],
 	["Remained stable throughout", "Unstable / deteriorated during transfer"],
 	[
@@ -56,7 +67,7 @@ const CONVEY_TRANSFER = [
 		"Communication concerns during transfer",
 	],
 	["Handover completed with receiving team", "Handover incomplete / delayed"],
-	["Pre-alert not given", "Pre-alert given to receiving unit"],
+	["Pre-alert not given", "Pre-alert given"],
 	["No escalation en route", "Care escalated en route"],
 	["No clinical change", "Clinical change during conveyance"],
 ];
@@ -104,7 +115,7 @@ const WORSENING_PC = {
 	},
 	Headache: {
 		items: [
-			"sudden severe 'thunderclap' headache — worst headache of their life",
+			"sudden severe 'thunderclap' headache",
 			"headache with fever and neck stiffness",
 			"headache with a non-blanching rash",
 			"headache with vision changes, vomiting, or new neurological symptoms",
@@ -165,7 +176,6 @@ const WORSENING_PC = {
 			"worsening or severe abdominal pain",
 			"rigid or board-like abdomen",
 			"vomiting blood or passing black or tarry stools",
-			"fever above 38°C with abdominal pain",
 			"inability to pass urine",
 		],
 	},
@@ -187,8 +197,8 @@ const WORSENING_PC = {
 		items: [
 			"worsening pain or fever with urinary symptoms",
 			"inability to pass urine",
-			"confusion — especially in older patients",
-			"blood in urine with loin or back pain",
+			"confusion",
+			"blood in urine with back pain",
 		],
 	},
 	"Allergic reaction": {
@@ -197,12 +207,12 @@ const WORSENING_PC = {
 			"swelling of lips, tongue, or throat",
 			"wheeze or difficulty breathing",
 			"dizziness or collapse",
-			"if adrenaline auto-injector (EpiPen) used — call 999 immediately regardless",
+			"if EpiPen used — call 999 immediately regardless",
 		],
 	},
 	"Diabetic emergency": {
 		items: [
-			"recurrence of hypoglycaemia symptoms — shakiness, sweating, confusion",
+			"recurrence of hypo symptoms — shakiness, sweating, confusion",
 			"blood glucose not responding to treatment",
 			"vomiting preventing oral intake",
 			"confusion, drowsiness, or unresponsiveness",
@@ -218,7 +228,7 @@ const WORSENING_PC = {
 			"severe worsening pain at any injury site",
 		],
 		redFlags:
-			"Cauda equina red flags explained: loss of bladder or bowel control, saddle anaesthesia (numbness of inner thighs, genitals, or back passage), progressive bilateral leg weakness or numbness — these require an immediate 999 call and should not be waited on.",
+			"Cauda equina red flags: loss of bladder or bowel control, saddle numbness (numbness of inner thighs, genitals, or back passage), bilateral leg weakness or numbness — these require an immediate 999 call and should not be waited on.",
 	},
 	"Back pain": {
 		items: [
@@ -229,27 +239,27 @@ const WORSENING_PC = {
 			"inability to stand or walk",
 		],
 		redFlags:
-			"Cauda equina red flags explained: loss of bladder or bowel control, saddle anaesthesia (numbness of inner thighs, genitals, or back passage), progressive bilateral leg weakness or numbness — these require an immediate 999 call.",
+			"Cauda equina red flags explained: loss of bladder or bowel control, saddle anaesthesia (numbness of inner thighs, genitals, or back passage), bilateral leg weakness or numbness.",
 	},
 	"Trauma / injury": {
 		items: [
 			"increasing pain, swelling, or bruising at the injury site",
 			"loss of sensation or movement below the injury",
-			"severe increasing pain with tightness in a limb — possible compartment syndrome, call 999",
-			"signs of wound infection — redness, warmth, discharge, or fever",
+			"severe increasing pain with tightness in a limb",
+			"signs of infection — redness, warmth, discharge, or fever",
 		],
 	},
 	"Limb pain / swelling": {
 		items: [
 			"worsening swelling, redness, or warmth in the limb",
 			"new numbness, weakness, or colour change",
-			"severe pain with tightness — possible compartment syndrome, call 999",
-			"calf swelling or redness with breathlessness — possible DVT/PE, call 999",
+			"severe pain with tightness",
+			"calf swelling or redness with breathlessness",
 		],
 	},
 	"Wound / laceration": {
 		items: [
-			"wound re-opening or bleeding not controlled with direct pressure",
+			"wound re-opening or bleeding and not controlled with direct pressure",
 			"signs of infection — redness, warmth, swelling, discharge, or fever",
 			"loss of sensation or movement near the wound",
 		],
@@ -267,7 +277,7 @@ const WORSENING_PC = {
 		items: [
 			"temperature above 39.5°C not responding to analgesia",
 			"rigors, severe confusion, or very rapid breathing",
-			"non-blanching rash with fever — call 999 immediately",
+			"non-blanching rash with fever",
 			"signs of sepsis: rapid breathing, mottled skin, confusion, reduced urine",
 		],
 	},
@@ -285,7 +295,7 @@ const WORSENING_PC = {
 			"any immediate risk to life — call 999",
 		],
 		extra:
-			"Samaritans helpline: 116 123 (free, 24/7). Local crisis line signposted if available.",
+			"Samaritans helpline: 116 123 (free, 24/7). Shout 85258. NHS 111 Option 1. Local crisis line signposted if available.",
 	},
 	"Confusion / delirium": {
 		items: [
@@ -443,9 +453,15 @@ const OPTIONS = {
 		"No injury found",
 	],
 	abdoRegions: [
-		"RUQ", "Epigastric", "LUQ",
-		"R flank", "Umbilical", "L flank",
-		"RIF", "Suprapubic", "LIF",
+		"RUQ",
+		"Epigastric",
+		"LUQ",
+		"R flank",
+		"Umbilical",
+		"L flank",
+		"RIF",
+		"Suprapubic",
+		"LIF",
 	],
 };
 
@@ -546,7 +562,7 @@ const ROS = {
 			["accessory", "No accessory muscle use", "Accessory muscle use present"],
 		],
 		extras:
-			'<div class="auscultation-block"><label class="field-label">Auscultation findings</label><div class="square-grid ausc-grid" id="auscSoundGrid"></div><div id="auscLocationPanel" class="hidden"><div id="auscOtherWrap" class="hidden"><label class="field-label" for="auscOtherText">Describe finding</label><input id="auscOtherText" type="text" placeholder="e.g. pleural rub" /></div><label class="field-label">Location <span class="field-hint" style="display:inline;font-size:11px">(tap one or more, then add)</span></label><div class="square-grid ausc-loc-grid" id="auscLocGrid"></div><button id="auscAddButton" type="button" class="secondary-action" style="margin-top:8px">Add finding</button></div><div id="auscEntries" class="ausc-entries"></div><input id="respAus" type="hidden" /><p id="auscPreview" class="ausc-preview">Equal and clear bilateral air entry</p></div><label class="field-label" for="coughType">Cough</label><select id="coughType"><option>No cough</option><option>Dry cough present</option><option>Productive cough present</option></select><label class="field-label" for="respNotes">Additional notes</label><textarea id="respNotes" rows="2"></textarea>',
+			'<div class="auscultation-block"><label class="field-label">Auscultation findings</label><div class="square-grid ausc-grid" id="auscSoundGrid"></div><div id="auscLocationPanel" class="hidden"><div id="auscOtherWrap" class="hidden"><label class="field-label" for="auscOtherText">Describe finding</label><input id="auscOtherText" type="text" placeholder="e.g. pleural rub" /></div><label class="field-label">Location <span class="field-hint" style="display:inline;font-size:11px">(tap one or more, then add)</span></label><div class="square-grid ausc-loc-grid" id="auscLocGrid"></div><button id="auscAddButton" type="button" class="secondary-action" style="margin-top:8px">Add finding</button></div><div id="auscEntries" class="ausc-entries"></div><input id="respAus" type="hidden" /><p id="auscPreview" class="ausc-preview">Equal and clear bilateral air entry</p></div><label class="field-label" for="coughType">Cough</label><select id="coughType"><option>No cough</option><option>Dry cough present</option><option>Productive cough present</option></select><div id="sputumWrap" class="hidden" style="margin-top:6px"><label class="field-label" for="sputumDesc">Sputum</label><input id="sputumDesc" list="sputumList" placeholder="e.g. yellow, green, white, blood-stained" /><datalist id="sputumList"><option>Clear</option><option>White / frothy</option><option>Yellow</option><option>Green</option><option>Brown</option><option>Blood-stained (haemoptysis)</option><option>Pink and frothy</option><option>Rust-coloured</option></datalist></div><label class="field-label" for="respNotes">Additional notes</label><textarea id="respNotes" rows="2"></textarea>',
 	},
 	cvs: {
 		title: "Cardiovascular",
@@ -569,7 +585,7 @@ const ROS = {
 			],
 		],
 		extras:
-			'<label class="field-label" for="bpStatus">Blood pressure status</label><select id="bpStatus"><option>Normotensive</option><option>Hypotensive</option><option>Hypertensive</option></select><label class="field-label" for="ecg">ECG findings</label><input id="ecg" type="text" placeholder="Sinus rhythm - nil acute / not performed"><label class="field-label" for="cvsNotes">Additional notes</label><textarea id="cvsNotes" rows="2"></textarea>',
+			'<label class="field-label" for="bpStatus">Blood pressure status</label><select id="bpStatus"><option>Normotensive</option><option>Hypotensive</option><option>Hypertensive</option></select><label class="field-label">ECG findings</label><div class="square-grid ecg-grid" id="ecgFindingsGrid"></div><div id="ecgLeadPanel" class="hidden" style="margin-top:10px"><label class="field-label">Affected leads <span class="field-hint" style="display:inline;font-size:11px">(select all that apply)</span></label><div class="ecg-lead-grid" id="ecgLeadsGrid"></div></div><label class="field-label" for="cvsNotes" style="margin-top:10px">Additional notes</label><textarea id="cvsNotes" rows="2"></textarea>',
 	},
 	neuro: {
 		title: "Neurological",
@@ -610,7 +626,7 @@ const ROS = {
 			["rebound", "No rebound tenderness", "Rebound tenderness present"],
 		],
 		extras:
-			'<label class="field-label">Palpation findings by region</label><div class="multi-group abdo-grid" data-state="abdoRegions"></div><div class="grid-2" style="margin-top:12px"><div><label class="field-label" for="giFluidIntake">Fluid intake</label><select id="giFluidIntake"><option value="">Not assessed</option><option value="Normal">Normal</option><option value="Increased">Increased</option><option value="Reduced">Reduced</option></select></div><div><label class="field-label" for="giAppetite">Appetite</label><select id="giAppetite"><option value="">Not assessed</option><option value="Normal">Normal</option><option value="Increased">Increased</option><option value="Reduced">Reduced</option></select></div></div><label class="field-label" for="bowelSounds">Bowel sounds</label><input id="bowelSounds" type="text" placeholder="Present and normal"><label class="field-label" for="giNotes">Additional notes</label><textarea id="giNotes" rows="2"></textarea>',
+			'<label class="field-label">Palpation findings by region</label><div class="multi-group abdo-grid" data-state="abdoRegions"></div><div class="grid-2" style="margin-top:12px"><div><label class="field-label" for="giFluidIntake">Fluid intake</label><select id="giFluidIntake"><option value="">Not assessed</option><option value="Normal">Normal</option><option value="Increased">Increased</option><option value="Reduced">Reduced</option></select></div><div><label class="field-label" for="giAppetite">Appetite</label><select id="giAppetite"><option value="">Not assessed</option><option value="Normal">Normal</option><option value="Increased">Increased</option><option value="Reduced">Reduced</option></select></div></div><label class="field-label" for="bowelSounds">Bowel sounds</label><input id="bowelSounds" type="text" placeholder="Present and normal"><label class="check-row" style="margin-top:10px;margin-bottom:8px"><input type="checkbox" id="stomaPresent" /> Patient has stoma</label><div id="stomaDetails" class="hidden"><label class="field-label" for="stomaType">Stoma type</label><select id="stomaType"><option value="">Unknown</option><option>Colostomy</option><option>Ileostomy</option><option>Urostomy</option></select><label class="field-label" for="stomaOutput">Stoma output</label><select id="stomaOutput"><option value="">Not assessed</option><option>Normal</option><option>Reduced</option><option>Absent / no output</option><option>High output / loose</option></select><label class="field-label" for="stomaAppearance">Stoma appearance</label><select id="stomaAppearance"><option value="">Not assessed</option><option>Normal</option><option>Dark / discoloured</option><option>Blood-stained</option><option>Offensive</option></select></div><label class="field-label" for="giNotes" style="margin-top:8px">Additional notes</label><textarea id="giNotes" rows="2"></textarea>',
 	},
 	urine: {
 		title: "Urinary",
@@ -632,7 +648,7 @@ const ROS = {
 			],
 		],
 		extras:
-			'<label class="field-label" for="urineNotes">Additional notes</label><textarea id="urineNotes" rows="2"></textarea>',
+			'<label class="check-row" style="margin-bottom:8px"><input type="checkbox" id="catheterPresent" /> Patient has urinary catheter</label><div id="catheterDetails" class="hidden"><label class="field-label" for="catheterOutput">Catheter output</label><select id="catheterOutput"><option value="">Not assessed</option><option>Normal output</option><option>Reduced output</option><option>No output / blocked</option><option>Bypassing</option></select><label class="field-label" for="urineAppearance">Urine appearance</label><select id="urineAppearance"><option value="">Not assessed</option><option>Clear</option><option>Pale yellow</option><option>Dark yellow / concentrated</option><option>Orange / brown</option><option>Cloudy</option><option>Blood-stained</option><option>Offensive</option></select></div><label class="field-label" for="urineNotes" style="margin-top:8px">Additional notes</label><textarea id="urineNotes" rows="2"></textarea>',
 	},
 	integ: {
 		title: "Integumentary",
@@ -656,13 +672,29 @@ const ROS = {
 		items: [
 			["moodAppropriate", "Mood appropriate", "Mood low or elevated"],
 			["affectAppropriate", "Affect appropriate", "Flat or blunted affect"],
-			["thoughtCoherent", "Thought process coherent", "Disorganised / tangential thinking"],
-			["noHallucinations", "No hallucinations reported", "Hallucinations reported"],
+			[
+				"thoughtCoherent",
+				"Thought process coherent",
+				"Disorganised / tangential thinking",
+			],
+			[
+				"noHallucinations",
+				"No hallucinations reported",
+				"Hallucinations reported",
+			],
 			["noDelusions", "No delusions expressed", "Delusions expressed"],
 			["oriented", "Oriented to person, place and time", "Disoriented"],
 			["insight", "Insight present", "Impaired insight"],
-			["noSuicidalIdeation", "No suicidal ideation expressed", "Suicidal ideation expressed"],
-			["noSelfHarmEvident", "No self-harm evident on examination", "Self-harm evident on examination"],
+			[
+				"noSuicidalIdeation",
+				"No suicidal ideation expressed",
+				"Suicidal ideation expressed",
+			],
+			[
+				"noSelfHarmEvident",
+				"No self-harm evident on examination",
+				"Self-harm evident on examination",
+			],
 		],
 		extras:
 			'<label class="field-label" for="psychBehaviour">Appearance and behaviour</label><input id="psychBehaviour" type="text" placeholder="e.g. Appropriately dressed, cooperative"><label class="field-label" for="psychSpeech">Speech</label><input id="psychSpeech" type="text" placeholder="e.g. Normal rate and volume"><label class="field-label" for="psychRisk">Risk level</label><select id="psychRisk"><option value="">Not assessed</option><option>Low</option><option>Medium</option><option>High</option><option>Very high</option></select><label class="field-label" for="psychProtective">Protective factors</label><input id="psychProtective" type="text" placeholder="e.g. Family support, future plans, engagement with services"><label class="field-label" for="psychNotes">Notes</label><textarea id="psychNotes" rows="2"></textarea>',
@@ -722,10 +754,11 @@ function initDashboard() {
 }
 
 function init() {
-	buildOptionButtons();
 	buildAbcde();
 	buildRos();
+	buildOptionButtons(); // after buildRos so abdoRegions container exists
 	buildAuscultation();
+	buildEcgSection();
 	buildInjurySection();
 	buildTreatmentSection();
 	buildSeizureSection();
@@ -783,9 +816,39 @@ function buildAbcde() {
 			vitalRoot.append(box);
 		});
 		if (!section.vitals.length) vitalRoot.remove();
+		if (section.key === "D") {
+			const sectionBody = $(".section-body", details);
+			const calc = document.createElement("div");
+			calc.id = "gcsCalcWrap";
+			calc.style.cssText = "margin-top:10px";
+			calc.innerHTML = `<button type="button" id="gcsCalcToggle" class="secondary-action" style="width:100%;text-align:left">▸ Calculate GCS</button><div id="gcsCalcPanel" class="hidden" style="margin-top:8px;display:grid;gap:8px"><div class="gcs-row"><label class="field-label">E — Eye opening</label><select id="gcsEye"><option value="">Select</option>${GCS_EYE.map(([n, l]) => `<option value="${n}">${n} — ${l}</option>`).join("")}</select></div><div class="gcs-row"><label class="field-label">V — Verbal response</label><select id="gcsVerbal"><option value="">Select</option>${GCS_VERBAL.map(([n, l]) => `<option value="${n}">${n} — ${l}</option>`).join("")}</select></div><div class="gcs-row"><label class="field-label">M — Motor response</label><select id="gcsMotor"><option value="">Select</option>${GCS_MOTOR.map(([n, l]) => `<option value="${n}">${n} — ${l}</option>`).join("")}</select></div><p id="gcsTally" class="field-hint" style="font-weight:700;font-size:14px;margin:4px 0 0"></p></div>`;
+			sectionBody.append(calc);
+		}
 		root.append(details);
 	});
 }
+
+const GCS_EYE = [
+	[4, "Spontaneous"],
+	[3, "To voice / sound"],
+	[2, "To pain"],
+	[1, "None"],
+];
+const GCS_VERBAL = [
+	[5, "Orientated"],
+	[4, "Confused"],
+	[3, "Inappropriate words"],
+	[2, "Incomprehensible sounds"],
+	[1, "None"],
+];
+const GCS_MOTOR = [
+	[6, "Obeys commands"],
+	[5, "Localises pain"],
+	[4, "Withdraws from pain"],
+	[3, "Abnormal flexion (decorticate)"],
+	[2, "Extension (decerebrate)"],
+	[1, "None"],
+];
 
 const AUSC_SOUNDS = [
 	["normal", "Normal (equal & clear bilateral)"],
@@ -794,6 +857,48 @@ const AUSC_SOUNDS = [
 	["reduced", "Reduced air entry"],
 	["bronchial", "Bronchial breathing"],
 	["other", "Other"],
+	["not-auscultated", "Not auscultated"],
+];
+
+const ECG_FINDINGS = [
+	"Sinus rhythm",
+	"Sinus tachycardia",
+	"Sinus bradycardia",
+	"Atrial fibrillation",
+	"Atrial flutter",
+	"ST elevation",
+	"ST depression",
+	"T wave inversion",
+	"Peaked T waves",
+	"LBBB",
+	"RBBB",
+	"1° AV block",
+	"2° AV block",
+	"3° CHB",
+	"VT",
+	"VF",
+	"Nil acute",
+	"Not performed",
+];
+const ECG_LEAD_FINDINGS = new Set([
+	"ST elevation",
+	"ST depression",
+	"T wave inversion",
+	"Peaked T waves",
+]);
+const ECG_LEADS = [
+	"I",
+	"II",
+	"III",
+	"aVR",
+	"aVL",
+	"aVF",
+	"V1",
+	"V2",
+	"V3",
+	"V4",
+	"V5",
+	"V6",
 ];
 const AUSC_LOCATIONS = [
 	["R-upper", "R upper"],
@@ -825,21 +930,19 @@ const INJURY_TYPES = [
 const INJURY_INTERVENTIONS = [
 	"Wound cleaned",
 	"Wound dressed",
-	"Wound closed (steri-strips)",
+	"Steri-strips",
 	"Pressure dressing",
 	"Haemostatic dressing",
 	"Tourniquet applied",
 	"Splinted",
-	"Buddy strapped",
-	"Sling applied",
+	"Sling applied/Triangular Bandage",
 	"Cervical collar",
-	"Ice pack",
 ];
 
 const TX_AIRWAY = [
 	"OPA",
 	"NPA",
-	"LMA / i-gel",
+	"i-gel",
 	"Endotracheal tube",
 	"Suction",
 	"BVM ventilation",
@@ -874,49 +977,138 @@ const TX_MANUAL = [
 	"Hoist",
 	"Other",
 ];
-const TX_OTHER = [
-	"12-lead ECG",
-	"Blood glucose monitoring",
-	"Temperature",
-	"Pain reassessment",
-	"Position change",
-	"Psychological support",
-	"Safeguarding referral",
-	"Other",
-];
 
 const SEIZURE_TYPES = [
-	"Tonic-clonic (grand mal)", "Absence", "Focal / partial onset",
-	"Myoclonic", "Atonic (drop attack)", "Status epilepticus", "Unknown / unwitnessed",
+	"Tonic-clonic (grand mal)",
+	"Absence",
+	"Focal / partial onset",
+	"Myoclonic",
+	"Atonic (drop attack)",
+	"Status epilepticus",
+	"Unknown / unwitnessed",
 ];
 const SEIZURE_FEATURES = [
-	"Tongue biting", "Urinary incontinence", "Limb jerking",
-	"Eye deviation", "Cyanosis", "Frothing at mouth", "Head turning",
+	"Tongue biting",
+	"Urinary incontinence",
+	"Limb jerking",
+	"Eye deviation",
+	"Cyanosis",
+	"Frothing at mouth",
+	"Head turning",
 ];
 const SEIZURE_FINDINGS = [
-	"Tongue laceration / bite mark", "Lip / cheek biting",
-	"Urinary incontinence", "Faecal soiling",
-	"Head injury / scalp wound", "Facial trauma",
-	"Limb injury", "Back / spinal tenderness",
-	"Shoulder dislocation", "Burn / contact injury",
+	"Tongue laceration / bite mark",
+	"Lip / cheek biting",
+	"Urinary incontinence",
+	"Faecal soiling",
+	"Head injury / scalp wound",
+	"Facial trauma",
+	"Limb injury",
+	"Back / spinal tenderness",
+	"Shoulder dislocation",
+	"Burn / contact injury",
 	"No injuries found",
 ];
 const SEIZURE_PRECIPITANTS = [
-	"Missed medication", "Sleep deprivation", "Alcohol / substance use",
-	"Fever / illness", "Stress", "Flickering / visual stimulus",
-	"Hypoglycaemia", "Head injury", "Unknown",
+	"Missed medication",
+	"Sleep deprivation",
+	"Alcohol / substance use",
+	"Fever / illness",
+	"Stress",
+	"Flickering / visual stimulus",
+	"Hypoglycaemia",
+	"Head injury",
+	"Unknown",
 ];
 const AED_COMPLIANCE = [
-	"Compliant with AEDs", "Missed dose(s)", "Recently stopped medication",
-	"Not prescribed AEDs", "Medication changed recently",
+	"Compliant with AEDs",
+	"Missed dose(s)",
+	"Recently stopped medication",
+	"Not prescribed AEDs",
+	"Medication changed recently",
 ];
 
 const MH_PCS = ["Mental health crisis", "Overdose / poisoning", "Self-harm"];
-const MH_INTENT = ["Deliberate", "Accidental", "Unclear / unknown", "Intent denied"];
+const MH_INTENT = [
+	"Deliberate",
+	"Accidental",
+	"Unclear / unknown",
+	"Intent denied",
+];
 const MH_PLANNING = ["Planned", "Impulsive", "Unknown"];
-const OD_PRESCRIBED = ["Prescribed medication", "OTC / purchased", "Non-prescribed / illicit", "Unknown"];
-const SH_METHOD = ["Cutting", "Burning", "Strangulation / ligature", "Blunt trauma / hitting", "Scratching / picking", "Poisoning / ingestion", "Other"];
+const OD_PRESCRIBED = [
+	"Prescribed medication",
+	"OTC / purchased",
+	"Non-prescribed / illicit",
+	"Unknown",
+];
+const SH_METHOD = [
+	"Cutting",
+	"Burning",
+	"Strangulation / ligature",
+	"Blunt trauma / hitting",
+	"Scratching / picking",
+	"Poisoning / ingestion",
+	"Other",
+];
 const SH_DEPTH = ["Superficial", "Deep", "Unknown"];
+
+const MSE_APPEARANCE = [
+	"Appropriately dressed",
+	"Dishevelled",
+	"Unkempt",
+	"Bizarre / unusual",
+];
+const MSE_BEHAVIOUR = [
+	"Calm",
+	"Agitated",
+	"Restless",
+	"Aggressive",
+	"Withdrawn",
+	"Tearful",
+	"Disinhibited",
+];
+const MSE_SPEECH = [
+	"Normal rate/volume",
+	"Pressured",
+	"Slow",
+	"Loud",
+	"Quiet",
+	"Incoherent",
+	"Mute",
+];
+const MSE_THOUGHT_CONTENT = [
+	"No abnormal content",
+	"Paranoid ideation",
+	"Grandiose beliefs",
+	"Referential ideation",
+	"Obsessional thoughts",
+];
+const MSE_AFFECT = [
+	"Euthymic",
+	"Low / depressed",
+	"Elevated",
+	"Anxious",
+	"Labile",
+	"Blunted / flat",
+	"Irritable",
+];
+const MSE_THOUGHT_FORM = [
+	"Coherent",
+	"Circumstantial",
+	"Tangential",
+	"Flight of ideas",
+	"Loose associations",
+	"Thought blocking",
+];
+const MSE_PERCEPTION = [
+	"None reported",
+	"Auditory hallucinations",
+	"Visual hallucinations",
+	"Tactile hallucinations",
+	"Command hallucinations",
+];
+const MSE_INSIGHT = ["Full insight", "Partial insight", "No insight"];
 
 function buildAuscultation() {
 	const soundGrid = $("#auscSoundGrid");
@@ -925,7 +1117,7 @@ function buildAuscultation() {
 	AUSC_SOUNDS.forEach(([id, label]) => {
 		const button = document.createElement("button");
 		button.type = "button";
-		button.className = `square-btn ausc-sound${id === "normal" ? " selected" : ""}`;
+		button.className = `square-btn ausc-sound${id === "not-auscultated" ? " selected" : ""}`;
 		button.textContent = label;
 		button.dataset.sound = id;
 		soundGrid.append(button);
@@ -939,6 +1131,32 @@ function buildAuscultation() {
 		locGrid.append(button);
 	});
 	$("#auscAddButton")?.addEventListener("click", commitAuscLocations);
+}
+
+function buildEcgSection() {
+	const findingsGrid = $("#ecgFindingsGrid");
+	const leadsGrid = $("#ecgLeadsGrid");
+	if (!findingsGrid || !leadsGrid) return;
+	ECG_FINDINGS.forEach((label) => {
+		const btn = document.createElement("button");
+		btn.type = "button";
+		btn.className = "square-btn ecg-finding";
+		btn.textContent = label;
+		btn.dataset.finding = label;
+		if (label === "Not performed") {
+			btn.classList.add("selected");
+			state.ecgFindings.add(label);
+		}
+		findingsGrid.append(btn);
+	});
+	ECG_LEADS.forEach((lead) => {
+		const btn = document.createElement("button");
+		btn.type = "button";
+		btn.className = "square-btn ecg-lead";
+		btn.textContent = lead;
+		btn.dataset.lead = lead;
+		leadsGrid.append(btn);
+	});
 }
 
 function buildInjurySection() {
@@ -1042,10 +1260,27 @@ function buildButtonGrid(containerId, items, groupAttr, groupKey, valueAttr) {
 }
 
 function buildTreatmentSection() {
-	buildButtonGrid("airwayInterventionGrid", TX_AIRWAY, "txGroup", "airway", "txValue");
-	buildButtonGrid("woundInterventionGrid", TX_WOUND, "txGroup", "wound", "txValue");
-	buildButtonGrid("manualHandlingGrid", TX_MANUAL, "txGroup", "manual", "txValue");
-	buildButtonGrid("otherInterventionGrid", TX_OTHER, "txGroup", "other", "txValue");
+	buildButtonGrid(
+		"airwayInterventionGrid",
+		TX_AIRWAY,
+		"txGroup",
+		"airway",
+		"txValue",
+	);
+	buildButtonGrid(
+		"woundInterventionGrid",
+		TX_WOUND,
+		"txGroup",
+		"wound",
+		"txValue",
+	);
+	buildButtonGrid(
+		"manualHandlingGrid",
+		TX_MANUAL,
+		"txGroup",
+		"manual",
+		"txValue",
+	);
 
 	$("#addVaButton")?.addEventListener("click", addIvEntry);
 	$("#addDrugButton")?.addEventListener("click", addDrugEntry);
@@ -1069,12 +1304,16 @@ function makeEntryManager(stateKey, containerId, formatFn, removeAttr) {
 			root.append(row);
 		});
 	};
-	const remove = (index) => { state[stateKey].splice(index, 1); render(); };
+	const remove = (index) => {
+		state[stateKey].splice(index, 1);
+		render();
+	};
 	return { render, remove };
 }
 
 const { render: renderIvEntries, remove: removeIvEntry } = makeEntryManager(
-	"ivEntries", "vaEntries",
+	"ivEntries",
+	"vaEntries",
 	(e) => {
 		const parts = [e.type];
 		if (e.gauge) parts.push(e.gauge);
@@ -1083,26 +1322,53 @@ const { render: renderIvEntries, remove: removeIvEntry } = makeEntryManager(
 		if (e.fluids) parts.push(`• ${e.fluids}`);
 		return parts.join(" ");
 	},
-	"remove-va"
+	"remove-va",
 );
 
-const { render: renderDrugEntries, remove: removeDrugEntry } = makeEntryManager(
-	"drugEntries", "drugEntries",
-	(e) => {
-		const parts = [e.drug];
-		if (e.dose) parts.push(e.dose);
-		if (e.route) parts.push(`via ${e.route}`);
-		if (e.time) parts.push(`at ${e.time}`);
-		return parts.join(" ");
-	},
-	"remove-drug"
-);
+function renderDrugEntries() {
+	const root = $("#drugEntries");
+	if (!root) return;
+	root.innerHTML = "";
+	state.drugEntries.forEach((entry, index) => {
+		const parts = [entry.drug];
+		if (entry.dose) parts.push(entry.dose);
+		if (entry.route) parts.push(`via ${entry.route}`);
+		if (entry.time) parts.push(`at ${entry.time}`);
+		const row = document.createElement("div");
+		row.className = "ausc-entry";
+		row.innerHTML = `<span>${parts.join(" ")}</span><div style="display:flex;gap:4px"><button type="button" class="repeat-drug-btn" data-repeat-drug="${index}" aria-label="Repeat">↺</button><button type="button" data-remove-drug="${index}" aria-label="Remove">×</button></div>`;
+		root.append(row);
+	});
+}
+function removeDrugEntry(index) {
+	state.drugEntries.splice(index, 1);
+	renderDrugEntries();
+}
+function repeatDrugEntry(index) {
+	const entry = state.drugEntries[index];
+	if (!entry) return;
+	const now = new Date();
+	const hh = String(now.getHours()).padStart(2, "0");
+	const mm = String(now.getMinutes()).padStart(2, "0");
+	const nameEl = $("#drugName");
+	if (nameEl) nameEl.value = entry.drug;
+	const doseEl = $("#drugDose");
+	if (doseEl) doseEl.value = entry.dose || "";
+	const routeEl = $("#drugRoute");
+	if (routeEl) routeEl.value = entry.route || "";
+	const timeEl = $("#drugTime");
+	if (timeEl) timeEl.value = `${hh}:${mm}`;
+	nameEl?.scrollIntoView({ behavior: "smooth", block: "center" });
+	nameEl?.focus();
+}
 
-const { render: renderChangeEntries, remove: removeChangeEntry } = makeEntryManager(
-	"clinicalChanges", "changeEntries",
-	(e) => e.time ? `[${e.time}] ${e.desc}` : e.desc,
-	"remove-change"
-);
+const { render: renderChangeEntries, remove: removeChangeEntry } =
+	makeEntryManager(
+		"clinicalChanges",
+		"changeEntries",
+		(e) => (e.time ? `[${e.time}] ${e.desc}` : e.desc),
+		"remove-change",
+	);
 
 function addIvEntry() {
 	const type = val("vaType");
@@ -1115,7 +1381,10 @@ function addIvEntry() {
 		outcome: val("vaOutcome"),
 		fluids: val("vaFluids"),
 	});
-	["vaType", "vaGauge", "vaSite", "vaOutcome", "vaFluids"].forEach((id) => { const el = $(`#${id}`); if (el) el.value = ""; });
+	["vaType", "vaGauge", "vaSite", "vaOutcome", "vaFluids"].forEach((id) => {
+		const el = $(`#${id}`);
+		if (el) el.value = "";
+	});
 	$("#vaGaugeWrap")?.classList.add("hidden");
 	renderIvEntries();
 }
@@ -1129,7 +1398,10 @@ function addDrugEntry() {
 		route: val("drugRoute"),
 		time: val("drugTime"),
 	});
-	["drugName", "drugDose", "drugRoute", "drugTime"].forEach((id) => { const el = $(`#${id}`); if (el) el.value = ""; });
+	["drugName", "drugDose", "drugRoute", "drugTime"].forEach((id) => {
+		const el = $(`#${id}`);
+		if (el) el.value = "";
+	});
 	renderDrugEntries();
 }
 
@@ -1137,7 +1409,10 @@ function addChangeEntry() {
 	const desc = val("changeDesc");
 	if (!desc) return;
 	state.clinicalChanges.push({ time: val("changeTime"), desc });
-	["changeDesc", "changeTime"].forEach((id) => { const el = $(`#${id}`); if (el) el.value = ""; });
+	["changeDesc", "changeTime"].forEach((id) => {
+		const el = $(`#${id}`);
+		if (el) el.value = "";
+	});
 	renderChangeEntries();
 }
 
@@ -1182,34 +1457,70 @@ function buildTreatmentText() {
 		});
 	}
 	if (state.woundInterventions.size) {
-		const items = [...state.woundInterventions].map((v) => v === "Other" && val("woundOther") ? val("woundOther") : v);
+		const items = [...state.woundInterventions].map((v) =>
+			v === "Other" && val("woundOther") ? val("woundOther") : v,
+		);
 		lines.push(`Wound management: ${items.join(", ")}.`);
 	}
 	if (state.manualHandling.size) {
-		const items = [...state.manualHandling].map((v) => v === "Other" && val("manualOther") ? val("manualOther") : v);
+		const items = [...state.manualHandling].map((v) =>
+			v === "Other" && val("manualOther") ? val("manualOther") : v,
+		);
 		lines.push(`Manual handling: ${items.join(", ")}.`);
 	}
-	if (state.otherInterventions.size) {
-		const items = [...state.otherInterventions].map((v) => v === "Other" && val("otherIntOther") ? val("otherIntOther") : v);
-		lines.push(`Other: ${items.join(", ")}.`);
-	}
+	if (val("otherInterventionsFree"))
+		lines.push(`Other interventions: ${val("otherInterventionsFree")}.`);
+
 	if (val("treatmentNotes")) lines.push(val("treatmentNotes"));
 	return lines.length ? lines.join("\n") : "No interventions documented.";
 }
 
 function buildSeizureSection() {
-	buildButtonGrid("seizureTypeGrid", SEIZURE_TYPES, "szGroup", "type", "szValue");
-	buildButtonGrid("seizureFeaturesGrid", SEIZURE_FEATURES, "szGroup", "features", "szValue");
-	buildButtonGrid("seizureFindingsGrid", SEIZURE_FINDINGS, "szGroup", "findings", "szValue");
-	buildButtonGrid("seizurePrecipitantsGrid", SEIZURE_PRECIPITANTS, "szGroup", "precipitants", "szValue");
-	buildButtonGrid("aedComplianceGrid", AED_COMPLIANCE, "szGroup", "aed", "szValue");
+	buildButtonGrid(
+		"seizureTypeGrid",
+		SEIZURE_TYPES,
+		"szGroup",
+		"type",
+		"szValue",
+	);
+	buildButtonGrid(
+		"seizureFeaturesGrid",
+		SEIZURE_FEATURES,
+		"szGroup",
+		"features",
+		"szValue",
+	);
+	buildButtonGrid(
+		"seizureFindingsGrid",
+		SEIZURE_FINDINGS,
+		"szGroup",
+		"findings",
+		"szValue",
+	);
+	buildButtonGrid(
+		"seizurePrecipitantsGrid",
+		SEIZURE_PRECIPITANTS,
+		"szGroup",
+		"precipitants",
+		"szValue",
+	);
+	buildButtonGrid(
+		"aedComplianceGrid",
+		AED_COMPLIANCE,
+		"szGroup",
+		"aed",
+		"szValue",
+	);
 }
 
 function buildSeizureText() {
 	const lines = [];
-	if (state.seizureType.size) lines.push(`Seizure type: ${[...state.seizureType].join(", ")}.`);
-	if (val("seizureCount")) lines.push(`Number of seizures: ${val("seizureCount")}.`);
-	if (val("seizureDuration")) lines.push(`Duration: ${val("seizureDuration")}.`);
+	if (state.seizureType.size)
+		lines.push(`Seizure type: ${[...state.seizureType].join(", ")}.`);
+	if (val("seizureCount"))
+		lines.push(`Number of seizures: ${val("seizureCount")}.`);
+	if (val("seizureDuration"))
+		lines.push(`Duration: ${val("seizureDuration")}.`);
 	if (val("seizureTime")) lines.push(`Time of onset: ${val("seizureTime")}.`);
 	if (isChecked("seizureWitnessed")) {
 		const by = val("seizureWitnessedBy");
@@ -1217,43 +1528,130 @@ function buildSeizureText() {
 	} else {
 		lines.push("Witnessed: No / unknown.");
 	}
-	if (isChecked("seizureLOC")) lines.push("Loss of consciousness during seizure: Yes.");
-	if (state.seizureFeatures.size) lines.push(`Features during seizure: ${[...state.seizureFeatures].join(", ")}.`);
-	if (state.seizureFindings.size) lines.push(`Post-seizure findings on examination: ${[...state.seizureFindings].join(", ")}.`);
+	if (isChecked("seizureLOC"))
+		lines.push("Loss of consciousness during seizure: Yes.");
+	if (state.seizureFeatures.size)
+		lines.push(
+			`Features during seizure: ${[...state.seizureFeatures].join(", ")}.`,
+		);
+	if (state.seizureFindings.size)
+		lines.push(
+			`Post-seizure findings on examination: ${[...state.seizureFindings].join(", ")}.`,
+		);
 	const postictal = isChecked("seizurePostictal");
 	if (postictal) {
 		const dur = val("seizurePostictalDuration");
 		lines.push(`Postictal phase: Yes${dur ? ` — duration ${dur}` : ""}.`);
 	}
-	if (val("seizureRecovery")) lines.push(`Recovery to baseline: ${val("seizureRecovery")}.`);
+	if (val("seizureRecovery"))
+		lines.push(`Recovery to baseline: ${val("seizureRecovery")}.`);
 	if (isChecked("seizureKnownEpileptic")) {
 		const diag = val("seizureEpilepsyDiagnosis");
 		lines.push(`Known epileptic: Yes${diag ? ` (${diag})` : ""}.`);
-		if (val("seizureLastPrior")) lines.push(`Last seizure prior to today: ${val("seizureLastPrior")}.`);
-		if (val("seizureUsualPattern")) lines.push(`Usual pattern: ${val("seizureUsualPattern")}.`);
-		if (state.aedCompliance.size) lines.push(`AED compliance: ${[...state.aedCompliance].join(", ")}.`);
+		if (val("seizureLastPrior"))
+			lines.push(`Last seizure prior to today: ${val("seizureLastPrior")}.`);
+		if (val("seizureUsualPattern"))
+			lines.push(`Usual pattern: ${val("seizureUsualPattern")}.`);
+		if (state.aedCompliance.size)
+			lines.push(`AED compliance: ${[...state.aedCompliance].join(", ")}.`);
 	}
-	if (state.seizurePrecipitants.size) lines.push(`Precipitating factors: ${[...state.seizurePrecipitants].join(", ")}.`);
+	if (state.seizurePrecipitants.size)
+		lines.push(
+			`Precipitating factors: ${[...state.seizurePrecipitants].join(", ")}.`,
+		);
 	if (val("seizureNotes")) lines.push(val("seizureNotes"));
 	return lines.length ? lines.join("\n") : "No seizure assessment documented.";
 }
 
 function buildMhSection() {
 	buildButtonGrid("mhIntentGrid", MH_INTENT, "mhGroup", "intent", "mhValue");
-	buildButtonGrid("mhPlanningGrid", MH_PLANNING, "mhGroup", "planning", "mhValue");
-	buildButtonGrid("odPrescribedGrid", OD_PRESCRIBED, "mhGroup", "odPrescribed", "mhValue");
+	buildButtonGrid(
+		"mhPlanningGrid",
+		MH_PLANNING,
+		"mhGroup",
+		"planning",
+		"mhValue",
+	);
+	buildButtonGrid(
+		"odPrescribedGrid",
+		OD_PRESCRIBED,
+		"mhGroup",
+		"odPrescribed",
+		"mhValue",
+	);
 	buildButtonGrid("shMethodGrid", SH_METHOD, "mhGroup", "shMethod", "mhValue");
 	buildButtonGrid("shDepthGrid", SH_DEPTH, "mhGroup", "shDepth", "mhValue");
+	buildButtonGrid(
+		"mseAppearanceGrid",
+		MSE_APPEARANCE,
+		"mhGroup",
+		"mseAppearance",
+		"mhValue",
+	);
+	buildButtonGrid(
+		"mseBehaviourGrid",
+		MSE_BEHAVIOUR,
+		"mhGroup",
+		"mseBehaviour",
+		"mhValue",
+	);
+	buildButtonGrid(
+		"mseSpeechGrid",
+		MSE_SPEECH,
+		"mhGroup",
+		"mseSpeech",
+		"mhValue",
+	);
+	buildButtonGrid(
+		"mseThoughtContentGrid",
+		MSE_THOUGHT_CONTENT,
+		"mhGroup",
+		"mseThoughtContent",
+		"mhValue",
+	);
+	buildButtonGrid(
+		"mseAffectGrid",
+		MSE_AFFECT,
+		"mhGroup",
+		"mseAffect",
+		"mhValue",
+	);
+	buildButtonGrid(
+		"mseThoughtFormGrid",
+		MSE_THOUGHT_FORM,
+		"mhGroup",
+		"mseThoughtForm",
+		"mhValue",
+	);
+	buildButtonGrid(
+		"msePerceptionGrid",
+		MSE_PERCEPTION,
+		"mhGroup",
+		"msePerception",
+		"mhValue",
+	);
+	buildButtonGrid(
+		"mseInsightGrid",
+		MSE_INSIGHT,
+		"mhGroup",
+		"mseInsight",
+		"mhValue",
+	);
 }
 
 function buildMhAssessmentText() {
 	const pc = getPc();
 	const lines = [];
-	if (state.mhIntent.size) lines.push(`Intent: ${[...state.mhIntent].join(", ")}.`);
-	if (state.mhPlanning.size) lines.push(`Nature of act: ${[...state.mhPlanning].join(", ")}.`);
-	if (val("mhTriggers")) lines.push(`Triggers / precipitants: ${val("mhTriggers")}.`);
+	if (state.mhIntent.size)
+		lines.push(`Intent: ${[...state.mhIntent].join(", ")}.`);
+	if (state.mhPlanning.size)
+		lines.push(`Nature of act: ${[...state.mhPlanning].join(", ")}.`);
+	if (val("mhTriggers"))
+		lines.push(`Triggers / precipitants: ${val("mhTriggers")}.`);
 	if (isChecked("mhPrevious")) {
-		lines.push(`Previous episodes: ${val("mhPreviousDetails") || "Yes — details not documented"}.`);
+		lines.push(
+			`Previous episodes: ${val("mhPreviousDetails") || "Yes — details not documented"}.`,
+		);
 	}
 	if (pc === "Overdose / poisoning") {
 		if (val("odSubstance")) lines.push(`Substance(s): ${val("odSubstance")}.`);
@@ -1261,16 +1659,36 @@ function buildMhAssessmentText() {
 		if (val("odTime")) lines.push(`Time taken: ${val("odTime")}.`);
 		if (val("odRoute")) lines.push(`Route: ${val("odRoute")}.`);
 		if (isChecked("odAlcohol")) lines.push("Alcohol co-ingestion reported.");
-		if (state.odPrescribed.size) lines.push(`Source: ${[...state.odPrescribed].join(", ")}.`);
+		if (state.odPrescribed.size)
+			lines.push(`Source: ${[...state.odPrescribed].join(", ")}.`);
 	}
 	if (pc === "Self-harm") {
-		if (state.shMethod.size) lines.push(`Method: ${[...state.shMethod].join(", ")}.`);
-		if (state.shDepth.size) lines.push(`Wound depth: ${[...state.shDepth].join(", ")}.`);
+		if (state.shMethod.size)
+			lines.push(`Method: ${[...state.shMethod].join(", ")}.`);
+		if (state.shDepth.size)
+			lines.push(`Wound depth: ${[...state.shDepth].join(", ")}.`);
 	}
-	if (val("mhCurrentServices")) lines.push(`Current MH services: ${val("mhCurrentServices")}.`);
+	const msePairs = [
+		[state.mseAppearance, "Appearance"],
+		[state.mseBehaviour, "Behaviour"],
+		[state.mseSpeech, "Communication"],
+		[state.mseThoughtContent, "Delusions"],
+		[state.mseAffect, "Emotion/affect"],
+		[state.mseThoughtForm, "Form of thoguht"],
+		[state.msePerception, "Hallucination/Perception"],
+		[state.mseInsight, "Insight"],
+	];
+	const mseLines = msePairs
+		.filter(([s]) => s.size)
+		.map(([s, label]) => `${label}: ${[...s].join(", ")}.`);
+	if (mseLines.length) lines.push("MSE — " + mseLines.join(" "));
+	if (val("mhCurrentServices"))
+		lines.push(`Current MH services: ${val("mhCurrentServices")}.`);
 	if (val("mhS136")) lines.push(`S136 / MHA: ${val("mhS136")}.`);
 	if (val("mhNotes")) lines.push(val("mhNotes"));
-	return lines.length ? lines.join("\n") : "No MH assessment details documented.";
+	return lines.length
+		? lines.join("\n")
+		: "No MH assessment details documented.";
 }
 
 function buildRos() {
@@ -1279,7 +1697,11 @@ function buildRos() {
 		const details = document.createElement("details");
 		details.className = "section-card";
 
-		details.innerHTML = `<summary><span>${section.title}</span><small id="badge-${key}" class="status-pill">All normal</small></summary><div class="section-body"><div class="square-grid ros-grid"></div>${section.extras}</div>`;
+		details.innerHTML = `<summary><span>${section.title}</span><small id="badge-${key}" class="status-pill">All normal</small></summary><div class="section-body"><div class="square-grid ros-grid"></div>${section.extras || ""}</div>`;
+		if (key === "psych") {
+			details.id = "ros-psych-section";
+			details.classList.add("hidden");
+		}
 		const grid = $(".ros-grid", details);
 		section.items.forEach(([id, normal, abnormal]) => {
 			const stateId = `${key}_${id}`;
@@ -1311,13 +1733,55 @@ function bindEvents() {
 		$("#fallsAssessmentCard").classList.toggle("hidden", pc !== "Fall");
 		$("#headInjuryCard").classList.toggle("hidden", pc !== "Head injury");
 		$("#seizureAssessmentCard").classList.toggle("hidden", pc !== "Seizure");
-		$("#mhAssessmentCard").classList.toggle("hidden", !MH_PCS.includes(pc));
-		$("#odDetailsWrap").classList.toggle("hidden", pc !== "Overdose / poisoning");
+		const isMhPc = MH_PCS.includes(pc);
+		$("#mhAssessmentCard").classList.toggle("hidden", !isMhPc);
+		$("#ros-psych-section")?.classList.toggle("hidden", !isMhPc);
+		$("#odDetailsWrap").classList.toggle(
+			"hidden",
+			pc !== "Overdose / poisoning",
+		);
 		$("#shDetailsWrap").classList.toggle("hidden", pc !== "Self-harm");
 		if (state.worseningAuto) applyWorseningDefault();
 		else updateWorseningScript();
 	});
 	$("#capacityStatus").addEventListener("change", handleCapacityDisplay);
+	$("#onsetTime").addEventListener("change", () => {
+		$("#onsetTimeOther")?.classList.toggle("hidden", onsetTime() !== "Other");
+	});
+	$("#coughType").addEventListener("change", () => {
+		$("#sputumWrap")?.classList.toggle(
+			"hidden",
+			val("coughType") !== "Productive cough present",
+		);
+	});
+	document.addEventListener("change", (e) => {
+		if (e.target.id === "catheterPresent")
+			$("#catheterDetails")?.classList.toggle("hidden", !e.target.checked);
+		if (e.target.id === "stomaPresent")
+			$("#stomaDetails")?.classList.toggle("hidden", !e.target.checked);
+	});
+	$("#gcsCalcToggle")?.addEventListener("click", () => {
+		const panel = $("#gcsCalcPanel");
+		if (!panel) return;
+		const open = !panel.classList.contains("hidden");
+		panel.classList.toggle("hidden", open);
+		$("#gcsCalcToggle").textContent = (open ? "▸" : "▾") + " Calculate GCS";
+	});
+	document.addEventListener("change", (e) => {
+		if (!["gcsEye", "gcsVerbal", "gcsMotor"].includes(e.target.id)) return;
+		const e4 = parseInt(val("gcsEye"), 10);
+		const v5 = parseInt(val("gcsVerbal"), 10);
+		const m6 = parseInt(val("gcsMotor"), 10);
+		const tally = $("#gcsTally");
+		if (!e4 || !v5 || !m6) {
+			if (tally) tally.textContent = "";
+			return;
+		}
+		const total = e4 + v5 + m6;
+		if (tally) tally.textContent = `GCS: E${e4} V${v5} M${m6} = ${total}/15`;
+		const scoreEl = $("#gcsScore");
+		if (scoreEl) scoreEl.value = total;
+	});
 	$("#worseningMode").addEventListener("change", () => {
 		state.worseningAuto = false;
 		$("#customWorsening").classList.toggle(
@@ -1420,7 +1884,13 @@ function bindEvents() {
 			return removeInjuryEntry(Number(removeInjury.dataset.removeInjury));
 		const szChip = event.target.closest("[data-sz-group]");
 		if (szChip) {
-			const map = { type: "seizureType", features: "seizureFeatures", findings: "seizureFindings", precipitants: "seizurePrecipitants", aed: "aedCompliance" };
+			const map = {
+				type: "seizureType",
+				features: "seizureFeatures",
+				findings: "seizureFindings",
+				precipitants: "seizurePrecipitants",
+				aed: "aedCompliance",
+			};
 			const set = state[map[szChip.dataset.szGroup]];
 			if (!set) return;
 			const v = szChip.dataset.szValue;
@@ -1430,7 +1900,21 @@ function bindEvents() {
 		}
 		const mhChip = event.target.closest("[data-mh-group]");
 		if (mhChip) {
-			const map = { intent: "mhIntent", planning: "mhPlanning", odPrescribed: "odPrescribed", shMethod: "shMethod", shDepth: "shDepth" };
+			const map = {
+				intent: "mhIntent",
+				planning: "mhPlanning",
+				odPrescribed: "odPrescribed",
+				shMethod: "shMethod",
+				shDepth: "shDepth",
+				mseAppearance: "mseAppearance",
+				mseBehaviour: "mseBehaviour",
+				mseSpeech: "mseSpeech",
+				mseThoughtContent: "mseThoughtContent",
+				mseAffect: "mseAffect",
+				mseThoughtForm: "mseThoughtForm",
+				msePerception: "msePerception",
+				mseInsight: "mseInsight",
+			};
 			const set = state[map[mhChip.dataset.mhGroup]];
 			if (!set) return;
 			const v = mhChip.dataset.mhValue;
@@ -1467,9 +1951,16 @@ function bindEvents() {
 		const removeDrug = event.target.closest("[data-remove-drug]");
 		if (removeDrug)
 			return removeDrugEntry(Number(removeDrug.dataset.removeDrug));
+		const repeatDrug = event.target.closest("[data-repeat-drug]");
+		if (repeatDrug)
+			return repeatDrugEntry(Number(repeatDrug.dataset.repeatDrug));
 		const removeChange = event.target.closest("[data-remove-change]");
 		if (removeChange)
 			return removeChangeEntry(Number(removeChange.dataset.removeChange));
+		const ecgFinding = event.target.closest(".ecg-finding");
+		if (ecgFinding) return toggleEcgFinding(ecgFinding);
+		const ecgLead = event.target.closest(".ecg-lead");
+		if (ecgLead) return toggleEcgLead(ecgLead);
 		const copySectionBtn = event.target.closest("[data-copy-section]");
 		if (copySectionBtn)
 			return copySectionById(copySectionBtn.dataset.copySection);
@@ -1673,7 +2164,9 @@ function handleCapacityDisplay() {
 		"hidden",
 		status === "Lacks capacity" || status === "Not applicable",
 	);
-	$("#bestInterests").classList.toggle("hidden", status !== "Lacks capacity");
+	const lacksCapacity = status === "Lacks capacity";
+	$("#lacksCapReasons")?.classList.toggle("hidden", !lacksCapacity);
+	$("#bestInterests").classList.toggle("hidden", !lacksCapacity);
 }
 
 function getSelectedParts(set) {
@@ -1703,6 +2196,69 @@ function abcLine(section) {
 	return `${section.key} - ${[...values, ...vitals, notes].filter(Boolean).join(", ") || "assessed"}.`;
 }
 
+function abcCompactLine(section) {
+	const abnormals = $$(`[data-abc="${section.key}"]`)
+		.filter((b) => b.dataset.abcState === "abnormal")
+		.map((b) => b.textContent);
+	const notes = val(section.notes);
+	const all = [...abnormals, notes].filter(Boolean);
+	if (!all.length) return null;
+	return `${section.key} — ${all.join(", ")}.`;
+}
+
+function abcHandoverSummary() {
+	const lines = ABCDE.map(abcCompactLine).filter(Boolean);
+	return lines.length ? lines.join("\n") : "No ABCDE concerns identified.";
+}
+
+function toggleEcgFinding(btn) {
+	const finding = btn.dataset.finding;
+	if (state.ecgFindings.has(finding)) {
+		state.ecgFindings.delete(finding);
+		btn.classList.remove("selected");
+	} else {
+		state.ecgFindings.add(finding);
+		btn.classList.add("selected");
+	}
+	const hasLeadFinding = [...state.ecgFindings].some((f) =>
+		ECG_LEAD_FINDINGS.has(f),
+	);
+	$("#ecgLeadPanel")?.classList.toggle("hidden", !hasLeadFinding);
+	if (!hasLeadFinding) {
+		state.ecgLeads.clear();
+		$$(".ecg-lead").forEach((b) => b.classList.remove("selected"));
+	}
+}
+
+function toggleEcgLead(btn) {
+	const lead = btn.dataset.lead;
+	if (state.ecgLeads.has(lead)) {
+		state.ecgLeads.delete(lead);
+		btn.classList.remove("selected");
+	} else {
+		state.ecgLeads.add(lead);
+		btn.classList.add("selected");
+	}
+}
+
+function buildEcgText() {
+	if (!state.ecgFindings.size) return "";
+	const leadFindings = [...state.ecgFindings].filter((f) =>
+		ECG_LEAD_FINDINGS.has(f),
+	);
+	const otherFindings = [...state.ecgFindings].filter(
+		(f) => !ECG_LEAD_FINDINGS.has(f),
+	);
+	const parts = [...otherFindings];
+	if (leadFindings.length && state.ecgLeads.size) {
+		const leads = [...state.ecgLeads].join(", ");
+		parts.push(...leadFindings.map((f) => `${f} (leads: ${leads})`));
+	} else if (leadFindings.length) {
+		parts.push(...leadFindings);
+	}
+	return `ECG: ${parts.join("; ")}.`;
+}
+
 function generateOe() {
 	syncAuscultationOutput();
 	const oe = [
@@ -1713,7 +2269,7 @@ function generateOe() {
 		ABCDE.map(abcLine).join("\n"),
 		"",
 		`Resp: ${rosLine("resp")} ${val("respAus") ? `Auscultation: ${val("respAus")}.` : ""}`,
-		`CVS: ${rosLine("cvs")} ${val("ecg") ? `ECG: ${val("ecg")}.` : ""}`,
+		`CVS: ${rosLine("cvs")} ${buildEcgText()}`,
 		`Neuro: ${rosLine("neuro")}`,
 		`Abdo/GI: ${rosLine("gi")} ${[state.abdoRegions.size ? `Palpation findings: ${[...state.abdoRegions].join(", ")}.` : "", val("giFluidIntake") ? `Fluid intake: ${val("giFluidIntake")}.` : "", val("giAppetite") ? `Appetite: ${val("giAppetite")}.` : "", val("bowelSounds") ? `Bowel sounds: ${val("bowelSounds")}.` : ""].filter(Boolean).join(" ")}`.trimEnd(),
 		`Urinary: ${rosLine("urine")}`,
@@ -1740,26 +2296,49 @@ function listFactors(set, otherFieldId, fallback) {
 function rosBlock(section) {
 	const extras = {
 		resp: () =>
-			`${val("coughType")}. ${val("respAus") ? `Auscultation: ${val("respAus")}.` : ""} ${val("respNotes")}`.trim(),
+			`${val("coughType")}${val("sputumDesc") ? ` — sputum: ${val("sputumDesc")}` : ""}. ${val("respAus") ? `Auscultation: ${val("respAus")}.` : ""} ${val("respNotes")}`.trim(),
 		cvs: () =>
-			`${val("bpStatus")}. ${val("ecg") ? `ECG: ${val("ecg")}.` : ""} ${val("cvsNotes")}`.trim(),
+			`${val("bpStatus")}. ${buildEcgText()} ${val("cvsNotes")}`.trim(),
 		gi: () => {
 			const parts = [];
-			if (state.abdoRegions.size) parts.push(`Palpation findings: ${[...state.abdoRegions].join(", ")}.`);
+			if (state.abdoRegions.size)
+				parts.push(`Palpation findings: ${[...state.abdoRegions].join(", ")}.`);
 			if (val("giFluidIntake"))
 				parts.push(`Fluid intake: ${val("giFluidIntake")}.`);
 			if (val("giAppetite")) parts.push(`Appetite: ${val("giAppetite")}.`);
 			if (val("bowelSounds"))
 				parts.push(`Bowel sounds: ${val("bowelSounds")}.`);
 			if (val("giNotes")) parts.push(val("giNotes"));
+			if (isChecked("stomaPresent")) {
+				const type = val("stomaType");
+				const out = val("stomaOutput");
+				const app = val("stomaAppearance");
+				parts.push(
+					`Stoma present${type ? ` (${type})` : ""}.${out ? ` Output: ${out}.` : ""}${app ? ` Appearance: ${app}.` : ""}`,
+				);
+			}
+			return parts.join(" ");
+		},
+		urine: () => {
+			const parts = [];
+			if (isChecked("catheterPresent")) {
+				const out = val("catheterOutput");
+				const app = val("urineAppearance");
+				parts.push(
+					`Urinary catheter in situ.${out ? ` Output: ${out}.` : ""}${app ? ` Appearance: ${app}.` : ""}`,
+				);
+			}
+			if (val("urineNotes")) parts.push(val("urineNotes"));
 			return parts.join(" ");
 		},
 		psych: () => {
 			const parts = [];
-			if (val("psychBehaviour")) parts.push(`Appearance/behaviour: ${val("psychBehaviour")}.`);
+			if (val("psychBehaviour"))
+				parts.push(`Appearance/behaviour: ${val("psychBehaviour")}.`);
 			if (val("psychSpeech")) parts.push(`Speech: ${val("psychSpeech")}.`);
 			if (val("psychRisk")) parts.push(`Risk level: ${val("psychRisk")}.`);
-			if (val("psychProtective")) parts.push(`Protective factors: ${val("psychProtective")}.`);
+			if (val("psychProtective"))
+				parts.push(`Protective factors: ${val("psychProtective")}.`);
 			if (val("psychNotes")) parts.push(val("psychNotes"));
 			return parts.join(" ");
 		},
@@ -1822,7 +2401,7 @@ function buildHandoverText() {
 			`A — Age: ${age || "Not documented"}`,
 			`S — Sex: ${sex || "Not specified"}`,
 			`H — History: ${pc}. ${hpc ? hpc + ". " : ""}PMH: ${pmh}. Medications: ${meds}. Allergies: ${allergies}.`,
-			`I — Illness/Injury: ${pc}${val("onsetType") ? `. Onset: ${val("onsetType")}${val("onsetTime") ? `, ${val("onsetTime")}` : ""}` : ""}.`,
+			`I — Illness/Injury: ${pc}${val("onsetType") ? `. Onset: ${val("onsetType")}${onsetTime() ? `, ${onsetTime()}` : ""}` : ""}.`,
 			`C — Condition: ${vitalsLine}.`,
 			`E — ETA: ${val("handoverEta") || "Not given"}`,
 			...(extraNotes ? ["", extraNotes] : []),
@@ -1833,7 +2412,7 @@ function buildHandoverText() {
 		return [
 			`S — Situation: ${pt ? pt + " " : ""}presenting with ${pc.toLowerCase()}${hpc ? `. ${hpc}` : ""}.`,
 			`B — Background: PMH: ${pmh}. Medications: ${meds}. Allergies: ${allergies}.`,
-			`A — Assessment:\n${ABCDE.map(abcLine).join("\n")}`,
+			`A — Assessment:\n${abcHandoverSummary()}`,
 			`R — Recommendation: ${buildConveyanceText()}`,
 			...(extraNotes ? ["", extraNotes] : []),
 		].join("\n\n");
@@ -2008,7 +2587,13 @@ function buildOutputSections() {
 				]
 			: []),
 		...(val("pcSelect") === "Seizure"
-			? [{ id: "seizure", title: "SEIZURE ASSESSMENT", body: buildSeizureText() }]
+			? [
+					{
+						id: "seizure",
+						title: "SEIZURE ASSESSMENT",
+						body: buildSeizureText(),
+					},
+				]
 			: []),
 		...(MH_PCS.includes(val("pcSelect"))
 			? [
@@ -2038,7 +2623,7 @@ function buildOutputSections() {
 				: "PAIN ASSESSMENT / SOCRATES",
 			body: isChecked("noPain")
 				? [
-						`Onset: ${val("onsetType") || "Not documented"}${val("onsetTime") ? `, ${val("onsetTime")}` : ""}${val("onsetDuration") ? `, duration ${val("onsetDuration")}` : ""}`,
+						`Onset: ${val("onsetType") || "Not documented"}${onsetTime() ? `, ${onsetTime()}` : ""}${val("onsetDuration") ? `, duration ${val("onsetDuration")}` : ""}`,
 						`Associated symptoms: ${listSet(state.associated, "None reported")}`,
 						`Timing: ${val("timingSelect") || "Not documented"}`,
 						`Exacerbating factors: ${listFactors(state.exacerbating, "exacerbatingOther", "None identified")}`,
@@ -2047,7 +2632,7 @@ function buildOutputSections() {
 					].join("\n")
 				: [
 						`Site: ${site}`,
-						`Onset: ${val("onsetType") || "Not documented"}${val("onsetTime") ? `, ${val("onsetTime")}` : ""}${val("onsetDuration") ? `, duration ${val("onsetDuration")}` : ""}`,
+						`Onset: ${val("onsetType") || "Not documented"}${onsetTime() ? `, ${onsetTime()}` : ""}${val("onsetDuration") ? `, duration ${val("onsetDuration")}` : ""}`,
 						`Character: ${listSet(state.character, "Not characterised")}`,
 						`Radiation: ${radiation}`,
 						`Associated symptoms: ${listSet(state.associated, "None reported")}`,
@@ -2118,7 +2703,7 @@ function buildOutputSections() {
 				state.drugEntries.length ||
 				state.woundInterventions.size ||
 				state.manualHandling.size ||
-				state.otherInterventions.size ||
+				val("otherInterventionsFree") ||
 				val("treatmentNotes");
 			return hasTx
 				? [
@@ -2131,8 +2716,7 @@ function buildOutputSections() {
 				: [];
 		})(),
 		...(() => {
-			const hasChanges =
-				state.clinicalChanges.length || val("additionalInfo");
+			const hasChanges = state.clinicalChanges.length || val("additionalInfo");
 			return hasChanges
 				? [
 						{
@@ -2215,9 +2799,7 @@ function buildPatientScript(declined) {
 	const declinedLine = declined
 		? "\nYou have declined conveyance to hospital today. You have the right to refuse treatment and transport, but please do not hesitate to call 999 again if you change your mind or feel worse at any time."
 		: "";
-	return `"Before I leave, I want to go through some important warning signs with you.
-
-Please call 999 immediately if you notice:
+	return `"Call 999 immediately if you notice:
 ${genericLines}
 
 ${specificLines ? `Specific to your condition today (${pc}), also call 999 for:\n${specificLines}\n` : ""}${redFlags}${extra}${declinedLine}
@@ -2264,8 +2846,28 @@ function buildWorseningText() {
 function buildCapacityText() {
 	const status = val("capacityStatus");
 	if (status === "Not applicable") return "Not applicable.";
-	if (status === "Lacks capacity")
-		return `Patient assessed as lacking capacity for the relevant decision at this time. Best interests decision documented. ${val("bestInterests")}`.trim();
+	if (status === "Lacks capacity") {
+		const unable = ["Understand", "Retain", "Weigh", "Communicate"]
+			.filter((_, i) =>
+				isChecked(
+					["lacksUnderstand", "lacksRetain", "lacksWeigh", "lacksCommunicate"][
+						i
+					],
+				),
+			)
+			.map((s) => s.toLowerCase() + " information")
+			.join(", ");
+		const reason = val("lacksCausation");
+		const bi = val("bestInterests");
+		return [
+			"Patient assessed as lacking capacity for the relevant decision at this time.",
+			unable ? `Unable to: ${unable}.` : "",
+			reason ? `Reason for incapacity: ${reason}.` : "",
+			bi ? `Best interests decision: ${bi}` : "",
+		]
+			.filter(Boolean)
+			.join(" ");
+	}
 	const tests = [
 		isChecked("mcaUnderstand") && "understand",
 		isChecked("mcaRetain") && "retain",
@@ -2399,11 +3001,15 @@ function clearPainAssessment() {
 
 function selectAuscSound(button) {
 	const sound = button.dataset.sound;
-	if (sound === "normal") {
-		state.respAusc = { normal: true, entries: [] };
+	if (sound === "normal" || sound === "not-auscultated") {
+		state.respAusc = {
+			normal: sound === "normal",
+			notAuscultated: sound === "not-auscultated",
+			entries: [],
+		};
 		pendingAuscSound = null;
 		$$(".ausc-sound").forEach((item) =>
-			item.classList.toggle("selected", item.dataset.sound === "normal"),
+			item.classList.toggle("selected", item.dataset.sound === sound),
 		);
 		$("#auscLocationPanel")?.classList.add("hidden");
 		$("#auscOtherWrap")?.classList.add("hidden");
@@ -2509,6 +3115,7 @@ function formatAuscEntry(entry) {
 }
 
 function buildAuscText() {
+	if (state.respAusc.notAuscultated) return "Lungs not auscultated";
 	if (!state.respAusc.entries.length)
 		return "Equal and clear bilateral air entry";
 	const groups = new Map();

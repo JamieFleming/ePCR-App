@@ -519,6 +519,27 @@ select {
 	gap: 8px;
 }
 
+/* ECG lead grid — column-first mirrors standard 12-lead layout (I/II/III, aVR/aVL/aVF, V1-3, V4-6) */
+#ecgLeadsGrid {
+	display: grid;
+	grid-auto-flow: column;
+	grid-template-rows: repeat(3, auto);
+	grid-template-columns: repeat(4, 1fr);
+	gap: 6px;
+}
+
+@media (max-width: 480px) {
+	#ecgLeadsGrid {
+		grid-auto-flow: row;
+		grid-template-rows: unset;
+	}
+}
+
+/* ECG finding chips — slightly smaller for dense grid */
+.ecg-grid {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .square-btn {
 	border: 1.5px solid var(--line);
 	background: linear-gradient(180deg, #ffffff 0%, var(--surface-2) 100%);
@@ -818,6 +839,10 @@ select {
 }
 
 /* Output */
+.output-panel-body {
+	padding: 14px 16px;
+}
+
 .output-sections {
 	display: grid;
 	gap: 6px;
@@ -939,6 +964,12 @@ select {
 	height: 24px;
 	cursor: pointer;
 	font-weight: 900;
+}
+
+.repeat-drug-btn {
+	background: var(--primary-soft) !important;
+	color: var(--primary) !important;
+	font-size: 15px;
 }
 
 /* Footer */
@@ -1427,6 +1458,12 @@ select {
 	background: var(--primary-soft);
 }
 
+.card-icon svg {
+	width: 22px;
+	height: 22px;
+	flex-shrink: 0;
+}
+
 .feature-card.featured .card-icon {
 	background: rgba(255, 255, 255, 0.18);
 	border: 1px solid rgba(255, 255, 255, 0.22);
@@ -1452,6 +1489,9 @@ select {
 }
 .card-icon.indigo {
 	background: #eef0ff;
+}
+.card-icon.blue {
+	background: #e8f4ff;
 }
 
 .card-body {
@@ -1518,6 +1558,11 @@ select {
 	color: rgba(255, 255, 255, 0.7);
 	margin-left: 8px;
 	flex-shrink: 0;
+}
+
+.feature-card.featured .card-arrow svg {
+	width: 18px;
+	height: 18px;
 }
 
 #prf-tool.hidden,

@@ -80,7 +80,7 @@
 						</svg>
 					</div>
 					<div class="card-body">
-						<h3 class="card-title">ePRF Assistant</h3>
+						<h3 class="card-title">ePCR Assistant</h3>
 						<p class="card-desc">
 							Full patient documentation — history, assessment, interventions
 							and handover
@@ -449,7 +449,6 @@
 											<option>Mental health team referral</option>
 										</optgroup>
 										<optgroup label="Other">
-											<option>Self-presented</option>
 											<option>Police request</option>
 											<option>Fire service request</option>
 											<option>Other service referral</option>
@@ -468,10 +467,10 @@
 									</select>
 								</div>
 							</div>
-							<label class="check-row"
+							<!-- <label class="check-row"
 								><input type="checkbox" id="noTravel" checked /> No recent
 								travel</label
-							>
+							> -->
 						</div>
 					</details>
 
@@ -963,6 +962,35 @@
 								<div class="square-grid" id="shDepthGrid"></div>
 							</div>
 
+							<!-- Mental State Examination -->
+							<div style="margin-top: 16px">
+								<p class="field-label" style="font-weight: 600; margin-bottom: 8px">Mental State Examination (MSE)</p>
+
+								<label class="field-label">A — Appearance</label>
+								<div class="square-grid" id="mseAppearanceGrid"></div>
+
+								<label class="field-label" style="margin-top: 10px">B — Behaviour</label>
+								<div class="square-grid" id="mseBehaviourGrid"></div>
+
+								<label class="field-label" style="margin-top: 10px">C — Communication / speech</label>
+								<div class="square-grid" id="mseSpeechGrid"></div>
+
+								<label class="field-label" style="margin-top: 10px">D — Delusions / thought content</label>
+								<div class="square-grid" id="mseThoughtContentGrid"></div>
+
+								<label class="field-label" style="margin-top: 10px">E — Emotion / affect</label>
+								<div class="square-grid" id="mseAffectGrid"></div>
+
+								<label class="field-label" style="margin-top: 10px">F — Form of thought</label>
+								<div class="square-grid" id="mseThoughtFormGrid"></div>
+
+								<label class="field-label" style="margin-top: 10px">H — Hallucinations / perception</label>
+								<div class="square-grid" id="msePerceptionGrid"></div>
+
+								<label class="field-label" style="margin-top: 10px">I — Insight</label>
+								<div class="square-grid" id="mseInsightGrid"></div>
+							</div>
+
 							<div style="margin-top: 14px">
 								<label class="field-label" for="mhCurrentServices"
 									>Current MH services / care team</label
@@ -1020,6 +1048,14 @@
 											rx="24"
 											ry="26"
 											data-label="Head" />
+										<ellipse
+											class="body-part"
+											id="jaw"
+											cx="95"
+											cy="55"
+											rx="20"
+											ry="9"
+											data-label="Jaw / mandible" />
 										<rect
 											class="body-part"
 											id="neck"
@@ -1072,24 +1108,6 @@
 											height="42"
 											rx="3"
 											data-label="Abdomen" />
-										<rect
-											class="body-part"
-											id="left-flank"
-											x="50"
-											y="108"
-											width="18"
-											height="38"
-											rx="5"
-											data-label="Left flank" />
-										<rect
-											class="body-part"
-											id="right-flank"
-											x="122"
-											y="108"
-											width="18"
-											height="38"
-											rx="5"
-											data-label="Right flank" />
 										<rect
 											class="body-part"
 											id="pelvis"
@@ -1219,6 +1237,24 @@
 											rx="16"
 											ry="8"
 											data-label="Right foot" />
+										<rect
+											class="body-part"
+											id="left-flank"
+											x="38"
+											y="103"
+											width="30"
+											height="46"
+											rx="8"
+											data-label="Left flank" />
+										<rect
+											class="body-part"
+											id="right-flank"
+											x="122"
+											y="103"
+											width="30"
+											height="46"
+											rx="8"
+											data-label="Right flank" />
 									</svg>
 								</div>
 								<div class="body-map-panel">
@@ -1303,24 +1339,6 @@
 											height="42"
 											rx="3"
 											data-label="Lower back" />
-										<rect
-											class="body-part"
-											id="back-left-flank"
-											x="50"
-											y="108"
-											width="18"
-											height="38"
-											rx="5"
-											data-label="Left flank (back)" />
-										<rect
-											class="body-part"
-											id="back-right-flank"
-											x="122"
-											y="108"
-											width="18"
-											height="38"
-											rx="5"
-											data-label="Right flank (back)" />
 										<rect
 											class="body-part"
 											id="back-sacrum"
@@ -1468,6 +1486,24 @@
 											rx="16"
 											ry="8"
 											data-label="Right heel / foot" />
+										<rect
+											class="body-part"
+											id="back-left-flank"
+											x="38"
+											y="103"
+											width="30"
+											height="46"
+											rx="8"
+											data-label="Left flank (back)" />
+										<rect
+											class="body-part"
+											id="back-right-flank"
+											x="122"
+											y="103"
+											width="30"
+											height="46"
+											rx="8"
+											data-label="Right flank (back)" />
 									</svg>
 								</div>
 								<div class="selected-panel">
@@ -1510,7 +1546,13 @@
 											<option>~24 hours ago</option>
 											<option>Earlier today</option>
 											<option>Yesterday</option>
+											<option value="Other">Other (specify)</option>
 										</select>
+										<input
+											id="onsetTimeOther"
+											class="hidden"
+											placeholder="e.g. 3–4 days ago, last week"
+											style="margin-top: 6px" />
 									</div>
 									<div>
 										<label class="field-label" for="onsetType">Onset</label
@@ -1619,12 +1661,12 @@
 								><textarea id="pmh" rows="2"></textarea>
 							</div>
 							<div>
-								<label class="field-label">Last oral intake</label>
+								<!-- <label class="field-label">Last oral intake</label>
 								<div class="split">
 									<input id="loiWhat" placeholder="Food / fluid" /><input
 										id="loiTime"
 										type="time" />
-								</div>
+								</div> -->
 								<label class="field-label" for="prevDetails"
 									>Previous episodes</label
 								><textarea
@@ -1976,10 +2018,7 @@
 										<option>Nebulised</option>
 										<option>Inhaled</option>
 										<option>IO</option>
-										<option>ETT</option>
-										<option>Topical</option>
 										<option>Buccal</option>
-										<option>Transdermal</option>
 									</select>
 								</div>
 								<div>
@@ -2018,16 +2057,16 @@
 									style="margin-top: 8px" />
 							</div>
 
-							<label class="field-label" style="margin-top: 14px"
+							<label
+								class="field-label"
+								for="otherInterventionsFree"
+								style="margin-top: 14px"
 								>Other interventions</label
 							>
-							<div class="square-grid" id="otherInterventionGrid"></div>
-							<div id="otherIntOtherWrap" class="hidden">
-								<input
-									id="otherIntOther"
-									placeholder="Describe intervention"
-									style="margin-top: 8px" />
-							</div>
+							<textarea
+								id="otherInterventionsFree"
+								rows="2"
+								placeholder="Describe any other interventions performed…"></textarea>
 
 							<label
 								class="field-label"
@@ -2109,6 +2148,38 @@
 									Communicates decision</label
 								>
 							</div>
+							<div id="lacksCapReasons" class="hidden" style="margin-top: 8px">
+								<label class="field-label"
+									>Unable to (select all that apply)</label
+								>
+								<div class="grid-2 compact">
+									<label class="check-row"
+										><input type="checkbox" id="lacksUnderstand" /> Understand
+										information</label
+									>
+									<label class="check-row"
+										><input type="checkbox" id="lacksRetain" /> Retain
+										information</label
+									>
+									<label class="check-row"
+										><input type="checkbox" id="lacksWeigh" /> Weigh / use
+										information</label
+									>
+									<label class="check-row"
+										><input type="checkbox" id="lacksCommunicate" /> Communicate
+										decision</label
+									>
+								</div>
+								<label
+									class="field-label"
+									for="lacksCausation"
+									style="margin-top: 8px"
+									>Reason for incapacity</label
+								>
+								<input
+									id="lacksCausation"
+									placeholder="e.g. GCS reduced, acute intoxication, dementia" />
+							</div>
 							<textarea
 								id="bestInterests"
 								class="hidden"
@@ -2162,6 +2233,7 @@
 												<option>Bishop Auckland Hospital</option>
 												<option>Friarage Hospital (Northallerton)</option>
 												<option>Berwick Infirmary</option>
+												<option>Freeman Hospital</option>
 											</optgroup>
 											<option>Other hospital</option>
 										</select>
@@ -2177,6 +2249,8 @@
 											<option>SAU — Surgical Assessment Unit</option>
 											<option>SDEC — Same Day Emergency Care</option>
 											<option>Ward</option>
+											<option>CCU — Coronary Care Unit</option>
+											<option>PPCI — Primary PCI (cath lab)</option>
 											<option>Other department</option>
 										</select>
 									</div>
@@ -2353,30 +2427,24 @@
 				</section>
 
 				<section class="panel" id="panel-output">
-					<details class="section-card">
-						<summary><span>Generated PRF</span><small>Output</small></summary>
-						<div class="section-body">
-							<div class="toolbar">
-								<button id="copyButton" class="primary-action" type="button">
-									Generate and copy all
-								</button>
-								<button
-									id="refreshButton"
-									class="secondary-action"
-									type="button">
-									Refresh preview
-								</button>
-							</div>
-							<p class="output-hint">
-								Copy individual sections into separate ePCR pages, or copy
-								everything at once.
-							</p>
-							<div id="outputSections" class="output-sections"></div>
-							<pre id="outputText" class="output hidden">
-Tap “Refresh preview” or “Generate and copy”.</pre
-							>
+					<div class="output-panel-body">
+						<div class="toolbar">
+							<button id="copyButton" class="primary-action" type="button">
+								Generate and copy all
+							</button>
+							<button id="refreshButton" class="secondary-action" type="button">
+								Refresh preview
+							</button>
 						</div>
-					</details>
+						<p class="output-hint">
+							Copy individual sections into separate ePCR pages, or copy
+							everything at once.
+						</p>
+						<div id="outputSections" class="output-sections"></div>
+						<pre id="outputText" class="output hidden">
+Tap “Refresh preview” or “Generate and copy”.</pre
+						>
+					</div>
 				</section>
 			</main>
 
