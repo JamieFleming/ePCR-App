@@ -2760,3 +2760,375 @@ select {
 		grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
 	}
 }
+
+
+/* =========================================================
+   Dark mode
+   Uses <html data-theme="dark"> and a top-right header button
+   ========================================================= */
+
+.theme-toggle {
+	margin-left: auto;
+	width: 42px;
+	height: 42px;
+	border: 1px solid var(--line-strong);
+	border-radius: 999px;
+	background: var(--surface);
+	color: var(--primary);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	box-shadow: none;
+	flex: 0 0 auto;
+}
+
+.theme-toggle:hover {
+	background: var(--primary-soft);
+	border-color: var(--primary-2);
+}
+
+.theme-toggle + .ghost-button {
+	margin-left: 0;
+}
+
+.theme-icon {
+	width: 20px;
+	height: 20px;
+}
+
+.theme-icon-sun {
+	display: none;
+}
+
+.theme-icon-moon {
+	display: block;
+}
+
+html[data-theme="dark"] .theme-icon-sun {
+	display: block;
+}
+
+html[data-theme="dark"] .theme-icon-moon {
+	display: none;
+}
+
+html[data-theme="dark"] {
+	color-scheme: dark;
+
+	--bg: #081722;
+	--bg-accent: #0d2433;
+	--surface: #10202d;
+	--surface-2: #142838;
+	--surface-3: #183246;
+	--line: #274356;
+	--line-strong: #3a5a70;
+	--text: #eaf4f8;
+	--muted: #a9bdc9;
+	--muted-2: #8198a7;
+
+	--primary: #38bdf8;
+	--primary-2: #67e8f9;
+	--primary-3: #7dd3fc;
+	--primary-soft: #123449;
+	--primary-soft-2: #16445d;
+
+	--success: #86efac;
+	--success-soft: #123323;
+	--warning: #facc15;
+	--warning-soft: #332a12;
+	--danger: #fb7185;
+	--danger-soft: #371923;
+
+	--focus: 0 0 0 4px rgba(56, 189, 248, 0.22);
+}
+
+html[data-theme="dark"] body {
+	background: #081722;
+	color: var(--text);
+}
+
+html[data-theme="dark"] .app-header,
+html[data-theme="dark"] .site-footer {
+	background: rgba(16, 32, 45, 0.96);
+	border-color: var(--line);
+}
+
+html[data-theme="dark"] .tabs {
+	background: #0c1d2a;
+	border-color: var(--line);
+}
+
+html[data-theme="dark"] .tab,
+html[data-theme="dark"] .section-card,
+html[data-theme="dark"] .section-card > summary,
+html[data-theme="dark"] .section-body,
+html[data-theme="dark"] .feature-card,
+html[data-theme="dark"] .output-card,
+html[data-theme="dark"] .output-card-head,
+html[data-theme="dark"] .body-map-panel,
+html[data-theme="dark"] .selected-panel,
+html[data-theme="dark"] .vital,
+html[data-theme="dark"] .patient-script,
+html[data-theme="dark"] .footer-guidance {
+	background: var(--surface);
+	border-color: var(--line) !important;
+	color: var(--text);
+}
+
+html[data-theme="dark"] .section-card:hover,
+html[data-theme="dark"] .feature-card:not(.coming-soon):hover {
+	background: #142838;
+}
+
+html[data-theme="dark"] .tab.active,
+html[data-theme="dark"] .primary-action {
+	background: #0e7490;
+	color: #ffffff;
+}
+
+html[data-theme="dark"] .app-header h1,
+html[data-theme="dark"] .dashboard-intro h2,
+html[data-theme="dark"] .section-card summary span,
+html[data-theme="dark"] .card-title,
+html[data-theme="dark"] .footer-brand h3,
+html[data-theme="dark"] .footer-notice h4,
+html[data-theme="dark"] .footer-guidance h4 {
+	color: var(--text);
+}
+
+html[data-theme="dark"] .app-header p,
+html[data-theme="dark"] .dashboard-intro p,
+html[data-theme="dark"] .card-desc,
+html[data-theme="dark"] .field-label,
+html[data-theme="dark"] .field-hint,
+html[data-theme="dark"] .output-hint,
+html[data-theme="dark"] .footer-intro,
+html[data-theme="dark"] .footer-bottom,
+html[data-theme="dark"] .footer-brand p,
+html[data-theme="dark"] .footer-notice p,
+html[data-theme="dark"] .footer-guidance li {
+	color: var(--muted);
+}
+
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] .square-btn,
+html[data-theme="dark"] .radio-chip,
+html[data-theme="dark"] .flacc-chip,
+html[data-theme="dark"] .faces-chip,
+html[data-theme="dark"] .pain-score-btn,
+html[data-theme="dark"] .output,
+html[data-theme="dark"] .output-snippet,
+html[data-theme="dark"] .ausc-entry {
+	background: var(--surface-2) !important;
+	border-color: var(--line) !important;
+	color: var(--text);
+}
+
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+	color: #6f8797;
+}
+
+html[data-theme="dark"] input:focus,
+html[data-theme="dark"] select:focus,
+html[data-theme="dark"] textarea:focus {
+	background: #182e40 !important;
+	border-color: var(--primary) !important;
+}
+
+html[data-theme="dark"] .notice,
+html[data-theme="dark"] .secondary-action,
+html[data-theme="dark"] .theme-toggle,
+html[data-theme="dark"] .ghost-button,
+html[data-theme="dark"] .section-card summary small,
+html[data-theme="dark"] .status-pill,
+html[data-theme="dark"] .ausc-preview {
+	background: var(--primary-soft);
+	border-color: var(--line-strong);
+	color: var(--primary);
+}
+
+html[data-theme="dark"] .square-btn.selected,
+html[data-theme="dark"] .abc-chip.selected,
+html[data-theme="dark"] .convey-chip.selected,
+html[data-theme="dark"] .radio-chip.selected,
+html[data-theme="dark"] .flacc-chip.selected,
+html[data-theme="dark"] .faces-chip.selected {
+	background: #123449 !important;
+	border-color: #38bdf8 !important;
+	color: #dff7ff;
+}
+
+html[data-theme="dark"] .square-btn.abnormal,
+html[data-theme="dark"] .abc-chip.abnormal,
+html[data-theme="dark"] .convey-chip.abnormal,
+html[data-theme="dark"] .status-pill.flagged {
+	background: var(--danger-soft) !important;
+	border-color: #7f3342 !important;
+	color: #fecdd3;
+}
+
+html[data-theme="dark"] .footer-notice {
+	background: var(--warning-soft);
+	border-color: #6b5416 !important;
+}
+
+html[data-theme="dark"] .body-part {
+	fill: #20394c;
+	stroke: #5b7486;
+}
+
+html[data-theme="dark"] .body-part:hover {
+	fill: #294a61;
+}
+
+html[data-theme="dark"] .body-part.site {
+	fill: #0ea5e9;
+	stroke: #7dd3fc;
+}
+
+html[data-theme="dark"] .body-part.radiation {
+	fill: #ca8a04;
+	stroke: #fde68a;
+}
+
+html[data-theme="dark"] .logo,
+html[data-theme="dark"] .footer-logo {
+	border-color: var(--line);
+	box-shadow: none;
+}
+
+@media (max-width: 430px) {
+	.theme-toggle {
+		width: 38px;
+		height: 38px;
+	}
+
+	.theme-icon {
+		width: 18px;
+		height: 18px;
+	}
+}
+
+/* =========================================================
+   DARK MODE TOGGLE FIX
+   JS uses html[data-theme="dark"].
+   Keep the SVG icons only — no text/emoji required.
+   ========================================================= */
+
+.theme-toggle {
+	position: relative;
+}
+
+.theme-toggle .theme-icon {
+	pointer-events: none;
+	flex: 0 0 auto;
+}
+
+html[data-theme="light"] .theme-icon-sun,
+html:not([data-theme]) .theme-icon-sun {
+	display: none;
+}
+
+html[data-theme="light"] .theme-icon-moon,
+html:not([data-theme]) .theme-icon-moon {
+	display: block;
+}
+
+html[data-theme="dark"] .theme-icon-sun {
+	display: block;
+}
+
+html[data-theme="dark"] .theme-icon-moon {
+	display: none;
+}
+
+/* =========================================================
+   DARK MODE DASHBOARD SVG FIX
+   Keeps dashboard card SVG icons visible in dark mode.
+   Your dashboard SVGs use stroke="currentColor", so the
+   icon colour must be set on .card-icon / .card-arrow.
+   ========================================================= */
+
+html[data-theme="dark"] .feature-card:not(.featured) {
+	background: var(--surface) !important;
+	border-color: var(--line) !important;
+	color: var(--text) !important;
+}
+
+html[data-theme="dark"] .feature-card:not(.featured) .card-title {
+	color: var(--text) !important;
+}
+
+html[data-theme="dark"] .feature-card:not(.featured) .card-desc {
+	color: var(--muted) !important;
+}
+
+html[data-theme="dark"] .feature-card .card-icon {
+	background: #132f42 !important;
+	border: 1px solid #27485c !important;
+	color: #e5f6ff !important;
+}
+
+html[data-theme="dark"] .feature-card .card-icon svg,
+html[data-theme="dark"] .feature-card .card-arrow svg {
+	display: block !important;
+	opacity: 1 !important;
+	visibility: visible !important;
+	stroke: currentColor !important;
+	color: inherit !important;
+}
+
+html[data-theme="dark"] .feature-card.featured .card-icon {
+	background: rgba(255, 255, 255, 0.16) !important;
+	border-color: rgba(255, 255, 255, 0.24) !important;
+	color: #ffffff !important;
+}
+
+html[data-theme="dark"] .feature-card.featured .card-arrow {
+	color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Keep each dashboard icon type visible but still subtly coloured */
+html[data-theme="dark"] .card-icon.green {
+	background: #0f2f23 !important;
+	color: #bbf7d0 !important;
+}
+
+html[data-theme="dark"] .card-icon.red {
+	background: #3a1820 !important;
+	color: #fecdd3 !important;
+}
+
+html[data-theme="dark"] .card-icon.purple {
+	background: #281d3f !important;
+	color: #ddd6fe !important;
+}
+
+html[data-theme="dark"] .card-icon.teal {
+	background: #0f3434 !important;
+	color: #99f6e4 !important;
+}
+
+html[data-theme="dark"] .card-icon.amber {
+	background: #3a2a0f !important;
+	color: #fde68a !important;
+}
+
+html[data-theme="dark"] .card-icon.orange {
+	background: #3a2112 !important;
+	color: #fed7aa !important;
+}
+
+html[data-theme="dark"] .card-icon.indigo {
+	background: #202549 !important;
+	color: #c7d2fe !important;
+}
+
+html[data-theme="dark"] .card-icon.blue {
+	background: #132f42 !important;
+	color: #bae6fd !important;
+}

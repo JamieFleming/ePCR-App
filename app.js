@@ -747,8 +747,12 @@ function showFeature(feature) {
 		$("#paeds-tool")?.classList.remove("hidden");
 		initPaeds();
 		// Reset paeds tabs to history
-		$$("[data-paeds-tab]").forEach((t) => t.classList.toggle("active", t.dataset.paedsTab === "history"));
-		$$(".panel[id^='paeds-panel-']").forEach((p) => p.classList.remove("active"));
+		$$("[data-paeds-tab]").forEach((t) =>
+			t.classList.toggle("active", t.dataset.paedsTab === "history"),
+		);
+		$$(".panel[id^='paeds-panel-']").forEach((p) =>
+			p.classList.remove("active"),
+		);
 		$("#paeds-panel-history")?.classList.add("active");
 	}
 }
@@ -1325,10 +1329,16 @@ function buildTreatmentSection() {
 		$("#vaIvSites")?.classList.toggle("hidden", !isIv);
 		$("#vaIoSites")?.classList.toggle("hidden", !isIo);
 		// Clear site + gauge chip selections when type changes
-		$$("[data-radio-group='vaSite'] [data-value]").forEach((c) => c.classList.remove("selected"));
-		$$("[data-radio-group='vaGauge'] [data-value]").forEach((c) => c.classList.remove("selected"));
-		const siteInp = $("#vaSite"); if (siteInp) siteInp.value = "";
-		const gaugeInp = $("#vaGauge"); if (gaugeInp) gaugeInp.value = "";
+		$$("[data-radio-group='vaSite'] [data-value]").forEach((c) =>
+			c.classList.remove("selected"),
+		);
+		$$("[data-radio-group='vaGauge'] [data-value]").forEach((c) =>
+			c.classList.remove("selected"),
+		);
+		const siteInp = $("#vaSite");
+		if (siteInp) siteInp.value = "";
+		const gaugeInp = $("#vaGauge");
+		if (gaugeInp) gaugeInp.value = "";
 	});
 }
 
@@ -1428,8 +1438,9 @@ function addIvEntry() {
 	$("#vaGaugeWrap")?.classList.add("hidden");
 	$("#vaIvSites")?.classList.add("hidden");
 	$("#vaIoSites")?.classList.add("hidden");
-	$$("[data-radio-group='vaType'] [data-value], [data-radio-group='vaGauge'] [data-value], [data-radio-group='vaSite'] [data-value], [data-radio-group='vaOutcome'] [data-value]")
-		.forEach((c) => c.classList.remove("selected"));
+	$$(
+		"[data-radio-group='vaType'] [data-value], [data-radio-group='vaGauge'] [data-value], [data-radio-group='vaSite'] [data-value], [data-radio-group='vaOutcome'] [data-value]",
+	).forEach((c) => c.classList.remove("selected"));
 	renderIvEntries();
 }
 
@@ -1446,7 +1457,9 @@ function addDrugEntry() {
 		const el = $(`#${id}`);
 		if (el) el.value = "";
 	});
-	$$("[data-radio-group='drugRoute'] [data-value]").forEach((c) => c.classList.remove("selected"));
+	$$("[data-radio-group='drugRoute'] [data-value]").forEach((c) =>
+		c.classList.remove("selected"),
+	);
 	renderDrugEntries();
 }
 
@@ -2061,7 +2074,9 @@ function bindEvents() {
 			btn.addEventListener("click", () => {
 				const score = btn.dataset.score;
 				const already = btn.classList.contains("selected");
-				$$("#" + gridId + " .pain-score-btn").forEach((b) => b.classList.remove("selected"));
+				$$("#" + gridId + " .pain-score-btn").forEach((b) =>
+					b.classList.remove("selected"),
+				);
 				if (!already) {
 					btn.classList.add("selected");
 					$("#" + inputId).value = `${score}/10`;
@@ -3742,7 +3757,9 @@ function clearPainAssessment() {
 		const field = $(`#${id}`);
 		if (field) field.value = "";
 	});
-	$$("#painScoreGrid .pain-score-btn, #painScoreWorstGrid .pain-score-btn").forEach((b) => b.classList.remove("selected"));
+	$$(
+		"#painScoreGrid .pain-score-btn, #painScoreWorstGrid .pain-score-btn",
+	).forEach((b) => b.classList.remove("selected"));
 	setOtherFactorVisible("exacerbating", false);
 	setOtherFactorVisible("relieving", false);
 	updateMapTags();
@@ -3982,83 +3999,292 @@ const PAEDS_DRUG_LIST = [
  *   notes    — any additional clinical notes
  */
 const PAEDS_DRUG_DOSES = {
-	"Adrenaline": { doses: [
-		{ indication: "Anaphylaxis (IM)", mgPerKg: 0.01, maxMg: 0.5, prep: "1:1,000 (1 mg/ml)", notes: "= 0.01 ml/kg of 1:1,000" },
-		{ indication: "Cardiac arrest (IV/IO)", mgPerKg: 0.01, maxMg: 1, prep: "1:10,000 (0.1 mg/ml)", notes: "= 0.1 ml/kg of 1:10,000" },
-		{ indication: "Croup (neb)", flatDose: "5 mg (5 ml of 1:1,000 neat)", prep: "Dilute to 5 ml with NaCl 0.9%" },
-	]},
-	"Salbutamol": { doses: [
-		{ indication: "Wheeze / asthma (neb)", flatDose: "2.5 mg (<5y) · 5 mg (≥5y)", prep: "2.5 mg/2.5 ml or 5 mg/2.5 ml nebule" },
-		{ indication: "Asthma (MDI + spacer)", flatDose: "2–10 puffs (100 mcg/puff)", prep: "Titrate to response, reassess after each 2 puffs" },
-	]},
-	"Ipratropium": { doses: [
-		{ indication: "Severe asthma (neb)", flatDose: "250 mcg (<12y) · 500 mcg (≥12y)", prep: "250 mcg/ml or 500 mcg/2 ml nebule" },
-	]},
-	"Dexamethasone": { doses: [
-		{ indication: "Croup (oral/IV)", mgPerKg: 0.15, maxMg: 8, prep: "2 mg/5 ml oral or 4 mg/ml IV", notes: "Single dose; oral preferred if tolerated" },
-		{ indication: "Asthma/anaphylaxis (IV/IM)", mgPerKg: 0.15, maxMg: 8, prep: "4 mg/ml IV" },
-	]},
-	"Prednisolone": { doses: [
-		{ indication: "Asthma (oral)", mgPerKg: 1, maxMg: 40, prep: "5 mg tabs or 5 mg/ml liquid" },
-	]},
-	"Paracetamol": { doses: [
-		{ indication: "Analgesia (oral/PR)", mgPerKg: 15, maxMg: 1000, prep: "120 mg/5 ml susp or 500 mg tabs" },
-		{ indication: "Analgesia (IV)", mgPerKg: 15, maxMg: 1000, prep: "10 mg/ml IV infusion", notes: "Max 500 mg if weight 10–33 kg" },
-	]},
-	"Ibuprofen": { doses: [
-		{ indication: "Analgesia (oral) ≥3 months", mgPerKg: 10, maxMg: 400, prep: "100 mg/5 ml susp or 200 mg tabs", notes: "Not if asthma, dehydration or renal concerns" },
-	]},
-	"Midazolam": { doses: [
-		{ indication: "Seizure (buccal)", mgPerKg: 0.5, maxMg: 10, prep: "10 mg/ml buccal solution (Buccolam)" },
-		{ indication: "Seizure (IN)", mgPerKg: 0.2, maxMg: 10, prep: "5 mg/ml intranasal", notes: "Use MAD device; 0.1 ml/kg per nostril" },
-	]},
-	"Diazepam": { doses: [
-		{ indication: "Seizure (PR)", mgPerKg: 0.5, maxMg: 20, prep: "5 mg/ml rectal solution", notes: "Max 10 mg if <5 years" },
-	]},
-	"Lorazepam": { doses: [
-		{ indication: "Seizure (IV/IO)", mgPerKg: 0.1, maxMg: 4, prep: "4 mg/ml IV" },
-	]},
-	"Naloxone": { doses: [
-		{ indication: "Opioid reversal (IV/IM/IN)", mgPerKg: 0.01, maxMg: 0.4, prep: "400 mcg/ml injection" },
-	]},
-	"Ondansetron": { doses: [
-		{ indication: "Nausea / vomiting (IV/oral)", mgPerKg: 0.1, maxMg: 4, prep: "2 mg/ml IV or 4 mg tablet" },
-	]},
-	"Glucose 10%": { doses: [
-		{ indication: "Hypoglycaemia (IV/IO)", mlPerKg: 2, prep: "10% glucose (100 mg/ml)", notes: "Flush with NaCl 0.9% after; recheck BM" },
-	]},
-	"Glucagon": { doses: [
-		{ indication: "Hypoglycaemia (IM)", flatDose: "0.5 mg (<25 kg) · 1 mg (≥25 kg)", prep: "1 mg powder for reconstitution" },
-	]},
-	"Hydrocortisone": { doses: [
-		{ indication: "Anaphylaxis / severe asthma (IV/IO)", mgPerKg: 4, maxMg: 200, prep: "100 mg/ml IV" },
-	]},
-	"Chlorphenamine": { doses: [
-		{ indication: "Anaphylaxis / allergic reaction (IM/IV)", mgPerKg: 0.1, maxMg: 4, prep: "10 mg/ml injection" },
-	]},
-	"Tranexamic acid": { doses: [
-		{ indication: "Traumatic haemorrhage (IV)", mgPerKg: 15, maxMg: 1000, prep: "100 mg/ml IV", notes: "Give within 3 hours of injury; over 10 min" },
-	]},
-	"Amiodarone": { doses: [
-		{ indication: "VF / pVT cardiac arrest (IV/IO)", mgPerKg: 5, maxMg: 300, prep: "50 mg/ml — dilute to 5 mg/ml in 5% glucose", notes: "After 3rd shock" },
-	]},
-	"Atropine": { doses: [
-		{ indication: "Symptomatic bradycardia (IV/IO)", mgPerKg: 0.02, maxMg: 0.6, minMg: 0.1, prep: "1 mg/ml or 600 mcg/ml" },
-	]},
-	"Adenosine": { doses: [
-		{ indication: "SVT (IV — rapid bolus)", mgPerKg: 0.1, maxMg: 6, prep: "3 mg/ml IV", notes: "2nd dose: 0.2 mg/kg max 12 mg; 3rd: 0.3 mg/kg max 18 mg" },
-	]},
-	"Benzylpenicillin": { doses: [
-		{ indication: "Meningococcal (IV/IO/IM)", mgPerKg: 50, maxMg: 2400, prep: "600 mg or 1.2 g vials for reconstitution" },
-	]},
-	"Morphine": { doses: [
-		{ indication: "Moderate / severe pain (IV)", mgPerKg: 0.1, maxMg: 5, prep: "10 mg/ml — dilute to 1 mg/ml", notes: "Titrate; reassess pain and RR" },
-		{ indication: "Moderate / severe pain (IN)", mgPerKg: 0.1, maxMg: 5, prep: "10 mg/ml concentrated IN" },
-	]},
-	"Ketamine": { doses: [
-		{ indication: "Procedural sedation / analgesia (IV)", mgPerKg: 1, maxMg: 200, prep: "10 mg/ml or 50 mg/ml (dilute)", notes: "Specialist use; ensure airway support available" },
-		{ indication: "Procedural sedation (IM)", mgPerKg: 4, maxMg: 400, prep: "50 mg/ml or 100 mg/ml (dilute)" },
-	]},
+	Adrenaline: {
+		doses: [
+			{
+				indication: "Anaphylaxis (IM)",
+				mgPerKg: 0.01,
+				maxMg: 0.5,
+				prep: "1:1,000 (1 mg/ml)",
+				notes: "= 0.01 ml/kg of 1:1,000",
+			},
+			{
+				indication: "Cardiac arrest (IV/IO)",
+				mgPerKg: 0.01,
+				maxMg: 1,
+				prep: "1:10,000 (0.1 mg/ml)",
+				notes: "= 0.1 ml/kg of 1:10,000",
+			},
+			{
+				indication: "Croup (neb)",
+				flatDose: "5 mg (5 ml of 1:1,000 neat)",
+				prep: "Dilute to 5 ml with NaCl 0.9%",
+			},
+		],
+	},
+	Salbutamol: {
+		doses: [
+			{
+				indication: "Wheeze / asthma (neb)",
+				flatDose: "2.5 mg (<5y) · 5 mg (≥5y)",
+				prep: "2.5 mg/2.5 ml or 5 mg/2.5 ml nebule",
+			},
+			{
+				indication: "Asthma (MDI + spacer)",
+				flatDose: "2–10 puffs (100 mcg/puff)",
+				prep: "Titrate to response, reassess after each 2 puffs",
+			},
+		],
+	},
+	Ipratropium: {
+		doses: [
+			{
+				indication: "Severe asthma (neb)",
+				flatDose: "250 mcg (<12y) · 500 mcg (≥12y)",
+				prep: "250 mcg/ml or 500 mcg/2 ml nebule",
+			},
+		],
+	},
+	Dexamethasone: {
+		doses: [
+			{
+				indication: "Croup (oral/IV)",
+				mgPerKg: 0.15,
+				maxMg: 8,
+				prep: "2 mg/5 ml oral or 4 mg/ml IV",
+				notes: "Single dose; oral preferred if tolerated",
+			},
+			{
+				indication: "Asthma/anaphylaxis (IV/IM)",
+				mgPerKg: 0.15,
+				maxMg: 8,
+				prep: "4 mg/ml IV",
+			},
+		],
+	},
+	Prednisolone: {
+		doses: [
+			{
+				indication: "Asthma (oral)",
+				mgPerKg: 1,
+				maxMg: 40,
+				prep: "5 mg tabs or 5 mg/ml liquid",
+			},
+		],
+	},
+	Paracetamol: {
+		doses: [
+			{
+				indication: "Analgesia (oral/PR)",
+				mgPerKg: 15,
+				maxMg: 1000,
+				prep: "120 mg/5 ml susp or 500 mg tabs",
+			},
+			{
+				indication: "Analgesia (IV)",
+				mgPerKg: 15,
+				maxMg: 1000,
+				prep: "10 mg/ml IV infusion",
+				notes: "Max 500 mg if weight 10–33 kg",
+			},
+		],
+	},
+	Ibuprofen: {
+		doses: [
+			{
+				indication: "Analgesia (oral) ≥3 months",
+				mgPerKg: 10,
+				maxMg: 400,
+				prep: "100 mg/5 ml susp or 200 mg tabs",
+				notes: "Not if asthma, dehydration or renal concerns",
+			},
+		],
+	},
+	Midazolam: {
+		doses: [
+			{
+				indication: "Seizure (buccal)",
+				mgPerKg: 0.5,
+				maxMg: 10,
+				prep: "10 mg/ml buccal solution (Buccolam)",
+			},
+			{
+				indication: "Seizure (IN)",
+				mgPerKg: 0.2,
+				maxMg: 10,
+				prep: "5 mg/ml intranasal",
+				notes: "Use MAD device; 0.1 ml/kg per nostril",
+			},
+		],
+	},
+	Diazepam: {
+		doses: [
+			{
+				indication: "Seizure (PR)",
+				mgPerKg: 0.5,
+				maxMg: 20,
+				prep: "5 mg/ml rectal solution",
+				notes: "Max 10 mg if <5 years",
+			},
+		],
+	},
+	Lorazepam: {
+		doses: [
+			{
+				indication: "Seizure (IV/IO)",
+				mgPerKg: 0.1,
+				maxMg: 4,
+				prep: "4 mg/ml IV",
+			},
+		],
+	},
+	Naloxone: {
+		doses: [
+			{
+				indication: "Opioid reversal (IV/IM/IN)",
+				mgPerKg: 0.01,
+				maxMg: 0.4,
+				prep: "400 mcg/ml injection",
+			},
+		],
+	},
+	Ondansetron: {
+		doses: [
+			{
+				indication: "Nausea / vomiting (IV/oral)",
+				mgPerKg: 0.1,
+				maxMg: 4,
+				prep: "2 mg/ml IV or 4 mg tablet",
+			},
+		],
+	},
+	"Glucose 10%": {
+		doses: [
+			{
+				indication: "Hypoglycaemia (IV/IO)",
+				mlPerKg: 2,
+				prep: "10% glucose (100 mg/ml)",
+				notes: "Flush with NaCl 0.9% after; recheck BM",
+			},
+		],
+	},
+	Glucagon: {
+		doses: [
+			{
+				indication: "Hypoglycaemia (IM)",
+				flatDose: "0.5 mg (<25 kg) · 1 mg (≥25 kg)",
+				prep: "1 mg powder for reconstitution",
+			},
+		],
+	},
+	Hydrocortisone: {
+		doses: [
+			{
+				indication: "Anaphylaxis / severe asthma (IV/IO)",
+				mgPerKg: 4,
+				maxMg: 200,
+				prep: "100 mg/ml IV",
+			},
+		],
+	},
+	Chlorphenamine: {
+		doses: [
+			{
+				indication: "Anaphylaxis / allergic reaction (IM/IV)",
+				mgPerKg: 0.1,
+				maxMg: 4,
+				prep: "10 mg/ml injection",
+			},
+		],
+	},
+	"Tranexamic acid": {
+		doses: [
+			{
+				indication: "Traumatic haemorrhage (IV)",
+				mgPerKg: 15,
+				maxMg: 1000,
+				prep: "100 mg/ml IV",
+				notes: "Give within 3 hours of injury; over 10 min",
+			},
+		],
+	},
+	Amiodarone: {
+		doses: [
+			{
+				indication: "VF / pVT cardiac arrest (IV/IO)",
+				mgPerKg: 5,
+				maxMg: 300,
+				prep: "50 mg/ml — dilute to 5 mg/ml in 5% glucose",
+				notes: "After 3rd shock",
+			},
+		],
+	},
+	Atropine: {
+		doses: [
+			{
+				indication: "Symptomatic bradycardia (IV/IO)",
+				mgPerKg: 0.02,
+				maxMg: 0.6,
+				minMg: 0.1,
+				prep: "1 mg/ml or 600 mcg/ml",
+			},
+		],
+	},
+	Adenosine: {
+		doses: [
+			{
+				indication: "SVT (IV — rapid bolus)",
+				mgPerKg: 0.1,
+				maxMg: 6,
+				prep: "3 mg/ml IV",
+				notes: "2nd dose: 0.2 mg/kg max 12 mg; 3rd: 0.3 mg/kg max 18 mg",
+			},
+		],
+	},
+	Benzylpenicillin: {
+		doses: [
+			{
+				indication: "Meningococcal (IV/IO/IM)",
+				mgPerKg: 50,
+				maxMg: 2400,
+				prep: "600 mg or 1.2 g vials for reconstitution",
+			},
+		],
+	},
+	Morphine: {
+		doses: [
+			{
+				indication: "Moderate / severe pain (IV)",
+				mgPerKg: 0.1,
+				maxMg: 5,
+				prep: "10 mg/ml — dilute to 1 mg/ml",
+				notes: "Titrate; reassess pain and RR",
+			},
+			{
+				indication: "Moderate / severe pain (IN)",
+				mgPerKg: 0.1,
+				maxMg: 5,
+				prep: "10 mg/ml concentrated IN",
+			},
+		],
+	},
+	Ketamine: {
+		doses: [
+			{
+				indication: "Procedural sedation / analgesia (IV)",
+				mgPerKg: 1,
+				maxMg: 200,
+				prep: "10 mg/ml or 50 mg/ml (dilute)",
+				notes: "Specialist use; ensure airway support available",
+			},
+			{
+				indication: "Procedural sedation (IM)",
+				mgPerKg: 4,
+				maxMg: 400,
+				prep: "50 mg/ml or 100 mg/ml (dilute)",
+			},
+		],
+	},
 };
 
 const PAEDS_ABCDENT = [
@@ -4229,7 +4455,8 @@ const PAEDS_WORSENING_PC = {
 			"your child will not drink or has had no wet nappy or has not urinated for 8 or more hours",
 			"you are worried or unsure at any point",
 		],
-		guidance: "NICE NG143 — feverish illness in children under 5. Do not sponge your child with cold water. Dress them comfortably — do not over-wrap or under-dress. Encourage regular fluids.",
+		guidance:
+			"NICE NG143 — feverish illness in children under 5. Do not sponge your child with cold water. Dress them comfortably — do not over-wrap or under-dress. Encourage regular fluids.",
 	},
 	"Respiratory distress": {
 		call999: [
@@ -4243,9 +4470,10 @@ const PAEDS_WORSENING_PC = {
 			"your child will not feed or drink",
 			"symptoms have not improved after prescribed treatment",
 		],
-		guidance: "JRCALC guidelines. Do not leave the child unattended. Keep the child calm and in a position they find comfortable — do not force them to lie down.",
+		guidance:
+			"JRCALC guidelines. Do not leave the child unattended. Keep the child calm and in a position they find comfortable — do not force them to lie down.",
 	},
-	"Wheeze": {
+	Wheeze: {
 		call999: [
 			"breathing becomes very difficult and is not improving with inhalers",
 			"your child cannot speak or cry normally",
@@ -4257,7 +4485,8 @@ const PAEDS_WORSENING_PC = {
 			"symptoms are not improving or are returning quickly after inhaler use",
 			"your child is too breathless to eat or drink normally",
 		],
-		guidance: "JRCALC / BTS asthma guidelines. Give reliever inhaler (usually salbutamol) via spacer — up to 10 puffs one at a time, each with 5–10 breaths, every 20 minutes if needed while awaiting help.",
+		guidance:
+			"JRCALC / BTS asthma guidelines. Give reliever inhaler (usually salbutamol) via spacer — up to 10 puffs one at a time, each with 5–10 breaths, every 20 minutes if needed while awaiting help.",
 	},
 	"Stridor / croup": {
 		call999: [
@@ -4271,9 +4500,10 @@ const PAEDS_WORSENING_PC = {
 			"barking cough or noisy breathing continues for more than a few days",
 			"your child is not drinking or eating normally",
 		],
-		guidance: "Keep the child calm — distress worsens stridor. Cool humid air may help (sitting in a steamy bathroom briefly). Do not put anything in the child's mouth.",
+		guidance:
+			"Keep the child calm — distress worsens stridor. Cool humid air may help (sitting in a steamy bathroom briefly). Do not put anything in the child's mouth.",
 	},
-	"Bronchiolitis": {
+	Bronchiolitis: {
 		call999: [
 			"breathing stops for a few seconds (apnoea) or your child goes blue",
 			"breathing is very laboured — you can see the ribs or the tummy is being sucked in",
@@ -4284,9 +4514,10 @@ const PAEDS_WORSENING_PC = {
 			"there has been no wet nappy for 8 or more hours",
 			"symptoms are getting worse rather than gradually improving",
 		],
-		guidance: "Bronchiolitis typically peaks at 3–5 days and lasts 2–3 weeks. Small, frequent feeds are better tolerated. Keep the head slightly elevated if comfortable. No evidence for salbutamol in bronchiolitis.",
+		guidance:
+			"Bronchiolitis typically peaks at 3–5 days and lasts 2–3 weeks. Small, frequent feeds are better tolerated. Keep the head slightly elevated if comfortable. No evidence for salbutamol in bronchiolitis.",
 	},
-	"Seizure": {
+	Seizure: {
 		call999: [
 			"another seizure occurs",
 			"a seizure lasts more than 5 minutes",
@@ -4298,7 +4529,8 @@ const PAEDS_WORSENING_PC = {
 			"this was the first-ever seizure — follow-up is required even if recovered",
 			"your child appears different or confused for longer than expected after the seizure",
 		],
-		guidance: "If a seizure occurs: do not restrain the child. Clear the area of hazards. Time the seizure. Place on their side when convulsing has stopped. Call 999 if the seizure lasts more than 5 minutes or does not stop.",
+		guidance:
+			"If a seizure occurs: do not restrain the child. Clear the area of hazards. Time the seizure. Place on their side when convulsing has stopped. Call 999 if the seizure lasts more than 5 minutes or does not stop.",
 	},
 	"Febrile seizure": {
 		call999: [
@@ -4312,7 +4544,8 @@ const PAEDS_WORSENING_PC = {
 			"fever returns and you are worried",
 			"this was the first febrile seizure — a follow-up appointment with GP or paediatrician is recommended",
 		],
-		guidance: "Febrile seizures are caused by the sudden rise in temperature, not the height of the fever. Give regular paracetamol or ibuprofen to manage fever. If a further seizure occurs, call 999 — do not administer rectal diazepam unless prescribed and instructed to do so.",
+		guidance:
+			"Febrile seizures are caused by the sudden rise in temperature, not the height of the fever. Give regular paracetamol or ibuprofen to manage fever. If a further seizure occurs, call 999 — do not administer rectal diazepam unless prescribed and instructed to do so.",
 	},
 	"Reduced / altered consciousness": {
 		call999: [
@@ -4325,9 +4558,10 @@ const PAEDS_WORSENING_PC = {
 			"your child is unusually sleepy or difficult to rouse but does respond to you",
 			"behaviour is significantly different from normal",
 		],
-		guidance: "Monitor closely and do not leave the child unattended. Keep them in the recovery position if unconscious and breathing. Reassess frequently.",
+		guidance:
+			"Monitor closely and do not leave the child unattended. Keep them in the recovery position if unconscious and breathing. Reassess frequently.",
 	},
-	"Vomiting": {
+	Vomiting: {
 		call999: [
 			"vomit is green or contains bile",
 			"your child is showing signs of dehydration — sunken eyes, no tears when crying, dry mouth, no wet nappy for 8 hours",
@@ -4339,7 +4573,8 @@ const PAEDS_WORSENING_PC = {
 			"there is blood in the vomit",
 			"vomiting is getting worse rather than better",
 		],
-		guidance: "Offer small sips of fluid frequently rather than large amounts. Oral rehydration solution (e.g. Dioralyte) is recommended. Avoid fruit juice and fizzy drinks.",
+		guidance:
+			"Offer small sips of fluid frequently rather than large amounts. Oral rehydration solution (e.g. Dioralyte) is recommended. Avoid fruit juice and fizzy drinks.",
 	},
 	"Diarrhoea and vomiting": {
 		call999: [
@@ -4353,7 +4588,8 @@ const PAEDS_WORSENING_PC = {
 			"your child cannot tolerate oral fluids",
 			"you are worried about their level of hydration or overall condition",
 		],
-		guidance: "NICE NG172 — gastroenteritis in children under 5. Use oral rehydration solution (Dioralyte) as the first-line treatment for mild-moderate dehydration. Avoid anti-diarrhoeal medications in children. Reassess frequently.",
+		guidance:
+			"NICE NG172 — gastroenteritis in children under 5. Use oral rehydration solution (Dioralyte) as the first-line treatment for mild-moderate dehydration. Avoid anti-diarrhoeal medications in children. Reassess frequently.",
 	},
 	"Abdominal pain": {
 		call999: [
@@ -4367,9 +4603,10 @@ const PAEDS_WORSENING_PC = {
 			"your child develops fever alongside the abdominal pain",
 			"your child will not eat or drink",
 		],
-		guidance: "Appendicitis classically starts around the navel and moves to the right lower abdomen. If in doubt, seek urgent assessment.",
+		guidance:
+			"Appendicitis classically starts around the navel and moves to the right lower abdomen. If in doubt, seek urgent assessment.",
 	},
-	"Rash": {
+	Rash: {
 		call999: [
 			"a rash appears or spreads that does not fade when you press a glass firmly against it — this could indicate meningitis or septicaemia",
 			"your child develops fever with the rash",
@@ -4381,7 +4618,8 @@ const PAEDS_WORSENING_PC = {
 			"your child is very unwell alongside the rash",
 			"you are uncertain about the nature of the rash",
 		],
-		guidance: "The glass test: press a clear glass firmly against the rash. If the rash does not fade (non-blanching), call 999 immediately. Meningococcal disease can deteriorate very rapidly.",
+		guidance:
+			"The glass test: press a clear glass firmly against the rash. If the rash does not fade (non-blanching), call 999 immediately. Meningococcal disease can deteriorate very rapidly.",
 	},
 	"Head injury": {
 		call999: [
@@ -4398,7 +4636,8 @@ const PAEDS_WORSENING_PC = {
 			"you have any concerns about your child's behaviour or level of alertness after the injury",
 			"headache persists beyond a few hours",
 		],
-		guidance: "NICE CG176 head injury guidelines. The child should be supervised closely for at least 24 hours. Avoid giving ibuprofen for head injury — paracetamol at correct dose is preferred for pain relief.",
+		guidance:
+			"NICE CG176 head injury guidelines. The child should be supervised closely for at least 24 hours. Avoid giving ibuprofen for head injury — paracetamol at correct dose is preferred for pain relief.",
 	},
 	"Allergic reaction / anaphylaxis": {
 		call999: [
@@ -4412,7 +4651,8 @@ const PAEDS_WORSENING_PC = {
 			"you are concerned about ongoing symptoms",
 			"if an adrenaline auto-injector was used — an ED assessment is always required even if the child has improved",
 		],
-		guidance: "If prescribed: use adrenaline auto-injector (EpiPen / Jext / Emerade) immediately if anaphylaxis is suspected — do not wait. Lie the child flat unless they have breathing difficulty (sit up). Call 999. JRCALC anaphylaxis guidelines.",
+		guidance:
+			"If prescribed: use adrenaline auto-injector (EpiPen / Jext / Emerade) immediately if anaphylaxis is suspected — do not wait. Lie the child flat unless they have breathing difficulty (sit up). Call 999. JRCALC anaphylaxis guidelines.",
 	},
 	"Diabetic emergency": {
 		call999: [
@@ -4425,7 +4665,8 @@ const PAEDS_WORSENING_PC = {
 			"your child is unable to keep fluids or glucose down",
 			"you are unsure how to manage the blood glucose level",
 		],
-		guidance: "For hypoglycaemia (BM <4 mmol/L): fast-acting glucose (Glucogel, juice, glucose tablets) if conscious and able to swallow. Recheck in 10–15 minutes. Give a starchy snack once recovered. Do not give food or drink if the child is not fully conscious.",
+		guidance:
+			"For hypoglycaemia (BM <4 mmol/L): fast-acting glucose (Glucogel, juice, glucose tablets) if conscious and able to swallow. Recheck in 10–15 minutes. Give a starchy snack once recovered. Do not give food or drink if the child is not fully conscious.",
 	},
 	"Sepsis concern": {
 		call999: [
@@ -4439,7 +4680,8 @@ const PAEDS_WORSENING_PC = {
 			"fever does not respond to paracetamol or ibuprofen",
 			"your child appears more unwell than expected for a simple illness",
 		],
-		guidance: "NICE NG51 — sepsis in children. Trust your instincts — sepsis can deteriorate very rapidly. If in doubt, call 999.",
+		guidance:
+			"NICE NG51 — sepsis in children. Trust your instincts — sepsis can deteriorate very rapidly. If in doubt, call 999.",
 	},
 	"Meningitis concern": {
 		call999: [
@@ -4452,7 +4694,8 @@ const PAEDS_WORSENING_PC = {
 		call111: [
 			"any new or worsening symptoms — for meningitis concern, do not wait: seek urgent medical advice immediately",
 		],
-		guidance: "Meningococcal disease can deteriorate within hours. Do not wait for a rash — if you suspect meningitis or septicaemia, call 999 immediately. The glass test should be performed if any rash develops.",
+		guidance:
+			"Meningococcal disease can deteriorate within hours. Do not wait for a rash — if you suspect meningitis or septicaemia, call 999 immediately. The glass test should be performed if any rash develops.",
 	},
 	"Overdose / poisoning": {
 		call999: [
@@ -4465,7 +4708,8 @@ const PAEDS_WORSENING_PC = {
 			"you are unsure whether your child has taken something harmful",
 			"you have any concern about their condition",
 		],
-		guidance: "If you know what substance was taken, tell the ambulance crew. Do not induce vomiting. Keep any packaging or containers to hand for the clinical team. TOXBASE is available to NHS clinicians.",
+		guidance:
+			"If you know what substance was taken, tell the ambulance crew. Do not induce vomiting. Keep any packaging or containers to hand for the clinical team. TOXBASE is available to NHS clinicians.",
 	},
 	"Trauma / injury": {
 		call999: [
@@ -4480,7 +4724,8 @@ const PAEDS_WORSENING_PC = {
 			"swelling or bruising is significant and spreading",
 			"you are worried about a possible fracture",
 		],
-		guidance: "JRCALC trauma guidelines. Keep injured limbs supported and still. Apply gentle pressure to any wound that is bleeding. Do not remove any impaled objects.",
+		guidance:
+			"JRCALC trauma guidelines. Keep injured limbs supported and still. Apply gentle pressure to any wound that is bleeding. Do not remove any impaled objects.",
 	},
 	"Mental health (adolescent)": {
 		call999: [
@@ -4492,9 +4737,10 @@ const PAEDS_WORSENING_PC = {
 			"you are concerned about your child's mental health and need urgent advice",
 			"your child is expressing thoughts of self-harm or suicide and you are unsure what to do",
 		],
-		guidance: "Keep communication open and non-judgmental. Remove access to means of self-harm where possible and safe to do so. Local CAMHS crisis lines and crisis cafes are available in many areas — ask your GP or 111 for local services.",
+		guidance:
+			"Keep communication open and non-judgmental. Remove access to means of self-harm where possible and safe to do so. Local CAMHS crisis lines and crisis cafes are available in many areas — ask your GP or 111 for local services.",
 	},
-	"Fall": {
+	Fall: {
 		call999: [
 			"loss of consciousness occurs, even briefly",
 			"three or more episodes of vomiting after the fall",
@@ -4507,7 +4753,8 @@ const PAEDS_WORSENING_PC = {
 			"swelling, bruising or deformity is significant",
 			"you have concerns about your child following the fall",
 		],
-		guidance: "NICE CG176 head injury guidance applies if the head was struck. Observe the child closely for the 24 hours following a significant fall.",
+		guidance:
+			"NICE CG176 head injury guidance applies if the head was struck. Observe the child closely for the 24 hours following a significant fall.",
 	},
 };
 
@@ -4687,15 +4934,18 @@ function updatePaedsAgeRef() {
 	const wt = aplsWeight(years, months);
 	const pill = $("#pAplsEstimate");
 	if (pill) {
-		pill.textContent = (years === 0 && months === 0)
-			? "Enter age above"
-			: wt !== null
-				? `≈ ${wt} kg (APLS)`
-				: "Use actual weight";
+		pill.textContent =
+			years === 0 && months === 0
+				? "Enter age above"
+				: wt !== null
+					? `≈ ${wt} kg (APLS)`
+					: "Use actual weight";
 	}
 
 	// Vitals reference
-	const group = manualGroup || ((years === 0 && months === 0) ? "" : detectAgeGroup(years, months));
+	const group =
+		manualGroup ||
+		(years === 0 && months === 0 ? "" : detectAgeGroup(years, months));
 	const ref = PAEDS_VITALS_REF[group];
 	const refBox = $("#pVitalsRef");
 	if (!refBox) return;
@@ -4752,32 +5002,55 @@ function renderWetflag(weight) {
 		{ letter: "T", label: "Tube size", value: data.tube },
 		{ letter: "F", label: "Fluid bolus", value: data.fluid },
 		{ letter: "L", label: "Lorazepam (seizure)", value: data.lorazepam },
-		{ letter: "A", label: "Adrenaline (cardiac arrest)", value: data.adrenaline },
+		{
+			letter: "A",
+			label: "Adrenaline (cardiac arrest)",
+			value: data.adrenaline,
+		},
 		{ letter: "G", label: "Glucose (hypoglycaemia)", value: data.glucose },
 	];
 	results.classList.remove("hidden");
 	results.innerHTML = `
 		<div class="wf-header">WETFLAG — ${data.weight} Reference</div>
-		${rows.map(r => `
+		${rows
+			.map(
+				(r) => `
 			<div class="wf-row">
 				<span class="wf-letter">${r.letter}</span>
 				<span class="wf-label">${r.label}</span>
 				<span class="wf-value">${r.value}</span>
-			</div>`).join("")}
+			</div>`,
+			)
+			.join("")}
 		<div class="wf-disclaimer">Prompt only — always verify with JRCALC Plus. Not a prescription. Check weight is accurate before administration.</div>`;
 }
 
 /* ── FLACC total ─────────────────────────────────────────── */
 function updateFlaccTotal() {
-	const ids = ["flaccFace", "flaccLegs", "flaccActivity", "flaccCry", "flaccConsolability"];
+	const ids = [
+		"flaccFace",
+		"flaccLegs",
+		"flaccActivity",
+		"flaccCry",
+		"flaccConsolability",
+	];
 	const total = ids.reduce((sum, id) => sum + (parseInt(val(id)) || 0), 0);
 	const el = $("#flaccTotal");
 	if (!el) return;
 	let label = "No pain / relaxed";
 	let cls = "pain-low";
-	if (total >= 1 && total <= 3) { label = "Mild pain"; cls = "pain-low"; }
-	if (total >= 4 && total <= 6) { label = "Moderate pain"; cls = "pain-mod"; }
-	if (total >= 7) { label = "Severe pain"; cls = "pain-high"; }
+	if (total >= 1 && total <= 3) {
+		label = "Mild pain";
+		cls = "pain-low";
+	}
+	if (total >= 4 && total <= 6) {
+		label = "Moderate pain";
+		cls = "pain-mod";
+	}
+	if (total >= 7) {
+		label = "Severe pain";
+		cls = "pain-high";
+	}
 	el.className = `flacc-total ${cls}`;
 	el.textContent = `FLACC total: ${total} / 10 — ${label}`;
 }
@@ -4813,7 +5086,9 @@ function bindRadioChipGroups() {
 			if (!chip || !group.contains(chip)) return;
 			const fieldId = group.dataset.radioGroup;
 			// Deselect all chips in this group
-			group.querySelectorAll("[data-value]").forEach((c) => c.classList.remove("selected"));
+			group
+				.querySelectorAll("[data-value]")
+				.forEach((c) => c.classList.remove("selected"));
 			// Select tapped chip
 			chip.classList.add("selected");
 			// Update hidden input
@@ -4837,7 +5112,9 @@ function bindPaedsEvents() {
 			const target = tab.dataset.paedsTab;
 			$$("[data-paeds-tab]").forEach((t) => t.classList.remove("active"));
 			tab.classList.add("active");
-			$$(".panel[id^='paeds-panel-']").forEach((p) => p.classList.remove("active"));
+			$$(".panel[id^='paeds-panel-']").forEach((p) =>
+				p.classList.remove("active"),
+			);
 			$(`#paeds-panel-${target}`)?.classList.add("active");
 		});
 	});
@@ -4860,7 +5137,9 @@ function bindPaedsEvents() {
 			if (!chip) return;
 			const isNormal = chip.dataset.patState === "normal";
 			chip.dataset.patState = isNormal ? "abnormal" : "normal";
-			chip.textContent = isNormal ? chip.dataset.patAbnormal : chip.dataset.patNormal;
+			chip.textContent = isNormal
+				? chip.dataset.patAbnormal
+				: chip.dataset.patNormal;
 			chip.classList.toggle("selected", !isNormal);
 			chip.classList.toggle("abnormal", isNormal);
 		});
@@ -4878,7 +5157,9 @@ function bindPaedsEvents() {
 			const chip = e.target.closest(".flacc-chip");
 			if (!chip) return;
 			const field = row.dataset.flaccField;
-			$$(`[data-flacc-field="${field}"] .flacc-chip`).forEach((c) => c.classList.remove("selected"));
+			$$(`[data-flacc-field="${field}"] .flacc-chip`).forEach((c) =>
+				c.classList.remove("selected"),
+			);
 			chip.classList.add("selected");
 			const inp = $(`#${field}`);
 			if (inp) {
@@ -4887,7 +5168,13 @@ function bindPaedsEvents() {
 			}
 		});
 	});
-	["flaccFace", "flaccLegs", "flaccActivity", "flaccCry", "flaccConsolability"].forEach((id) => {
+	[
+		"flaccFace",
+		"flaccLegs",
+		"flaccActivity",
+		"flaccCry",
+		"flaccConsolability",
+	].forEach((id) => {
 		$(`#${id}`)?.addEventListener("change", updateFlaccTotal);
 	});
 
@@ -4909,7 +5196,9 @@ function bindPaedsEvents() {
 			if (!btn) return;
 			const score = btn.dataset.score;
 			const already = btn.classList.contains("selected");
-			$$(`#${gridId} .pain-score-btn`).forEach((b) => b.classList.remove("selected"));
+			$$(`#${gridId} .pain-score-btn`).forEach((b) =>
+				b.classList.remove("selected"),
+			);
 			if (!already) {
 				btn.classList.add("selected");
 				const inp = $(`#${inputId}`);
@@ -4936,7 +5225,10 @@ function bindPaedsEvents() {
 				: paedsState.sgConcerns.add(v);
 		}
 		$$("#pSgGrid [data-p-sg-group]").forEach((b) => {
-			b.classList.toggle("selected", paedsState.sgConcerns.has(b.dataset.pSgValue));
+			b.classList.toggle(
+				"selected",
+				paedsState.sgConcerns.has(b.dataset.pSgValue),
+			);
 		});
 		const hasConcerns =
 			paedsState.sgConcerns.size > 0 &&
@@ -4989,19 +5281,43 @@ function buildPaedsOutputSections() {
 	container.innerHTML = "";
 
 	const sections = [
-		{ id: "p-patient",    title: "PATIENT",                   body: buildPaedsPatientText() },
-		{ id: "p-pc",         title: "PRESENTING COMPLAINT",       body: buildPaedsPcText() },
-		{ id: "p-background", title: "BACKGROUND",                 body: buildPaedsBackgroundText() },
-		{ id: "p-tmt",        title: "3 MINUTE TOOLKIT",            body: buildTmtText() },
-		{ id: "p-pat",        title: "PAT — ACROSS-THE-ROOM",      body: buildPaedsPATText() },
-		{ id: "p-primary",    title: "PRIMARY SURVEY (ABCDE + ENT + T + DEFG)", body: buildPaedsAbcdentText() },
-		{ id: "p-pain",       title: "PAIN ASSESSMENT",            body: buildPaedsPainText() },
-		{ id: "p-sg",         title: "SAFEGUARDING",               body: buildPaedsSgText() },
-		{ id: "p-tx",         title: "TREATMENTS & INTERVENTIONS", body: buildPaedsTxText() },
-		{ id: "p-changes",    title: "CLINICAL CHANGES",           body: buildPaedsClinChangesText() },
-		{ id: "p-consent",    title: "CONSENT & CAPACITY",         body: buildPaedsConsentText() },
-		{ id: "p-convey",     title: "CONVEYANCE",                 body: buildPaedsConveyText() },
-		{ id: "p-worsening",  title: "WORSENING ADVICE",           body: buildPaedsWorseningText() },
+		{ id: "p-patient", title: "PATIENT", body: buildPaedsPatientText() },
+		{ id: "p-pc", title: "PRESENTING COMPLAINT", body: buildPaedsPcText() },
+		{
+			id: "p-background",
+			title: "BACKGROUND",
+			body: buildPaedsBackgroundText(),
+		},
+		{ id: "p-tmt", title: "3 MINUTE TOOLKIT", body: buildTmtText() },
+		{ id: "p-pat", title: "PAT — ACROSS-THE-ROOM", body: buildPaedsPATText() },
+		{
+			id: "p-primary",
+			title: "PRIMARY SURVEY (ABCDE + ENT + T + DEFG)",
+			body: buildPaedsAbcdentText(),
+		},
+		{ id: "p-pain", title: "PAIN ASSESSMENT", body: buildPaedsPainText() },
+		{ id: "p-sg", title: "SAFEGUARDING", body: buildPaedsSgText() },
+		{
+			id: "p-tx",
+			title: "TREATMENTS & INTERVENTIONS",
+			body: buildPaedsTxText(),
+		},
+		{
+			id: "p-changes",
+			title: "CLINICAL CHANGES",
+			body: buildPaedsClinChangesText(),
+		},
+		{
+			id: "p-consent",
+			title: "CONSENT & CAPACITY",
+			body: buildPaedsConsentText(),
+		},
+		{ id: "p-convey", title: "CONVEYANCE", body: buildPaedsConveyText() },
+		{
+			id: "p-worsening",
+			title: "WORSENING ADVICE",
+			body: buildPaedsWorseningText(),
+		},
 	];
 
 	sections.forEach(({ id, title, body }) => {
@@ -5014,9 +5330,11 @@ function buildPaedsOutputSections() {
 		pre.textContent = body;
 		pre.dataset.plaintext = body;
 		card.append(pre);
-		card.querySelector("[data-p-copy-section]")?.addEventListener("click", async () => {
-			await copyText(body);
-		});
+		card
+			.querySelector("[data-p-copy-section]")
+			?.addEventListener("click", async () => {
+				await copyText(body);
+			});
 		container.append(card);
 	});
 }
@@ -5036,9 +5354,13 @@ function buildTmtText() {
 	lines.push(`See primary survey (ABCDE + ENT + T + DEFG) below`);
 
 	// Phase 3 — DECIDE
-	const all3  = $$(`#tmtPhase3Grid .tmt-chip`);
-	const done3 = all3.filter((c) =>  c.classList.contains("selected")).map((c) => c.dataset.tmtLabel);
-	const skip3 = all3.filter((c) => !c.classList.contains("selected")).map((c) => c.dataset.tmtLabel);
+	const all3 = $$(`#tmtPhase3Grid .tmt-chip`);
+	const done3 = all3
+		.filter((c) => c.classList.contains("selected"))
+		.map((c) => c.dataset.tmtLabel);
+	const skip3 = all3
+		.filter((c) => !c.classList.contains("selected"))
+		.map((c) => c.dataset.tmtLabel);
 	const decision = val("tmtDecision");
 	const notes = val("tmtNotes");
 	lines.push(`\nPhase 3 — DECIDE`);
@@ -5053,16 +5375,28 @@ function buildTmtText() {
 function buildPaedsPatientText() {
 	const yrs = val("pAgeYears");
 	const mo = val("pAgeMonths");
-	const ageStr = [yrs ? `${yrs} years` : null, mo ? `${mo} months` : null].filter(Boolean).join(" ") || "Age not recorded";
+	const ageStr =
+		[yrs ? `${yrs} years` : null, mo ? `${mo} months` : null]
+			.filter(Boolean)
+			.join(" ") || "Age not recorded";
 	const sex = val("pSex") || "Sex not recorded";
-	const wt = val("pWeight") || (aplsWeight(parseInt(yrs) || 0, parseInt(mo) || 0) ? `≈${aplsWeight(parseInt(yrs) || 0, parseInt(mo) || 0)} kg (APLS estimate)` : "Not recorded");
-	const group = val("pAgeGroup") || detectAgeGroup(parseInt(yrs) || 0, parseInt(mo) || 0) || "";
+	const wt =
+		val("pWeight") ||
+		(aplsWeight(parseInt(yrs) || 0, parseInt(mo) || 0)
+			? `≈${aplsWeight(parseInt(yrs) || 0, parseInt(mo) || 0)} kg (APLS estimate)`
+			: "Not recorded");
+	const group =
+		val("pAgeGroup") ||
+		detectAgeGroup(parseInt(yrs) || 0, parseInt(mo) || 0) ||
+		"";
 	const groupLabel = PAEDS_VITALS_REF[group]?.label || group;
 	return [
 		`Patient: ${ageStr}, ${sex}`,
 		`Weight: ${wt}`,
 		groupLabel ? `Age group: ${groupLabel}` : null,
-	].filter(Boolean).join("\n");
+	]
+		.filter(Boolean)
+		.join("\n");
 }
 
 function buildPaedsPcText() {
@@ -5072,7 +5406,8 @@ function buildPaedsPcText() {
 	const onset = val("pOnsetType");
 	const duration = val("pOnsetDuration");
 	if (pc) lines.push(`Presenting complaint: ${pc}`);
-	if (onset || duration) lines.push(`Onset: ${[onset, duration].filter(Boolean).join(", ")}`);
+	if (onset || duration)
+		lines.push(`Onset: ${[onset, duration].filter(Boolean).join(", ")}`);
 	if (hpc) lines.push(`\nHistory:\n${hpc}`);
 	return lines.join("\n");
 }
@@ -5086,9 +5421,11 @@ function buildPaedsBackgroundText() {
 	if (isChecked("pNoPmh")) lines.push("PMH: None significant");
 	else if (val("pPmh")) lines.push(`PMH: ${val("pPmh")}`);
 	if (val("pGestation")) lines.push(`Gestation: ${val("pGestation")}`);
-	if (val("pBirthHistory")) lines.push(`Birth history: ${val("pBirthHistory")}`);
+	if (val("pBirthHistory"))
+		lines.push(`Birth history: ${val("pBirthHistory")}`);
 	const imms = val("pImms");
-	if (imms && imms !== "Unknown / not checked") lines.push(`Immunisations: ${imms}`);
+	if (imms && imms !== "Unknown / not checked")
+		lines.push(`Immunisations: ${imms}`);
 	if (val("pSocial")) lines.push(`Social: ${val("pSocial")}`);
 	return lines.join("\n");
 }
@@ -5097,8 +5434,14 @@ function buildPaedsPATText() {
 	const lines = [];
 	["appearance", "wob", "circ"].forEach((component) => {
 		const chips = $$(`[data-pat="${component}"]`);
-		const abnormal = chips.filter((c) => c.dataset.patState === "abnormal").map((c) => c.textContent);
-		const componentName = { appearance: "Appearance (TICLS)", wob: "Work of Breathing", circ: "Circulation to skin" }[component];
+		const abnormal = chips
+			.filter((c) => c.dataset.patState === "abnormal")
+			.map((c) => c.textContent);
+		const componentName = {
+			appearance: "Appearance (TICLS)",
+			wob: "Work of Breathing",
+			circ: "Circulation to skin",
+		}[component];
 		if (abnormal.length) {
 			lines.push(`${componentName}: ABNORMAL — ${abnormal.join(", ")}`);
 		} else {
@@ -5115,11 +5458,16 @@ function buildPaedsAbcdentText() {
 	PAEDS_ABCDENT.forEach((section) => {
 		const chips = $$(`[data-p-abc="${section.key}"]`);
 		if (!chips.length) return; // not built yet
-		const abnormal = chips.filter((c) => c.dataset.abcState === "abnormal").map((c) => c.textContent);
-		const vitalsText = section.vitals.map(([id, label]) => {
-			const v = val(id);
-			return v ? `${label}: ${v}` : null;
-		}).filter(Boolean).join(", ");
+		const abnormal = chips
+			.filter((c) => c.dataset.abcState === "abnormal")
+			.map((c) => c.textContent);
+		const vitalsText = section.vitals
+			.map(([id, label]) => {
+				const v = val(id);
+				return v ? `${label}: ${v}` : null;
+			})
+			.filter(Boolean)
+			.join(", ");
 		const notes = val(section.notes);
 		const status = abnormal.length
 			? `ABNORMAL — ${abnormal.join(", ")}`
@@ -5136,9 +5484,21 @@ function buildPaedsPainText() {
 	const tool = val("pPainTool");
 	const lines = [];
 	if (tool === "flacc") {
-		const total = ["flaccFace", "flaccLegs", "flaccActivity", "flaccCry", "flaccConsolability"]
-			.reduce((sum, id) => sum + (parseInt(val(id)) || 0), 0);
-		const label = total <= 0 ? "No pain" : total <= 3 ? "Mild pain" : total <= 6 ? "Moderate pain" : "Severe pain";
+		const total = [
+			"flaccFace",
+			"flaccLegs",
+			"flaccActivity",
+			"flaccCry",
+			"flaccConsolability",
+		].reduce((sum, id) => sum + (parseInt(val(id)) || 0), 0);
+		const label =
+			total <= 0
+				? "No pain"
+				: total <= 3
+					? "Mild pain"
+					: total <= 6
+						? "Moderate pain"
+						: "Severe pain";
 		lines.push(`Pain assessment tool: FLACC`);
 		lines.push(`FLACC score: ${total}/10 — ${label}`);
 	} else if (tool === "nrs") {
@@ -5164,7 +5524,9 @@ function buildPaedsSgText() {
 	if (val("pSgDetail")) lines.push(`Detail: ${val("pSgDetail")}`);
 	if (isChecked("pSgReferral")) {
 		const ref = val("pSgReferralDetail");
-		lines.push(`Safeguarding referral made / MASH contacted.${ref ? ` ${ref}` : ""}`);
+		lines.push(
+			`Safeguarding referral made / MASH contacted.${ref ? ` ${ref}` : ""}`,
+		);
 	}
 	return lines.join("\n") || "Safeguarding: None identified on scene";
 }
@@ -5213,7 +5575,11 @@ function buildPaedsTreatmentSection() {
 
 	buildPaedsTxGrid("pAirwayGrid", PAEDS_TX_AIRWAY, "pAirwayInterventions");
 	buildPaedsTxGrid("pWoundGrid", PAEDS_TX_WOUND, "pWoundInterventions");
-	buildPaedsTxGrid("pPositioningGrid", PAEDS_TX_POSITIONING, "pPositioningInterventions");
+	buildPaedsTxGrid(
+		"pPositioningGrid",
+		PAEDS_TX_POSITIONING,
+		"pPositioningInterventions",
+	);
 
 	// VA type → show/hide gauge + site grids
 	$("#pVaType")?.addEventListener("change", () => {
@@ -5224,10 +5590,14 @@ function buildPaedsTreatmentSection() {
 		$("#pVaIvSites")?.classList.toggle("hidden", !isIv);
 		$("#pVaIoSites")?.classList.toggle("hidden", !isIo);
 		// Clear site + gauge selection when type changes
-		[...$$("[data-radio-group='pVaSite'] [data-value]"),
-		 ...$$("[data-radio-group='pVaGauge'] [data-value]")].forEach((c) => c.classList.remove("selected"));
-		const siteInp = $("#pVaSite"); if (siteInp) siteInp.value = "";
-		const gaugeInp = $("#pVaGauge"); if (gaugeInp) gaugeInp.value = "";
+		[
+			...$$("[data-radio-group='pVaSite'] [data-value]"),
+			...$$("[data-radio-group='pVaGauge'] [data-value]"),
+		].forEach((c) => c.classList.remove("selected"));
+		const siteInp = $("#pVaSite");
+		if (siteInp) siteInp.value = "";
+		const gaugeInp = $("#pVaGauge");
+		if (gaugeInp) gaugeInp.value = "";
 	});
 
 	// Outcome → show flush confirmation when Successful, auto-populate flush chip
@@ -5237,8 +5607,11 @@ function buildPaedsTreatmentSection() {
 		if (successful) {
 			setRadioChip("pVaFlushed", "Flushed — 5ml NaCl 0.9%");
 		} else {
-			$$("[data-radio-group='pVaFlushed'] [data-value]").forEach((c) => c.classList.remove("selected"));
-			const fi = $("#pVaFlushed"); if (fi) fi.value = "";
+			$$("[data-radio-group='pVaFlushed'] [data-value]").forEach((c) =>
+				c.classList.remove("selected"),
+			);
+			const fi = $("#pVaFlushed");
+			if (fi) fi.value = "";
 		}
 	});
 
@@ -5254,11 +5627,17 @@ function buildPaedsTreatmentSection() {
 	// Remove / repeat delegation
 	$("#pVaEntries")?.addEventListener("click", (e) => {
 		const idx = e.target.dataset.removePva;
-		if (idx !== undefined) { paedsState.pIvEntries.splice(parseInt(idx), 1); renderPaedsIvEntries(); }
+		if (idx !== undefined) {
+			paedsState.pIvEntries.splice(parseInt(idx), 1);
+			renderPaedsIvEntries();
+		}
 	});
 	$("#pDrugEntries")?.addEventListener("click", (e) => {
 		const ri = e.target.dataset.removePdrug;
-		if (ri !== undefined) { paedsState.pDrugEntries.splice(parseInt(ri), 1); renderPaedsDrugEntries(); }
+		if (ri !== undefined) {
+			paedsState.pDrugEntries.splice(parseInt(ri), 1);
+			renderPaedsDrugEntries();
+		}
 		const rp = e.target.dataset.repeatPdrug;
 		if (rp !== undefined) repeatPaedsDrugEntry(parseInt(rp));
 	});
@@ -5277,13 +5656,23 @@ function addPaedsIvEntry() {
 		fluids: val("pVaFluids"),
 	});
 	// Clear inputs
-	["pVaType", "pVaGauge", "pVaSite", "pVaOutcome", "pVaFlushed", "pVaFluids"].forEach((id) => {
-		const el = $(`#${id}`); if (el) el.value = "";
+	[
+		"pVaType",
+		"pVaGauge",
+		"pVaSite",
+		"pVaOutcome",
+		"pVaFlushed",
+		"pVaFluids",
+	].forEach((id) => {
+		const el = $(`#${id}`);
+		if (el) el.value = "";
 	});
 	["pVaGaugeWrap", "pVaIvSites", "pVaIoSites", "pVaFlushWrap"].forEach((id) => {
 		$(`#${id}`)?.classList.add("hidden");
 	});
-	$$("[data-radio-group='pVaType'] [data-value], [data-radio-group='pVaGauge'] [data-value], [data-radio-group='pVaSite'] [data-value], [data-radio-group='pVaOutcome'] [data-value], [data-radio-group='pVaFlushed'] [data-value]").forEach((c) => c.classList.remove("selected"));
+	$$(
+		"[data-radio-group='pVaType'] [data-value], [data-radio-group='pVaGauge'] [data-value], [data-radio-group='pVaSite'] [data-value], [data-radio-group='pVaOutcome'] [data-value], [data-radio-group='pVaFlushed'] [data-value]",
+	).forEach((c) => c.classList.remove("selected"));
 	renderPaedsIvEntries();
 }
 
@@ -5315,10 +5704,19 @@ function addPaedsDrugEntry() {
 		time: val("pDrugTime"),
 		response: val("pDrugSingleResponse"),
 	});
-	["pDrugName", "pDrugDose", "pDrugRoute", "pDrugTime", "pDrugSingleResponse"].forEach((id) => {
-		const el = $(`#${id}`); if (el) el.value = "";
+	[
+		"pDrugName",
+		"pDrugDose",
+		"pDrugRoute",
+		"pDrugTime",
+		"pDrugSingleResponse",
+	].forEach((id) => {
+		const el = $(`#${id}`);
+		if (el) el.value = "";
 	});
-	$$("[data-radio-group='pDrugRoute'] [data-value]").forEach((c) => c.classList.remove("selected"));
+	$$("[data-radio-group='pDrugRoute'] [data-value]").forEach((c) =>
+		c.classList.remove("selected"),
+	);
 	$("#pDoseHint")?.classList.add("hidden");
 	renderPaedsDrugEntries();
 }
@@ -5347,9 +5745,14 @@ function repeatPaedsDrugEntry(index) {
 	const hh = String(now.getHours()).padStart(2, "0");
 	const mm = String(now.getMinutes()).padStart(2, "0");
 	const nameEl = $("#pDrugName");
-	if (nameEl) { nameEl.value = e.drug; nameEl.dispatchEvent(new Event("input")); }
-	const doseEl = $("#pDrugDose"); if (doseEl) doseEl.value = e.dose || "";
-	const timeEl = $("#pDrugTime"); if (timeEl) timeEl.value = `${hh}:${mm}`;
+	if (nameEl) {
+		nameEl.value = e.drug;
+		nameEl.dispatchEvent(new Event("input"));
+	}
+	const doseEl = $("#pDrugDose");
+	if (doseEl) doseEl.value = e.dose || "";
+	const timeEl = $("#pDrugTime");
+	if (timeEl) timeEl.value = `${hh}:${mm}`;
 	// Re-select route chip
 	if (e.route) setRadioChip("pDrugRoute", e.route);
 	nameEl?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -5361,16 +5764,21 @@ function updatePaedsDoseHint() {
 	const hintEl = $("#pDoseHint");
 	if (!hintEl) return;
 	const data = PAEDS_DRUG_DOSES[drug];
-	if (!data) { hintEl.classList.add("hidden"); return; }
+	if (!data) {
+		hintEl.classList.add("hidden");
+		return;
+	}
 
 	const weightActual = parseFloat(val("pWeight"));
 	const years = parseInt(val("pAgeYears")) || 0;
 	const months = parseInt(val("pAgeMonths")) || 0;
 	const weightApls = aplsWeight(years, months);
-	const weight = (!isNaN(weightActual) && weightActual > 0) ? weightActual : weightApls;
+	const weight =
+		!isNaN(weightActual) && weightActual > 0 ? weightActual : weightApls;
 
 	let html = `<div class="dose-hint"><strong class="dose-hint-drug">${drug}</strong><span class="dose-hint-source">JRCALC reference doses</span>`;
-	if (weight) html += `<span class="dose-hint-weight">Based on ${weight} kg${!isNaN(weightActual) && weightActual > 0 ? " (actual)" : " (APLS estimate)"}</span>`;
+	if (weight)
+		html += `<span class="dose-hint-weight">Based on ${weight} kg${!isNaN(weightActual) && weightActual > 0 ? " (actual)" : " (APLS estimate)"}</span>`;
 
 	data.doses.forEach((d) => {
 		html += `<div class="dose-hint-row"><span class="dose-hint-indication">${d.indication}</span>`;
@@ -5387,9 +5795,17 @@ function updatePaedsDoseHint() {
 		} else if (d.mgPerKg && weight) {
 			let doseMg = d.mgPerKg * weight;
 			let capped = false;
-			if (d.maxMg && doseMg > d.maxMg) { doseMg = d.maxMg; capped = true; }
-			if (d.minMg && doseMg < d.minMg) { doseMg = d.minMg; }
-			const doseStr = doseMg < 1 ? `${(doseMg * 1000).toFixed(0)} mcg` : `${doseMg % 1 === 0 ? doseMg : doseMg.toFixed(2)} mg`;
+			if (d.maxMg && doseMg > d.maxMg) {
+				doseMg = d.maxMg;
+				capped = true;
+			}
+			if (d.minMg && doseMg < d.minMg) {
+				doseMg = d.minMg;
+			}
+			const doseStr =
+				doseMg < 1
+					? `${(doseMg * 1000).toFixed(0)} mcg`
+					: `${doseMg % 1 === 0 ? doseMg : doseMg.toFixed(2)} mg`;
 			html += `<span class="dose-hint-calc dose-hint-calc--active">${doseStr}${capped ? " (MAX)" : ""}</span>`;
 		} else if (d.mgPerKg) {
 			html += `<span class="dose-hint-calc">${d.mgPerKg} mg/kg</span>`;
@@ -5407,7 +5823,9 @@ function buildPaedsTxText() {
 	const lines = [];
 
 	if (paedsState.pAirwayInterventions.size)
-		lines.push(`Airway / breathing: ${[...paedsState.pAirwayInterventions].join(", ")}`);
+		lines.push(
+			`Airway / breathing: ${[...paedsState.pAirwayInterventions].join(", ")}`,
+		);
 
 	if (paedsState.pIvEntries.length) {
 		lines.push("Vascular access:");
@@ -5435,13 +5853,18 @@ function buildPaedsTxText() {
 	}
 
 	if (paedsState.pWoundInterventions.size)
-		lines.push(`Wound management: ${[...paedsState.pWoundInterventions].join(", ")}`);
+		lines.push(
+			`Wound management: ${[...paedsState.pWoundInterventions].join(", ")}`,
+		);
 
 	if (paedsState.pPositioningInterventions.size)
-		lines.push(`Positioning: ${[...paedsState.pPositioningInterventions].join(", ")}`);
+		lines.push(
+			`Positioning: ${[...paedsState.pPositioningInterventions].join(", ")}`,
+		);
 
 	if (val("pOtherTx")) lines.push(`Other: ${val("pOtherTx")}`);
-	if (val("pTxResponse")) lines.push(`Treatment response: ${val("pTxResponse")}`);
+	if (val("pTxResponse"))
+		lines.push(`Treatment response: ${val("pTxResponse")}`);
 
 	return lines.join("\n");
 }
@@ -5549,15 +5972,25 @@ function updatePaedsWorseningScript() {
 
 function buildPaedsWorseningText() {
 	const mode = val("pWorseningMode");
-	if (mode === "na") return "Patient conveyed — worsening advice not applicable for this episode.";
+	if (mode === "na")
+		return "Patient conveyed — worsening advice not applicable for this episode.";
 
 	const script = buildPaedsWorseningScript();
 	const lines = [script];
 	const checks = [
-		[isChecked("pAdviceUnderstood"), "Advice given and confirmed understood by parent / carer"],
-		[isChecked("pFeverAdviceGiven"), "Fever / temperature management advice given"],
+		[
+			isChecked("pAdviceUnderstood"),
+			"Advice given and confirmed understood by parent / carer",
+		],
+		[
+			isChecked("pFeverAdviceGiven"),
+			"Fever / temperature management advice given",
+		],
 		[isChecked("pFluidAdviceGiven"), "Hydration / feeding advice given"],
-		[isChecked("pRecontactAdvice"), "Parent / carer advised to call 999 / 111 if concerned"],
+		[
+			isChecked("pRecontactAdvice"),
+			"Parent / carer advised to call 999 / 111 if concerned",
+		],
 	];
 	const confirmed = checks.filter(([c]) => c).map(([, l]) => l);
 	if (confirmed.length) lines.push(`\nConfirmed: ${confirmed.join("; ")}`);
@@ -5640,3 +6073,53 @@ function enhanceSectionCards() {
 		summary.dataset.enhanced = "true";
 	});
 }
+
+/* =========================================
+   CrewMate Dark Mode Toggle
+========================================= */
+
+(function () {
+	const STORAGE_KEY = "crewmate-theme";
+	const toggle = document.getElementById("themeToggle");
+	const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+	function applyTheme(theme) {
+		const root = document.documentElement;
+		const isDark = theme === "dark";
+
+		root.setAttribute("data-theme", theme);
+
+		if (toggle) {
+			toggle.setAttribute(
+				"aria-label",
+				isDark ? "Switch to light mode" : "Switch to dark mode",
+			);
+
+			toggle.setAttribute("aria-pressed", String(isDark));
+		}
+
+		if (themeMeta) {
+			themeMeta.setAttribute("content", isDark ? "#0f1720" : "#075985");
+		}
+	}
+
+	const savedTheme = localStorage.getItem(STORAGE_KEY);
+	const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+	const initialTheme = savedTheme || (prefersDark ? "dark" : "light");
+
+	applyTheme(initialTheme);
+
+	if (toggle) {
+		toggle.addEventListener("click", function () {
+			const currentTheme =
+				document.documentElement.getAttribute("data-theme") || "light";
+
+			const nextTheme = currentTheme === "dark" ? "light" : "dark";
+
+			localStorage.setItem(STORAGE_KEY, nextTheme);
+
+			applyTheme(nextTheme);
+		});
+	}
+})();
