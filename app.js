@@ -23,7 +23,8 @@ const state = {
 	headSymptoms: new Set(),
 	headSigns: new Set(),
 	injuryEntries: [],
-	abdoRegions: new Set(),
+	abdoFindings: {}, // { regionName: Set<finding> }
+	abdoActive: null, // currently focused region
 	ivEntries: [],
 	drugEntries: [],
 	seizureType: new Set(),
@@ -54,6 +55,7 @@ const state = {
 	ros: {},
 	respAusc: { normal: false, notAuscultated: true, entries: [] },
 	worseningAuto: true,
+	pReferrals: new Set(),
 };
 
 /** When one disability chip is set abnormal, linked chips flip too. */
@@ -72,6 +74,21 @@ const CONVEY_TRANSFER = [
 	["No escalation en route", "Care escalated en route"],
 	["No clinical change", "Clinical change during conveyance"],
 ];
+
+const ABDO_FINDINGS = [
+	"Tenderness",
+	"Guarding",
+	"Rigidity",
+	"Rebound",
+	"Mass / lump",
+];
+const ABDO_FINDING_SHORT = {
+	Tenderness: "T",
+	Guarding: "G",
+	Rigidity: "Ri",
+	Rebound: "Rb",
+	"Mass / lump": "M",
+};
 
 const WORSENING_GENERIC = [
 	"chest pain or pressure",
@@ -379,6 +396,17 @@ const OPTIONS = {
 		"Mental health crisis team",
 		"Safeguarding referral",
 	],
+	pReferrals: [
+		"GP",
+		"111",
+		"Urgent treatment centre",
+		"Health visitor",
+		"Community nursing",
+		"Self-care",
+		"CAMHS",
+		"Paediatric safeguarding",
+		"Pharmacy",
+	],
 	fallsSymptoms: [
 		"Dizziness",
 		"Pre-syncope",
@@ -460,9 +488,9 @@ const OPTIONS = {
 		"R flank",
 		"Umbilical",
 		"L flank",
-		"RIF",
+		"R iliac fossa",
 		"Suprapubic",
-		"LIF",
+		"L iliac fossa",
 	],
 };
 
@@ -627,7 +655,7 @@ const ROS = {
 			["rebound", "No rebound tenderness", "Rebound tenderness present"],
 		],
 		extras:
-			'<label class="field-label">Palpation findings by region</label><div class="multi-group abdo-grid" data-state="abdoRegions"></div><div class="grid-2" style="margin-top:12px"><div><label class="field-label" for="giFluidIntake">Fluid intake</label><select id="giFluidIntake"><option value="">Not assessed</option><option value="Normal">Normal</option><option value="Increased">Increased</option><option value="Reduced">Reduced</option></select></div><div><label class="field-label" for="giAppetite">Appetite</label><select id="giAppetite"><option value="">Not assessed</option><option value="Normal">Normal</option><option value="Increased">Increased</option><option value="Reduced">Reduced</option></select></div></div><label class="field-label" for="bowelSounds">Bowel sounds</label><input id="bowelSounds" type="text" placeholder="Present and normal"><label class="check-row" style="margin-top:10px;margin-bottom:8px"><input type="checkbox" id="stomaPresent" /> Patient has stoma</label><div id="stomaDetails" class="hidden"><label class="field-label" for="stomaType">Stoma type</label><select id="stomaType"><option value="">Unknown</option><option>Colostomy</option><option>Ileostomy</option><option>Urostomy</option></select><label class="field-label" for="stomaOutput">Stoma output</label><select id="stomaOutput"><option value="">Not assessed</option><option>Normal</option><option>Reduced</option><option>Absent / no output</option><option>High output / loose</option></select><label class="field-label" for="stomaAppearance">Stoma appearance</label><select id="stomaAppearance"><option value="">Not assessed</option><option>Normal</option><option>Dark / discoloured</option><option>Blood-stained</option><option>Offensive</option></select></div><label class="field-label" for="giNotes" style="margin-top:8px">Additional notes</label><textarea id="giNotes" rows="2"></textarea>',
+			'<label class="field-label">Palpation findings by region</label><div class="abdo-grid" id="abdoRegionsGrid"></div><div id="abdoFindingPanel" class="abdo-finding-panel hidden"></div><div class="grid-2" style="margin-top:12px"><div><label class="field-label" for="giFluidIntake">Fluid intake</label><select id="giFluidIntake"><option value="">Not assessed</option><option value="Normal">Normal</option><option value="Increased">Increased</option><option value="Reduced">Reduced</option></select></div><div><label class="field-label" for="giAppetite">Appetite</label><select id="giAppetite"><option value="">Not assessed</option><option value="Normal">Normal</option><option value="Increased">Increased</option><option value="Reduced">Reduced</option></select></div></div><label class="field-label" for="bowelSounds">Bowel sounds</label><input id="bowelSounds" type="text" placeholder="Present and normal"><label class="check-row" style="margin-top:10px;margin-bottom:8px"><input type="checkbox" id="stomaPresent" /> Patient has stoma</label><div id="stomaDetails" class="hidden"><label class="field-label" for="stomaType">Stoma type</label><select id="stomaType"><option value="">Unknown</option><option>Colostomy</option><option>Ileostomy</option><option>Urostomy</option></select><label class="field-label" for="stomaOutput">Stoma output</label><select id="stomaOutput"><option value="">Not assessed</option><option>Normal</option><option>Reduced</option><option>Absent / no output</option><option>High output / loose</option></select><label class="field-label" for="stomaAppearance">Stoma appearance</label><select id="stomaAppearance"><option value="">Not assessed</option><option>Normal</option><option>Dark / discoloured</option><option>Blood-stained</option><option>Offensive</option></select></div><label class="field-label" for="giNotes" style="margin-top:8px">Additional notes</label><textarea id="giNotes" rows="2"></textarea>',
 	},
 	urine: {
 		title: "Urinary",
@@ -745,6 +773,7 @@ function showFeature(feature) {
 		switchTab("history");
 	} else if (feature === "paeds-prf") {
 		$("#paeds-tool")?.classList.remove("hidden");
+		$("#resetButton")?.classList.remove("hidden");
 		initPaeds();
 		// Reset paeds tabs to history
 		$$("[data-paeds-tab]").forEach((t) =>
@@ -770,7 +799,8 @@ function initDashboard() {
 function init() {
 	buildAbcde();
 	buildRos();
-	buildOptionButtons(); // after buildRos so abdoRegions container exists
+	buildOptionButtons(); // after buildRos so ROS containers exist
+	buildAbdoGrid(); // after buildOptionButtons so #abdoRegionsGrid exists
 	buildAuscultation();
 	buildEcgSection();
 	buildInjurySection();
@@ -797,6 +827,7 @@ function init() {
 
 function buildOptionButtons() {
 	Object.entries(OPTIONS).forEach(([key, options]) => {
+		if (key === "abdoRegions") return; // handled by buildAbdoGrid()
 		const container = $(`[data-state="${key}"]`);
 		if (!container) return;
 		options.forEach((option) => {
@@ -808,6 +839,56 @@ function buildOptionButtons() {
 			container.append(button);
 		});
 	});
+}
+
+function buildAbdoGrid() {
+	const grid = $("#abdoRegionsGrid");
+	if (!grid) return;
+	OPTIONS.abdoRegions.forEach((region) => {
+		const btn = document.createElement("button");
+		btn.type = "button";
+		btn.className = "square-btn abdo-region-btn";
+		btn.dataset.region = region;
+		btn.innerHTML = `<span class="abdo-region-name">${region}</span><span class="abdo-region-tags"></span>`;
+		grid.append(btn);
+	});
+}
+
+function renderAbdoGrid() {
+	$$(".abdo-region-btn").forEach((btn) => {
+		const region = btn.dataset.region;
+		const findings = state.abdoFindings[region];
+		const hasFindings = findings && findings.size > 0;
+		const isActive = state.abdoActive === region;
+		btn.classList.toggle("selected", hasFindings || isActive);
+		btn.classList.toggle("abdo-active", isActive);
+		const tags = btn.querySelector(".abdo-region-tags");
+		if (tags) {
+			tags.textContent = hasFindings
+				? [...findings].map((f) => ABDO_FINDING_SHORT[f] || f[0]).join(" · ")
+				: "";
+		}
+	});
+
+	const panel = $("#abdoFindingPanel");
+	if (!panel) return;
+	if (!state.abdoActive) {
+		panel.classList.add("hidden");
+		return;
+	}
+	const findings = state.abdoFindings[state.abdoActive] || new Set();
+	panel.classList.remove("hidden");
+	panel.innerHTML =
+		`<p class="abdo-finding-label">Findings in <strong>${state.abdoActive}</strong></p>` +
+		`<div class="radio-chip-group" style="flex-wrap:wrap;gap:6px;margin-top:6px">` +
+		ABDO_FINDINGS.map(
+			(f) =>
+				`<button type="button" class="radio-chip abdo-finding-chip${findings.has(f) ? " selected" : ""}" data-finding="${f}">${f}</button>`,
+		).join("") +
+		`</div>` +
+		(findings.size > 0
+			? `<button type="button" class="abdo-clear-btn" data-region="${state.abdoActive}">✕ Clear ${state.abdoActive}</button>`
+			: "");
 }
 
 function buildAbcde() {
@@ -1321,6 +1402,20 @@ function buildTreatmentSection() {
 	$("#addDrugButton")?.addEventListener("click", addDrugEntry);
 	$("#addChangeButton")?.addEventListener("click", addChangeEntry);
 
+	$("#vaOutcome")?.addEventListener("change", () => {
+		const successful = val("vaOutcome") === "Successful — patent and flushed";
+		$("#vaFlushWrap")?.classList.toggle("hidden", !successful);
+		if (successful) {
+			setRadioChip("vaFlushed", "Flushed — 5ml NaCl 0.9%");
+		} else {
+			$$("[data-radio-group='vaFlushed'] [data-value]").forEach((c) =>
+				c.classList.remove("selected"),
+			);
+			const fi = $("#vaFlushed");
+			if (fi) fi.value = "";
+		}
+	});
+
 	$("#vaType")?.addEventListener("change", () => {
 		const type = val("vaType");
 		const isIv = type === "IV Cannula";
@@ -1424,22 +1519,26 @@ function addIvEntry() {
 	const type = val("vaType");
 	const site = val("vaSite");
 	if (!type || !site) return;
+	const fluidParts = [val("vaFlushed"), val("vaFluids")].filter(Boolean);
 	state.ivEntries.push({
 		type,
 		gauge: val("vaGauge"),
 		site,
 		outcome: val("vaOutcome"),
-		fluids: val("vaFluids"),
+		fluids: fluidParts.join("; "),
 	});
-	["vaType", "vaGauge", "vaSite", "vaOutcome", "vaFluids"].forEach((id) => {
-		const el = $(`#${id}`);
-		if (el) el.value = "";
-	});
+	["vaType", "vaGauge", "vaSite", "vaOutcome", "vaFlushed", "vaFluids"].forEach(
+		(id) => {
+			const el = $(`#${id}`);
+			if (el) el.value = "";
+		},
+	);
 	$("#vaGaugeWrap")?.classList.add("hidden");
 	$("#vaIvSites")?.classList.add("hidden");
 	$("#vaIoSites")?.classList.add("hidden");
+	$("#vaFlushWrap")?.classList.add("hidden");
 	$$(
-		"[data-radio-group='vaType'] [data-value], [data-radio-group='vaGauge'] [data-value], [data-radio-group='vaSite'] [data-value], [data-radio-group='vaOutcome'] [data-value]",
+		"[data-radio-group='vaType'] [data-value], [data-radio-group='vaGauge'] [data-value], [data-radio-group='vaSite'] [data-value], [data-radio-group='vaOutcome'] [data-value], [data-radio-group='vaFlushed'] [data-value]",
 	).forEach((c) => c.classList.remove("selected"));
 	renderIvEntries();
 }
@@ -1892,7 +1991,8 @@ function buildEdHandoverText() {
 		.filter(Boolean)
 		.join(" ");
 	const dest = buildConveyDestination();
-	// Obs
+
+	// ── Observations ────────────────────────────────────────
 	const obs = [
 		val("hr") ? `HR ${val("hr")}bpm` : null,
 		val("bp") ? `BP ${val("bp")}mmHg` : null,
@@ -1904,19 +2004,67 @@ function buildEdHandoverText() {
 	]
 		.filter(Boolean)
 		.join(" | ");
-	// ABCDE summary
-	const abcdeSections = ["A", "B", "C", "D", "E"].map((key) => {
+
+	// ── ABCDE — only report abnormals; single line if all clear ─
+	const abcdeAbnormals = [];
+	let abcdeAllClear = true;
+	ABCDE.forEach(({ key, notes: notesId }) => {
 		const chips = $$(`[data-abc="${key}"]`);
 		const abnormals = chips
 			.filter((b) => b.dataset.abcState === "abnormal")
 			.map((b) => b.dataset.abnormal);
-		const sectionData = ABCDE.find((s) => s.key === key);
-		const notes = sectionData ? val(sectionData.notes) : "";
-		if (!abnormals.length && !notes) return `${key}: Unremarkable.`;
-		const parts = [...abnormals, notes].filter(Boolean);
-		return `${key}: ${parts.join(", ")}.`;
+		const notes = notesId ? val(notesId) : "";
+		if (abnormals.length || notes) {
+			abcdeAllClear = false;
+			abcdeAbnormals.push(
+				`${key}: ${[...abnormals, notes].filter(Boolean).join(", ")}.`,
+			);
+		}
 	});
-	// Drugs / interventions summary
+	const abcdeSummary = abcdeAllClear
+		? "Primary survey: No ABC concerns."
+		: abcdeAbnormals.join("\n");
+
+	// ── SOCRATES / symptom description ───────────────────────
+	const hasPain = !isChecked("noPain");
+	const site = getSelectedParts(state.siteParts);
+	const radiation = getSelectedParts(state.radiationParts);
+	const character = listSet(state.character, "");
+	const associated = listSet(state.associated, "");
+	const exacerbating = listFactors(state.exacerbating, "exacerbatingOther", "");
+	const relieving = listFactors(state.relieving, "relievingOther", "");
+	const severityNow = val("severity");
+	const severityWorst = val("severityWorst");
+	const onsetType = val("onsetType");
+	const oTime = onsetTime();
+	const duration = val("onsetDuration");
+	const onsetStr = [onsetType, oTime, duration ? `duration ${duration}` : null]
+		.filter(Boolean)
+		.join(", ");
+	const severityStr = [
+		severityNow ? `${severityNow}/10 now` : null,
+		severityWorst ? `${severityWorst}/10 at worst` : null,
+	]
+		.filter(Boolean)
+		.join(", ");
+
+	const socratesLines = [];
+	if (hasPain) {
+		if (site) socratesLines.push(`Site: ${site}`);
+		if (onsetStr) socratesLines.push(`Onset: ${onsetStr}`);
+		if (character) socratesLines.push(`Character: ${character}`);
+		if (radiation) socratesLines.push(`Radiation: ${radiation}`);
+		if (associated) socratesLines.push(`Associated: ${associated}`);
+		if (exacerbating) socratesLines.push(`Worse with: ${exacerbating}`);
+		if (relieving) socratesLines.push(`Better with: ${relieving}`);
+		if (severityStr) socratesLines.push(`Severity: ${severityStr}`);
+	} else {
+		if (onsetStr) socratesLines.push(`Onset: ${onsetStr}`);
+		if (associated) socratesLines.push(`Associated symptoms: ${associated}`);
+		if (severityStr) socratesLines.push(`Severity: ${severityStr}`);
+	}
+
+	// ── Interventions ────────────────────────────────────────
 	const drugs = state.drugEntries.map((e) => {
 		const parts = [e.drug];
 		if (e.dose) parts.push(e.dose);
@@ -1943,46 +2091,44 @@ function buildEdHandoverText() {
 		...drugs,
 		...(val("otherInterventionsFree") ? [val("otherInterventionsFree")] : []),
 	];
-	// Concerns
 	const ecgLine = buildEcgText();
 	const sgText = buildSafeguardingText();
-	const clinChanges = state.clinicalChanges.map((e) => {
-		const t = e.time ? `[${e.time}] ` : "";
-		return `${t}${e.text}`;
-	});
+	const clinChanges = state.clinicalChanges.map(
+		(e) => `${e.time ? `[${e.time}] ` : ""}${e.text}`,
+	);
+
 	const lines = [
 		`ED HANDOVER ── ${timeStr}`,
 		"",
 		"PATIENT",
-		`${demographics ? demographics + " | " : ""}Presenting with: ${pc}`,
-		val("allergies")
-			? `Allergies: ${val("allergies")}`
-			: "Allergies: None known / not documented",
-		val("currentMeds") ? `Medications: ${val("currentMeds")}` : null,
+		`${demographics ? demographics + " | " : ""}${pc}`,
+		`Allergies: ${isChecked("nkda") ? "NKDA" : val("allergies") || "None known"}`,
+		!isChecked("noMeds") && val("medications")
+			? `Medications: ${val("medications")}`
+			: null,
+		!isChecked("noPmh") && val("pmh") ? `PMH: ${val("pmh")}` : null,
 		"",
 		"HISTORY",
-		val("hpc") || "History not documented.",
-		val("pmh") ? `PMH: ${val("pmh")}` : null,
-		val("social") ? `Social: ${val("social")}` : null,
+		val("hpcEvents") || "History not documented.",
 		"",
-		"OBSERVATIONS",
-		obs || "Not documented.",
+		socratesLines.length ? (hasPain ? "PAIN (SOCRATES)" : "SYMPTOMS") : null,
+		socratesLines.length ? socratesLines.join("\n") : null,
+		socratesLines.length ? "" : null,
+		obs ? `OBSERVATIONS\n${obs}` : null,
+		obs ? "" : null,
+		abcdeSummary,
+		ecgLine ? `ECG: ${ecgLine.replace("ECG: ", "")}` : null,
 		"",
-		"PRIMARY SURVEY (ABCDE)",
-		...abcdeSections,
-		ecgLine ? `\nECG: ${ecgLine.replace("ECG: ", "")}` : null,
-		"",
-		txLines.length ? "INTERVENTIONS & RESPONSE" : null,
+		txLines.length ? "INTERVENTIONS" : null,
 		txLines.length ? txLines.join("\n") : null,
 		txLines.length ? "" : null,
 		clinChanges.length ? "CLINICAL CHANGES" : null,
 		clinChanges.length ? clinChanges.join("\n") : null,
 		clinChanges.length ? "" : null,
-		`CAPACITY: ${val("capacityStatus") || "Not formally assessed"}`,
-		"",
-		sgText ? `SAFEGUARDING\n${sgText}\n` : null,
-		val("handoverNotes") ? `ADDITIONAL NOTES\n${val("handoverNotes")}\n` : null,
-		dest ? `RECEIVING: ${dest}` : null,
+		val("capacityStatus") ? `CAPACITY: ${val("capacityStatus")}` : null,
+		sgText ? `\nSAFEGUARDING\n${sgText}` : null,
+		val("handoverNotes") ? `\nADDITIONAL NOTES\n${val("handoverNotes")}` : null,
+		dest ? `\nRECEIVING: ${dest}` : null,
 	].filter((l) => l !== null);
 	return lines.join("\n");
 }
@@ -2126,6 +2272,34 @@ function bindEvents() {
 	document.addEventListener("click", (event) => {
 		const option = event.target.closest(".multi-group .square-btn");
 		if (option) return toggleMulti(option);
+
+		const abdoRegionBtn = event.target.closest(".abdo-region-btn");
+		if (abdoRegionBtn) {
+			const region = abdoRegionBtn.dataset.region;
+			state.abdoActive = state.abdoActive === region ? null : region;
+			renderAbdoGrid();
+			return;
+		}
+		const abdoFindingChip = event.target.closest(".abdo-finding-chip");
+		if (abdoFindingChip) {
+			const region = state.abdoActive;
+			if (!region) return;
+			if (!state.abdoFindings[region]) state.abdoFindings[region] = new Set();
+			const f = abdoFindingChip.dataset.finding;
+			if (state.abdoFindings[region].has(f))
+				state.abdoFindings[region].delete(f);
+			else state.abdoFindings[region].add(f);
+			renderAbdoGrid();
+			return;
+		}
+		const abdoClearBtn = event.target.closest(".abdo-clear-btn");
+		if (abdoClearBtn) {
+			delete state.abdoFindings[abdoClearBtn.dataset.region];
+			state.abdoActive = null;
+			renderAbdoGrid();
+			return;
+		}
+
 		const abc = event.target.closest(".abc-chip");
 		if (abc) return toggleAbc(abc);
 		const convey = event.target.closest(".convey-chip");
@@ -2577,14 +2751,24 @@ function generateOe() {
 	const oe = [
 		"OE:",
 		"",
-		`OA: ${val("oaFound")}${val("oaLocation") ? ` at ${val("oaLocation")}` : ""}; ${val("oaMobility").toLowerCase()}. ${val("oaFound") !== "Greeted by patient" && val("oaPatientFoundHow") ? `On reaching patient: ${val("oaPatientFoundHow")}. ` : ""}${isChecked("oaConsent") ? "Consented to assessment. " : ""}${isChecked("oaNoABC") ? "No immediate ABC concerns. " : ""}${isChecked("oaNormalPresentation") ? "Normal presentation on arrival. " : ""}${val("oaNotes")}`.trim(),
-		"",
 		ABCDE.map(abcLine).join("\n"),
 		"",
 		`Resp: ${rosLine("resp")} ${val("respAus") ? `Auscultation: ${val("respAus")}.` : ""}`,
 		`CVS: ${rosLine("cvs")} ${buildEcgText()}`,
 		`Neuro: ${rosLine("neuro")}`,
-		`Abdo/GI: ${rosLine("gi")} ${[state.abdoRegions.size ? `Palpation findings: ${[...state.abdoRegions].join(", ")}.` : "", val("giFluidIntake") ? `Fluid intake: ${val("giFluidIntake")}.` : "", val("giAppetite") ? `Appetite: ${val("giAppetite")}.` : "", val("bowelSounds") ? `Bowel sounds: ${val("bowelSounds")}.` : ""].filter(Boolean).join(" ")}`.trimEnd(),
+		`Abdo/GI: ${rosLine("gi")} ${[
+			Object.entries(state.abdoFindings).filter(([, f]) => f.size > 0).length
+				? `Palpation: ${Object.entries(state.abdoFindings)
+						.filter(([, f]) => f.size > 0)
+						.map(([r, f]) => `${r} — ${[...f].join(", ")}`)
+						.join("; ")}.`
+				: "",
+			val("giFluidIntake") ? `Fluid intake: ${val("giFluidIntake")}.` : "",
+			val("giAppetite") ? `Appetite: ${val("giAppetite")}.` : "",
+			val("bowelSounds") ? `Bowel sounds: ${val("bowelSounds")}.` : "",
+		]
+			.filter(Boolean)
+			.join(" ")}`.trimEnd(),
 		`Urinary: ${rosLine("urine")}`,
 		`Skin: ${rosLine("integ")}`,
 		`MSK: ${rosLine("msk")}`,
@@ -2614,8 +2798,13 @@ function rosBlock(section) {
 			`${val("bpStatus")}. ${buildEcgText()} ${val("cvsNotes")}`.trim(),
 		gi: () => {
 			const parts = [];
-			if (state.abdoRegions.size)
-				parts.push(`Palpation findings: ${[...state.abdoRegions].join(", ")}.`);
+			const abdoEntries = Object.entries(state.abdoFindings).filter(
+				([, f]) => f.size > 0,
+			);
+			if (abdoEntries.length)
+				parts.push(
+					`Palpation: ${abdoEntries.map(([r, f]) => `${r} — ${[...f].join(", ")}`).join("; ")}.`,
+				);
 			if (val("giFluidIntake"))
 				parts.push(`Fluid intake: ${val("giFluidIntake")}.`);
 			if (val("giAppetite")) parts.push(`Appetite: ${val("giAppetite")}.`);
@@ -3473,7 +3662,15 @@ function buildOutputSections() {
 			title: "ASSESSMENT — MENTAL CAPACITY / CONSENT",
 			body: buildCapacityText(),
 		},
-		{ id: "worsening", title: "PLAN — WORSENING ADVICE", body: worseningText },
+		...(val("conveyanceDecision") !== "Conveyed"
+			? [
+					{
+						id: "worsening",
+						title: "PLAN — WORSENING ADVICE",
+						body: worseningText,
+					},
+				]
+			: []),
 		{
 			id: "conveyance",
 			title: "PLAN — CONVEYANCE DECISION",
@@ -4843,6 +5040,7 @@ function initPaeds() {
 	buildPaedsAbcdent();
 	buildPaedsSafeguardingGrid();
 	buildPaedsTreatmentSection();
+	buildPConveyTransferChips();
 	bindPaedsEvents();
 	updatePaedsAgeRef();
 	updateFlaccTotal();
@@ -4868,7 +5066,7 @@ function buildPaedsAbcdent() {
 		section.chips.forEach(([normal, abnormal]) => {
 			const btn = document.createElement("button");
 			btn.type = "button";
-			btn.className = "square-btn abc-chip selected";
+			btn.className = "square-btn p-abc-chip selected";
 			btn.textContent = normal;
 			btn.dataset.pAbc = section.key;
 			btn.dataset.normal = normal;
@@ -5116,6 +5314,7 @@ function bindPaedsEvents() {
 				p.classList.remove("active"),
 			);
 			$(`#paeds-panel-${target}`)?.classList.add("active");
+			if (target === "output") buildPaedsOutputSections();
 		});
 	});
 
@@ -5237,18 +5436,25 @@ function bindPaedsEvents() {
 	});
 
 	// ── Convey decision → wrap visibility + worsening ────
-	$("#pConveyDecision")?.addEventListener("change", () => {
-		const conveyed = val("pConveyDecision") === "Conveyed";
-		$("#pConveyedWrap")?.classList.toggle("hidden", !conveyed);
-		const hidden = $(`#pWorseningMode`);
-		if (hidden) hidden.value = conveyed ? "na" : "standard";
+	$("#pConveyDecision")?.addEventListener("change", handlePConveyanceDisplay);
+	$("#pConveyHospital")?.addEventListener("change", handlePConveyanceDisplay);
+	$("#pConveyDepartment")?.addEventListener("change", handlePConveyanceDisplay);
+	// Sync display to default value
+	handlePConveyanceDisplay();
+
+	// ── Paeds transfer chip clicks ────────────────────────
+	$("#pConveyTransferGrid")?.addEventListener("click", (e) => {
+		const chip = e.target.closest(".p-convey-chip");
+		if (chip) togglePConveyChip(chip);
+	});
+
+	// ── pPc "Other" free-text ─────────────────────────────
+	$("#pPc")?.addEventListener("change", () => {
+		const isOther = val("pPc") === "Other";
+		$("#pPcOtherWrap")?.classList.toggle("hidden", !isOther);
 		updatePaedsWorseningScript();
 	});
-	// Default state — hide conveyed wrap until a decision is made
-	$("#pConveyedWrap")?.classList.add("hidden");
-	["pPc"].forEach((id) => {
-		$(`#${id}`)?.addEventListener("change", updatePaedsWorseningScript);
-	});
+
 	$(`#pWorseningCustom`)?.addEventListener("input", updatePaedsWorseningScript);
 	updatePaedsWorseningScript();
 
@@ -5313,11 +5519,15 @@ function buildPaedsOutputSections() {
 			body: buildPaedsConsentText(),
 		},
 		{ id: "p-convey", title: "CONVEYANCE", body: buildPaedsConveyText() },
-		{
-			id: "p-worsening",
-			title: "WORSENING ADVICE",
-			body: buildPaedsWorseningText(),
-		},
+		...(val("pConveyDecision") !== "Conveyed"
+			? [
+					{
+						id: "p-worsening",
+						title: "WORSENING ADVICE",
+						body: buildPaedsWorseningText(),
+					},
+				]
+			: []),
 	];
 
 	sections.forEach(({ id, title, body }) => {
@@ -5345,12 +5555,12 @@ function buildTmtText() {
 
 	// Phase 1 — PAT (documented in full via buildPaedsPATText)
 	const patImpression = val("patImpression");
-	lines.push(`\nPhase 1 — LOOK (PAT across the room)`);
+	lines.push(`\nLOOK (PAT across the room)`);
 	if (patImpression) lines.push(`Initial impression: ${patImpression}`);
 	else lines.push(`Initial impression: Not recorded`);
 
 	// Phase 2 — ABCDE + ENT + T + DEFG (documented via buildPaedsAbcdentText)
-	lines.push(`\nPhase 2 — LISTEN & FEEL (hands-on primary survey)`);
+	lines.push(`\nLISTEN & FEEL (hands-on primary survey)`);
 	lines.push(`See primary survey (ABCDE + ENT + T + DEFG) below`);
 
 	// Phase 3 — DECIDE
@@ -5363,7 +5573,7 @@ function buildTmtText() {
 		.map((c) => c.dataset.tmtLabel);
 	const decision = val("tmtDecision");
 	const notes = val("tmtNotes");
-	lines.push(`\nPhase 3 — DECIDE`);
+	lines.push(`\nDECIDE`);
 	if (done3.length) lines.push(`Completed: ${done3.join(", ")}`);
 	if (skip3.length) lines.push(`Not completed: ${skip3.join(", ")}`);
 	if (decision) lines.push(`Management decision: ${decision}`);
@@ -5401,7 +5611,8 @@ function buildPaedsPatientText() {
 
 function buildPaedsPcText() {
 	const lines = [];
-	const pc = val("pPc");
+	const pcRaw = val("pPc");
+	const pc = pcRaw === "Other" ? val("pPcOther") || "Other" : pcRaw;
 	const hpc = val("pHpc");
 	const onset = val("pOnsetType");
 	const duration = val("pOnsetDuration");
@@ -5892,6 +6103,91 @@ function buildPaedsWetflagText() {
 	].join("\n");
 }
 
+/* ── Paeds conveyance transfer chips ─────────────────────── */
+function buildPConveyTransferChips() {
+	const root = $("#pConveyTransferGrid");
+	if (!root) return;
+	CONVEY_TRANSFER.forEach(([normal, abnormal]) => {
+		const button = document.createElement("button");
+		button.type = "button";
+		button.className = "square-btn p-convey-chip selected";
+		button.textContent = normal;
+		button.dataset.normal = normal;
+		button.dataset.abnormal = abnormal;
+		button.dataset.conveyState = "normal";
+		if (abnormal === "Clinical change during conveyance")
+			button.dataset.clinicalChange = "true";
+		if (abnormal === "Care escalated en route")
+			button.dataset.escalated = "true";
+		root.append(button);
+	});
+}
+
+function togglePConveyChip(button) {
+	const isAbnormal = button.dataset.conveyState === "abnormal";
+	const next = isAbnormal ? "normal" : "abnormal";
+	button.dataset.conveyState = next;
+	button.classList.toggle("abnormal", next === "abnormal");
+	button.classList.toggle("selected", next === "normal");
+	button.textContent =
+		next === "abnormal" ? button.dataset.abnormal : button.dataset.normal;
+	if (button.dataset.clinicalChange) {
+		$("#pConveyChangeWrap")?.classList.toggle("hidden", next !== "abnormal");
+	}
+	if (button.dataset.escalated) {
+		$("#pConveyEscalatedWrap")?.classList.toggle("hidden", next !== "abnormal");
+	}
+	if (button.dataset.clinicalChange && next === "abnormal") {
+		const stable = $(
+			'.p-convey-chip[data-normal="Remained stable throughout"]',
+		);
+		if (stable?.dataset.conveyState === "normal") togglePConveyChip(stable);
+	}
+}
+
+function handlePConveyanceDisplay() {
+	const decision = val("pConveyDecision");
+	const conveyed = decision === "Conveyed";
+	const notConveyed = decision !== "" && !conveyed;
+	$("#pConveyedFields")?.classList.toggle("hidden", !conveyed);
+	$("#pNonConveyedFields")?.classList.toggle("hidden", !notConveyed);
+	const pWorseningMode = $("#pWorseningMode");
+	if (pWorseningMode) pWorseningMode.value = conveyed ? "na" : "standard";
+	updatePaedsWorseningScript();
+	if (!conveyed) return;
+	$("#pHospitalOtherWrap")?.classList.toggle(
+		"hidden",
+		val("pConveyHospital") !== "Other hospital",
+	);
+	const dept = val("pConveyDepartment");
+	$("#pWardDetailsWrap")?.classList.toggle("hidden", dept !== "Ward");
+	$("#pDepartmentOtherWrap")?.classList.toggle(
+		"hidden",
+		dept !== "Other department",
+	);
+}
+
+function buildPConveyDestination() {
+	const hospital =
+		val("pConveyHospital") === "Other hospital"
+			? val("pConveyHospitalOther")
+			: val("pConveyHospital");
+	let department = val("pConveyDepartment");
+	if (department === "Ward") {
+		const ward = val("pConveyWard");
+		department = ward ? `Ward — ${ward}` : "Ward";
+	} else if (department === "Other department") {
+		department = val("pConveyDepartmentOther") || "Other department";
+	}
+	return [hospital, department].filter(Boolean).join("; ");
+}
+
+function getPConveyTransferText() {
+	return $$(".p-convey-chip")
+		.map((chip) => chip.textContent)
+		.join("; ");
+}
+
 function buildPaedsConsentText() {
 	const consent = val("pConsentType");
 	const notes = val("pConsentNotes");
@@ -5903,16 +6199,42 @@ function buildPaedsConsentText() {
 
 function buildPaedsConveyText() {
 	const decision = val("pConveyDecision");
-	const lines = [decision ? `Conveyance decision: ${decision}` : null];
-	if (decision === "Conveyed") {
-		const dest = val("pConveyDest");
-		const prealert = val("pConveyPrealert");
-		if (dest) lines.push(`Destination: ${dest}`);
-		if (prealert) lines.push(`Pre-alert: ${prealert}`);
-	}
 	const notes = val("pConveyNotes");
-	if (notes) lines.push(`Notes: ${notes}`);
-	return lines.filter(Boolean).join("\n");
+	if (decision === "Conveyed") {
+		const destination = buildPConveyDestination();
+		const transferText = getPConveyTransferText();
+		const changeDetail = val("pConveyChangeDetail");
+		const escalatedDetail = val("pConveyEscalatedDetail");
+		const extraDetail = [
+			changeDetail ? `Clinical change detail: ${changeDetail}` : null,
+			escalatedDetail ? `Escalation of care detail: ${escalatedDetail}` : null,
+		]
+			.filter(Boolean)
+			.join(" ");
+		const lines = [
+			"Conveyance decision: Patient conveyed to hospital for further assessment and/or treatment.",
+			destination
+				? `Destination: ${destination}.`
+				: "Destination: Not specified.",
+			transferText
+				? `Transfer and handover: ${transferText}.${extraDetail ? ` ${extraDetail}` : ""}`
+				: null,
+			val("pConveyTransferNotes")
+				? `Transfer / handover notes: ${val("pConveyTransferNotes")}`
+				: null,
+			notes ? `Additional notes: ${notes}` : null,
+		].filter(Boolean);
+		return lines.join("\n");
+	}
+	const checks = [
+		isChecked("pRiskExplained") && "risks explained",
+		isChecked("pAlternativesDiscussed") && "alternatives discussed",
+		isChecked("pUnderstandsRisk") && "parent / carer understands risks",
+		isChecked("pCanRecontact") && "advised they can recontact 999/111",
+	]
+		.filter(Boolean)
+		.join("; ");
+	return `${decision || "Not documented"}. Referred/signposted to: ${listSet(state.pReferrals, "not documented")}. ${val("pFollowUp") ? val("pFollowUp") + ". " : ""}${checks ? `Safety netting: ${checks}.` : ""}${notes ? " " + notes : ""}`.trim();
 }
 
 function buildPaedsWorseningScript() {
@@ -6104,9 +6426,8 @@ function enhanceSectionCards() {
 	}
 
 	const savedTheme = localStorage.getItem(STORAGE_KEY);
-	const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-	const initialTheme = savedTheme || (prefersDark ? "dark" : "light");
+	const initialTheme = savedTheme || "light";
 
 	applyTheme(initialTheme);
 

@@ -220,7 +220,7 @@ a:focus-visible {
 	align-items: center;
 	justify-content: center;
 	min-width: 108px;
-	min-height: 64px;
+	min-height: 54px;
 	border: 1px solid #d8e6ef;
 	background: #ffffff;
 	color: var(--text);
@@ -283,7 +283,7 @@ main {
 	color: #164e63;
 	border-radius: 16px;
 	padding: 13px 16px;
-	font-weight: 650;
+	font-weight: 600;
 	font-size: 13px;
 	line-height: 1.55;
 	margin-bottom: 6px;
@@ -322,11 +322,11 @@ main {
 .section-card > summary {
 	list-style: none;
 	display: grid;
-	grid-template-columns: 48px 1fr auto auto;
+	grid-template-columns: 40px 1fr auto auto;
 	align-items: center;
-	gap: 14px;
-	min-height: 78px;
-	padding: 14px 16px;
+	gap: 12px;
+	min-height: 60px;
+	padding: 10px 14px;
 	cursor: pointer;
 	user-select: none;
 	background: #ffffff;
@@ -366,9 +366,9 @@ main {
 	background: #eaf6fb;
 	border: 1px solid #cce5f0;
 	border-radius: 999px;
-	padding: 5px 9px;
-	font-weight: 750;
-	font-size: 10.5px;
+	padding: 3px 7px;
+	font-weight: 700;
+	font-size: 10px;
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
 	white-space: nowrap;
@@ -377,7 +377,7 @@ main {
 .section-body {
 	border-top: 1px solid var(--line);
 	background: #ffffff;
-	padding: 14px 16px !important;
+	padding: 12px 14px !important;
 }
 
 .nested-sections {
@@ -393,7 +393,7 @@ main {
 /* Forms */
 .field-label {
 	display: block;
-	margin: 15px 0 7px;
+	margin: 11px 0 5px;
 	color: #526879;
 	font-size: 12.5px;
 	font-weight: 800;
@@ -408,7 +408,7 @@ main {
 .output-hint {
 	margin: 0 0 12px;
 	font-size: 12.5px;
-	font-weight: 650;
+	font-weight: 600;
 	color: var(--muted);
 	line-height: 1.55;
 }
@@ -513,11 +513,6 @@ select {
 	gap: 4px;
 }
 
-/* Lone chip on last row spans full width */
-/* .square-grid > :last-child:nth-child(odd) {
-	grid-column: 1 / -1;
-} */
-
 .square-grid > :last-child:nth-child(odd) {
 	grid-column: auto;
 }
@@ -528,9 +523,55 @@ select {
 }
 
 .abdo-grid {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
+	display: grid !important;
+	grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
 	gap: 8px;
+}
+.abdo-grid > * {
+	grid-column: auto !important;
+	grid-row: auto !important;
+}
+
+.abdo-region-name {
+	display: block;
+	font-size: 13px;
+	font-weight: 700;
+}
+.abdo-region-tags {
+	display: block;
+	font-size: 10px;
+	color: var(--primary);
+	margin-top: 2px;
+	font-weight: 600;
+	min-height: 14px;
+}
+.abdo-region-btn.abdo-active {
+	border-color: var(--primary-2) !important;
+	border-width: 2px !important;
+}
+.abdo-finding-panel {
+	background: var(--primary-soft);
+	border: 1px solid #9ed2e8;
+	border-radius: 10px;
+	padding: 10px 12px;
+	margin-top: 8px;
+}
+.abdo-finding-label {
+	margin: 0 0 2px;
+	font-size: 12px;
+	color: #0f5878;
+	font-weight: 700;
+}
+.abdo-clear-btn {
+	margin-top: 8px;
+	font-size: 11.5px;
+	color: var(--danger);
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 2px 0;
+	font-weight: 600;
+	display: block;
 }
 
 /* ECG lead grid — column-first mirrors standard 12-lead layout (I/II/III, aVR/aVL/aVF, V1-3, V4-6) */
@@ -568,10 +609,10 @@ select {
 }
 .pain-score-btn {
 	border: 1.5px solid var(--line);
-	background: linear-gradient(180deg, #ffffff 0%, var(--surface-2) 100%);
+	background: #ffffff;
 	color: #223847;
 	border-radius: 10px;
-	min-height: 52px;
+	min-height: 44px;
 	padding: 6px 2px;
 	font-weight: 800;
 	font-size: 16px;
@@ -611,11 +652,11 @@ select {
 
 .square-btn {
 	border: 1.5px solid var(--line);
-	background: linear-gradient(180deg, #ffffff 0%, var(--surface-2) 100%);
+	background: #ffffff;
 	color: #223847;
 	border-radius: 10px !important;
-	min-height: 64px;
-	padding: 14px 16px;
+	min-height: 52px;
+	padding: 10px 14px;
 	text-align: left;
 	font-weight: 700;
 	font-size: 14px;
@@ -632,7 +673,7 @@ select {
 .square-btn.selected,
 .abc-chip.selected,
 .convey-chip.selected {
-	background: linear-gradient(180deg, #f2fbff 0%, var(--primary-soft) 100%);
+	background: var(--primary-soft);
 	border-color: #9ed2e8;
 	color: #0f5878;
 }
@@ -640,7 +681,7 @@ select {
 .square-btn.abnormal,
 .abc-chip.abnormal,
 .convey-chip.abnormal {
-	background: linear-gradient(180deg, #fff7f8 0%, var(--danger-soft) 100%);
+	background: var(--danger-soft);
 	border-color: #efb3bc;
 	color: var(--danger);
 }
@@ -655,12 +696,12 @@ select {
 .radio-chip {
 	flex: 1 1 80px;
 	min-width: 0;
-	min-height: 48px;
+	min-height: 40px;
 	border: 1.5px solid var(--line);
-	background: linear-gradient(180deg, #ffffff 0%, var(--surface-2) 100%);
+	background: #ffffff;
 	color: #223847;
 	border-radius: 10px;
-	padding: 10px 14px;
+	padding: 8px 12px;
 	font-weight: 600;
 	font-size: 14px;
 	line-height: 1.3;
@@ -686,7 +727,7 @@ select {
 	color: #2e88b0;
 }
 .radio-chip.selected {
-	background: linear-gradient(180deg, #f2fbff 0%, var(--primary-soft) 100%);
+	background: var(--primary-soft);
 	border-color: #9ed2e8;
 	color: #0f5878;
 }
@@ -743,11 +784,11 @@ select {
 }
 .flacc-chip {
 	border: 1.5px solid var(--line);
-	background: linear-gradient(180deg, #ffffff 0%, var(--surface-2) 100%);
+	background: #ffffff;
 	color: #223847;
 	border-radius: 10px;
-	min-height: 64px;
-	padding: 9px 10px;
+	min-height: 52px;
+	padding: 7px 8px;
 	font-size: 12px;
 	font-weight: 600;
 	line-height: 1.3;
@@ -759,7 +800,7 @@ select {
 		color 0.1s;
 }
 .flacc-chip .flacc-score {
-	font-size: 18px;
+	font-size: 16px;
 	font-weight: 800;
 	display: block;
 	color: #1a3a50;
@@ -773,7 +814,7 @@ select {
 	display: block;
 }
 .flacc-chip.selected {
-	background: linear-gradient(180deg, #f2fbff 0%, var(--primary-soft) 100%);
+	background: var(--primary-soft);
 	border-color: #9ed2e8;
 	color: #0f5878;
 }
@@ -791,10 +832,10 @@ select {
 }
 .faces-chip {
 	border: 1.5px solid var(--line);
-	background: linear-gradient(180deg, #ffffff 0%, var(--surface-2) 100%);
+	background: #ffffff;
 	border-radius: 10px;
-	min-height: 72px;
-	padding: 12px 6px;
+	min-height: 58px;
+	padding: 8px 6px;
 	text-align: center;
 	cursor: pointer;
 	transition:
@@ -802,7 +843,7 @@ select {
 		border-color 0.1s;
 }
 .faces-chip .faces-score {
-	font-size: 22px;
+	font-size: 18px;
 	font-weight: 800;
 	display: block;
 	color: #1a3a50;
@@ -815,7 +856,7 @@ select {
 	margin-top: 3px;
 }
 .faces-chip.selected {
-	background: linear-gradient(180deg, #f2fbff 0%, var(--primary-soft) 100%);
+	background: var(--primary-soft);
 	border-color: #9ed2e8;
 }
 .faces-chip.selected .faces-score {
@@ -832,7 +873,7 @@ select {
 
 .body-map-panel,
 .selected-panel {
-	background: linear-gradient(180deg, #ffffff 0%, var(--surface-2) 100%);
+	background: #ffffff;
 	border: 1px solid var(--line);
 	border-radius: var(--radius);
 	padding: 14px;
@@ -980,7 +1021,7 @@ select {
 }
 
 .vital {
-	background: linear-gradient(180deg, #ffffff 0%, var(--surface-2) 100%);
+	background: #ffffff;
 	border: 1px solid var(--line);
 	border-radius: 14px;
 	padding: 9px;
@@ -990,7 +1031,7 @@ select {
 .vital label {
 	display: block;
 	font-size: 11px;
-	font-weight: 850;
+	font-weight: 800;
 	color: var(--primary);
 	margin-bottom: 4px;
 	text-align: center;
@@ -1003,7 +1044,7 @@ select {
 	border: 0;
 	border-bottom: 1px solid var(--line-strong);
 	border-radius: 0;
-	font-weight: 850;
+	font-weight: 800;
 	box-shadow: none;
 }
 
@@ -1018,7 +1059,7 @@ select {
 	border-radius: 999px;
 	padding: 4px 10px;
 	font-size: 11px;
-	font-weight: 850;
+	font-weight: 800;
 	background: var(--success-soft);
 	color: var(--success);
 	border: 1px solid #bee4ca;
@@ -1125,13 +1166,13 @@ select {
 	gap: 4px;
 	padding: 10px 12px;
 	border-bottom: 1px solid var(--line);
-	background: linear-gradient(180deg, #ffffff 0%, var(--surface-2) 100%);
+	background: #ffffff;
 }
 
 .output-card-head h3 {
 	margin: 0;
 	font-size: 12px;
-	font-weight: 850;
+	font-weight: 800;
 	letter-spacing: 0.04em;
 	color: var(--primary);
 }
@@ -1255,7 +1296,7 @@ select {
 .footer-brand p {
 	margin: 0.15rem 0 0;
 	font-size: 0.95rem;
-	font-weight: 650;
+	font-weight: 600;
 	color: var(--muted);
 }
 
@@ -1287,7 +1328,7 @@ select {
 .footer-guidance h4 {
 	margin: 0 0 0.5rem;
 	font-size: 1rem;
-	font-weight: 850;
+	font-weight: 800;
 	color: #0b2d4d;
 }
 
@@ -1326,7 +1367,7 @@ select {
 	display: inline-block;
 	margin-top: 0.35rem;
 	color: var(--primary);
-	font-weight: 750;
+	font-weight: 700;
 	text-decoration: none;
 }
 
@@ -1345,7 +1386,7 @@ select {
 	color: #fff;
 	border-radius: 999px;
 	padding: 10px 20px;
-	font-weight: 850;
+	font-weight: 800;
 	opacity: 0;
 	transition: 0.25s ease;
 	pointer-events: none;
@@ -1360,13 +1401,13 @@ select {
 /* Section card icon thumbnails */
 .section-card > summary::before {
 	content: "";
-	width: 44px;
-	height: 44px;
-	border-radius: 12px;
+	width: 36px;
+	height: 36px;
+	border-radius: 9px;
 	background-color: #e9f6fb;
 	background-repeat: no-repeat;
 	background-position: center;
-	background-size: 24px;
+	background-size: 20px;
 	box-shadow: none;
 }
 
@@ -1549,17 +1590,17 @@ select {
 	}
 
 	.section-card > summary {
-		grid-template-columns: 52px 1fr auto auto;
-		min-height: 82px;
-		padding: 14px 15px;
+		grid-template-columns: 40px 1fr auto auto;
+		min-height: 62px;
+		padding: 10px 13px;
 		gap: 11px;
 	}
 
 	.section-card > summary::before {
-		width: 46px;
-		height: 46px;
-		border-radius: 14px;
-		background-size: 25px;
+		width: 36px;
+		height: 36px;
+		border-radius: 9px;
+		background-size: 20px;
 	}
 
 	.section-card summary span {
@@ -1795,6 +1836,10 @@ select {
 	color: #fff;
 }
 
+.feature-card.featured:hover {
+	background: linear-gradient(135deg, #065273 0%, #0b6880 100%);
+	border-color: transparent;
+}
 .feature-card.featured--paeds {
 	background: linear-gradient(135deg, #0f766e 0%, #0891b2 100%);
 	box-shadow: 0 18px 46px rgba(15, 118, 110, 0.25);
@@ -1868,7 +1913,7 @@ select {
 .card-title {
 	margin: 0 0 3px;
 	font-size: 15px;
-	font-weight: 750;
+	font-weight: 700;
 	color: var(--text);
 	line-height: 1.2;
 	letter-spacing: -0.02em;
@@ -2141,7 +2186,7 @@ select {
 }
 .dose-hint-drug {
 	font-size: 13px;
-	font-weight: 750;
+	font-weight: 700;
 	color: #0369a1;
 }
 .dose-hint-source {
@@ -2326,60 +2371,6 @@ select {
 	color: #713f12;
 }
 
-/* ── Paeds footer ────────────────────────────────────────── */
-.paeds-footer .footer-top {
-	display: none;
-}
-
-.paeds-footer-resource {
-	display: flex;
-	align-items: center;
-	gap: 14px;
-	background: #f0f9ff;
-	border: 1px solid #bae6fd;
-	border-radius: 12px;
-	padding: 14px 16px;
-	margin-bottom: 12px;
-}
-.paeds-footer-logo {
-	width: 44px;
-	height: 44px;
-	border-radius: 12px;
-	background: #0284c7;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-shrink: 0;
-	color: #fff;
-}
-.paeds-footer-logo svg {
-	width: 22px;
-	height: 22px;
-}
-.paeds-footer-text {
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
-}
-.paeds-footer-text strong {
-	font-size: 13.5px;
-	font-weight: 700;
-	color: #0c4a6e;
-}
-.paeds-footer-text span {
-	font-size: 12px;
-	color: #0369a1;
-}
-.paeds-footer-link {
-	font-size: 12px;
-	font-weight: 600;
-	color: #0284c7;
-	text-decoration: none;
-	margin-top: 2px;
-}
-.paeds-footer-link:hover {
-	text-decoration: underline;
-}
 
 /* ── Paediatric reference pills ──────────────────────────── */
 .paeds-ref-pill {
@@ -2592,7 +2583,7 @@ select {
 }
 .tmt-phase-label strong {
 	font-size: 13.5px;
-	font-weight: 750;
+	font-weight: 700;
 	color: var(--text);
 }
 .tmt-phase-label small {
@@ -2602,7 +2593,7 @@ select {
 
 .tmt-sublabel {
 	font-size: 12px;
-	font-weight: 650;
+	font-weight: 600;
 	color: var(--text);
 	margin: 10px 0 5px;
 	padding: 0;
@@ -2621,18 +2612,10 @@ select {
 	border-color: #fca5a5 !important;
 	color: #b91c1c !important;
 }
-.tmt-chip::before {
-	content: "✗ ";
-	font-weight: 800;
-}
 .tmt-chip.selected {
 	background: #dcfce7 !important;
 	border-color: #86efac !important;
 	color: #15803d !important;
-}
-.tmt-chip.selected::before {
-	content: "✓ ";
-	font-weight: 800;
 }
 
 /* DEFG section — subtle glucose reminder highlight */
@@ -2668,15 +2651,16 @@ select {
 }
 
 /* =========================================================
-   FINAL FIX: natural chip/grid flow
-   Stops odd final buttons stretching or jumping lines
-   Applies to ROS, Primary Survey, ABCDE, generated grids
+   Universal grid override — natural chip/grid flow
+   Ensures all named chip grids use auto-fit columns and
+   prevents odd final buttons from stretching or jumping.
+   Applies to: ROS, Primary Survey, ABCDE, generated grids.
+   Keep !important — overrides responsive breakpoint rules above.
    ========================================================= */
 
 .square-grid,
 .pabc-grid,
 .abc-layout,
-.abdo-grid,
 .ecg-grid,
 #conveyTransferGrid,
 #injuryTypeGrid,
@@ -2704,7 +2688,6 @@ select {
 .square-grid > *,
 .pabc-grid > *,
 .abc-layout > *,
-.abdo-grid > *,
 .ecg-grid > *,
 #conveyTransferGrid > *,
 #injuryTypeGrid > *,
@@ -2738,7 +2721,6 @@ select {
 	.square-grid,
 	.pabc-grid,
 	.abc-layout,
-	.abdo-grid,
 	.ecg-grid,
 	#conveyTransferGrid,
 	#injuryTypeGrid,
@@ -2759,4 +2741,367 @@ select {
 	#shDepthGrid {
 		grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
 	}
+}
+
+/* =========================================================
+   Dark mode
+   Uses <html data-theme="dark"> and a top-right header button
+   ========================================================= */
+
+.theme-toggle {
+	margin-left: auto;
+	width: 42px;
+	height: 42px;
+	border: 1px solid var(--line-strong);
+	border-radius: 999px;
+	background: var(--surface);
+	color: var(--primary);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	box-shadow: none;
+	flex: 0 0 auto;
+}
+
+.theme-toggle:hover {
+	background: var(--primary-soft);
+	border-color: var(--primary-2);
+}
+
+.theme-toggle + .ghost-button {
+	margin-left: 0;
+}
+
+.theme-icon {
+	width: 20px;
+	height: 20px;
+}
+
+.theme-icon-sun {
+	display: none;
+}
+
+.theme-icon-moon {
+	display: block;
+}
+
+html[data-theme="dark"] .theme-icon-sun {
+	display: block;
+}
+
+html[data-theme="dark"] .theme-icon-moon {
+	display: none;
+}
+
+html[data-theme="dark"] {
+	color-scheme: dark;
+
+	--bg: #081722;
+	--bg-accent: #0d2433;
+	--surface: #10202d;
+	--surface-2: #142838;
+	--surface-3: #183246;
+	--line: #274356;
+	--line-strong: #3a5a70;
+	--text: #eaf4f8;
+	--muted: #a9bdc9;
+	--muted-2: #8198a7;
+
+	--primary: #38bdf8;
+	--primary-2: #67e8f9;
+	--primary-3: #7dd3fc;
+	--primary-soft: #123449;
+	--primary-soft-2: #16445d;
+
+	--success: #86efac;
+	--success-soft: #123323;
+	--warning: #facc15;
+	--warning-soft: #332a12;
+	--danger: #fb7185;
+	--danger-soft: #371923;
+
+	--focus: 0 0 0 4px rgba(56, 189, 248, 0.22);
+}
+
+html[data-theme="dark"] body {
+	background: #081722;
+	color: var(--text);
+}
+
+html[data-theme="dark"] .app-header,
+html[data-theme="dark"] .site-footer {
+	background: rgba(16, 32, 45, 0.96);
+	border-color: var(--line);
+}
+
+html[data-theme="dark"] .tabs {
+	background: #0c1d2a;
+	border-color: var(--line);
+}
+
+html[data-theme="dark"] .tab,
+html[data-theme="dark"] .section-card,
+html[data-theme="dark"] .section-card > summary,
+html[data-theme="dark"] .section-body,
+html[data-theme="dark"] .feature-card,
+html[data-theme="dark"] .output-card,
+html[data-theme="dark"] .output-card-head,
+html[data-theme="dark"] .body-map-panel,
+html[data-theme="dark"] .selected-panel,
+html[data-theme="dark"] .vital,
+html[data-theme="dark"] .patient-script,
+html[data-theme="dark"] .footer-guidance {
+	background: var(--surface);
+	border-color: var(--line) !important;
+	color: var(--text);
+}
+
+html[data-theme="dark"] .section-card:hover,
+html[data-theme="dark"] .feature-card:not(.coming-soon):hover {
+	background: #142838;
+}
+
+html[data-theme="dark"] .tab.active,
+html[data-theme="dark"] .primary-action {
+	background: #0e7490;
+	color: #ffffff;
+}
+
+html[data-theme="dark"] .app-header h1,
+html[data-theme="dark"] .dashboard-intro h2,
+html[data-theme="dark"] .section-card summary span,
+html[data-theme="dark"] .card-title,
+html[data-theme="dark"] .footer-brand h3,
+html[data-theme="dark"] .footer-notice h4,
+html[data-theme="dark"] .footer-guidance h4 {
+	color: var(--text);
+}
+
+html[data-theme="dark"] .app-header p,
+html[data-theme="dark"] .dashboard-intro p,
+html[data-theme="dark"] .card-desc,
+html[data-theme="dark"] .field-label,
+html[data-theme="dark"] .field-hint,
+html[data-theme="dark"] .output-hint,
+html[data-theme="dark"] .footer-intro,
+html[data-theme="dark"] .footer-bottom,
+html[data-theme="dark"] .footer-brand p,
+html[data-theme="dark"] .footer-notice p,
+html[data-theme="dark"] .footer-guidance li {
+	color: var(--muted);
+}
+
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] .square-btn,
+html[data-theme="dark"] .radio-chip,
+html[data-theme="dark"] .flacc-chip,
+html[data-theme="dark"] .faces-chip,
+html[data-theme="dark"] .pain-score-btn,
+html[data-theme="dark"] .output,
+html[data-theme="dark"] .output-snippet,
+html[data-theme="dark"] .ausc-entry {
+	background: var(--surface-2) !important;
+	border-color: var(--line) !important;
+	color: var(--text);
+}
+
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+	color: #6f8797;
+}
+
+html[data-theme="dark"] input:focus,
+html[data-theme="dark"] select:focus,
+html[data-theme="dark"] textarea:focus {
+	background: #182e40 !important;
+	border-color: var(--primary) !important;
+}
+
+html[data-theme="dark"] .notice,
+html[data-theme="dark"] .secondary-action,
+html[data-theme="dark"] .theme-toggle,
+html[data-theme="dark"] .ghost-button,
+html[data-theme="dark"] .section-card summary small,
+html[data-theme="dark"] .status-pill,
+html[data-theme="dark"] .ausc-preview {
+	background: var(--primary-soft);
+	border-color: var(--line-strong);
+	color: var(--primary);
+}
+
+html[data-theme="dark"] .square-btn.selected,
+html[data-theme="dark"] .abc-chip.selected,
+html[data-theme="dark"] .convey-chip.selected,
+html[data-theme="dark"] .radio-chip.selected,
+html[data-theme="dark"] .flacc-chip.selected,
+html[data-theme="dark"] .faces-chip.selected {
+	background: #123449 !important;
+	border-color: #38bdf8 !important;
+	color: #dff7ff;
+}
+
+html[data-theme="dark"] .square-btn.abnormal,
+html[data-theme="dark"] .abc-chip.abnormal,
+html[data-theme="dark"] .convey-chip.abnormal,
+html[data-theme="dark"] .status-pill.flagged {
+	background: var(--danger-soft) !important;
+	border-color: #7f3342 !important;
+	color: #fecdd3;
+}
+
+html[data-theme="dark"] .footer-notice {
+	background: var(--warning-soft);
+	border-color: #6b5416 !important;
+}
+
+html[data-theme="dark"] .body-part {
+	fill: #20394c;
+	stroke: #5b7486;
+}
+
+html[data-theme="dark"] .body-part:hover {
+	fill: #294a61;
+}
+
+html[data-theme="dark"] .body-part.site {
+	fill: #0ea5e9;
+	stroke: #7dd3fc;
+}
+
+html[data-theme="dark"] .body-part.radiation {
+	fill: #ca8a04;
+	stroke: #fde68a;
+}
+
+html[data-theme="dark"] .logo,
+html[data-theme="dark"] .footer-logo {
+	border-color: var(--line);
+	box-shadow: none;
+}
+
+@media (max-width: 430px) {
+	.theme-toggle {
+		width: 38px;
+		height: 38px;
+	}
+
+	.theme-icon {
+		width: 18px;
+		height: 18px;
+	}
+}
+
+/* =========================================================
+   DARK MODE TOGGLE FIX
+   JS uses html[data-theme="dark"].
+   Keep the SVG icons only — no text/emoji required.
+   ========================================================= */
+
+.theme-toggle {
+	position: relative;
+}
+
+.theme-toggle .theme-icon {
+	pointer-events: none;
+	flex: 0 0 auto;
+}
+
+html[data-theme="light"] .theme-icon-sun,
+html:not([data-theme]) .theme-icon-sun {
+	display: none;
+}
+
+html[data-theme="light"] .theme-icon-moon,
+html:not([data-theme]) .theme-icon-moon {
+	display: block;
+}
+
+/* =========================================================
+   DARK MODE DASHBOARD SVG FIX
+   Keeps dashboard card SVG icons visible in dark mode.
+   Your dashboard SVGs use stroke="currentColor", so the
+   icon colour must be set on .card-icon / .card-arrow.
+   ========================================================= */
+
+html[data-theme="dark"] .feature-card:not(.featured) {
+	background: var(--surface) !important;
+	border-color: var(--line) !important;
+	color: var(--text) !important;
+}
+
+html[data-theme="dark"] .feature-card:not(.featured) .card-title {
+	color: var(--text) !important;
+}
+
+html[data-theme="dark"] .feature-card:not(.featured) .card-desc {
+	color: var(--muted) !important;
+}
+
+html[data-theme="dark"] .feature-card .card-icon {
+	background: #132f42 !important;
+	border: 1px solid #27485c !important;
+	color: #e5f6ff !important;
+}
+
+html[data-theme="dark"] .feature-card .card-icon svg,
+html[data-theme="dark"] .feature-card .card-arrow svg {
+	display: block !important;
+	opacity: 1 !important;
+	visibility: visible !important;
+	stroke: currentColor !important;
+	color: inherit !important;
+}
+
+html[data-theme="dark"] .feature-card.featured .card-icon {
+	background: rgba(255, 255, 255, 0.16) !important;
+	border-color: rgba(255, 255, 255, 0.24) !important;
+	color: #ffffff !important;
+}
+
+html[data-theme="dark"] .feature-card.featured .card-arrow {
+	color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Keep each dashboard icon type visible but still subtly coloured */
+html[data-theme="dark"] .card-icon.green {
+	background: #0f2f23 !important;
+	color: #bbf7d0 !important;
+}
+
+html[data-theme="dark"] .card-icon.red {
+	background: #3a1820 !important;
+	color: #fecdd3 !important;
+}
+
+html[data-theme="dark"] .card-icon.purple {
+	background: #281d3f !important;
+	color: #ddd6fe !important;
+}
+
+html[data-theme="dark"] .card-icon.teal {
+	background: #0f3434 !important;
+	color: #99f6e4 !important;
+}
+
+html[data-theme="dark"] .card-icon.amber {
+	background: #3a2a0f !important;
+	color: #fde68a !important;
+}
+
+html[data-theme="dark"] .card-icon.orange {
+	background: #3a2112 !important;
+	color: #fed7aa !important;
+}
+
+html[data-theme="dark"] .card-icon.indigo {
+	background: #202549 !important;
+	color: #c7d2fe !important;
+}
+
+html[data-theme="dark"] .card-icon.blue {
+	background: #132f42 !important;
+	color: #bae6fd !important;
 }

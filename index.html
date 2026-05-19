@@ -14,7 +14,7 @@
 		<link
 			href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
 			rel="stylesheet" />
-		<link rel="stylesheet" href="style.css" />
+		<link rel="stylesheet" href="styles.css" />
 		<link rel="icon" type="image/png" href="assets/favicon.png" />
 		<link rel="apple-touch-icon" href="assets/favicon.png" />
 	</head>
@@ -173,7 +173,7 @@
 					</div>
 				</div>
 
-				<!-- Resp Timer -->
+				<!-- Resp Counter -->
 				<div class="feature-card coming-soon" data-feature="resp-timer">
 					<div class="card-icon green">
 						<svg
@@ -190,7 +190,7 @@
 						</svg>
 					</div>
 					<div class="card-body">
-						<h3 class="card-title">Resp Timer</h3>
+						<h3 class="card-title">Resp Counter</h3>
 						<p class="card-desc">Count and time respiratory rates accurately</p>
 					</div>
 					<span class="card-badge soon">Coming soon</span>
@@ -2642,13 +2642,34 @@
 									</div>
 								</div>
 							</div>
-							<div>
+							<div id="vaFlushWrap" class="hidden" style="margin-top: 8px">
+								<label class="field-label">Flush</label>
+								<input type="hidden" id="vaFlushed" />
+								<div
+									class="radio-chip-group"
+									data-radio-group="vaFlushed"
+									style="margin-top: 4px">
+									<button
+										type="button"
+										class="radio-chip"
+										data-value="Flushed — 5ml NaCl 0.9%">
+										✓ Flushed (5ml NaCl 0.9%)
+									</button>
+									<button
+										type="button"
+										class="radio-chip"
+										data-value="Not flushed">
+										✗ Not flushed
+									</button>
+								</div>
+							</div>
+							<div style="margin-top: 8px">
 								<label class="field-label" for="vaFluids"
-									>Fluids / flushes</label
+									>Additional fluids</label
 								>
 								<input
 									id="vaFluids"
-									placeholder="e.g. 10ml NaCl flush, 500ml NaCl 0.9%" />
+									placeholder="e.g. 500ml NaCl 0.9%, Hartmann's 250ml" />
 							</div>
 							<button
 								id="addVaButton"
@@ -3707,6 +3728,12 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 								<button type="button" class="radio-chip" data-value="Other">
 									Other
 								</button>
+							</div>
+							<div id="pPcOtherWrap" class="hidden" style="margin-top: 8px">
+								<label class="field-label" for="pPcOther"
+									>Specify presenting complaint</label
+								>
+								<input id="pPcOther" placeholder="Enter presenting complaint" />
 							</div>
 							<label class="field-label" for="pHpc" style="margin-top: 10px"
 								>History of presenting complaint</label
@@ -4966,12 +4993,15 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 						<summary><span>Conveyance</span><small>Plan</small></summary>
 						<div class="section-body">
 							<label class="field-label">Conveyance decision</label>
-							<input type="hidden" id="pConveyDecision" />
+							<input type="hidden" id="pConveyDecision" value="Conveyed" />
 							<div
 								class="radio-chip-group"
 								data-radio-group="pConveyDecision"
 								style="margin-top: 4px">
-								<button type="button" class="radio-chip" data-value="Conveyed">
+								<button
+									type="button"
+									class="radio-chip selected"
+									data-value="Conveyed">
 									Conveyed
 								</button>
 								<button
@@ -4987,63 +5017,187 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 									Declined by parent / carer
 								</button>
 							</div>
-							<div id="pConveyedWrap">
-								<label
-									class="field-label"
-									for="pConveyDest"
-									style="margin-top: 10px"
-									>Destination</label
+
+							<div id="pConveyedFields">
+								<p class="field-hint">
+									Document destination, transfer care, and handover in line with
+									local policy and JRCALC+ transfer guidance.
+								</p>
+								<div class="grid-2">
+									<div>
+										<label class="field-label" for="pConveyHospital"
+											>Receiving hospital</label
+										>
+										<select id="pConveyHospital">
+											<option value="">Select hospital</option>
+											<optgroup label="North East England">
+												<option>
+													NSECH — Northumbria Specialist Emergency Care Hospital
+												</option>
+												<option>RVI — Royal Victoria Infirmary</option>
+												<option>
+													QE — Queen Elizabeth Hospital (Gateshead)
+												</option>
+												<option>James Cook University Hospital</option>
+												<option>North Tees Hospital</option>
+												<option>University Hospital of North Durham</option>
+												<option>Darlington Memorial Hospital</option>
+												<option>Sunderland Royal Hospital</option>
+												<option>South Tyneside District Hospital</option>
+												<option>Wansbeck General Hospital</option>
+												<option>Bishop Auckland Hospital</option>
+												<option>Friarage Hospital (Northallerton)</option>
+												<option>Berwick Infirmary</option>
+												<option>Freeman Hospital</option>
+											</optgroup>
+											<option>Other hospital</option>
+										</select>
+									</div>
+									<div>
+										<label class="field-label">Receiving department</label>
+										<input type="hidden" id="pConveyDepartment" />
+										<div
+											class="radio-chip-group wrap-grid"
+											data-radio-group="pConveyDepartment"
+											style="margin-top: 4px">
+											<button
+												type="button"
+												class="radio-chip"
+												data-value="ED — Emergency Department">
+												ED
+											</button>
+											<button
+												type="button"
+												class="radio-chip"
+												data-value="Paediatric ED">
+												Paed ED
+											</button>
+											<button
+												type="button"
+												class="radio-chip"
+												data-value="Paediatric Ward / Admissions">
+												Paed Ward
+											</button>
+											<button
+												type="button"
+												class="radio-chip"
+												data-value="PICU — Paediatric Intensive Care">
+												PICU
+											</button>
+											<button
+												type="button"
+												class="radio-chip"
+												data-value="NICU — Neonatal Intensive Care">
+												NICU
+											</button>
+											<button
+												type="button"
+												class="radio-chip"
+												data-value="Ward">
+												Ward
+											</button>
+											<button
+												type="button"
+												class="radio-chip"
+												data-value="Other department">
+												Other
+											</button>
+										</div>
+									</div>
+								</div>
+								<div id="pHospitalOtherWrap" class="hidden">
+									<label class="field-label" for="pConveyHospitalOther"
+										>Other hospital name</label
+									>
+									<input
+										id="pConveyHospitalOther"
+										placeholder="e.g. out of area hospital" />
+								</div>
+								<div id="pWardDetailsWrap" class="hidden">
+									<label class="field-label" for="pConveyWard"
+										>Ward name / number</label
+									>
+									<input
+										id="pConveyWard"
+										placeholder="e.g. Paediatric Ward, HDU" />
+								</div>
+								<div id="pDepartmentOtherWrap" class="hidden">
+									<label class="field-label" for="pConveyDepartmentOther"
+										>Other department</label
+									>
+									<input
+										id="pConveyDepartmentOther"
+										placeholder="e.g. resus, observation ward" />
+								</div>
+
+								<label class="field-label">Transfer and handover</label>
+								<p class="field-hint">
+									Tap a box to toggle between normal and abnormal findings.
+								</p>
+								<div id="pConveyTransferGrid" class="square-grid"></div>
+								<div id="pConveyChangeWrap" class="hidden">
+									<label class="field-label" for="pConveyChangeDetail"
+										>Clinical change — detail</label
+									>
+									<textarea
+										id="pConveyChangeDetail"
+										rows="2"
+										placeholder="Describe change, actions taken, and response"></textarea>
+								</div>
+								<div id="pConveyEscalatedWrap" class="hidden">
+									<label class="field-label" for="pConveyEscalatedDetail"
+										>Escalation of care — detail</label
+									>
+									<textarea
+										id="pConveyEscalatedDetail"
+										rows="2"
+										placeholder="e.g. oxygen, analgesia, fluid, crew assist..."></textarea>
+								</div>
+								<label class="field-label" for="pConveyTransferNotes"
+									>Transfer / handover notes</label
 								>
-								<input
-									id="pConveyDest"
-									placeholder="e.g. NSECH ED, RVI Paediatric ED, Children's ward" />
-								<label class="field-label" style="margin-top: 8px"
-									>Pre-alert given</label
-								>
-								<input type="hidden" id="pConveyPrealert" />
+								<textarea
+									id="pConveyTransferNotes"
+									rows="3"
+									placeholder="e.g. observations during transfer, safeguarding flags passed on, belongings, infection precautions..."></textarea>
+							</div>
+
+							<div id="pNonConveyedFields" class="hidden">
+								<label class="field-label">Referred / signposted to</label>
 								<div
-									class="radio-chip-group"
-									data-radio-group="pConveyPrealert"
-									style="margin-top: 4px">
-									<button type="button" class="radio-chip" data-value="">
-										Not required
-									</button>
-									<button
-										type="button"
-										class="radio-chip"
-										data-value="Pre-alert given to receiving unit">
-										Pre-alert to unit
-									</button>
-									<button
-										type="button"
-										class="radio-chip"
-										data-value="Paediatric team alerted">
-										Paediatric team
-									</button>
-									<button
-										type="button"
-										class="radio-chip"
-										data-value="Resus team alerted">
-										Resus team
-									</button>
-									<button
-										type="button"
-										class="radio-chip"
-										data-value="Trauma team alerted">
-										Trauma team
-									</button>
+									class="square-grid multi-group"
+									data-state="pReferrals"></div>
+								<label class="field-label" for="pFollowUp"
+									>Follow-up arrangements</label
+								>
+								<input id="pFollowUp" />
+								<div class="grid-2 compact">
+									<label class="check-row"
+										><input type="checkbox" id="pRiskExplained" checked /> Risks
+										explained</label
+									>
+									<label class="check-row"
+										><input
+											type="checkbox"
+											id="pAlternativesDiscussed"
+											checked />
+										Alternatives discussed</label
+									>
+									<label class="check-row"
+										><input type="checkbox" id="pUnderstandsRisk" checked />
+										Parent / carer understands risks</label
+									>
+									<label class="check-row"
+										><input type="checkbox" id="pCanRecontact" checked />
+										999/111 recontact advised</label
+									>
 								</div>
 							</div>
-							<label
-								class="field-label"
-								for="pConveyNotes"
-								style="margin-top: 8px"
+
+							<label class="field-label" for="pConveyNotes"
 								>Conveyance notes</label
 							>
-							<textarea
-								id="pConveyNotes"
-								rows="2"
-								placeholder="Transfer observations, any concerns during transport, parent / carer informed…"></textarea>
+							<textarea id="pConveyNotes" rows="2"></textarea>
 						</div>
 					</details>
 
@@ -5127,35 +5281,85 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 				</section>
 			</main>
 
-			<footer class="app-footer paeds-footer">
-				<div class="paeds-footer-resource">
-					<div class="paeds-footer-logo">
-						<svg
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="1.8"
-							stroke-linecap="round"
-							stroke-linejoin="round">
-							<circle cx="12" cy="7" r="3.5" />
-							<path d="M3 21v-1a9 9 0 0 1 18 0v1" />
-						</svg>
-					</div>
-					<div class="paeds-footer-text">
-						<strong>Spotting the Sick Child</strong>
-						<span>Free online paediatric assessment training</span>
-						<a
-							href="https://www.spottingthesickchild.com"
-							target="_blank"
-							rel="noopener"
-							class="paeds-footer-link"
-							>Visit spottingthesickchild.com ↗</a
-						>
+			<footer class="site-footer" role="contentinfo">
+				<div class="footer-brand">
+					<img src="assets/logo.jpg" alt="CrewMate logo" class="footer-logo" />
+					<div>
+						<h3>CrewMate</h3>
+						<p>Your second crew member.</p>
 					</div>
 				</div>
+
+				<p class="footer-intro">
+					Paediatric documentation support to help crews structure assessments,
+					safety-netting and handover notes for paediatric patients. Always
+					apply JRCALC paediatric guidelines and local safeguarding procedures.
+				</p>
+
+				<div class="footer-notice">
+					<h4>Clinical Use Notice</h4>
+					<p>
+						CrewMate is an assistance and documentation support tool only. It is
+						not a replacement for your licensed ePCR system, local trust policy,
+						clinical judgement, senior advice, or the official JRCALC / JRCALC
+						Plus guidance.
+					</p>
+					<p>
+						Users remain responsible for checking all entries before submission
+						and for ensuring records are full, clear, accurate, completed
+						promptly, and handled securely in line with HCPC expectations.
+					</p>
+				</div>
+
+				<div class="footer-guidance">
+					<h4>Guidance References</h4>
+					<ul>
+						<li>
+							<strong>JRCALC:</strong>
+							Use the current official JRCALC or JRCALC Plus app/book for
+							definitive UK paediatric ambulance clinical guidance.
+							<br />
+							<a
+								href="https://jrcalcplus.co.uk/"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="footer-link">
+								Visit JRCALC
+							</a>
+						</li>
+						<li>
+							<strong>Spotting the Sick Child:</strong>
+							Free online paediatric assessment training recommended for all
+							clinicians caring for children.
+							<br />
+							<a
+								href="https://www.spottingthesickchild.com"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="footer-link">
+								Visit spottingthesickchild.com
+							</a>
+						</li>
+						<li>
+							<strong>HCPC:</strong>
+							Clinical records should be full, clear, accurate, completed as
+							soon as possible, and kept secure.
+							<br />
+							<a
+								href="https://www.hcpc-uk.org/standards/standards-of-proficiency/paramedics/"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="footer-link">
+								HCPC Standards for Paramedics
+							</a>
+						</li>
+					</ul>
+				</div>
+
 				<div class="footer-bottom">
-					© 2026 CrewMate. Paediatric documentation support only — not
-					affiliated with Spotting the Sick Child, JRCALC or any NHS system.
+					© 2026 CrewMate. Independent support tool. Not affiliated with,
+					endorsed by, or a replacement for JRCALC, Spotting the Sick Child,
+					HCPC, NEAS, NHS systems, or any licensed ePCR provider.
 				</div>
 			</footer>
 		</div>
