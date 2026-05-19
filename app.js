@@ -6538,7 +6538,6 @@ function initRespCounter() {
 	startButton?.addEventListener("click", startRespCounter);
 	resetButton?.addEventListener("click", () => resetRespCounter());
 	tapButton?.addEventListener("click", () => {
-		if (!respCounter.running) startRespCounter();
 		recordRespTap();
 	});
 }
