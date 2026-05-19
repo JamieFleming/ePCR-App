@@ -6,6 +6,10 @@ const val = (id) => ($(`#${id}`)?.value || "").trim();
 const isChecked = (id) => Boolean($(`#${id}`)?.checked);
 const onsetTime = () =>
 	val("onsetTime") === "Other" ? val("onsetTimeOther") : val("onsetTime");
+const onsetClockSuffix = () => {
+	const t = val("onsetClockTime");
+	return t ? ` (at ${t})` : "";
+};
 
 const state = {
 	mapMode: "site",
@@ -53,7 +57,8 @@ const state = {
 	ecgFindings: new Set(),
 	ecgLeads: new Set(),
 	ros: {},
-	respAusc: { normal: false, notAuscultated: true, entries: [] },
+	auscFindings: {}, // { regionName: Set<finding> }
+	auscActive: null,
 	worseningAuto: true,
 	pReferrals: new Set(),
 };
@@ -539,6 +544,8 @@ const ABCDE = [
 			["bm", "BM mmol/L", "5.2"],
 		],
 		notes: "circulationNotes",
+		extras:
+			'<div id="colourDetailWrap" class="hidden" style="margin-top:6px"><input type="hidden" id="colourDetail"><div class="radio-chip-group" data-radio-group="colourDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Pale">Pale</button><button type="button" class="radio-chip" data-value="Flushed">Flushed</button></div></div>',
 	},
 	{
 		key: "D",
@@ -591,7 +598,7 @@ const ROS = {
 			["accessory", "No accessory muscle use", "Accessory muscle use present"],
 		],
 		extras:
-			'<div class="auscultation-block"><label class="field-label">Auscultation findings</label><div class="square-grid ausc-grid" id="auscSoundGrid"></div><div id="auscLocationPanel" class="hidden"><div id="auscOtherWrap" class="hidden"><label class="field-label" for="auscOtherText">Describe finding</label><input id="auscOtherText" type="text" placeholder="e.g. pleural rub" /></div><label class="field-label">Location <span class="field-hint" style="display:inline;font-size:11px">(tap one or more, then add)</span></label><div class="square-grid ausc-loc-grid" id="auscLocGrid"></div><button id="auscAddButton" type="button" class="secondary-action" style="margin-top:8px">Add finding</button></div><div id="auscEntries" class="ausc-entries"></div><input id="respAus" type="hidden" /><p id="auscPreview" class="ausc-preview">Equal and clear bilateral air entry</p></div><label class="field-label" for="coughType">Cough</label><select id="coughType"><option>No cough</option><option>Dry cough present</option><option>Productive cough present</option></select><div id="sputumWrap" class="hidden" style="margin-top:6px"><label class="field-label" for="sputumDesc">Sputum</label><input id="sputumDesc" list="sputumList" placeholder="e.g. yellow, green, white, blood-stained" /><datalist id="sputumList"><option>Clear</option><option>White / frothy</option><option>Yellow</option><option>Green</option><option>Brown</option><option>Blood-stained (haemoptysis)</option><option>Pink and frothy</option><option>Rust-coloured</option></datalist></div><label class="field-label" for="respNotes">Additional notes</label><textarea id="respNotes" rows="2"></textarea>',
+			'<label class="field-label">Auscultation</label><div id="auscRegionGrid" class="ausc-region-grid"></div><div id="auscFindingPanel" class="ausc-finding-panel hidden"></div><input id="respAus" type="hidden" /><p id="auscPreview" class="ausc-preview field-hint" style="margin-top:6px">Not auscultated</p><label class="field-label" style="margin-top:10px" for="coughType">Cough</label><select id="coughType"><option>No cough</option><option>Dry cough present</option><option>Productive cough present</option></select><div id="sputumWrap" class="hidden" style="margin-top:6px"><label class="field-label" for="sputumDesc">Sputum</label><input id="sputumDesc" list="sputumList" placeholder="e.g. yellow, green, white, blood-stained" /><datalist id="sputumList"><option>Clear</option><option>White / frothy</option><option>Yellow</option><option>Green</option><option>Brown</option><option>Blood-stained (haemoptysis)</option><option>Pink and frothy</option><option>Rust-coloured</option></datalist></div><label class="field-label" for="respNotes">Additional notes</label><textarea id="respNotes" rows="2"></textarea>',
 	},
 	cvs: {
 		title: "Cardiovascular",
@@ -637,7 +644,7 @@ const ROS = {
 			["speech", "Speech clear and coherent", "Speech difficulty noted"],
 		],
 		extras:
-			'<label class="field-label" for="neuroNotes">Additional notes</label><textarea id="neuroNotes" rows="2"></textarea>',
+			'<div class="ros-gcs-wrap" style="margin-top:10px"></div><label class="field-label" style="margin-top:10px" for="neuroNotes">Additional notes</label><textarea id="neuroNotes" rows="2"></textarea>',
 	},
 	gi: {
 		title: "Gastrointestinal",
@@ -807,7 +814,7 @@ function init() {
 	buildRos();
 	buildOptionButtons(); // after buildRos so ROS containers exist
 	buildAbdoGrid(); // after buildOptionButtons so #abdoRegionsGrid exists
-	buildAuscultation();
+	buildAuscGrid();
 	buildEcgSection();
 	buildInjurySection();
 	buildTreatmentSection();
@@ -925,12 +932,17 @@ function buildAbcde() {
 			vitalRoot.append(box);
 		});
 		if (!section.vitals.length) vitalRoot.remove();
+		if (section.extras) {
+			const sectionBody = $(".section-body", details);
+			const extraWrap = document.createElement("div");
+			extraWrap.innerHTML = section.extras;
+			while (extraWrap.firstChild) sectionBody.append(extraWrap.firstChild);
+		}
 		if (section.key === "D") {
 			const sectionBody = $(".section-body", details);
 			const calc = document.createElement("div");
-			calc.id = "gcsCalcWrap";
 			calc.style.cssText = "margin-top:10px";
-			calc.innerHTML = `<button type="button" id="gcsCalcToggle" class="secondary-action" style="width:100%;text-align:left">▸ Calculate GCS</button><div id="gcsCalcPanel" class="hidden" style="margin-top:8px;display:grid;gap:8px"><div class="gcs-row"><label class="field-label">E — Eye opening</label><select id="gcsEye"><option value="">Select</option>${GCS_EYE.map(([n, l]) => `<option value="${n}">${n} — ${l}</option>`).join("")}</select></div><div class="gcs-row"><label class="field-label">V — Verbal response</label><select id="gcsVerbal"><option value="">Select</option>${GCS_VERBAL.map(([n, l]) => `<option value="${n}">${n} — ${l}</option>`).join("")}</select></div><div class="gcs-row"><label class="field-label">M — Motor response</label><select id="gcsMotor"><option value="">Select</option>${GCS_MOTOR.map(([n, l]) => `<option value="${n}">${n} — ${l}</option>`).join("")}</select></div><p id="gcsTally" class="field-hint" style="font-weight:700;font-size:14px;margin:4px 0 0"></p></div>`;
+			calc.innerHTML = buildGcsCalcHTML("gcsCalc");
 			sectionBody.append(calc);
 		}
 		root.append(details);
@@ -939,35 +951,79 @@ function buildAbcde() {
 
 const GCS_EYE = [
 	[4, "Spontaneous"],
-	[3, "To voice / sound"],
+	[3, "To voice"],
 	[2, "To pain"],
 	[1, "None"],
 ];
 const GCS_VERBAL = [
 	[5, "Orientated"],
 	[4, "Confused"],
-	[3, "Inappropriate words"],
-	[2, "Incomprehensible sounds"],
+	[3, "Inappropriate"],
+	[2, "Sounds only"],
 	[1, "None"],
 ];
 const GCS_MOTOR = [
-	[6, "Obeys commands"],
-	[5, "Localises pain"],
-	[4, "Withdraws from pain"],
-	[3, "Abnormal flexion (decorticate)"],
-	[2, "Extension (decerebrate)"],
+	[6, "Obeys"],
+	[5, "Localises"],
+	[4, "Withdraws"],
+	[3, "Flexion"],
+	[2, "Extension"],
 	[1, "None"],
 ];
 
-const AUSC_SOUNDS = [
-	["normal", "Normal (equal & clear bilateral)"],
-	["wheeze", "Wheeze"],
-	["crackles", "Crackles"],
-	["reduced", "Reduced air entry"],
-	["bronchial", "Bronchial breathing"],
-	["other", "Other"],
-	["not-auscultated", "Not auscultated"],
+function buildGcsCalcHTML(prefix) {
+	const row = (field, label, items) =>
+		`<div class="gcs-row"><p class="gcs-row-label">${label}</p>` +
+		`<div class="gcs-btn-row">` +
+		items.map(([n, l]) =>
+			`<button type="button" class="gcs-btn" data-gcs-prefix="${prefix}" data-gcs-field="${field}" data-gcs-score="${n}">` +
+			`<span class="gcs-score">${n}</span><span class="gcs-label">${l}</span></button>`,
+		).join("") +
+		`</div></div>`;
+	return (
+		`<button type="button" class="gcs-toggle secondary-action" data-gcs-toggle="${prefix}" style="width:100%;text-align:left">▸ GCS Calculator</button>` +
+		`<div class="gcs-panel hidden" id="${prefix}Panel" style="margin-top:8px">` +
+		row(`${prefix}Eye`, "E — Eye opening", GCS_EYE) +
+		row(`${prefix}Verbal`, "V — Verbal", GCS_VERBAL) +
+		row(`${prefix}Motor`, "M — Motor", GCS_MOTOR) +
+		`<p class="gcs-tally" id="${prefix}Tally"></p>` +
+		`</div>`
+	);
+}
+
+function updateGcsTally(prefix) {
+	const e4 = parseInt($("#" + prefix + "Eye")?.dataset.gcsSelected || "", 10);
+	const v5 = parseInt($("#" + prefix + "Verbal")?.dataset.gcsSelected || "", 10);
+	const m6 = parseInt($("#" + prefix + "Motor")?.dataset.gcsSelected || "", 10);
+	const tally = $("#" + prefix + "Tally");
+	if (!e4 || !v5 || !m6) { if (tally) tally.textContent = ""; return; }
+	const total = e4 + v5 + m6;
+	if (tally) tally.textContent = `GCS: E${e4} V${v5} M${m6} = ${total}/15`;
+	const scoreEl = $("#gcsScore");
+	if (scoreEl) scoreEl.value = total;
+}
+
+const AUSC_REGIONS = ["R upper", "R lower", "L upper", "L lower"];
+const AUSC_FINDINGS = [
+	"Clear",
+	"Wheeze",
+	"Fine crackles",
+	"Coarse crackles",
+	"Reduced entry",
+	"Absent entry",
+	"Pleural rub",
+	"Bronchial",
 ];
+const AUSC_FINDING_SHORT = {
+	Clear: "Cl",
+	Wheeze: "Wh",
+	"Fine crackles": "FC",
+	"Coarse crackles": "CC",
+	"Reduced entry": "Re",
+	"Absent entry": "Ab",
+	"Pleural rub": "PR",
+	Bronchial: "Br",
+};
 
 const ECG_FINDINGS = [
 	"Sinus rhythm",
@@ -1009,16 +1065,6 @@ const ECG_LEADS = [
 	"V5",
 	"V6",
 ];
-const AUSC_LOCATIONS = [
-	["R-upper", "R upper"],
-	["R-mid", "R mid"],
-	["R-basal", "R basal"],
-	["L-upper", "L upper"],
-	["L-mid", "L mid"],
-	["L-basal", "L basal"],
-	["bilateral", "Bilateral"],
-];
-
 const INJURY_TYPES = [
 	"Laceration",
 	"Abrasion",
@@ -1232,27 +1278,55 @@ const MSE_PERCEPTION = [
 ];
 const MSE_INSIGHT = ["Full insight", "Partial insight", "No insight"];
 
-function buildAuscultation() {
-	const soundGrid = $("#auscSoundGrid");
-	const locGrid = $("#auscLocGrid");
-	if (!soundGrid || !locGrid) return;
-	AUSC_SOUNDS.forEach(([id, label]) => {
-		const button = document.createElement("button");
-		button.type = "button";
-		button.className = `square-btn ausc-sound${id === "not-auscultated" ? " selected" : ""}`;
-		button.textContent = label;
-		button.dataset.sound = id;
-		soundGrid.append(button);
+function buildAuscGrid() {
+	const grid = $("#auscRegionGrid");
+	if (!grid) return;
+	AUSC_REGIONS.forEach((region) => {
+		const btn = document.createElement("button");
+		btn.type = "button";
+		btn.className = "square-btn ausc-region-btn";
+		if (region === "Trachea") btn.classList.add("ausc-full");
+		btn.dataset.region = region;
+		btn.innerHTML = `<span class="ausc-region-name">${region}</span><span class="ausc-region-tags"></span>`;
+		grid.append(btn);
 	});
-	AUSC_LOCATIONS.forEach(([id, label]) => {
-		const button = document.createElement("button");
-		button.type = "button";
-		button.className = "square-btn ausc-loc";
-		button.textContent = label;
-		button.dataset.location = id;
-		locGrid.append(button);
+}
+
+function renderAuscGrid() {
+	$$(".ausc-region-btn").forEach((btn) => {
+		const region = btn.dataset.region;
+		const findings = state.auscFindings[region];
+		const hasFindings = findings && findings.size > 0;
+		const isActive = state.auscActive === region;
+		btn.classList.toggle("selected", hasFindings || isActive);
+		btn.classList.toggle("ausc-active", isActive);
+		const tags = btn.querySelector(".ausc-region-tags");
+		if (tags) {
+			tags.textContent = hasFindings
+				? [...findings].map((f) => AUSC_FINDING_SHORT[f] || f[0]).join(" · ")
+				: "";
+		}
 	});
-	$("#auscAddButton")?.addEventListener("click", commitAuscLocations);
+	const panel = $("#auscFindingPanel");
+	if (!panel) return;
+	if (!state.auscActive) {
+		panel.classList.add("hidden");
+		return;
+	}
+	const findings = state.auscFindings[state.auscActive] || new Set();
+	panel.classList.remove("hidden");
+	panel.innerHTML =
+		`<p class="ausc-finding-label">Findings in <strong>${state.auscActive}</strong></p>` +
+		`<div class="radio-chip-group" style="flex-wrap:wrap;gap:6px;margin-top:6px">` +
+		AUSC_FINDINGS.map(
+			(f) =>
+				`<button type="button" class="radio-chip ausc-finding-chip${findings.has(f) ? " selected" : ""}" data-finding="${f}">${f}</button>`,
+		).join("") +
+		`</div>` +
+		(findings.size > 0
+			? `<button type="button" class="ausc-clear-btn" data-region="${state.auscActive}">✕ Clear ${state.auscActive}</button>`
+			: "");
+	syncAuscultationOutput();
 }
 
 function buildEcgSection() {
@@ -1502,7 +1576,18 @@ function repeatDrugEntry(index) {
 	const hh = String(now.getHours()).padStart(2, "0");
 	const mm = String(now.getMinutes()).padStart(2, "0");
 	const nameEl = $("#drugName");
-	if (nameEl) nameEl.value = entry.drug;
+	const otherEl = $("#drugNameOther");
+	if (nameEl) {
+		// Check if the drug is a known option in the select
+		const isKnown = [...nameEl.options].some((o) => o.value === entry.drug || o.text === entry.drug);
+		if (isKnown) {
+			nameEl.value = entry.drug;
+			otherEl?.classList.add("hidden");
+		} else {
+			nameEl.value = "Other";
+			if (otherEl) { otherEl.value = entry.drug; otherEl.classList.remove("hidden"); }
+		}
+	}
 	const doseEl = $("#drugDose");
 	if (doseEl) doseEl.value = entry.dose || "";
 	const routeEl = $("#drugRoute");
@@ -1550,7 +1635,7 @@ function addIvEntry() {
 }
 
 function addDrugEntry() {
-	const drug = val("drugName");
+	const drug = val("drugName") === "Other" ? val("drugNameOther") : val("drugName");
 	if (!drug) return;
 	state.drugEntries.push({
 		drug,
@@ -1558,10 +1643,11 @@ function addDrugEntry() {
 		route: val("drugRoute"),
 		time: val("drugTime"),
 	});
-	["drugName", "drugDose", "drugRoute", "drugTime"].forEach((id) => {
+	["drugName", "drugNameOther", "drugDose", "drugRoute", "drugTime"].forEach((id) => {
 		const el = $(`#${id}`);
 		if (el) el.value = "";
 	});
+	$("#drugNameOther")?.classList.add("hidden");
 	$$("[data-radio-group='drugRoute'] [data-value]").forEach((c) =>
 		c.classList.remove("selected"),
 	);
@@ -1879,6 +1965,11 @@ function buildRos() {
 			button.dataset.abnormal = abnormal;
 			grid.append(button);
 		});
+		// Inject ROS GCS calculator into neuro section
+		if (key === "neuro") {
+			const wrap = $(".ros-gcs-wrap", details);
+			if (wrap) wrap.innerHTML = buildGcsCalcHTML("rosGcs");
+		}
 		root.append(details);
 	});
 }
@@ -2044,7 +2135,12 @@ function buildEdHandoverText() {
 	const onsetType = val("onsetType");
 	const oTime = onsetTime();
 	const duration = val("onsetDuration");
-	const onsetStr = [onsetType, oTime, duration ? `duration ${duration}` : null]
+	const clockSuffix = onsetClockSuffix();
+	const onsetStr = [
+		onsetType,
+		oTime ? oTime + clockSuffix : null,
+		duration ? `duration ${duration}` : null,
+	]
 		.filter(Boolean)
 		.join(", ");
 	const severityStr = [
@@ -2173,33 +2269,28 @@ function bindEvents() {
 			val("coughType") !== "Productive cough present",
 		);
 	});
+	$("#drugName")?.addEventListener("change", () => {
+		const isOther = val("drugName") === "Other";
+		$("#drugNameOther")?.classList.toggle("hidden", !isOther);
+		if (isOther) setTimeout(() => $("#drugNameOther")?.focus(), 50);
+	});
 	document.addEventListener("change", (e) => {
 		if (e.target.id === "catheterPresent")
 			$("#catheterDetails")?.classList.toggle("hidden", !e.target.checked);
 		if (e.target.id === "stomaPresent")
 			$("#stomaDetails")?.classList.toggle("hidden", !e.target.checked);
 	});
-	$("#gcsCalcToggle")?.addEventListener("click", () => {
-		const panel = $("#gcsCalcPanel");
-		if (!panel) return;
-		const open = !panel.classList.contains("hidden");
-		panel.classList.toggle("hidden", open);
-		$("#gcsCalcToggle").textContent = (open ? "▸" : "▾") + " Calculate GCS";
-	});
-	document.addEventListener("change", (e) => {
-		if (!["gcsEye", "gcsVerbal", "gcsMotor"].includes(e.target.id)) return;
-		const e4 = parseInt(val("gcsEye"), 10);
-		const v5 = parseInt(val("gcsVerbal"), 10);
-		const m6 = parseInt(val("gcsMotor"), 10);
-		const tally = $("#gcsTally");
-		if (!e4 || !v5 || !m6) {
-			if (tally) tally.textContent = "";
-			return;
+	// GCS toggle buttons (both primary survey and neuro ROS use same delegation)
+	document.addEventListener("click", (e) => {
+		const toggle = e.target.closest(".gcs-toggle");
+		if (toggle) {
+			const prefix = toggle.dataset.gcsToggle;
+			const panel = $("#" + prefix + "Panel");
+			if (!panel) return;
+			const open = !panel.classList.contains("hidden");
+			panel.classList.toggle("hidden", open);
+			toggle.textContent = (open ? "▸" : "▾") + " GCS Calculator";
 		}
-		const total = e4 + v5 + m6;
-		if (tally) tally.textContent = `GCS: E${e4} V${v5} M${m6} = ${total}/15`;
-		const scoreEl = $("#gcsScore");
-		if (scoreEl) scoreEl.value = total;
 	});
 	$("#worseningMode").addEventListener("change", () => {
 		state.worseningAuto = false;
@@ -2276,6 +2367,25 @@ function bindEvents() {
 	$("#copyButton").addEventListener("click", copyOutput);
 
 	document.addEventListener("click", (event) => {
+		const gcsBtn = event.target.closest(".gcs-btn");
+		if (gcsBtn) {
+			const { gcsPrefix, gcsField, gcsScore } = gcsBtn.dataset;
+			// Deselect siblings, select this
+			gcsBtn.closest(".gcs-btn-row")?.querySelectorAll(".gcs-btn").forEach((b) => b.classList.remove("selected"));
+			gcsBtn.classList.add("selected");
+			// Store selection on a sentinel element keyed by field id
+			let sentinel = $("#" + gcsField);
+			if (!sentinel) {
+				sentinel = document.createElement("span");
+				sentinel.id = gcsField;
+				sentinel.hidden = true;
+				document.body.append(sentinel);
+			}
+			sentinel.dataset.gcsSelected = gcsScore;
+			updateGcsTally(gcsPrefix);
+			return;
+		}
+
 		const option = event.target.closest(".multi-group .square-btn");
 		if (option) return toggleMulti(option);
 
@@ -2306,6 +2416,33 @@ function bindEvents() {
 			return;
 		}
 
+		const auscRegionBtn = event.target.closest(".ausc-region-btn");
+		if (auscRegionBtn) {
+			const region = auscRegionBtn.dataset.region;
+			state.auscActive = state.auscActive === region ? null : region;
+			renderAuscGrid();
+			return;
+		}
+		const auscFindingChip = event.target.closest(".ausc-finding-chip");
+		if (auscFindingChip) {
+			const region = state.auscActive;
+			if (!region) return;
+			if (!state.auscFindings[region]) state.auscFindings[region] = new Set();
+			const f = auscFindingChip.dataset.finding;
+			if (state.auscFindings[region].has(f))
+				state.auscFindings[region].delete(f);
+			else state.auscFindings[region].add(f);
+			renderAuscGrid();
+			return;
+		}
+		const auscClearBtn = event.target.closest(".ausc-clear-btn");
+		if (auscClearBtn) {
+			delete state.auscFindings[auscClearBtn.dataset.region];
+			state.auscActive = null;
+			renderAuscGrid();
+			return;
+		}
+
 		const abc = event.target.closest(".abc-chip");
 		if (abc) return toggleAbc(abc);
 		const convey = event.target.closest(".convey-chip");
@@ -2319,13 +2456,6 @@ function bindEvents() {
 		const remove = event.target.closest("[data-remove-part]");
 		if (remove)
 			return removeBodyPart(remove.dataset.removePart, remove.dataset.partType);
-		const auscSound = event.target.closest(".ausc-sound");
-		if (auscSound) return selectAuscSound(auscSound);
-		const auscLoc = event.target.closest(".ausc-loc");
-		if (auscLoc) return toggleAuscLocation(auscLoc);
-		const removeAusc = event.target.closest("[data-remove-ausc]");
-		if (removeAusc)
-			return removeAuscEntry(Number(removeAusc.dataset.removeAusc));
 		const injuryTypeBtn = event.target.closest("[data-injury-type]");
 		if (injuryTypeBtn) {
 			const v = injuryTypeBtn.dataset.injuryType;
@@ -2460,7 +2590,6 @@ function bindEvents() {
 	});
 }
 
-let pendingAuscSound = null;
 let pendingInjuryTypes = new Set();
 let pendingInjuryInterventions = new Set();
 
@@ -2548,7 +2677,39 @@ function toggleAbc(button) {
 	const isAbnormal = button.dataset.abcState === "abnormal";
 	const next = isAbnormal ? "normal" : "abnormal";
 	setAbcChipState(button, next);
-	if (next === "abnormal") syncDisabilityLinks(button);
+	if (next === "abnormal") {
+		syncDisabilityLinks(button);
+		// Uncheck "No immediate ABC concerns" and "Normal presentation" on arrival
+		const noAbc = $("#oaNoABC");
+		if (noAbc) noAbc.checked = false;
+		const normPres = $("#oaNormalPresentation");
+		if (normPres) normPres.checked = false;
+	} else {
+		// Re-check if all chips are back to normal
+		const allNormal = !$$("[data-abc]").some(
+			(b) => b.dataset.abcState === "abnormal",
+		);
+		if (allNormal) {
+			const noAbc = $("#oaNoABC");
+			if (noAbc) noAbc.checked = true;
+			const normPres = $("#oaNormalPresentation");
+			if (normPres) normPres.checked = true;
+		}
+	}
+	// Show/hide pale-or-flushed picker when colour chip toggled
+	if (button.dataset.normal === "Good colour") {
+		const wrap = $("#colourDetailWrap");
+		if (wrap) {
+			wrap.classList.toggle("hidden", next === "normal");
+			if (next === "normal") {
+				const hidden = $("#colourDetail");
+				if (hidden) hidden.value = "";
+				wrap
+					.querySelectorAll("[data-value]")
+					.forEach((c) => c.classList.remove("selected"));
+			}
+		}
+	}
 }
 
 function setAbcChipState(button, state) {
@@ -2678,10 +2839,20 @@ function rosLine(section) {
 	);
 }
 
+function abcChipText(button) {
+	// Substitute colour detail if "Pale / flushed" and a sub-selection has been made
+	if (
+		button.dataset.normal === "Good colour" &&
+		button.dataset.abcState === "abnormal"
+	) {
+		const detail = val("colourDetail");
+		if (detail) return detail;
+	}
+	return button.textContent;
+}
+
 function abcLine(section) {
-	const values = $$(`[data-abc="${section.key}"]`).map(
-		(button) => button.textContent,
-	);
+	const values = $$(`[data-abc="${section.key}"]`).map(abcChipText);
 	const vitals = section.vitals
 		.map(([id, label]) => (val(id) ? `${label}: ${val(id)}` : null))
 		.filter(Boolean);
@@ -2692,7 +2863,7 @@ function abcLine(section) {
 function abcCompactLine(section) {
 	const abnormals = $$(`[data-abc="${section.key}"]`)
 		.filter((b) => b.dataset.abcState === "abnormal")
-		.map((b) => b.textContent);
+		.map(abcChipText);
 	const notes = val(section.notes);
 	const all = [...abnormals, notes].filter(Boolean);
 	if (!all.length) return null;
@@ -2706,12 +2877,28 @@ function abcHandoverSummary() {
 
 function toggleEcgFinding(btn) {
 	const finding = btn.dataset.finding;
-	if (state.ecgFindings.has(finding)) {
-		state.ecgFindings.delete(finding);
-		btn.classList.remove("selected");
+	if (finding === "Not performed") {
+		// Selecting "Not performed" clears everything else
+		state.ecgFindings.clear();
+		state.ecgFindings.add("Not performed");
+		$$(".ecg-finding").forEach((b) =>
+			b.classList.toggle("selected", b.dataset.finding === "Not performed"),
+		);
 	} else {
-		state.ecgFindings.add(finding);
-		btn.classList.add("selected");
+		// Deselect "Not performed" if switching to a real finding
+		if (state.ecgFindings.has("Not performed")) {
+			state.ecgFindings.delete("Not performed");
+			$(".ecg-finding[data-finding='Not performed']")?.classList.remove(
+				"selected",
+			);
+		}
+		if (state.ecgFindings.has(finding)) {
+			state.ecgFindings.delete(finding);
+			btn.classList.remove("selected");
+		} else {
+			state.ecgFindings.add(finding);
+			btn.classList.add("selected");
+		}
 	}
 	const hasLeadFinding = [...state.ecgFindings].some((f) =>
 		ECG_LEAD_FINDINGS.has(f),
@@ -2909,7 +3096,7 @@ function buildHandoverText() {
 			`A — Age: ${age || "Not documented"}`,
 			`S — Sex: ${sex || "Not specified"}`,
 			`H — History: ${pc}. ${hpc ? hpc + ". " : ""}PMH: ${pmh}. Medications: ${meds}. Allergies: ${allergies}.`,
-			`I — Illness/Injury: ${pc}${val("onsetType") ? `. Onset: ${val("onsetType")}${onsetTime() ? `, ${onsetTime()}` : ""}` : ""}.`,
+			`I — Illness/Injury: ${pc}${val("onsetType") ? `. Onset: ${val("onsetType")}${onsetTime() ? `, ${onsetTime()}` : ""}${onsetClockSuffix()}` : ""}.`,
 			`C — Condition: ${vitalsLine}.`,
 			`E — ETA: ${val("handoverEta") || "Not given"}`,
 			...(extraNotes ? ["", extraNotes] : []),
@@ -3559,7 +3746,7 @@ function buildOutputSections() {
 				: "PAIN ASSESSMENT / SOCRATES",
 			body: isChecked("noPain")
 				? [
-						`Onset: ${val("onsetType") || "Not documented"}${onsetTime() ? `, ${onsetTime()}` : ""}${val("onsetDuration") ? `, duration ${val("onsetDuration")}` : ""}`,
+						`Onset: ${val("onsetType") || "Not documented"}${onsetTime() ? `, ${onsetTime()}${onsetClockSuffix()}` : ""}${val("onsetDuration") ? `, duration ${val("onsetDuration")}` : ""}`,
 						`Associated symptoms: ${listSet(state.associated, "None reported")}`,
 						`Timing: ${val("timingSelect") || "Not documented"}`,
 						`Exacerbating factors: ${listFactors(state.exacerbating, "exacerbatingOther", "None identified")}`,
@@ -3568,7 +3755,7 @@ function buildOutputSections() {
 					].join("\n")
 				: [
 						`Site: ${site}`,
-						`Onset: ${val("onsetType") || "Not documented"}${onsetTime() ? `, ${onsetTime()}` : ""}${val("onsetDuration") ? `, duration ${val("onsetDuration")}` : ""}`,
+						`Onset: ${val("onsetType") || "Not documented"}${onsetTime() ? `, ${onsetTime()}${onsetClockSuffix()}` : ""}${val("onsetDuration") ? `, duration ${val("onsetDuration")}` : ""}`,
 						`Character: ${listSet(state.character, "Not characterised")}`,
 						`Radiation: ${radiation}`,
 						`Associated symptoms: ${listSet(state.associated, "None reported")}`,
@@ -3968,151 +4155,24 @@ function clearPainAssessment() {
 	updateMapTags();
 }
 
-function selectAuscSound(button) {
-	const sound = button.dataset.sound;
-	if (sound === "normal" || sound === "not-auscultated") {
-		state.respAusc = {
-			normal: sound === "normal",
-			notAuscultated: sound === "not-auscultated",
-			entries: [],
-		};
-		pendingAuscSound = null;
-		$$(".ausc-sound").forEach((item) =>
-			item.classList.toggle("selected", item.dataset.sound === sound),
-		);
-		$("#auscLocationPanel")?.classList.add("hidden");
-		$("#auscOtherWrap")?.classList.add("hidden");
-		renderAuscEntries();
-		syncAuscultationOutput();
-		return;
-	}
-	pendingAuscSound = sound;
-	state.respAusc.normal = false;
-	$$(".ausc-sound").forEach((item) =>
-		item.classList.toggle("selected", item === button),
+function syncAuscultationOutput() {
+	const entries = Object.entries(state.auscFindings).filter(
+		([, f]) => f.size > 0,
 	);
-	$("#auscLocationPanel")?.classList.remove("hidden");
-	$$(".ausc-loc").forEach((item) => item.classList.remove("selected"));
-	const otherWrap = $("#auscOtherWrap");
-	if (otherWrap) {
-		otherWrap.classList.toggle("hidden", sound !== "other");
-		if (sound === "other") {
-			$("#auscOtherText").value = "";
-			setTimeout(() => $("#auscOtherText")?.focus(), 50);
+	let text;
+	if (!entries.length) {
+		text = "Not auscultated";
+	} else {
+		// Check if all regions have only "Clear"
+		const allClear = entries.every(([, f]) => f.size === 1 && f.has("Clear"));
+		if (allClear && entries.length >= 4) {
+			text = "Equal and clear air entry throughout";
+		} else {
+			text = entries
+				.map(([region, findings]) => `${region}: ${[...findings].join(", ")}`)
+				.join("; ");
 		}
 	}
-}
-
-function toggleAuscLocation(button) {
-	if (!pendingAuscSound) return;
-	const loc = button.dataset.location;
-	if (loc === "bilateral") {
-		const alreadySelected = button.classList.contains("selected");
-		$$(".ausc-loc").forEach((item) => item.classList.remove("selected"));
-		if (!alreadySelected) button.classList.add("selected");
-	} else {
-		$(".ausc-loc[data-location='bilateral']")?.classList.remove("selected");
-		button.classList.toggle("selected");
-	}
-}
-
-function commitAuscLocations() {
-	if (!pendingAuscSound) return;
-	const selectedLocs = $$(".ausc-loc.selected");
-	if (!selectedLocs.length) return;
-	const otherText =
-		pendingAuscSound === "other"
-			? ($("#auscOtherText")?.value || "").trim() || "other"
-			: null;
-	selectedLocs.forEach((locBtn) => {
-		const entry = {
-			sound: pendingAuscSound,
-			location: locBtn.dataset.location,
-		};
-		if (otherText) entry.text = otherText;
-		state.respAusc.entries.push(entry);
-	});
-	pendingAuscSound = null;
-	$$(".ausc-sound").forEach((item) => item.classList.remove("selected"));
-	$$(".ausc-loc").forEach((item) => item.classList.remove("selected"));
-	$("#auscLocationPanel")?.classList.add("hidden");
-	$("#auscOtherWrap")?.classList.add("hidden");
-	renderAuscEntries();
-	syncAuscultationOutput();
-}
-
-function removeAuscEntry(index) {
-	state.respAusc.entries.splice(index, 1);
-	if (!state.respAusc.entries.length) state.respAusc.normal = true;
-	renderAuscEntries();
-	syncAuscultationOutput();
-}
-
-function renderAuscEntries() {
-	const root = $("#auscEntries");
-	if (!root) return;
-	root.innerHTML = "";
-	state.respAusc.entries.forEach((entry, index) => {
-		const row = document.createElement("div");
-		row.className = "ausc-entry";
-		row.innerHTML = `<span>${formatAuscEntry(entry)}</span><button type="button" data-remove-ausc="${index}" aria-label="Remove finding">×</button>`;
-		root.append(row);
-	});
-}
-
-function formatAuscSound(sound) {
-	return (
-		{
-			wheeze: "wheeze",
-			crackles: "crackles",
-			reduced: "reduced air entry",
-			bronchial: "bronchial breathing",
-			other: "other:",
-		}[sound] || sound
-	);
-}
-
-function formatAuscEntry(entry) {
-	const sound =
-		entry.sound === "other"
-			? entry.text || "other"
-			: formatAuscSound(entry.sound);
-	if (entry.location === "bilateral") return `Bilateral ${sound}`;
-	const side = entry.location.startsWith("L") ? "L" : "R";
-	const zone = entry.location.split("-")[1];
-	return `${side}-sided ${zone} ${sound}`;
-}
-
-function buildAuscText() {
-	if (state.respAusc.notAuscultated) return "Lungs not auscultated";
-	if (!state.respAusc.entries.length)
-		return "Equal and clear bilateral air entry";
-	const groups = new Map();
-	state.respAusc.entries.forEach((entry) => {
-		const key =
-			entry.sound === "other"
-				? entry.text || "other"
-				: formatAuscSound(entry.sound);
-		if (!groups.has(key)) groups.set(key, []);
-		groups.get(key).push(entry.location);
-	});
-	return [...groups.entries()]
-		.map(([sound, locs]) => {
-			const locLabels = locs.map((loc) => {
-				if (loc === "bilateral") return "bilateral";
-				const side = loc.startsWith("L") ? "L" : "R";
-				const zone = loc.split("-")[1];
-				return `${side}-sided ${zone}`;
-			});
-			if (locLabels.length === 1 && locLabels[0] === "bilateral")
-				return `Bilateral ${sound}`;
-			return `${sound.charAt(0).toUpperCase() + sound.slice(1)}: ${locLabels.join(", ")}`;
-		})
-		.join("; ");
-}
-
-function syncAuscultationOutput() {
-	const text = buildAuscText();
 	const hidden = $("#respAus");
 	if (hidden) hidden.value = text;
 	const preview = $("#auscPreview");
@@ -6451,7 +6511,6 @@ function enhanceSectionCards() {
 	}
 })();
 
-
 /* ── Resp Counter ───────────────────────────────────────────── */
 
 const respCounter = {
@@ -6524,9 +6583,11 @@ function updateRespCounterDisplay() {
 
 	const liveRate = Math.round((respCounter.count / elapsedSeconds) * 60);
 
-	if ($("#respLiveRate")) $("#respLiveRate").textContent = String(liveRate || 0);
+	if ($("#respLiveRate"))
+		$("#respLiveRate").textContent = String(liveRate || 0);
 	if ($("#respTimeLeft")) $("#respTimeLeft").textContent = String(remaining);
-	if ($("#respTapCount")) $("#respTapCount").textContent = String(respCounter.count);
+	if ($("#respTapCount"))
+		$("#respTapCount").textContent = String(respCounter.count);
 
 	if (respCounter.running && now >= respCounter.endTime) finishRespCounter();
 }
@@ -6539,9 +6600,12 @@ function finishRespCounter() {
 
 	if ($("#respLiveRate")) $("#respLiveRate").textContent = String(rate);
 	if ($("#respTimeLeft")) $("#respTimeLeft").textContent = "0";
-	if ($("#respResultTotal")) $("#respResultTotal").textContent = String(respCounter.count);
-	if ($("#respResultDuration")) $("#respResultDuration").textContent = String(respCounter.duration);
-	if ($("#respResultRate")) $("#respResultRate").textContent = `${rate} resp/min`;
+	if ($("#respResultTotal"))
+		$("#respResultTotal").textContent = String(respCounter.count);
+	if ($("#respResultDuration"))
+		$("#respResultDuration").textContent = String(respCounter.duration);
+	if ($("#respResultRate"))
+		$("#respResultRate").textContent = `${rate} resp/min`;
 
 	$("#respResultCard")?.classList.remove("hidden");
 	$("#respDuration")?.removeAttribute("disabled");
@@ -6559,10 +6623,12 @@ function resetRespCounter(clearResult = true) {
 	respCounter.timerId = null;
 
 	if ($("#respLiveRate")) $("#respLiveRate").textContent = "0";
-	if ($("#respTimeLeft")) $("#respTimeLeft").textContent = String(respCounter.duration);
+	if ($("#respTimeLeft"))
+		$("#respTimeLeft").textContent = String(respCounter.duration);
 	if ($("#respTapCount")) $("#respTapCount").textContent = "0";
 	if ($("#respStartButton")) $("#respStartButton").textContent = "Start count";
-	if ($("#respTapLabel")) $("#respTapLabel").textContent = "Start & tap breaths";
+	if ($("#respTapLabel"))
+		$("#respTapLabel").textContent = "Start & tap breaths";
 
 	$("#respDuration")?.removeAttribute("disabled");
 	if (clearResult) $("#respResultCard")?.classList.add("hidden");
