@@ -6213,7 +6213,10 @@ function finishRespCounter() {
 	if ($("#respResultRate"))
 		$("#respResultRate").textContent = `${rate} resp/min`;
 
-	$("#respResultCard")?.classList.remove("hidden");
+	const isAbnormal = rate < 12 || rate > 20;
+	const resultCard = $("#respResultCard");
+	resultCard?.classList.remove("hidden");
+	resultCard?.classList.toggle("resp-result-card--abnormal", isAbnormal);
 	$("#respDuration")?.removeAttribute("disabled");
 	if ($("#respStartButton")) $("#respStartButton").textContent = "Start again";
 	if ($("#respTapLabel")) $("#respTapLabel").textContent = "Count complete";
@@ -6237,5 +6240,9 @@ function resetRespCounter(clearResult = true) {
 		$("#respTapLabel").textContent = "Start & tap breaths";
 
 	$("#respDuration")?.removeAttribute("disabled");
-	if (clearResult) $("#respResultCard")?.classList.add("hidden");
+	if (clearResult) {
+		const rc = $("#respResultCard");
+		rc?.classList.add("hidden");
+		rc?.classList.remove("resp-result-card--abnormal");
+	}
 }
