@@ -174,7 +174,7 @@
 				</div>
 
 				<!-- Resp Counter -->
-				<div class="feature-card" data-feature="resp-timer" role="button" tabindex="0">
+				<div class="feature-card coming-soon" data-feature="resp-timer">
 					<div class="card-icon green">
 						<svg
 							viewBox="0 0 24 24"
@@ -193,7 +193,7 @@
 						<h3 class="card-title">Resp Counter</h3>
 						<p class="card-desc">Count and time respiratory rates accurately</p>
 					</div>
-					<span class="card-badge live">Live</span>
+					<span class="card-badge soon">Coming soon</span>
 				</div>
 
 				<!-- NEWS2 Score -->
@@ -368,91 +368,6 @@
 			<!-- /.dashboard-grid -->
 		</div>
 		<!-- /#dashboard -->
-
-		<div id="resp-tool" class="hidden tool-page">
-			<main class="resp-counter-page">
-				<section class="resp-hero section-card">
-					<div class="resp-hero-content">
-						<div class="resp-icon" aria-hidden="true">
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M12 5v8" />
-								<path d="M8 9c-3 0-5 2-5 5a4 4 0 0 0 4 4c2 0 3.5-1 3.5-3V9" />
-								<path d="M16 9c3 0 5 2 5 5a4 4 0 0 1-4 4c-2 0-3.5-1-3.5-3V9" />
-							</svg>
-						</div>
-						<div>
-							<h2>Resp Counter</h2>
-							<p>Tap once for every visible breath. CrewMate calculates the live respiratory rate for you.</p>
-						</div>
-					</div>
-				</section>
-
-				<section class="section-card resp-counter-card">
-					<div class="section-body">
-						<label class="field-label" for="respDuration">Count duration</label>
-						<select id="respDuration">
-							<option value="15">15 seconds</option>
-							<option value="20">20 seconds</option>
-							<option value="30" selected>30 seconds</option>
-							<option value="45">45 seconds</option>
-							<option value="60">1 minute</option>
-						</select>
-
-						<div class="resp-live-panel" aria-live="polite">
-							<div>
-								<span class="resp-metric-label">Live rate</span>
-								<strong id="respLiveRate">0</strong>
-								<span class="resp-unit">resp/min</span>
-							</div>
-							<div>
-								<span class="resp-metric-label">Time left</span>
-								<strong id="respTimeLeft">30</strong>
-								<span class="resp-unit">sec</span>
-							</div>
-							<div>
-								<span class="resp-metric-label">Total taps</span>
-								<strong id="respTapCount">0</strong>
-								<span class="resp-unit">breaths</span>
-							</div>
-						</div>
-
-						<button id="respTapButton" class="resp-tap-button" type="button">
-							<span id="respTapLabel">Start & tap breaths</span>
-							<small>Tap once per breath</small>
-						</button>
-
-						<div class="resp-actions">
-							<button id="respStartButton" class="primary-action" type="button">Start count</button>
-							<button id="respResetButton" class="secondary-action" type="button">Reset</button>
-						</div>
-
-						<div id="respResultCard" class="resp-result-card hidden">
-							<h3>Result</h3>
-							<p>
-								<span id="respResultTotal">0</span> breaths counted over
-								<span id="respResultDuration">30</span> seconds.
-							</p>
-							<strong id="respResultRate">0 resp/min</strong>
-						</div>
-					</div>
-				</section>
-
-				<section class="section-card resp-ranges-card">
-					<summary><span>Normal respiratory rate ranges</span><small>Reference</small></summary>
-					<div class="section-body">
-						<p class="field-hint">Approximate resting ranges. Interpret alongside work of breathing, SpO₂, perfusion, temperature, trend and overall clinical picture.</p>
-						<div class="resp-range-list">
-							<div><span>Newborn</span><strong>30–60/min</strong></div>
-							<div><span>Infant &lt;1 year</span><strong>30–40/min</strong></div>
-							<div><span>1–2 years</span><strong>25–35/min</strong></div>
-							<div><span>2–5 years</span><strong>25–30/min</strong></div>
-							<div><span>5–12 years</span><strong>20–25/min</strong></div>
-							<div><span>12+ years / adult</span><strong>12–20/min</strong></div>
-						</div>
-					</div>
-				</section>
-			</main>
-		</div>
 
 		<div id="prf-tool" class="hidden">
 			<nav class="tabs" aria-label="Main sections">

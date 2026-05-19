@@ -3105,3 +3105,270 @@ html[data-theme="dark"] .card-icon.blue {
 	background: #132f42 !important;
 	color: #bae6fd !important;
 }
+
+
+/* ── Resp Counter Tool ─────────────────────────────────────── */
+
+.tool-page.hidden {
+	display: none !important;
+}
+
+.resp-counter-page {
+	max-width: 760px;
+}
+
+.resp-hero {
+	margin-bottom: 0 !important;
+	border-radius: 10px 10px 0 0 !important;
+	border-bottom: none !important;
+}
+
+.resp-hero-content {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 18px;
+	background: linear-gradient(135deg, #075985 0%, #0e7490 100%);
+	color: #ffffff;
+}
+
+.resp-hero h2 {
+	margin: 0 0 4px;
+	font-size: 22px;
+	letter-spacing: -0.03em;
+}
+
+.resp-hero p {
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.5;
+	color: rgba(255, 255, 255, 0.82);
+}
+
+.resp-icon {
+	width: 52px;
+	height: 52px;
+	border-radius: 14px;
+	display: grid;
+	place-items: center;
+	background: rgba(255, 255, 255, 0.16);
+	border: 1px solid rgba(255, 255, 255, 0.24);
+	flex: 0 0 auto;
+}
+
+.resp-icon svg {
+	width: 28px;
+	height: 28px;
+}
+
+.resp-counter-card {
+	border-radius: 0 !important;
+}
+
+.resp-live-panel {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 0;
+	margin: 14px 0;
+	border: 1px solid var(--line);
+	border-radius: 10px;
+	overflow: hidden;
+	background: var(--surface);
+}
+
+.resp-live-panel > div {
+	padding: 14px 10px;
+	text-align: center;
+	border-right: 1px solid var(--line);
+}
+
+.resp-live-panel > div:last-child {
+	border-right: 0;
+}
+
+.resp-metric-label,
+.resp-unit {
+	display: block;
+	font-size: 11px;
+	font-weight: 700;
+	color: var(--muted);
+}
+
+.resp-live-panel strong {
+	display: block;
+	margin: 4px 0;
+	font-size: clamp(28px, 7vw, 44px);
+	line-height: 1;
+	color: var(--primary);
+	letter-spacing: -0.05em;
+}
+
+.resp-tap-button {
+	width: 100%;
+	min-height: 220px;
+	border: 1px solid #9ed2e8;
+	border-radius: 12px;
+	background: radial-gradient(circle at top, #ffffff 0%, var(--primary-soft) 58%, #d8eef8 100%);
+	color: #0b2d4d;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	cursor: pointer;
+}
+
+.resp-tap-button span {
+	font-size: clamp(24px, 7vw, 42px);
+	font-weight: 900;
+	letter-spacing: -0.04em;
+}
+
+.resp-tap-button small {
+	font-size: 13px;
+	font-weight: 700;
+	color: var(--muted);
+}
+
+.resp-tap-button.pulse {
+	animation: respPulse 0.18s ease;
+}
+
+@keyframes respPulse {
+	50% {
+		transform: scale(0.985);
+		background: #ccecf8;
+	}
+}
+
+.resp-actions {
+	display: flex;
+	gap: 8px;
+	margin-top: 10px;
+}
+
+.resp-actions button {
+	flex: 1;
+}
+
+.resp-result-card {
+	margin-top: 12px;
+	padding: 14px;
+	border-radius: 10px;
+	border: 1px solid #bee4ca;
+	background: var(--success-soft);
+	color: var(--success);
+}
+
+.resp-result-card h3 {
+	margin: 0 0 4px;
+	font-size: 15px;
+}
+
+.resp-result-card p {
+	margin: 0 0 6px;
+	font-size: 13px;
+	color: var(--text);
+}
+
+.resp-result-card strong {
+	font-size: 24px;
+	letter-spacing: -0.03em;
+}
+
+.resp-ranges-card {
+	border-radius: 0 0 10px 10px !important;
+}
+
+.resp-ranges-card > summary {
+	cursor: default;
+}
+
+.resp-ranges-card > summary::after {
+	display: none;
+}
+
+.resp-range-list {
+	display: grid;
+	border: 1px solid var(--line);
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+.resp-range-list div {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 11px 12px;
+	background: var(--surface);
+	border-bottom: 1px solid var(--line);
+}
+
+.resp-range-list div:last-child {
+	border-bottom: 0;
+}
+
+.resp-range-list span {
+	color: var(--text);
+	font-weight: 650;
+}
+
+.resp-range-list strong {
+	color: var(--primary);
+	white-space: nowrap;
+}
+
+html[data-theme="dark"] .resp-hero-content {
+	background: linear-gradient(135deg, #0f3b55 0%, #075985 100%);
+}
+
+html[data-theme="dark"] .resp-tap-button {
+	background: radial-gradient(circle at top, #18364a 0%, #132f42 58%, #0f2533 100%);
+	color: var(--text);
+	border-color: #27485c;
+}
+
+html[data-theme="dark"] .resp-tap-button small,
+html[data-theme="dark"] .resp-metric-label,
+html[data-theme="dark"] .resp-unit {
+	color: var(--muted);
+}
+
+html[data-theme="dark"] .resp-live-panel strong,
+html[data-theme="dark"] .resp-range-list strong {
+	color: #7dd3fc;
+}
+
+html[data-theme="dark"] .resp-result-card {
+	background: #0f2f23;
+	border-color: #285c3e;
+	color: #bbf7d0;
+}
+
+@media (max-width: 560px) {
+	.resp-hero-content {
+		align-items: flex-start;
+		padding: 16px;
+	}
+
+	.resp-live-panel {
+		grid-template-columns: 1fr;
+	}
+
+	.resp-live-panel > div {
+		border-right: 0;
+		border-bottom: 1px solid var(--line);
+	}
+
+	.resp-live-panel > div:last-child {
+		border-bottom: 0;
+	}
+
+	.resp-tap-button {
+		min-height: 190px;
+	}
+
+	.resp-actions {
+		flex-direction: column;
+	}
+}
