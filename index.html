@@ -374,16 +374,24 @@
 			<div class="disclaimer-banner">
 				<p class="disclaimer-heading">&#9888; Under Testing &amp; Review</p>
 				<p class="disclaimer-body">
-					This tool is a <strong>personal project</strong> currently under development and review. It is <strong>not validated</strong> for clinical use and must not replace professional judgement, approved clinical guidelines, or your employer’s protocols.
+					This tool is a <strong>personal project</strong> currently under
+					development and review. It is <strong>not validated</strong> for
+					clinical use and must not replace professional judgement, approved
+					clinical guidelines, or your employer’s protocols.
 				</p>
 				<p class="disclaimer-body">
-					This application is <strong>not affiliated with, endorsed by, or associated with</strong> the NHS, NEAS, or any other health service, trust, or statutory body. All content is provided <strong>as-is with no warranty</strong> of accuracy or fitness for any purpose.
+					This application is
+					<strong>not affiliated with, endorsed by, or associated with</strong>
+					the NHS, NEAS, or any other health service, trust, or statutory body.
+					All content is provided <strong>as-is with no warranty</strong> of
+					accuracy or fitness for any purpose.
 				</p>
 				<p class="disclaimer-body">
-					By using this tool you accept full responsibility for any clinical decisions made. The developer accepts no liability for errors, omissions, or outcomes arising from its use.
+					By using this tool you accept full responsibility for any clinical
+					decisions made. The developer accepts no liability for errors,
+					omissions, or outcomes arising from its use.
 				</p>
 			</div>
-
 		</div>
 		<!-- /#dashboard -->
 
@@ -2829,29 +2837,46 @@
 									<label class="field-label" for="drugName">Drug</label>
 									<select id="drugName">
 										<option value="">Select drug</option>
-										<option>Adenosine</option>
-										<option>Adrenaline</option>
-										<option>Amiodarone</option>
-										<option>Aspirin 300mg</option>
-										<option>Atropine</option>
-										<option>Chlorphenamine</option>
-										<option>Dexamethasone</option>
-										<option>Diazepam</option>
-										<option>Entonox</option>
-										<option>Glucagon</option>
-										<option>Glucose 10%</option>
-										<option>GTN 400mcg</option>
-										<option>Hydrocortisone</option>
-										<option>Ibuprofen</option>
-										<option>Ipratropium</option>
-										<option>Morphine</option>
-										<option>Naloxone</option>
-										<option>Ondansetron</option>
-										<option>Oxygen</option>
-										<option>Paracetamol</option>
-										<option>Salbutamol</option>
-										<option>Sodium chloride 0.9%</option>
-										<option>Tranexamic acid</option>
+										<optgroup label="Black bag">
+											<option>Paracetamol 500mg</option>
+											<option>Paracetamol 250mg/ml</option>
+											<option>Paracetamol 120mg Sachet</option>
+											<option>Ibuprofen 100mg/5ml</option>
+											<option>Ibuprofen 200mg</option>
+											<option>Oral Morphine 10mg/5ml</option>
+										</optgroup>
+										<optgroup label="Yellow bag">
+											<option>Glucagon 1mg</option>
+											<option>Glucose 40% Gel</option>
+											<option>Benzylpenicillin 600mg</option>
+											<option>Ondansetron 4mg/2ml</option>
+											<option>Diazapam 5mg Rectal</option>
+											<option>Naloxone 400mcg</option>
+										</optgroup>
+										<optgroup label="Blue bag">
+											<option>Salbutamol 5mg</option>
+											<option>Salbutamol 2.5mg</option>
+											<option>Chlorphenamine 10mg/ml</option>
+											<option>Atropine 600mcg</option>
+											<option>Hydrocortisone 100mg</option>
+											<option>Ipratropium Bromide 250mcg</option>
+											<option>Adrenaline 1mg/ml</option>
+											<option>Furosemide 20mg/2ml</option>
+											<option>Tranexamic Acid 500mg/5ml</option>
+											<option>Aspirin 300mg</option>
+											<option>GTN 400mcg</option>
+											<option>Dexamethasone 2mg</option>
+											<option>Prednisolone 5mg</option>
+										</optgroup>
+										<optgroup label="Red bag">
+											<option>Adrenaline 1:10,000</option>
+											<option>Amiodarone 300mg/10ml</option>
+											<option>Naloxone 400mcg</option>
+										</optgroup>
+										<optgroup label="Controlled">
+											<option>Morphine Sulfate 10mg/ml</option>
+											<option>Diazapam 10mg/2ml</option>
+										</optgroup>
 										<option value="Other">Other (specify)</option>
 									</select>
 									<input
@@ -4933,13 +4958,55 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 							<div class="grid-2">
 								<div>
 									<label class="field-label" for="pDrugName">Drug</label>
+									<select id="pDrugName" style="margin-top: 4px">
+										<option value="">Select drug</option>
+										<optgroup label="Black bag">
+											<option>Paracetamol 500mg</option>
+											<option>Paracetamol 250mg/ml</option>
+											<option>Paracetamol 120mg Sachet</option>
+											<option>Ibuprofen 100mg/5ml</option>
+											<option>Ibuprofen 200mg</option>
+											<option>Oral Morphine 10mg/5ml</option>
+										</optgroup>
+										<optgroup label="Yellow bag">
+											<option>Glucagon 1mg</option>
+											<option>Glucose 40% Gel</option>
+											<option>Benzylpenicillin 600mg</option>
+											<option>Ondansetron 4mg/2ml</option>
+											<option>Diazapam 5mg Rectal</option>
+											<option>Naloxone 400mcg</option>
+										</optgroup>
+										<optgroup label="Blue bag">
+											<option>Salbutamol 5mg</option>
+											<option>Salbutamol 2.5mg</option>
+											<option>Chlorphenamine 10mg/ml</option>
+											<option>Atropine 600mcg</option>
+											<option>Hydrocortisone 100mg</option>
+											<option>Ipratropium Bromide 250mcg</option>
+											<option>Adrenaline 1mg/ml</option>
+											<option>Furosemide 20mg/2ml</option>
+											<option>Tranexamic Acid 500mg/5ml</option>
+											<option>Aspirin 300mg</option>
+											<option>GTN 400mcg</option>
+											<option>Dexamethasone 2mg</option>
+											<option>Prednisolone 5mg</option>
+										</optgroup>
+										<optgroup label="Red bag">
+											<option>Adrenaline 1:10,000</option>
+											<option>Amiodarone 300mg/10ml</option>
+											<option>Naloxone 400mcg</option>
+										</optgroup>
+										<optgroup label="Controlled">
+											<option>Morphine Sulfate 10mg/ml</option>
+											<option>Diazapam 10mg/2ml</option>
+										</optgroup>
+										<option value="Other">Other (specify)</option>
+									</select>
 									<input
-										id="pDrugName"
-										list="pDrugList"
-										placeholder="Drug name"
-										autocomplete="off"
-										style="margin-top: 4px" />
-									<datalist id="pDrugList"></datalist>
+										id="pDrugNameOther"
+										class="hidden"
+										placeholder="Enter drug name"
+										style="margin-top: 6px" />
 								</div>
 								<div>
 									<label class="field-label" for="pDrugDose">Dose</label>
@@ -4949,7 +5016,6 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 										style="margin-top: 4px" />
 								</div>
 							</div>
-							<div id="pDoseHint" class="hidden" style="margin-top: 6px"></div>
 							<div style="margin-top: 8px">
 								<label class="field-label">Route</label>
 								<input type="hidden" id="pDrugRoute" />

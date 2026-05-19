@@ -4221,335 +4221,6 @@ const PAEDS_TX_POSITIONING = [
 	"Limb elevation",
 ];
 
-const PAEDS_DRUG_LIST = [
-	"Adrenaline",
-	"Salbutamol",
-	"Ipratropium",
-	"Dexamethasone",
-	"Prednisolone",
-	"Paracetamol",
-	"Ibuprofen",
-	"Midazolam",
-	"Diazepam",
-	"Lorazepam",
-	"Naloxone",
-	"Ondansetron",
-	"Glucose 10%",
-	"Glucagon",
-	"Hydrocortisone",
-	"Chlorphenamine",
-	"Tranexamic acid",
-	"Sodium chloride 0.9%",
-	"Amiodarone",
-	"Atropine",
-	"Adenosine",
-	"Benzylpenicillin",
-	"Morphine",
-	"Ketamine",
-	"Oxygen",
-	"Entonox",
-];
-
-/**
- * JRCALC-based paediatric dose reference.
- * Each entry has one or more dose objects:
- *   mgPerKg  — calculate dose from weight
- *   maxMg    — dose cap in mg
- *   minMg    — minimum dose in mg
- *   mlPerKg  — for volume-based dosing (e.g. glucose)
- *   flatDose — fixed dose string (no calculation)
- *   prep     — preparation / concentration note
- *   notes    — any additional clinical notes
- */
-const PAEDS_DRUG_DOSES = {
-	Adrenaline: {
-		doses: [
-			{
-				indication: "Anaphylaxis (IM)",
-				mgPerKg: 0.01,
-				maxMg: 0.5,
-				prep: "1:1,000 (1 mg/ml)",
-				notes: "= 0.01 ml/kg of 1:1,000",
-			},
-			{
-				indication: "Cardiac arrest (IV/IO)",
-				mgPerKg: 0.01,
-				maxMg: 1,
-				prep: "1:10,000 (0.1 mg/ml)",
-				notes: "= 0.1 ml/kg of 1:10,000",
-			},
-			{
-				indication: "Croup (neb)",
-				flatDose: "5 mg (5 ml of 1:1,000 neat)",
-				prep: "Dilute to 5 ml with NaCl 0.9%",
-			},
-		],
-	},
-	Salbutamol: {
-		doses: [
-			{
-				indication: "Wheeze / asthma (neb)",
-				flatDose: "2.5 mg (<5y) · 5 mg (≥5y)",
-				prep: "2.5 mg/2.5 ml or 5 mg/2.5 ml nebule",
-			},
-			{
-				indication: "Asthma (MDI + spacer)",
-				flatDose: "2–10 puffs (100 mcg/puff)",
-				prep: "Titrate to response, reassess after each 2 puffs",
-			},
-		],
-	},
-	Ipratropium: {
-		doses: [
-			{
-				indication: "Severe asthma (neb)",
-				flatDose: "250 mcg (<12y) · 500 mcg (≥12y)",
-				prep: "250 mcg/ml or 500 mcg/2 ml nebule",
-			},
-		],
-	},
-	Dexamethasone: {
-		doses: [
-			{
-				indication: "Croup (oral/IV)",
-				mgPerKg: 0.15,
-				maxMg: 8,
-				prep: "2 mg/5 ml oral or 4 mg/ml IV",
-				notes: "Single dose; oral preferred if tolerated",
-			},
-			{
-				indication: "Asthma/anaphylaxis (IV/IM)",
-				mgPerKg: 0.15,
-				maxMg: 8,
-				prep: "4 mg/ml IV",
-			},
-		],
-	},
-	Prednisolone: {
-		doses: [
-			{
-				indication: "Asthma (oral)",
-				mgPerKg: 1,
-				maxMg: 40,
-				prep: "5 mg tabs or 5 mg/ml liquid",
-			},
-		],
-	},
-	Paracetamol: {
-		doses: [
-			{
-				indication: "Analgesia (oral/PR)",
-				mgPerKg: 15,
-				maxMg: 1000,
-				prep: "120 mg/5 ml susp or 500 mg tabs",
-			},
-			{
-				indication: "Analgesia (IV)",
-				mgPerKg: 15,
-				maxMg: 1000,
-				prep: "10 mg/ml IV infusion",
-				notes: "Max 500 mg if weight 10–33 kg",
-			},
-		],
-	},
-	Ibuprofen: {
-		doses: [
-			{
-				indication: "Analgesia (oral) ≥3 months",
-				mgPerKg: 10,
-				maxMg: 400,
-				prep: "100 mg/5 ml susp or 200 mg tabs",
-				notes: "Not if asthma, dehydration or renal concerns",
-			},
-		],
-	},
-	Midazolam: {
-		doses: [
-			{
-				indication: "Seizure (buccal)",
-				mgPerKg: 0.5,
-				maxMg: 10,
-				prep: "10 mg/ml buccal solution (Buccolam)",
-			},
-			{
-				indication: "Seizure (IN)",
-				mgPerKg: 0.2,
-				maxMg: 10,
-				prep: "5 mg/ml intranasal",
-				notes: "Use MAD device; 0.1 ml/kg per nostril",
-			},
-		],
-	},
-	Diazepam: {
-		doses: [
-			{
-				indication: "Seizure (PR)",
-				mgPerKg: 0.5,
-				maxMg: 20,
-				prep: "5 mg/ml rectal solution",
-				notes: "Max 10 mg if <5 years",
-			},
-		],
-	},
-	Lorazepam: {
-		doses: [
-			{
-				indication: "Seizure (IV/IO)",
-				mgPerKg: 0.1,
-				maxMg: 4,
-				prep: "4 mg/ml IV",
-			},
-		],
-	},
-	Naloxone: {
-		doses: [
-			{
-				indication: "Opioid reversal (IV/IM/IN)",
-				mgPerKg: 0.01,
-				maxMg: 0.4,
-				prep: "400 mcg/ml injection",
-			},
-		],
-	},
-	Ondansetron: {
-		doses: [
-			{
-				indication: "Nausea / vomiting (IV/oral)",
-				mgPerKg: 0.1,
-				maxMg: 4,
-				prep: "2 mg/ml IV or 4 mg tablet",
-			},
-		],
-	},
-	"Glucose 10%": {
-		doses: [
-			{
-				indication: "Hypoglycaemia (IV/IO)",
-				mlPerKg: 2,
-				prep: "10% glucose (100 mg/ml)",
-				notes: "Flush with NaCl 0.9% after; recheck BM",
-			},
-		],
-	},
-	Glucagon: {
-		doses: [
-			{
-				indication: "Hypoglycaemia (IM)",
-				flatDose: "0.5 mg (<25 kg) · 1 mg (≥25 kg)",
-				prep: "1 mg powder for reconstitution",
-			},
-		],
-	},
-	Hydrocortisone: {
-		doses: [
-			{
-				indication: "Anaphylaxis / severe asthma (IV/IO)",
-				mgPerKg: 4,
-				maxMg: 200,
-				prep: "100 mg/ml IV",
-			},
-		],
-	},
-	Chlorphenamine: {
-		doses: [
-			{
-				indication: "Anaphylaxis / allergic reaction (IM/IV)",
-				mgPerKg: 0.1,
-				maxMg: 4,
-				prep: "10 mg/ml injection",
-			},
-		],
-	},
-	"Tranexamic acid": {
-		doses: [
-			{
-				indication: "Traumatic haemorrhage (IV)",
-				mgPerKg: 15,
-				maxMg: 1000,
-				prep: "100 mg/ml IV",
-				notes: "Give within 3 hours of injury; over 10 min",
-			},
-		],
-	},
-	Amiodarone: {
-		doses: [
-			{
-				indication: "VF / pVT cardiac arrest (IV/IO)",
-				mgPerKg: 5,
-				maxMg: 300,
-				prep: "50 mg/ml — dilute to 5 mg/ml in 5% glucose",
-				notes: "After 3rd shock",
-			},
-		],
-	},
-	Atropine: {
-		doses: [
-			{
-				indication: "Symptomatic bradycardia (IV/IO)",
-				mgPerKg: 0.02,
-				maxMg: 0.6,
-				minMg: 0.1,
-				prep: "1 mg/ml or 600 mcg/ml",
-			},
-		],
-	},
-	Adenosine: {
-		doses: [
-			{
-				indication: "SVT (IV — rapid bolus)",
-				mgPerKg: 0.1,
-				maxMg: 6,
-				prep: "3 mg/ml IV",
-				notes: "2nd dose: 0.2 mg/kg max 12 mg; 3rd: 0.3 mg/kg max 18 mg",
-			},
-		],
-	},
-	Benzylpenicillin: {
-		doses: [
-			{
-				indication: "Meningococcal (IV/IO/IM)",
-				mgPerKg: 50,
-				maxMg: 2400,
-				prep: "600 mg or 1.2 g vials for reconstitution",
-			},
-		],
-	},
-	Morphine: {
-		doses: [
-			{
-				indication: "Moderate / severe pain (IV)",
-				mgPerKg: 0.1,
-				maxMg: 5,
-				prep: "10 mg/ml — dilute to 1 mg/ml",
-				notes: "Titrate; reassess pain and RR",
-			},
-			{
-				indication: "Moderate / severe pain (IN)",
-				mgPerKg: 0.1,
-				maxMg: 5,
-				prep: "10 mg/ml concentrated IN",
-			},
-		],
-	},
-	Ketamine: {
-		doses: [
-			{
-				indication: "Procedural sedation / analgesia (IV)",
-				mgPerKg: 1,
-				maxMg: 200,
-				prep: "10 mg/ml or 50 mg/ml (dilute)",
-				notes: "Specialist use; ensure airway support available",
-			},
-			{
-				indication: "Procedural sedation (IM)",
-				mgPerKg: 4,
-				maxMg: 400,
-				prep: "50 mg/ml or 100 mg/ml (dilute)",
-			},
-		],
-	},
-};
-
 const PAEDS_ABCDENT = [
 	{
 		key: "A",
@@ -5810,16 +5481,6 @@ function buildPaedsSgText() {
 
 /* ── Build paeds treatment section ──────────────────────── */
 function buildPaedsTreatmentSection() {
-	// Populate drug datalist
-	const dl = $("#pDrugList");
-	if (dl) {
-		PAEDS_DRUG_LIST.forEach((d) => {
-			const opt = document.createElement("option");
-			opt.value = d;
-			dl.append(opt);
-		});
-	}
-
 	// Build chip grids
 	const buildPaedsTxGrid = (gridId, items, stateKey) => {
 		const grid = $(`#${gridId}`);
@@ -5898,8 +5559,12 @@ function buildPaedsTreatmentSection() {
 	// Add drug entry
 	$("#pAddDrugButton")?.addEventListener("click", addPaedsDrugEntry);
 
-	// Drug name input → dose hint
-	$("#pDrugName")?.addEventListener("input", updatePaedsDoseHint);
+	// Drug name select → show/hide Other input
+	$("#pDrugName")?.addEventListener("change", () => {
+		const isOther = val("pDrugName") === "Other";
+		$("#pDrugNameOther")?.classList.toggle("hidden", !isOther);
+		if (!isOther) { const o = $("#pDrugNameOther"); if (o) o.value = ""; }
+	});
 
 	// Remove / repeat delegation
 	$("#pVaEntries")?.addEventListener("click", (e) => {
@@ -5972,7 +5637,7 @@ function renderPaedsIvEntries() {
 }
 
 function addPaedsDrugEntry() {
-	const drug = val("pDrugName");
+	const drug = val("pDrugName") === "Other" ? val("pDrugNameOther") : val("pDrugName");
 	if (!drug) return;
 	paedsState.pDrugEntries.push({
 		drug,
@@ -5983,6 +5648,7 @@ function addPaedsDrugEntry() {
 	});
 	[
 		"pDrugName",
+		"pDrugNameOther",
 		"pDrugDose",
 		"pDrugRoute",
 		"pDrugTime",
@@ -5991,10 +5657,10 @@ function addPaedsDrugEntry() {
 		const el = $(`#${id}`);
 		if (el) el.value = "";
 	});
+	$("#pDrugNameOther")?.classList.add("hidden");
 	$$("[data-radio-group='pDrugRoute'] [data-value]").forEach((c) =>
 		c.classList.remove("selected"),
 	);
-	$("#pDoseHint")?.classList.add("hidden");
 	renderPaedsDrugEntries();
 }
 
@@ -6036,65 +5702,6 @@ function repeatPaedsDrugEntry(index) {
 	nameEl?.focus();
 }
 
-function updatePaedsDoseHint() {
-	const drug = val("pDrugName");
-	const hintEl = $("#pDoseHint");
-	if (!hintEl) return;
-	const data = PAEDS_DRUG_DOSES[drug];
-	if (!data) {
-		hintEl.classList.add("hidden");
-		return;
-	}
-
-	const weightActual = parseFloat(val("pWeight"));
-	const years = parseInt(val("pAgeYears")) || 0;
-	const months = parseInt(val("pAgeMonths")) || 0;
-	const weightApls = aplsWeight(years, months);
-	const weight =
-		!isNaN(weightActual) && weightActual > 0 ? weightActual : weightApls;
-
-	let html = `<div class="dose-hint"><strong class="dose-hint-drug">${drug}</strong><span class="dose-hint-source">JRCALC reference doses</span>`;
-	if (weight)
-		html += `<span class="dose-hint-weight">Based on ${weight} kg${!isNaN(weightActual) && weightActual > 0 ? " (actual)" : " (APLS estimate)"}</span>`;
-
-	data.doses.forEach((d) => {
-		html += `<div class="dose-hint-row"><span class="dose-hint-indication">${d.indication}</span>`;
-		if (d.flatDose) {
-			html += `<span class="dose-hint-calc">${d.flatDose}</span>`;
-		} else if (d.mlPerKg) {
-			// Volume-based (e.g. glucose)
-			if (weight) {
-				const vol = (d.mlPerKg * weight).toFixed(1);
-				html += `<span class="dose-hint-calc dose-hint-calc--active">${vol} ml</span>`;
-			} else {
-				html += `<span class="dose-hint-calc">${d.mlPerKg} ml/kg</span>`;
-			}
-		} else if (d.mgPerKg && weight) {
-			let doseMg = d.mgPerKg * weight;
-			let capped = false;
-			if (d.maxMg && doseMg > d.maxMg) {
-				doseMg = d.maxMg;
-				capped = true;
-			}
-			if (d.minMg && doseMg < d.minMg) {
-				doseMg = d.minMg;
-			}
-			const doseStr =
-				doseMg < 1
-					? `${(doseMg * 1000).toFixed(0)} mcg`
-					: `${doseMg % 1 === 0 ? doseMg : doseMg.toFixed(2)} mg`;
-			html += `<span class="dose-hint-calc dose-hint-calc--active">${doseStr}${capped ? " (MAX)" : ""}</span>`;
-		} else if (d.mgPerKg) {
-			html += `<span class="dose-hint-calc">${d.mgPerKg} mg/kg</span>`;
-		}
-		html += `<span class="dose-hint-prep">${d.prep}</span>`;
-		if (d.notes) html += `<span class="dose-hint-notes">${d.notes}</span>`;
-		html += `</div>`;
-	});
-	html += `</div>`;
-	hintEl.innerHTML = html;
-	hintEl.classList.remove("hidden");
-}
 
 function buildPaedsTxText() {
 	const lines = [];
