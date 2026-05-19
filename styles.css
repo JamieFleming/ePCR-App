@@ -1904,6 +1904,33 @@ select {
 	gap: 0 !important;
 }
 
+.disclaimer-banner {
+	margin: 20px 0 8px;
+	padding: 14px 16px;
+	background: #fffbeb;
+	border: 1px solid #f59e0b;
+	border-radius: 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+.disclaimer-heading {
+	font-size: 13px;
+	font-weight: 800;
+	color: #92400e;
+	margin: 0;
+}
+.disclaimer-body {
+	font-size: 12px;
+	color: #78350f;
+	margin: 0;
+	line-height: 1.5;
+}
+.disclaimer-body strong {
+	font-weight: 700;
+	color: #92400e;
+}
+
 .feature-card {
 	background: #ffffff;
 	border-radius: 0 !important;
@@ -3001,6 +3028,19 @@ html[data-theme="dark"] .footer-guidance h4 {
 }
 
 html[data-theme="dark"] .app-header p,
+html[data-theme="dark"] .disclaimer-banner {
+	background: #2d1f07;
+	border-color: #b45309;
+}
+html[data-theme="dark"] .disclaimer-heading {
+	color: #fcd34d;
+}
+html[data-theme="dark"] .disclaimer-body {
+	color: #fde68a;
+}
+html[data-theme="dark"] .disclaimer-body strong {
+	color: #fcd34d;
+}
 html[data-theme="dark"] .dashboard-intro p,
 html[data-theme="dark"] .card-desc,
 html[data-theme="dark"] .field-label,
