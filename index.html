@@ -2414,180 +2414,6 @@
 							</div>
 						</div>
 					</details>
-
-					<details class="section-card hidden" id="gynaeCard">
-						<summary>
-							<span>Obstetric / Gynaecological</span><small>OB/GYN</small>
-						</summary>
-						<div class="section-body">
-							<div class="grid-2">
-								<div>
-									<label class="field-label">Pregnancy status</label>
-									<input type="hidden" id="pregnancyStatus" />
-									<div
-										class="radio-chip-group"
-										data-radio-group="pregnancyStatus"
-										style="margin-top: 4px">
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Not pregnant">
-											Not pregnant
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Possibly pregnant">
-											Possibly
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Confirmed pregnant">
-											Confirmed
-										</button>
-									</div>
-								</div>
-								<div>
-									<label class="field-label" for="lmp"
-										>Last menstrual period (LMP)</label
-									>
-									<input
-										id="lmp"
-										placeholder="e.g. 2 weeks ago"
-										style="margin-top: 4px" />
-								</div>
-							</div>
-
-							<div id="pregnancyDetails" class="hidden" style="margin-top: 8px">
-								<div class="grid-2">
-									<div>
-										<label class="field-label" for="gestationWeeks"
-											>Gestation (weeks)</label
-										>
-										<input
-											id="gestationWeeks"
-											type="number"
-											min="1"
-											max="45"
-											placeholder="e.g. 28"
-											style="margin-top: 4px" />
-									</div>
-									<div>
-										<label class="field-label" for="edd"
-											>Estimated due date (EDD)</label
-										>
-										<input id="edd" type="date" style="margin-top: 4px" />
-									</div>
-									<div>
-										<label class="field-label" for="gravida">Gravida</label>
-										<input
-											id="gravida"
-											type="number"
-											min="0"
-											placeholder="e.g. 2"
-											style="margin-top: 4px" />
-									</div>
-									<div>
-										<label class="field-label" for="para">Para</label>
-										<input
-											id="para"
-											type="number"
-											min="0"
-											placeholder="e.g. 1"
-											style="margin-top: 4px" />
-									</div>
-								</div>
-							</div>
-
-							<div style="margin-top: 12px">
-								<label class="field-label">Gynaecological symptoms</label>
-								<div class="chip-multi-group" style="margin-top: 6px">
-									<button
-										type="button"
-										class="square-btn gynae-symptom"
-										data-gynae-symptom="pvBleed">
-										PV bleeding
-									</button>
-									<button
-										type="button"
-										class="square-btn gynae-symptom"
-										data-gynae-symptom="pelvicPain">
-										Pelvic pain
-									</button>
-									<button
-										type="button"
-										class="square-btn gynae-symptom"
-										data-gynae-symptom="discharge">
-										Vaginal discharge
-									</button>
-								</div>
-							</div>
-
-							<div id="pvBleedDetail" class="hidden" style="margin-top: 10px">
-								<label class="field-label">PV bleeding — severity</label>
-								<input type="hidden" id="pvBleedSeverity" />
-								<div
-									class="radio-chip-group"
-									data-radio-group="pvBleedSeverity"
-									style="margin-top: 4px">
-									<button
-										type="button"
-										class="radio-chip"
-										data-value="Spotting">
-										Spotting
-									</button>
-									<button type="button" class="radio-chip" data-value="Light">
-										Light
-									</button>
-									<button
-										type="button"
-										class="radio-chip"
-										data-value="Moderate">
-										Moderate
-									</button>
-									<button type="button" class="radio-chip" data-value="Heavy">
-										Heavy
-									</button>
-								</div>
-								<label class="field-label" style="margin-top: 8px"
-									>Character</label
-								>
-								<div class="chip-multi-group" style="margin-top: 6px">
-									<button
-										type="button"
-										class="square-btn gynae-char"
-										data-gynae-char="bright">
-										Bright red
-									</button>
-									<button
-										type="button"
-										class="square-btn gynae-char"
-										data-gynae-char="dark">
-										Dark / old blood
-									</button>
-									<button
-										type="button"
-										class="square-btn gynae-char"
-										data-gynae-char="clots">
-										Clots passed
-									</button>
-								</div>
-							</div>
-
-							<label
-								class="field-label"
-								style="margin-top: 12px"
-								for="gynaeNotes"
-								>Additional notes</label
-							>
-							<textarea
-								id="gynaeNotes"
-								rows="2"
-								placeholder="Any additional obstetric or gynaecological details..."
-								style="margin-top: 4px"></textarea>
-						</div>
-					</details>
 				</section>
 
 				<section class="panel" id="panel-primary">
@@ -3369,6 +3195,307 @@
 								class="hidden"
 								rows="3"
 								placeholder="Best interests decision / rationale"></textarea>
+						</div>
+					</details>
+					<details class="section-card hidden" id="gynaeCard">
+						<summary>
+							<span>Obstetric / Gynaecological</span><small>OB/GYN</small>
+						</summary>
+						<div class="section-body">
+							<div class="grid-2">
+								<div>
+									<label class="field-label">Pregnancy status</label>
+									<input type="hidden" id="pregnancyStatus" />
+									<div
+										class="radio-chip-group"
+										data-radio-group="pregnancyStatus"
+										style="margin-top: 4px">
+										<button
+											type="button"
+											class="radio-chip"
+											data-value="Not pregnant">
+											Not pregnant
+										</button>
+										<button
+											type="button"
+											class="radio-chip"
+											data-value="Possibly pregnant">
+											Possibly
+										</button>
+										<button
+											type="button"
+											class="radio-chip"
+											data-value="Confirmed pregnant">
+											Confirmed
+										</button>
+									</div>
+								</div>
+								<div>
+									<label class="field-label" for="lmp"
+										>Last menstrual period (LMP)</label
+									>
+									<input
+										id="lmp"
+										placeholder="e.g. 2 weeks ago"
+										style="margin-top: 4px" />
+								</div>
+							</div>
+
+							<div id="pregnancyDetails" class="hidden" style="margin-top: 8px">
+								<div class="grid-2">
+									<div>
+										<label class="field-label" for="gestationWeeks"
+											>Gestation (weeks)</label
+										>
+										<input
+											id="gestationWeeks"
+											type="number"
+											min="1"
+											max="45"
+											placeholder="e.g. 28"
+											style="margin-top: 4px" />
+									</div>
+									<div>
+										<label class="field-label" for="edd"
+											>Estimated due date (EDD)</label
+										>
+										<input id="edd" type="date" style="margin-top: 4px" />
+									</div>
+									<div>
+										<label class="field-label" for="gravida">Gravida</label>
+										<input
+											id="gravida"
+											type="number"
+											min="0"
+											placeholder="e.g. 2"
+											style="margin-top: 4px" />
+									</div>
+									<div>
+										<label class="field-label" for="para">Para</label>
+										<input
+											id="para"
+											type="number"
+											min="0"
+											placeholder="e.g. 1"
+											style="margin-top: 4px" />
+									</div>
+								</div>
+							</div>
+
+							<div style="margin-top: 12px">
+								<label class="field-label">Gynaecological symptoms</label>
+								<div class="chip-multi-group" style="margin-top: 6px">
+									<button
+										type="button"
+										class="square-btn gynae-symptom"
+										data-gynae-symptom="pvBleed">
+										PV bleeding
+									</button>
+									<button
+										type="button"
+										class="square-btn gynae-symptom"
+										data-gynae-symptom="pelvicPain">
+										Pelvic pain
+									</button>
+									<button
+										type="button"
+										class="square-btn gynae-symptom"
+										data-gynae-symptom="discharge">
+										Vaginal discharge
+									</button>
+								</div>
+							</div>
+
+							<div id="pvBleedDetail" class="hidden" style="margin-top: 10px">
+								<label class="field-label">PV bleeding — severity</label>
+								<input type="hidden" id="pvBleedSeverity" />
+								<div
+									class="radio-chip-group"
+									data-radio-group="pvBleedSeverity"
+									style="margin-top: 4px">
+									<button
+										type="button"
+										class="radio-chip"
+										data-value="Spotting">
+										Spotting
+									</button>
+									<button type="button" class="radio-chip" data-value="Light">
+										Light
+									</button>
+									<button
+										type="button"
+										class="radio-chip"
+										data-value="Moderate">
+										Moderate
+									</button>
+									<button type="button" class="radio-chip" data-value="Heavy">
+										Heavy
+									</button>
+								</div>
+								<label class="field-label" style="margin-top: 8px"
+									>Character</label
+								>
+								<div class="chip-multi-group" style="margin-top: 6px">
+									<button
+										type="button"
+										class="square-btn gynae-char"
+										data-gynae-char="bright">
+										Bright red
+									</button>
+									<button
+										type="button"
+										class="square-btn gynae-char"
+										data-gynae-char="dark">
+										Dark / old blood
+									</button>
+									<button
+										type="button"
+										class="square-btn gynae-char"
+										data-gynae-char="clots">
+										Clots passed
+									</button>
+								</div>
+							</div>
+
+							<div id="dischargeDetail" class="hidden" style="margin-top: 10px">
+								<label class="field-label"
+									>Vaginal discharge — colour / appearance</label
+								>
+								<div class="chip-multi-group" style="margin-top: 6px">
+									<button
+										type="button"
+										class="square-btn gynae-disc"
+										data-gynae-disc="clear">
+										Clear / white
+									</button>
+									<button
+										type="button"
+										class="square-btn gynae-disc"
+										data-gynae-disc="yellow">
+										Yellow
+									</button>
+									<button
+										type="button"
+										class="square-btn gynae-disc"
+										data-gynae-disc="green">
+										Green
+									</button>
+									<button
+										type="button"
+										class="square-btn gynae-disc"
+										data-gynae-disc="grey">
+										Grey
+									</button>
+									<button
+										type="button"
+										class="square-btn gynae-disc"
+										data-gynae-disc="brown">
+										Brown
+									</button>
+									<button
+										type="button"
+										class="square-btn gynae-disc"
+										data-gynae-disc="blood">
+										Blood-stained
+									</button>
+								</div>
+								<label class="field-label" style="margin-top: 8px"
+									>Consistency</label
+								>
+								<div class="chip-multi-group" style="margin-top: 6px">
+									<button
+										type="button"
+										class="square-btn gynae-disc"
+										data-gynae-disc="watery">
+										Watery
+									</button>
+									<button
+										type="button"
+										class="square-btn gynae-disc"
+										data-gynae-disc="thick">
+										Thick
+									</button>
+									<button
+										type="button"
+										class="square-btn gynae-disc"
+										data-gynae-disc="cottage">
+										Cottage cheese
+									</button>
+									<button
+										type="button"
+										class="square-btn gynae-disc"
+										data-gynae-disc="frothy">
+										Frothy
+									</button>
+								</div>
+								<label class="field-label" style="margin-top: 8px">Odour</label>
+								<div class="chip-multi-group" style="margin-top: 6px">
+									<button
+										type="button"
+										class="square-btn gynae-disc"
+										data-gynae-disc="no-odour">
+										No odour
+									</button>
+									<button
+										type="button"
+										class="square-btn gynae-disc"
+										data-gynae-disc="offensive">
+										Offensive
+									</button>
+									<button
+										type="button"
+										class="square-btn gynae-disc"
+										data-gynae-disc="fishy">
+										Fishy
+									</button>
+								</div>
+								<label class="field-label" style="margin-top: 8px"
+									>Amount</label
+								>
+								<input type="hidden" id="dischargeAmount" />
+								<div
+									class="radio-chip-group"
+									data-radio-group="dischargeAmount"
+									style="margin-top: 4px">
+									<button
+										type="button"
+										class="radio-chip"
+										data-value="Spotting">
+										Spotting
+									</button>
+									<button type="button" class="radio-chip" data-value="Light">
+										Light
+									</button>
+									<button
+										type="button"
+										class="radio-chip"
+										data-value="Moderate">
+										Moderate
+									</button>
+									<button type="button" class="radio-chip" data-value="Heavy">
+										Heavy
+									</button>
+								</div>
+								<label class="field-label" style="margin-top: 8px"
+									>Duration / onset</label
+								>
+								<input
+									id="dischargeDuration"
+									placeholder="e.g. 3 days, started this morning"
+									style="margin-top: 4px" />
+							</div>
+
+							<label
+								class="field-label"
+								style="margin-top: 12px"
+								for="gynaeNotes"
+								>Additional notes</label
+							>
+							<textarea
+								id="gynaeNotes"
+								rows="2"
+								placeholder="Any additional obstetric or gynaecological details..."
+								style="margin-top: 4px"></textarea>
 						</div>
 					</details>
 				</section>
@@ -5695,7 +5822,7 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 					<img src="assets/logo.jpg" alt="CrewMate logo" class="footer-logo" />
 					<div>
 						<h3>CrewMate</h3>
-						<p>Your second crew member.</p>
+						<p>Less typing more caring.</p>
 					</div>
 				</div>
 

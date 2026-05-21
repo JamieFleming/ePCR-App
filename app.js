@@ -2115,6 +2115,8 @@ function buildGynaeOutput() {
 		!!document.querySelector(`.gynae-symptom[data-gynae-symptom="${key}"]`)?.classList.contains("selected");
 	const isChar = (key) =>
 		!!document.querySelector(`.gynae-char[data-gynae-char="${key}"]`)?.classList.contains("selected");
+	const isDisc = (key) =>
+		!!document.querySelector(`.gynae-disc[data-gynae-disc="${key}"]`)?.classList.contains("selected");
 
 	const symptoms = [];
 	if (isSymptom("pvBleed")) {
@@ -2130,7 +2132,40 @@ function buildGynaeOutput() {
 		symptoms.push(bleed);
 	}
 	if (isSymptom("pelvicPain")) symptoms.push("pelvic pain");
-	if (isSymptom("discharge")) symptoms.push("vaginal discharge");
+	if (isSymptom("discharge")) {
+		const discColours = [
+			isDisc("clear") ? "clear/white" : null,
+			isDisc("yellow") ? "yellow" : null,
+			isDisc("green") ? "green" : null,
+			isDisc("grey") ? "grey" : null,
+			isDisc("brown") ? "brown" : null,
+			isDisc("blood") ? "blood-stained" : null,
+		].filter(Boolean);
+		const discConsistency = [
+			isDisc("watery") ? "watery" : null,
+			isDisc("thick") ? "thick" : null,
+			isDisc("cottage") ? "cottage cheese" : null,
+			isDisc("frothy") ? "frothy" : null,
+		].filter(Boolean);
+		const discOdour = [
+			isDisc("no-odour") ? "no odour" : null,
+			isDisc("offensive") ? "offensive odour" : null,
+			isDisc("fishy") ? "fishy odour" : null,
+		].filter(Boolean);
+		const discAmount = val("dischargeAmount");
+		const discDuration = val("dischargeDuration");
+
+		let disc = "Vaginal discharge";
+		const discParts = [
+			discColours.length ? discColours.join("/") : null,
+			discConsistency.length ? discConsistency.join(", ") : null,
+			discOdour.length ? discOdour.join(", ") : null,
+			discAmount ? `${discAmount.toLowerCase()} amount` : null,
+			discDuration ? `onset: ${discDuration}` : null,
+		].filter(Boolean);
+		if (discParts.length) disc += ` — ${discParts.join("; ")}`;
+		symptoms.push(disc);
+	}
 	if (symptoms.length) lines.push(`Symptoms: ${symptoms.join("; ")}`);
 
 	const notes = val("gynaeNotes");
@@ -2332,11 +2367,15 @@ function bindEvents() {
 		$("#pregnancyDetails")?.classList.toggle("hidden", !showDetails);
 	});
 	document.addEventListener("click", (e) => {
-		const chip = e.target.closest(".gynae-symptom, .gynae-char");
+		const chip = e.target.closest(".gynae-symptom, .gynae-char, .gynae-disc");
 		if (!chip) return;
 		chip.classList.toggle("selected");
-		if (chip.classList.contains("gynae-symptom") && chip.dataset.gynaeSymptom === "pvBleed") {
-			$("#pvBleedDetail")?.classList.toggle("hidden", !chip.classList.contains("selected"));
+		if (chip.classList.contains("gynae-symptom")) {
+			const sym = chip.dataset.gynaeSymptom;
+			if (sym === "pvBleed")
+				$("#pvBleedDetail")?.classList.toggle("hidden", !chip.classList.contains("selected"));
+			if (sym === "discharge")
+				$("#dischargeDetail")?.classList.toggle("hidden", !chip.classList.contains("selected"));
 		}
 	});
 
