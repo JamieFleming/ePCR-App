@@ -426,6 +426,7 @@ const OPTIONS = {
 		"Mechanical",
 		"No warning",
 		"Cannot recall",
+		"Other",
 	],
 	fallsActivity: [
 		"Walking",
@@ -437,6 +438,7 @@ const OPTIONS = {
 		"Exertion",
 		"Standing still",
 		"Unknown",
+		"Other",
 	],
 	headMechanism: [
 		"RTC — pedestrian",
@@ -447,6 +449,7 @@ const OPTIONS = {
 		"Assault",
 		"Sports injury",
 		"Object struck head",
+		"Other",
 	],
 	headSymptoms: [
 		"Headache",
@@ -478,6 +481,7 @@ const OPTIONS = {
 		"Upper back",
 		"Lower back",
 		"Shoulder",
+		"Arm",
 		"Chest / ribs",
 		"Wrist",
 		"Hip",
@@ -2069,10 +2073,70 @@ function buildSafeguardingText() {
 	if (isChecked("safeguardingReferral")) {
 		const ref = val("safeguardingReferralDetail");
 		lines.push(
-			`Safeguarding referral made / MASH contacted.${ref ? ` ${ref}` : ""}`,
+			`Safeguarding referral made.${ref ? ` ${ref}` : ""}`,
 		);
 	}
 	return lines.join("\n");
+}
+
+function updateDemographicVisibility() {
+	const sex = val("ptSex");
+	const age = parseInt(val("ptAge"), 10);
+	const isFemaleOrOther = sex === "Female" || sex === "Other";
+	const isReproductiveAge = isNaN(age) || (age >= 10 && age <= 60);
+	$("#gynaeCard")?.classList.toggle("hidden", !(isFemaleOrOther && isReproductiveAge));
+}
+
+function buildGynaeOutput() {
+	const lines = [];
+
+	const status = val("pregnancyStatus");
+	if (status) {
+		let line = `Pregnancy status: ${status}`;
+		if (status !== "Not pregnant") {
+			const gestation = val("gestationWeeks");
+			const edd = val("edd");
+			const gravida = val("gravida");
+			const para = val("para");
+			const details = [
+				gestation ? `${gestation} weeks` : null,
+				edd ? `EDD ${edd}` : null,
+				gravida || para ? `G${gravida || "?"}P${para || "?"}` : null,
+			].filter(Boolean).join(", ");
+			if (details) line += ` (${details})`;
+		}
+		lines.push(line);
+	}
+
+	const lmp = val("lmp");
+	if (lmp) lines.push(`LMP: ${lmp}`);
+
+	const isSymptom = (key) =>
+		!!document.querySelector(`.gynae-symptom[data-gynae-symptom="${key}"]`)?.classList.contains("selected");
+	const isChar = (key) =>
+		!!document.querySelector(`.gynae-char[data-gynae-char="${key}"]`)?.classList.contains("selected");
+
+	const symptoms = [];
+	if (isSymptom("pvBleed")) {
+		let bleed = "PV bleeding";
+		const severity = val("pvBleedSeverity");
+		const chars = [
+			isChar("bright") ? "bright red" : null,
+			isChar("dark") ? "dark/old blood" : null,
+			isChar("clots") ? "clots" : null,
+		].filter(Boolean);
+		const detail = [severity, ...chars].filter(Boolean).join(", ");
+		if (detail) bleed += ` — ${detail}`;
+		symptoms.push(bleed);
+	}
+	if (isSymptom("pelvicPain")) symptoms.push("pelvic pain");
+	if (isSymptom("discharge")) symptoms.push("vaginal discharge");
+	if (symptoms.length) lines.push(`Symptoms: ${symptoms.join("; ")}`);
+
+	const notes = val("gynaeNotes");
+	if (notes) lines.push(notes);
+
+	return lines.length ? lines.join("\n") : "No gynaecological concerns identified";
 }
 
 function buildEdHandoverText() {
@@ -2259,6 +2323,23 @@ function bindEvents() {
 		if (state.worseningAuto) applyWorseningDefault();
 		else updateWorseningScript();
 	});
+	// ── Demographics → conditional sections ──────────────────
+	$("#ptSex")?.addEventListener("change", updateDemographicVisibility);
+	$("#ptAge")?.addEventListener("input", updateDemographicVisibility);
+	$("#pregnancyStatus")?.addEventListener("change", () => {
+		const status = val("pregnancyStatus");
+		const showDetails = status === "Possibly pregnant" || status === "Confirmed pregnant";
+		$("#pregnancyDetails")?.classList.toggle("hidden", !showDetails);
+	});
+	document.addEventListener("click", (e) => {
+		const chip = e.target.closest(".gynae-symptom, .gynae-char");
+		if (!chip) return;
+		chip.classList.toggle("selected");
+		if (chip.classList.contains("gynae-symptom") && chip.dataset.gynaeSymptom === "pvBleed") {
+			$("#pvBleedDetail")?.classList.toggle("hidden", !chip.classList.contains("selected"));
+		}
+	});
+
 	$("#capacityStatus").addEventListener("change", handleCapacityDisplay);
 	$("#onsetTime").addEventListener("change", () => {
 		$("#onsetTimeOther")?.classList.toggle("hidden", onsetTime() !== "Other");
@@ -2619,12 +2700,13 @@ function toggleMulti(button) {
 }
 
 function setOtherFactorVisible(stateKey, visible) {
-	const wrapId =
-		stateKey === "exacerbating"
-			? "exacerbatingOtherWrap"
-			: stateKey === "relieving"
-				? "relievingOtherWrap"
-				: null;
+	const wrapIds = {
+		exacerbating: "exacerbatingOtherWrap",
+		relieving: "relievingOtherWrap",
+		fallsSymptoms: "fallsSymptomsOtherWrap",
+		fallsActivity: "fallsActivityOtherWrap",
+	};
+	const wrapId = wrapIds[stateKey];
 	if (wrapId) $(`#${wrapId}`)?.classList.toggle("hidden", !visible);
 }
 
@@ -3205,10 +3287,18 @@ function buildHeadInjuryText() {
 }
 
 function buildFallsText() {
-	const symptoms = listSet(state.fallsSymptoms, "Not documented");
+	const symptomsOther = val("fallsSymptomsOther");
+	const symptomsRaw = listSet(state.fallsSymptoms, "Not documented");
+	const symptoms = symptomsOther
+		? symptomsRaw.replace("Other", `Other (${symptomsOther})`)
+		: symptomsRaw;
 	const loc = val("fallsLocation") || "Not documented";
 	const surface = val("fallsSurface");
-	const activity = listSet(state.fallsActivity, "Not documented");
+	const activityOther = val("fallsActivityOther");
+	const activityRaw = listSet(state.fallsActivity, "Not documented");
+	const activity = activityOther
+		? activityRaw.replace("Other", `Other (${activityOther})`)
+		: activityRaw;
 	const time = val("fallsTime") || "Not documented";
 	const lieTime = val("fallsLieTime") || "Unknown";
 	const injuries = listSet(state.fallsInjuries, "No injury documented");
@@ -3732,6 +3822,11 @@ function buildOutputSections() {
 			title: "BACKGROUND",
 			body: `Allergies: ${isChecked("nkda") ? "NKDA" : val("allergies") || "Not documented"}\nMedications: ${isChecked("noMeds") ? "No regular medications" : val("medications") || "Not documented"}\nPMH: ${isChecked("noPmh") ? "No significant past medical history" : val("pmh") || "Not documented"}\nLast oral intake: ${[val("loiWhat"), val("loiTime")].filter(Boolean).join(" at ") || "Not documented"}\nPrevious episodes: ${val("prevDetails") || "Not documented"}`,
 		},
+		...(() => {
+			const card = $("#gynaeCard");
+			if (!card || card.classList.contains("hidden")) return [];
+			return [{ id: "gynae", title: "OBSTETRIC / GYNAECOLOGICAL", body: buildGynaeOutput() }];
+		})(),
 		{
 			id: "primary",
 			title: "PRIMARY SURVEY",
@@ -3898,18 +3993,22 @@ function buildOutputSections() {
 	];
 }
 
+// Plain-text bodies keyed by section id — bypasses DOM round-trips on copy
+const outputSectionTexts = new Map();
+
 function renderOutputSections(sections) {
+	outputSectionTexts.clear();
 	const root = $("#outputSections");
 	if (!root) return;
 	root.innerHTML = "";
 	sections.forEach((section) => {
+		outputSectionTexts.set(section.id, section.body);
 		const card = document.createElement("article");
 		card.className = "output-card";
 		card.innerHTML = `<div class="output-card-head"><h3>${section.title}</h3><button type="button" class="secondary-action" data-copy-section="${section.id}">Copy</button></div>`;
 		const pre = document.createElement("pre");
 		pre.className = "output-snippet";
 		pre.textContent = section.body;
-		pre.dataset.plaintext = pre.textContent;
 		card.append(pre);
 		root.append(card);
 	});
@@ -5473,7 +5572,7 @@ function buildPaedsSgText() {
 	if (isChecked("pSgReferral")) {
 		const ref = val("pSgReferralDetail");
 		lines.push(
-			`Safeguarding referral made / MASH contacted.${ref ? ` ${ref}` : ""}`,
+			`Safeguarding referral made.${ref ? ` ${ref}` : ""}`,
 		);
 	}
 	return lines.join("\n") || "Safeguarding: None identified on scene";
@@ -6013,9 +6112,7 @@ async function copyOutput() {
 
 async function copySectionById(sectionId) {
 	generateOutput();
-	const card = $(`[data-copy-section="${sectionId}"]`)?.closest(".output-card");
-	const body = card?.querySelector(".output-snippet");
-	const text = body?.dataset.plaintext || body?.innerText?.trim();
+	const text = outputSectionTexts.get(sectionId);
 	if (text) await copyText(text);
 }
 

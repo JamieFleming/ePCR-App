@@ -551,6 +551,45 @@
 						policy, and apply clinical judgement.
 					</div>
 
+					<details class="section-card" open id="patientCard">
+						<summary><span>Patient</span><small>Pt</small></summary>
+						<div class="section-body">
+							<div class="grid-2">
+								<div>
+									<label class="field-label" for="ptAge">Age</label>
+									<input
+										id="ptAge"
+										type="number"
+										min="0"
+										max="120"
+										placeholder="e.g. 72"
+										style="margin-top: 4px" />
+								</div>
+								<div>
+									<label class="field-label">Sex</label>
+									<input type="hidden" id="ptSex" />
+									<div
+										class="radio-chip-group"
+										data-radio-group="ptSex"
+										style="margin-top: 4px">
+										<button type="button" class="radio-chip" data-value="Male">
+											Male
+										</button>
+										<button
+											type="button"
+											class="radio-chip"
+											data-value="Female">
+											Female
+										</button>
+										<button type="button" class="radio-chip" data-value="Other">
+											Other
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</details>
+
 					<details class="section-card">
 						<summary>
 							<span>Presenting Complaint</span><small>PC</small>
@@ -702,6 +741,14 @@
 								<div
 									class="square-grid multi-group"
 									data-state="fallsSymptoms"></div>
+								<div
+									id="fallsSymptomsOtherWrap"
+									class="hidden"
+									style="margin-top: 6px">
+									<input
+										id="fallsSymptomsOther"
+										placeholder="Describe other symptom..." />
+								</div>
 								<div class="grid-2 compact" style="margin-top: 12px">
 									<label class="check-row"
 										><input type="checkbox" id="fallsLOC" /> Loss of
@@ -837,6 +884,14 @@
 								<div
 									class="square-grid multi-group"
 									data-state="fallsActivity"></div>
+								<div
+									id="fallsActivityOtherWrap"
+									class="hidden"
+									style="margin-top: 6px">
+									<input
+										id="fallsActivityOther"
+										placeholder="Describe activity..." />
+								</div>
 							</div>
 							<div class="socrates-group">
 								<label class="field-label">T — Time</label>
@@ -2359,6 +2414,180 @@
 							</div>
 						</div>
 					</details>
+
+					<details class="section-card hidden" id="gynaeCard">
+						<summary>
+							<span>Obstetric / Gynaecological</span><small>OB/GYN</small>
+						</summary>
+						<div class="section-body">
+							<div class="grid-2">
+								<div>
+									<label class="field-label">Pregnancy status</label>
+									<input type="hidden" id="pregnancyStatus" />
+									<div
+										class="radio-chip-group"
+										data-radio-group="pregnancyStatus"
+										style="margin-top: 4px">
+										<button
+											type="button"
+											class="radio-chip"
+											data-value="Not pregnant">
+											Not pregnant
+										</button>
+										<button
+											type="button"
+											class="radio-chip"
+											data-value="Possibly pregnant">
+											Possibly
+										</button>
+										<button
+											type="button"
+											class="radio-chip"
+											data-value="Confirmed pregnant">
+											Confirmed
+										</button>
+									</div>
+								</div>
+								<div>
+									<label class="field-label" for="lmp"
+										>Last menstrual period (LMP)</label
+									>
+									<input
+										id="lmp"
+										placeholder="e.g. 2 weeks ago"
+										style="margin-top: 4px" />
+								</div>
+							</div>
+
+							<div id="pregnancyDetails" class="hidden" style="margin-top: 8px">
+								<div class="grid-2">
+									<div>
+										<label class="field-label" for="gestationWeeks"
+											>Gestation (weeks)</label
+										>
+										<input
+											id="gestationWeeks"
+											type="number"
+											min="1"
+											max="45"
+											placeholder="e.g. 28"
+											style="margin-top: 4px" />
+									</div>
+									<div>
+										<label class="field-label" for="edd"
+											>Estimated due date (EDD)</label
+										>
+										<input id="edd" type="date" style="margin-top: 4px" />
+									</div>
+									<div>
+										<label class="field-label" for="gravida">Gravida</label>
+										<input
+											id="gravida"
+											type="number"
+											min="0"
+											placeholder="e.g. 2"
+											style="margin-top: 4px" />
+									</div>
+									<div>
+										<label class="field-label" for="para">Para</label>
+										<input
+											id="para"
+											type="number"
+											min="0"
+											placeholder="e.g. 1"
+											style="margin-top: 4px" />
+									</div>
+								</div>
+							</div>
+
+							<div style="margin-top: 12px">
+								<label class="field-label">Gynaecological symptoms</label>
+								<div class="chip-multi-group" style="margin-top: 6px">
+									<button
+										type="button"
+										class="square-btn gynae-symptom"
+										data-gynae-symptom="pvBleed">
+										PV bleeding
+									</button>
+									<button
+										type="button"
+										class="square-btn gynae-symptom"
+										data-gynae-symptom="pelvicPain">
+										Pelvic pain
+									</button>
+									<button
+										type="button"
+										class="square-btn gynae-symptom"
+										data-gynae-symptom="discharge">
+										Vaginal discharge
+									</button>
+								</div>
+							</div>
+
+							<div id="pvBleedDetail" class="hidden" style="margin-top: 10px">
+								<label class="field-label">PV bleeding — severity</label>
+								<input type="hidden" id="pvBleedSeverity" />
+								<div
+									class="radio-chip-group"
+									data-radio-group="pvBleedSeverity"
+									style="margin-top: 4px">
+									<button
+										type="button"
+										class="radio-chip"
+										data-value="Spotting">
+										Spotting
+									</button>
+									<button type="button" class="radio-chip" data-value="Light">
+										Light
+									</button>
+									<button
+										type="button"
+										class="radio-chip"
+										data-value="Moderate">
+										Moderate
+									</button>
+									<button type="button" class="radio-chip" data-value="Heavy">
+										Heavy
+									</button>
+								</div>
+								<label class="field-label" style="margin-top: 8px"
+									>Character</label
+								>
+								<div class="chip-multi-group" style="margin-top: 6px">
+									<button
+										type="button"
+										class="square-btn gynae-char"
+										data-gynae-char="bright">
+										Bright red
+									</button>
+									<button
+										type="button"
+										class="square-btn gynae-char"
+										data-gynae-char="dark">
+										Dark / old blood
+									</button>
+									<button
+										type="button"
+										class="square-btn gynae-char"
+										data-gynae-char="clots">
+										Clots passed
+									</button>
+								</div>
+							</div>
+
+							<label
+								class="field-label"
+								style="margin-top: 12px"
+								for="gynaeNotes"
+								>Additional notes</label
+							>
+							<textarea
+								id="gynaeNotes"
+								rows="2"
+								placeholder="Any additional obstetric or gynaecological details..."
+								style="margin-top: 4px"></textarea>
+						</div>
+					</details>
 				</section>
 
 				<section class="panel" id="panel-primary">
@@ -2876,6 +3105,10 @@
 										<optgroup label="Controlled">
 											<option>Morphine Sulfate 10mg/ml</option>
 											<option>Diazapam 10mg/2ml</option>
+										</optgroup>
+										<optgroup label="Gasses">
+											<option>Oxygen</option>
+											<option>Entonox</option>
 										</optgroup>
 										<option value="Other">Other (specify)</option>
 									</select>
@@ -3431,7 +3664,7 @@
 									placeholder="Describe specific concerns, indicators, or context observed on scene…"></textarea>
 								<label class="check-row" style="margin-top: 10px">
 									<input type="checkbox" id="safeguardingReferral" />
-									Safeguarding referral made / MASH contacted
+									Safeguarding referral made
 								</label>
 								<textarea
 									id="safeguardingReferralDetail"
@@ -3445,41 +3678,6 @@
 					<details class="section-card">
 						<summary><span>Handover</span><small>HO</small></summary>
 						<div class="section-body">
-							<div class="grid-2">
-								<div>
-									<label class="field-label" for="ptAge">Patient age</label
-									><input
-										id="ptAge"
-										type="number"
-										min="0"
-										max="120"
-										placeholder="e.g. 72" />
-								</div>
-								<div>
-									<label class="field-label">Sex</label>
-									<input type="hidden" id="ptSex" />
-									<div
-										class="radio-chip-group"
-										data-radio-group="ptSex"
-										style="margin-top: 4px">
-										<button type="button" class="radio-chip" data-value="Male">
-											Male
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Female">
-											Female
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Not specified">
-											Not specified
-										</button>
-									</div>
-								</div>
-							</div>
 							<label class="field-label">Format</label>
 							<input type="hidden" id="handoverFormat" value="ASHICE" />
 							<div
@@ -4698,7 +4896,7 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 									placeholder="Describe specific concerns, indicators or context…"></textarea>
 								<label class="check-row" style="margin-top: 8px"
 									><input type="checkbox" id="pSgReferral" /> Safeguarding
-									referral made / MASH / social services contacted</label
+									referral made</label
 								>
 								<textarea
 									id="pSgReferralDetail"
