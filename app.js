@@ -971,14 +971,6 @@ function buildAbcde() {
 			button.dataset.value = normal;
 			chipRoot.append(button);
 		});
-		const vitalRoot = $(".vital-grid", details);
-		section.vitals.forEach(([id, label, placeholder]) => {
-			const box = document.createElement("div");
-			box.className = "vital";
-			box.innerHTML = `<label for="${id}">${label}</label><input id="${id}" type="text" placeholder="${placeholder}">`;
-			vitalRoot.append(box);
-		});
-		if (!section.vitals.length) vitalRoot.remove();
 		if (section.extras) {
 			const sectionBody = $(".section-body", details);
 			const extraWrap = document.createElement("div");
