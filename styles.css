@@ -1,3 +1,16 @@
+/* =============================================================================
+   CrewMate — Stylesheet
+   Professional clinical tablet/mobile interface for NEAS paramedics.
+   Organised as: Design tokens → Base → Layout → Components → Sections →
+                 Specialist grids → Output → Dark mode → Responsive
+   ============================================================================= */
+
+/* =============================================================================
+   DESIGN TOKENS
+   All colours, spacing, and typography variables in one place.
+   Light-mode values here; overrides in [data-theme="dark"] block below.
+   ============================================================================= */
+
 :root {
 	/* CrewMate professional clinical palette */
 	--bg: #eef5f9;
@@ -54,6 +67,10 @@ html {
 	scroll-behavior: smooth;
 }
 
+/* =============================================================================
+   BASE STYLES — Reset, typography, global element defaults
+   ============================================================================= */
+
 body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
@@ -108,6 +125,10 @@ a:focus-visible {
 	outline: none;
 	box-shadow: var(--focus);
 }
+
+/* =============================================================================
+   LAYOUT — App shell, header bar, tab navigation
+   ============================================================================= */
 
 /* Header */
 .app-header {
@@ -289,6 +310,10 @@ main {
 	margin-bottom: 6px;
 	box-shadow: none;
 }
+
+/* =============================================================================
+   COMPONENTS — Cards, accordions, form controls
+   ============================================================================= */
 
 /* Cards and accordions */
 .section-card {
@@ -505,6 +530,10 @@ select {
 	accent-color: var(--primary-2);
 	flex: 0 0 auto;
 }
+
+/* =============================================================================
+   CLINICAL CHIP GRIDS — Square multi-select and radio chip buttons
+   ============================================================================= */
 
 /* Square clinical buttons */
 .square-grid {
@@ -1246,6 +1275,10 @@ select {
 .pain-toolbar {
 	margin-top: 4px;
 }
+
+/* =============================================================================
+   OUTPUT & CLIPBOARD — Section output cards, copy buttons, toast
+   ============================================================================= */
 
 /* Output */
 .output-panel-body {
@@ -3517,6 +3550,139 @@ html[data-theme="dark"] .resp-result-card--abnormal {
 	background: #371923;
 	border-color: #7f1d38;
 	color: #fb7185;
+}
+
+/* ── Observations ──────────────────────────────────────── */
+.obs-set {
+	border: 1px solid var(--line);
+	border-radius: 10px;
+	padding: 14px;
+	margin-bottom: 12px;
+	background: var(--surface);
+}
+
+.obs-set-head {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 14px;
+	flex-wrap: wrap;
+}
+
+.obs-set-label {
+	font-weight: 600;
+	font-size: 0.88rem;
+	color: var(--text);
+	flex: 1;
+}
+
+.obs-set-head input[type="time"] {
+	flex: 0 0 auto;
+	width: auto;
+	min-width: 110px;
+}
+
+.obs-remove {
+	margin-left: auto;
+	background: none;
+	border: 1px solid var(--line);
+	border-radius: 6px;
+	padding: 4px 12px;
+	font-size: 0.78rem;
+	color: var(--text-secondary);
+	cursor: pointer;
+}
+
+.obs-remove:hover {
+	border-color: var(--danger);
+	color: var(--danger);
+}
+
+/* Vital signs — compact 5-column grid */
+.obs-vitals-grid {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	gap: 8px;
+	margin-bottom: 12px;
+}
+
+/* Labelled row groups (O₂, HR, BP, AVPU, GCS) */
+.obs-row-group {
+	margin-bottom: 12px;
+}
+
+.obs-row-group:last-of-type {
+	margin-bottom: 0;
+}
+
+.obs-inline-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	margin-top: 4px;
+}
+
+/* Shared field label */
+.obs-label {
+	font-size: 0.72rem;
+	font-weight: 700;
+	color: var(--text-secondary);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	display: block;
+	margin-bottom: 4px;
+}
+
+/* NEWS2 footer strip */
+.obs-news2 {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-top: 14px;
+	padding-top: 12px;
+	border-top: 1px solid var(--line);
+}
+
+.obs-news2 .news2-label {
+	color: var(--text-secondary);
+	font-size: 0.72rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+}
+
+.news2-score {
+	font-size: 1.5rem;
+	font-weight: 800;
+	color: var(--text);
+	line-height: 1;
+}
+
+.news2-risk {
+	padding: 3px 12px;
+	border-radius: 12px;
+	font-size: 0.78rem;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+}
+
+.news2-low    { background: #d1fae5; color: #065f46; }
+.news2-medium { background: #fef3c7; color: #92400e; }
+.news2-high   { background: #fee2e2; color: #991b1b; }
+
+.obs-news2--low    .news2-score { color: #065f46; }
+.obs-news2--medium .news2-score { color: #92400e; }
+.obs-news2--high   .news2-score { color: #991b1b; }
+
+html[data-theme="dark"] .news2-low    { background: #064e3b; color: #6ee7b7; }
+html[data-theme="dark"] .news2-medium { background: #451a03; color: #fcd34d; }
+html[data-theme="dark"] .news2-high   { background: #450a0a; color: #fca5a5; }
+
+@media (max-width: 600px) {
+	.obs-vitals-grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
 }
 
 @media (max-width: 560px) {

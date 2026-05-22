@@ -1,15 +1,37 @@
 "use strict";
 
+// =============================================================================
+// UTILITY HELPERS
+// Shorthand DOM selectors and commonly-used field readers.
+// =============================================================================
+
+/** Selects the first matching element within an optional root (defaults to document). */
 const $ = (selector, root = document) => root.querySelector(selector);
+
+/** Selects all matching elements, returned as a real Array, within an optional root. */
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+
+/** Returns the trimmed value of an input/select/textarea by ID, or "" if absent. */
 const val = (id) => ($(`#${id}`)?.value || "").trim();
+
+/** Returns true if the checkbox or radio with the given ID is checked. */
 const isChecked = (id) => Boolean($(`#${id}`)?.checked);
+
+/** Returns the resolved onset time — uses the free-type value when "Other" is chosen. */
 const onsetTime = () =>
 	val("onsetTime") === "Other" ? val("onsetTimeOther") : val("onsetTime");
+
+/** Returns a formatted clock-time suffix string, e.g. " (at 14:30)", or "". */
 const onsetClockSuffix = () => {
 	const t = val("onsetClockTime");
 	return t ? ` (at ${t})` : "";
 };
+
+// =============================================================================
+// APPLICATION STATE
+// Mutable state shared across all adult ePRF sections. Sets hold multi-select
+// chip values; arrays hold structured entry records (drugs, IV, injuries, etc.).
+// =============================================================================
 
 const state = {
 	mapMode: "site",
@@ -27,8 +49,8 @@ const state = {
 	headSymptoms: new Set(),
 	headSigns: new Set(),
 	injuryEntries: [],
-	abdoFindings: {}, // { regionName: Set<finding> }
-	abdoActive: null, // currently focused region
+	abdoFindings: {},
+	abdoActive: null,
 	ivEntries: [],
 	drugEntries: [],
 	seizureType: new Set(),
@@ -57,11 +79,15 @@ const state = {
 	ecgFindings: new Set(),
 	ecgLeads: new Set(),
 	ros: {},
-	auscFindings: {}, // { regionName: Set<finding> }
+	auscFindings: {},
 	auscActive: null,
 	worseningAuto: true,
 	pReferrals: new Set(),
 };
+
+// CLINICAL CONTENT — WORSENING ADVICE
+// Generic 999 triggers shown to all patients, plus presenting-complaint-specific
+// items appended based on the selected PC.
 
 /** When one disability chip is set abnormal, linked chips flip too. */
 const ABC_DISABILITY_LINKS = [["GCS 15", "AOx4"]];
@@ -84,9 +110,11 @@ const ABDO_FINDINGS = [
 	"Tenderness",
 	"Guarding",
 	"Rigidity",
-	"Rebound",
-	"Mass / lump",
+	"Rebound Tenderness",
+	"Mass / Lump",
+	"Pulsating Mass",
 ];
+
 const ABDO_FINDING_SHORT = {
 	Tenderness: "T",
 	Guarding: "G",
@@ -96,12 +124,11 @@ const ABDO_FINDING_SHORT = {
 };
 
 const WORSENING_GENERIC = [
-	"chest pain or pressure",
-	"sudden difficulty breathing or shortness of breath",
-	"FAST symptoms — face drooping, arm weakness, or difficulty speaking",
-	"loss of consciousness or collapse",
-	"new seizure or fitting",
-	"severe allergic reaction — throat swelling or breathing difficulty",
+	"chest pain",
+	"sudden difficulty breathing or SOB",
+	"FAST symptoms — face drooping, arm weakness, or speech difficulty",
+	"LOC or collapse",
+	"seizures",
 	"heavy uncontrolled bleeding",
 ];
 
@@ -109,7 +136,7 @@ const WORSENING_PC = {
 	"Chest pain": {
 		items: [
 			"return or worsening of chest pain",
-			"pain spreading to jaw, left arm, or back",
+			"pain spreading to jaw, arm, or neck",
 			"sweating, nausea, or vomiting alongside chest pain",
 			"worsening breathlessness or palpitations",
 		],
@@ -157,7 +184,7 @@ const WORSENING_PC = {
 	},
 	Seizure: {
 		items: [
-			"further seizure activity",
+			"further seizures",
 			"seizure lasting more than 5 minutes",
 			"consciousness not recovering after a seizure",
 			"injury sustained during a seizure",
@@ -174,14 +201,14 @@ const WORSENING_PC = {
 	},
 	"Dizziness / vertigo": {
 		items: [
-			"worsening dizziness or inability to mobilise safely",
+			"worsening dizziness or inability to mobilise",
 			"FAST symptoms — face, arm, or speech changes",
 			"persistent vomiting or inability to keep fluids down",
 		],
 	},
 	"Collapse / syncope": {
 		items: [
-			"further episodes of blackout or near-collapse",
+			"further episodes of collapse or near-collapse",
 			"chest pain or palpitations before collapsing",
 			"prolonged loss of consciousness",
 			"injury from a collapse",
@@ -243,21 +270,21 @@ const WORSENING_PC = {
 	},
 	Fall: {
 		items: [
-			"another fall",
+			"any furthe falls",
 			"inability to bear weight or mobilise",
 			"new or worsening weakness or numbness in the legs",
-			"loss of bladder or bowel control — call 999 immediately",
-			"numbness or tingling in the saddle area (inner thighs, groin, or back passage) — call 999 immediately",
-			"severe worsening pain at any injury site",
+			"loss of bladder or bowel control",
+			"numbness or tingling in the saddle area (inner thighs, groin, or back passage)",
+			"severe worsening pain",
 		],
 		redFlags:
-			"Cauda equina red flags: loss of bladder or bowel control, saddle numbness (numbness of inner thighs, genitals, or back passage), bilateral leg weakness or numbness — these require an immediate 999 call and should not be waited on.",
+			"Cauda equina red flags: loss of bladder or bowel control, saddle numbness (numbness of inner thighs, genitals, or back passage), bilateral leg weakness or numbness",
 	},
 	"Back pain": {
 		items: [
 			"worsening pain not responding to prescribed analgesia",
-			"loss of bladder or bowel control — call 999 immediately",
-			"numbness or tingling in the saddle area (inner thighs, groin, or back passage) — call 999 immediately",
+			"loss of bladder or bowel control",
+			"numbness or tingling in the saddle area (inner thighs, groin, or back passage)",
 			"new or worsening weakness or numbness in both legs",
 			"inability to stand or walk",
 		],
@@ -315,6 +342,7 @@ const WORSENING_PC = {
 		items: [
 			"risk to self or others escalating",
 			"feeling unable to keep themselves safe",
+			"any further thoughts to self-harm",
 			"any immediate risk to life — call 999",
 		],
 		extra:
@@ -328,6 +356,10 @@ const WORSENING_PC = {
 		],
 	},
 };
+
+// CLINICAL CONTENT — UI OPTION LISTS
+// Arrays and objects used to populate chip grids and select menus throughout
+// the adult ePRF.  Keyed to match data-state attributes in the HTML.
 
 const OPTIONS = {
 	character: [
@@ -343,6 +375,7 @@ const OPTIONS = {
 		"Tight",
 		"Cramping",
 		"Squeezing",
+		"Other",
 	],
 	associated: [
 		"Nausea",
@@ -361,6 +394,7 @@ const OPTIONS = {
 		"Syncope",
 		"Back pain",
 		"Chest tightness",
+		"Other",
 	],
 	exacerbating: [
 		"Movement",
@@ -375,6 +409,7 @@ const OPTIONS = {
 		"Heat",
 		"Cold",
 		"Stress",
+		"None",
 		"Other",
 	],
 	relieving: [
@@ -388,28 +423,29 @@ const OPTIONS = {
 		"Eating",
 		"Vomiting",
 		"GTN",
+		"None",
 		"Other",
 	],
 	referrals: [
-		"GP",
-		"111",
-		"Urgent treatment centre",
-		"Pharmacy",
-		"Community nursing",
 		"Self-care",
+		"Own GP",
+		"OOH GP",
+		"Urgent treatment centre",
+		"Make own way to ED",
+		"Pharmacy",
+		"District Nurses",
 		"Falls team",
 		"Mental health crisis team",
 		"Safeguarding referral",
 	],
 	pReferrals: [
 		"GP",
-		"111",
 		"Urgent treatment centre",
 		"Health visitor",
-		"Community nursing",
+		"District Nurses",
 		"Self-care",
 		"CAMHS",
-		"Paediatric safeguarding",
+		"Safeguarding referral",
 		"Pharmacy",
 	],
 	fallsSymptoms: [
@@ -446,6 +482,7 @@ const OPTIONS = {
 		"RTC — vehicle occupant",
 		"Fall from height",
 		"Fall on stairs",
+		"Fall from standing",
 		"Assault",
 		"Sports injury",
 		"Object struck head",
@@ -467,7 +504,7 @@ const OPTIONS = {
 		"Scalp haematoma",
 		"Periorbital bruising (panda eyes)",
 		"Battle's sign",
-		"Haemotympanum",
+		"Boggy mass",
 		"CSF rhinorrhoea",
 		"CSF otorrhoea",
 		"Suspected open fracture",
@@ -491,17 +528,22 @@ const OPTIONS = {
 		"No injury found",
 	],
 	abdoRegions: [
-		"RUQ",
+		"R Hypocondriac",
 		"Epigastric",
-		"LUQ",
-		"R flank",
+		"L Hypocondriac",
+		"R Lumbar",
 		"Umbilical",
-		"L flank",
-		"R iliac fossa",
-		"Suprapubic",
-		"L iliac fossa",
+		"L Lumbar",
+		"R Iliac ",
+		"Hypogastric",
+		"L Iliac",
 	],
 };
+
+// CLINICAL CONTENT — ABCDE CONFIGURATION
+// Drives the dynamic ABCDE primary-survey card builder.  Each entry defines
+// the section key/title, normal/abnormal chip pairs, inline vital inputs, and
+// optional extra HTML rendered below the chip grid.
 
 const ABCDE = [
 	{
@@ -512,7 +554,6 @@ const ABCDE = [
 			["Self-maintained", "Airway support required"],
 			["No abnormal sounds", "Airway sounds present"],
 		],
-		vitals: [],
 		notes: "airwayNotes",
 	},
 	{
@@ -524,11 +565,6 @@ const ABCDE = [
 			["Full sentences", "Unable to complete full sentences"],
 			["No wheeze", "Wheeze present"],
 		],
-		vitals: [
-			["rr", "RR /min", "16"],
-			["spo2", "SpO2 %", "98"],
-			["o2Flow", "O2 L/min", ""],
-		],
 		notes: "breathingNotes",
 	},
 	{
@@ -536,20 +572,17 @@ const ABCDE = [
 		title: "Circulation",
 		chips: [
 			["Good colour", "Pale / flushed"],
+			["Normal Rate", "Tachycardic / Bradycardic"],
 			["Warm to touch", "Cold / clammy"],
 			["Radial pulse palpable", "Radial pulse weak / absent"],
 			["Regular pulse rhythm", "Irregular pulses"],
 			["CRT <2s", "CRT ≥2s"],
 			["No haemorrhage", "Haemorrhage"],
 		],
-		vitals: [
-			["hr", "HR bpm", "72"],
-			["bp", "BP mmHg", "120/80"],
-			["bm", "BM mmol/L", "5.2"],
-		],
 		notes: "circulationNotes",
 		extras:
-			'<div id="colourDetailWrap" class="hidden" style="margin-top:6px"><input type="hidden" id="colourDetail"><div class="radio-chip-group" data-radio-group="colourDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Pale">Pale</button><button type="button" class="radio-chip" data-value="Flushed">Flushed</button></div></div>',
+			'<div id="colourDetailWrap" class="hidden" style="margin-top:6px"><input type="hidden" id="colourDetail"><div class="radio-chip-group" data-radio-group="colourDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Pale">Pale</button><button type="button" class="radio-chip" data-value="Flushed">Flushed</button></div></div>' +
+			'<div id="hrRateDetailWrap" class="hidden" style="margin-top:6px"><input type="hidden" id="hrRateDetail"><div class="radio-chip-group" data-radio-group="hrRateDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Tachycardic">Tachycardic</button><button type="button" class="radio-chip" data-value="Bradycardic">Bradycardic</button></div></div>',
 	},
 	{
 		key: "D",
@@ -559,12 +592,7 @@ const ABCDE = [
 			["AOx4", "Not orientated x4"],
 			["PEARL", "Pupils unequal / unreactive"],
 			["Speech clear", "Speech impaired"],
-			["Fully mobile", "Reduced mobility"],
-		],
-		vitals: [
-			["gcsScore", "GCS /15", "15"],
-			["pupils", "Pupils", "3mm equal"],
-			["avpu", "AVPU", "A"],
+			["Normal mobility", "Reduced mobility"],
 		],
 		notes: "disabilityNotes",
 	},
@@ -580,10 +608,14 @@ const ABCDE = [
 			["No injuries", "Injury found"],
 			["No rash", "Rash present"],
 		],
-		vitals: [["temp", "Temp C", "36.8"]],
 		notes: "exposureNotes",
 	},
 ];
+
+// CLINICAL CONTENT — REVIEW OF SYSTEMS (ROS) CONFIGURATION
+// Drives the dynamic ROS card builder.  Each section maps a key to its title,
+// normal/abnormal toggle items, and optional extra HTML (auscultation, ECG,
+// GCS calculator, etc.).
 
 const ROS = {
 	resp: {
@@ -602,7 +634,8 @@ const ROS = {
 			["accessory", "No accessory muscle use", "Accessory muscle use present"],
 		],
 		extras:
-			'<label class="field-label">Auscultation</label><div id="auscRegionGrid" class="ausc-region-grid"></div><div id="auscFindingPanel" class="ausc-finding-panel hidden"></div><input id="respAus" type="hidden" /><p id="auscPreview" class="ausc-preview field-hint" style="margin-top:6px">Not auscultated</p><label class="field-label" style="margin-top:10px" for="coughType">Cough</label><select id="coughType"><option>No cough</option><option>Dry cough present</option><option>Productive cough present</option></select><div id="sputumWrap" class="hidden" style="margin-top:6px"><label class="field-label" for="sputumDesc">Sputum</label><input id="sputumDesc" list="sputumList" placeholder="e.g. yellow, green, white, blood-stained" /><datalist id="sputumList"><option>Clear</option><option>White / frothy</option><option>Yellow</option><option>Green</option><option>Brown</option><option>Blood-stained (haemoptysis)</option><option>Pink and frothy</option><option>Rust-coloured</option></datalist></div><label class="field-label" for="respNotes">Additional notes</label><textarea id="respNotes" rows="2"></textarea>',
+			'<div id="rrDetailWrap" class="hidden" style="margin-top:6px"><input type="hidden" id="rrDetail"><div class="radio-chip-group" data-radio-group="rrDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Tachypnoea">Tachypnoea</button><button type="button" class="radio-chip" data-value="Bradypnoea">Bradypnoea</button><button type="button" class="radio-chip" data-value="Apnoea">Apnoea</button></div></div>' +
+			'<label class="field-label" style="margin-top:10px">Auscultation</label><div id="auscRegionGrid" class="ausc-region-grid"></div><div id="auscFindingPanel" class="ausc-finding-panel hidden"></div><input id="respAus" type="hidden" /><p id="auscPreview" class="ausc-preview field-hint" style="margin-top:6px">Not auscultated</p><label class="field-label" style="margin-top:10px" for="coughType">Cough</label><select id="coughType"><option>No cough</option><option>Dry cough present</option><option>Productive cough present</option></select><div id="sputumWrap" class="hidden" style="margin-top:6px"><label class="field-label" for="sputumDesc">Sputum</label><input id="sputumDesc" list="sputumList" placeholder="e.g. yellow, green, white, blood-stained" /><datalist id="sputumList"><option>Clear</option><option>White / frothy</option><option>Yellow</option><option>Green</option><option>Brown</option><option>Blood-stained (haemoptysis)</option><option>Pink and frothy</option><option>Rust-coloured</option></datalist></div><label class="field-label" for="respNotes">Additional notes</label><textarea id="respNotes" rows="2"></textarea>',
 	},
 	cvs: {
 		title: "Cardiovascular",
@@ -768,6 +801,11 @@ document.addEventListener("DOMContentLoaded", () => {
 	initRespCounter();
 });
 
+// =============================================================================
+// NAVIGATION
+// Dashboard / feature switching — shows and hides the relevant tool panel.
+// =============================================================================
+
 function showDashboard() {
 	$("#dashboard")?.classList.remove("hidden");
 	$("#prf-tool")?.classList.add("hidden");
@@ -841,6 +879,11 @@ function init() {
 	document.addEventListener("change", scheduleRedFlags, { passive: true });
 	bindRadioChipGroups();
 }
+
+// DOM BUILDERS — ADULT ePRF
+// Functions that construct interactive UI components (chip grids, GCS
+// calculators, body maps, ABCDE sections) and insert them into the page.
+// Called once during init(); not re-run on user interaction.
 
 function buildOptionButtons() {
 	Object.entries(OPTIONS).forEach(([key, options]) => {
@@ -979,10 +1022,13 @@ function buildGcsCalcHTML(prefix) {
 	const row = (field, label, items) =>
 		`<div class="gcs-row"><p class="gcs-row-label">${label}</p>` +
 		`<div class="gcs-btn-row">` +
-		items.map(([n, l]) =>
-			`<button type="button" class="gcs-btn" data-gcs-prefix="${prefix}" data-gcs-field="${field}" data-gcs-score="${n}">` +
-			`<span class="gcs-score">${n}</span><span class="gcs-label">${l}</span></button>`,
-		).join("") +
+		items
+			.map(
+				([n, l]) =>
+					`<button type="button" class="gcs-btn" data-gcs-prefix="${prefix}" data-gcs-field="${field}" data-gcs-score="${n}">` +
+					`<span class="gcs-score">${n}</span><span class="gcs-label">${l}</span></button>`,
+			)
+			.join("") +
 		`</div></div>`;
 	return (
 		`<button type="button" class="gcs-toggle secondary-action" data-gcs-toggle="${prefix}" style="width:100%;text-align:left">▸ GCS Calculator</button>` +
@@ -997,15 +1043,34 @@ function buildGcsCalcHTML(prefix) {
 
 function updateGcsTally(prefix) {
 	const e4 = parseInt($("#" + prefix + "Eye")?.dataset.gcsSelected || "", 10);
-	const v5 = parseInt($("#" + prefix + "Verbal")?.dataset.gcsSelected || "", 10);
+	const v5 = parseInt(
+		$("#" + prefix + "Verbal")?.dataset.gcsSelected || "",
+		10,
+	);
 	const m6 = parseInt($("#" + prefix + "Motor")?.dataset.gcsSelected || "", 10);
 	const tally = $("#" + prefix + "Tally");
-	if (!e4 || !v5 || !m6) { if (tally) tally.textContent = ""; return; }
+	if (!e4 || !v5 || !m6) {
+		if (tally) tally.textContent = "";
+		return;
+	}
 	const total = e4 + v5 + m6;
 	if (tally) tally.textContent = `GCS: E${e4} V${v5} M${m6} = ${total}/15`;
-	const scoreEl = $("#gcsScore");
-	if (scoreEl) scoreEl.value = total;
+	// Only sync to the primary survey hidden gcsScore field for the main calculators
+	if (!prefix.startsWith("obsGcs")) {
+		const scoreEl = $("#gcsScore");
+		if (scoreEl) scoreEl.value = total;
+	}
+	// For obs GCS, trigger NEWS2 recalculation on the parent obs-set
+	if (prefix.startsWith("obsGcs")) {
+		const idx = prefix.replace("obsGcs", "");
+		const setEl = document.querySelector(`.obs-set[data-obs-idx="${idx}"]`);
+		if (setEl) updateNews2(setEl);
+	}
 }
+
+// CLINICAL CONTENT — SPECIALIST SECTION CONSTANTS
+// Option lists for auscultation, ECG interpretation, injury assessment,
+// treatment grids, seizure, mental health, MSE, and safeguarding.
 
 const AUSC_REGIONS = ["R upper", "R lower", "L upper", "L lower"];
 const AUSC_FINDINGS = [
@@ -1084,6 +1149,7 @@ const INJURY_TYPES = [
 	"Penetrating wound",
 	"Swelling",
 	"Amputation",
+	"Other",
 ];
 
 const INJURY_INTERVENTIONS = [
@@ -1096,6 +1162,7 @@ const INJURY_INTERVENTIONS = [
 	"Splinted",
 	"Sling applied/Triangular Bandage",
 	"Cervical collar",
+	"Other",
 ];
 
 const TX_AIRWAY = [
@@ -1282,6 +1349,10 @@ const MSE_PERCEPTION = [
 ];
 const MSE_INSIGHT = ["Full insight", "Partial insight", "No insight"];
 
+// DOM BUILDERS — SPECIALIST SECTIONS
+// Auscultation, ECG, injury, treatment (IV/drugs/airway/wound), seizure,
+// mental health, and ROS cards built from the constants above.
+
 function buildAuscGrid() {
 	const grid = $("#auscRegionGrid");
 	if (!grid) return;
@@ -1385,16 +1456,34 @@ function buildInjurySection() {
 function addInjuryEntry() {
 	const region = val("injuryRegion");
 	if (!region) return;
+
+	// Substitute "Other" chips with the free-text value when provided
+	const typeOther = val("injuryTypeOther");
+	const intOther = val("injuryIntOther");
+	const types = [...pendingInjuryTypes].map((t) =>
+		t === "Other" && typeOther ? typeOther : t,
+	);
+	const interventions = [...pendingInjuryInterventions].map((i) =>
+		i === "Other" && intOther ? intOther : i,
+	);
+
 	state.injuryEntries.push({
 		region,
-		types: [...pendingInjuryTypes],
+		types,
 		nv: val("injuryNv"),
-		interventions: [...pendingInjuryInterventions],
+		interventions,
 	});
+
 	pendingInjuryTypes.clear();
 	pendingInjuryInterventions.clear();
 	$("#injuryRegion").value = "";
 	$("#injuryNv").value = "";
+	const typeOtherEl = $("#injuryTypeOther");
+	const intOtherEl = $("#injuryIntOther");
+	if (typeOtherEl) typeOtherEl.value = "";
+	if (intOtherEl) intOtherEl.value = "";
+	$("#injuryTypeOtherWrap")?.classList.add("hidden");
+	$("#injuryIntOtherWrap")?.classList.add("hidden");
 	$$("[data-injury-type], [data-injury-intervention]").forEach((b) =>
 		b.classList.remove("selected"),
 	);
@@ -1583,13 +1672,18 @@ function repeatDrugEntry(index) {
 	const otherEl = $("#drugNameOther");
 	if (nameEl) {
 		// Check if the drug is a known option in the select
-		const isKnown = [...nameEl.options].some((o) => o.value === entry.drug || o.text === entry.drug);
+		const isKnown = [...nameEl.options].some(
+			(o) => o.value === entry.drug || o.text === entry.drug,
+		);
 		if (isKnown) {
 			nameEl.value = entry.drug;
 			otherEl?.classList.add("hidden");
 		} else {
 			nameEl.value = "Other";
-			if (otherEl) { otherEl.value = entry.drug; otherEl.classList.remove("hidden"); }
+			if (otherEl) {
+				otherEl.value = entry.drug;
+				otherEl.classList.remove("hidden");
+			}
 		}
 	}
 	const doseEl = $("#drugDose");
@@ -1639,7 +1733,8 @@ function addIvEntry() {
 }
 
 function addDrugEntry() {
-	const drug = val("drugName") === "Other" ? val("drugNameOther") : val("drugName");
+	const drug =
+		val("drugName") === "Other" ? val("drugNameOther") : val("drugName");
 	if (!drug) return;
 	state.drugEntries.push({
 		drug,
@@ -1647,10 +1742,12 @@ function addDrugEntry() {
 		route: val("drugRoute"),
 		time: val("drugTime"),
 	});
-	["drugName", "drugNameOther", "drugDose", "drugRoute", "drugTime"].forEach((id) => {
-		const el = $(`#${id}`);
-		if (el) el.value = "";
-	});
+	["drugName", "drugNameOther", "drugDose", "drugRoute", "drugTime"].forEach(
+		(id) => {
+			const el = $(`#${id}`);
+			if (el) el.value = "";
+		},
+	);
 	$("#drugNameOther")?.classList.add("hidden");
 	$$("[data-radio-group='drugRoute'] [data-value]").forEach((c) =>
 		c.classList.remove("selected"),
@@ -1727,6 +1824,8 @@ function buildTreatmentText() {
 	if (val("treatmentNotes")) lines.push(val("treatmentNotes"));
 	return lines.length ? lines.join("\n") : "No interventions documented.";
 }
+
+// --- Seizure assessment ---
 
 function buildSeizureSection() {
 	buildButtonGrid(
@@ -1815,6 +1914,8 @@ function buildSeizureText() {
 	if (val("seizureNotes")) lines.push(val("seizureNotes"));
 	return lines.length ? lines.join("\n") : "No seizure assessment documented.";
 }
+
+// --- Mental health assessment ---
 
 function buildMhSection() {
 	buildButtonGrid("mhIntentGrid", MH_INTENT, "mhGroup", "intent", "mhValue");
@@ -1944,6 +2045,8 @@ function buildMhAssessmentText() {
 		: "No MH assessment details documented.";
 }
 
+// --- Review of systems card builder ---
+
 function buildRos() {
 	const root = $("#rosContainer");
 	Object.entries(ROS).forEach(([key, section], index) => {
@@ -2062,6 +2165,9 @@ function renderConveyanceSuggestion() {
 	}
 }
 
+// TEXT BUILDERS — GYNAECOLOGY & HANDOVER
+// Gynaecology summary output and the pre-hospital ED handover document.
+
 function buildSafeguardingText() {
 	const concerns = [...state.safeguardingConcerns];
 	if (!concerns.length && !val("safeguardingDetail")) return "";
@@ -2072,9 +2178,7 @@ function buildSafeguardingText() {
 		lines.push(`Detail: ${val("safeguardingDetail")}`);
 	if (isChecked("safeguardingReferral")) {
 		const ref = val("safeguardingReferralDetail");
-		lines.push(
-			`Safeguarding referral made.${ref ? ` ${ref}` : ""}`,
-		);
+		lines.push(`Safeguarding referral made.${ref ? ` ${ref}` : ""}`);
 	}
 	return lines.join("\n");
 }
@@ -2084,7 +2188,10 @@ function updateDemographicVisibility() {
 	const age = parseInt(val("ptAge"), 10);
 	const isFemaleOrOther = sex === "Female" || sex === "Other";
 	const isReproductiveAge = isNaN(age) || (age >= 10 && age <= 60);
-	$("#gynaeCard")?.classList.toggle("hidden", !(isFemaleOrOther && isReproductiveAge));
+	$("#gynaeCard")?.classList.toggle(
+		"hidden",
+		!(isFemaleOrOther && isReproductiveAge),
+	);
 }
 
 function buildGynaeOutput() {
@@ -2102,7 +2209,9 @@ function buildGynaeOutput() {
 				gestation ? `${gestation} weeks` : null,
 				edd ? `EDD ${edd}` : null,
 				gravida || para ? `G${gravida || "?"}P${para || "?"}` : null,
-			].filter(Boolean).join(", ");
+			]
+				.filter(Boolean)
+				.join(", ");
 			if (details) line += ` (${details})`;
 		}
 		lines.push(line);
@@ -2112,11 +2221,17 @@ function buildGynaeOutput() {
 	if (lmp) lines.push(`LMP: ${lmp}`);
 
 	const isSymptom = (key) =>
-		!!document.querySelector(`.gynae-symptom[data-gynae-symptom="${key}"]`)?.classList.contains("selected");
+		!!document
+			.querySelector(`.gynae-symptom[data-gynae-symptom="${key}"]`)
+			?.classList.contains("selected");
 	const isChar = (key) =>
-		!!document.querySelector(`.gynae-char[data-gynae-char="${key}"]`)?.classList.contains("selected");
+		!!document
+			.querySelector(`.gynae-char[data-gynae-char="${key}"]`)
+			?.classList.contains("selected");
 	const isDisc = (key) =>
-		!!document.querySelector(`.gynae-disc[data-gynae-disc="${key}"]`)?.classList.contains("selected");
+		!!document
+			.querySelector(`.gynae-disc[data-gynae-disc="${key}"]`)
+			?.classList.contains("selected");
 
 	const symptoms = [];
 	if (isSymptom("pvBleed")) {
@@ -2171,7 +2286,9 @@ function buildGynaeOutput() {
 	const notes = val("gynaeNotes");
 	if (notes) lines.push(notes);
 
-	return lines.length ? lines.join("\n") : "No gynaecological concerns identified";
+	return lines.length
+		? lines.join("\n")
+		: "No gynaecological concerns identified";
 }
 
 function buildEdHandoverText() {
@@ -2334,6 +2451,10 @@ function buildEdHandoverText() {
 	return lines.join("\n");
 }
 
+// EVENT BINDING — ADULT ePRF
+// All DOM event listeners for the adult form wired here.  Delegated listeners
+// sit on document to handle dynamically-created elements (obs sets, entry rows).
+
 function bindEvents() {
 	$$(".tab").forEach((tab) =>
 		tab.addEventListener("click", () => switchTab(tab.dataset.tab)),
@@ -2363,7 +2484,8 @@ function bindEvents() {
 	$("#ptAge")?.addEventListener("input", updateDemographicVisibility);
 	$("#pregnancyStatus")?.addEventListener("change", () => {
 		const status = val("pregnancyStatus");
-		const showDetails = status === "Possibly pregnant" || status === "Confirmed pregnant";
+		const showDetails =
+			status === "Possibly pregnant" || status === "Confirmed pregnant";
 		$("#pregnancyDetails")?.classList.toggle("hidden", !showDetails);
 	});
 	document.addEventListener("click", (e) => {
@@ -2373,9 +2495,15 @@ function bindEvents() {
 		if (chip.classList.contains("gynae-symptom")) {
 			const sym = chip.dataset.gynaeSymptom;
 			if (sym === "pvBleed")
-				$("#pvBleedDetail")?.classList.toggle("hidden", !chip.classList.contains("selected"));
+				$("#pvBleedDetail")?.classList.toggle(
+					"hidden",
+					!chip.classList.contains("selected"),
+				);
 			if (sym === "discharge")
-				$("#dischargeDetail")?.classList.toggle("hidden", !chip.classList.contains("selected"));
+				$("#dischargeDetail")?.classList.toggle(
+					"hidden",
+					!chip.classList.contains("selected"),
+				);
 		}
 	});
 
@@ -2475,8 +2603,10 @@ function bindEvents() {
 	);
 	$("#handoverFormat").addEventListener("change", () => {
 		const fmt = $("#handoverFormat").value;
-		$("#handoverEtaWrap").classList.toggle("hidden", fmt !== "ASHICE");
-		$("#incidentTimeWrap").classList.toggle("hidden", fmt !== "ATMIST");
+		const isLah = fmt === "Leave at Home";
+		$("#handoverEtaWrap")?.classList.toggle("hidden", fmt !== "ASHICE");
+		$("#incidentTimeWrap")?.classList.toggle("hidden", fmt !== "ATMIST");
+		// For Leave at Home, the output section itself IS the document — no extra inputs needed
 	});
 	$("#generateOeButton").addEventListener("click", generateOe);
 	$("#clearOeButton").addEventListener(
@@ -2486,12 +2616,28 @@ function bindEvents() {
 	$("#refreshButton").addEventListener("click", generateOutput);
 	$("#copyButton").addEventListener("click", copyOutput);
 
+	// Observations
+	$("#addObsBtn")?.addEventListener("click", () => {
+		const set = createObsSet();
+		$("#obsContainer")?.append(set);
+		updateObsSetNumbers();
+	});
+
+	// Legal/capacity chips (treated & left)
+	document.addEventListener("click", (e) => {
+		const chip = e.target.closest(".legal-chip");
+		if (chip) chip.classList.toggle("selected");
+	});
+
 	document.addEventListener("click", (event) => {
 		const gcsBtn = event.target.closest(".gcs-btn");
 		if (gcsBtn) {
 			const { gcsPrefix, gcsField, gcsScore } = gcsBtn.dataset;
 			// Deselect siblings, select this
-			gcsBtn.closest(".gcs-btn-row")?.querySelectorAll(".gcs-btn").forEach((b) => b.classList.remove("selected"));
+			gcsBtn
+				.closest(".gcs-btn-row")
+				?.querySelectorAll(".gcs-btn")
+				.forEach((b) => b.classList.remove("selected"));
 			gcsBtn.classList.add("selected");
 			// Store selection on a sentinel element keyed by field id
 			let sentinel = $("#" + gcsField);
@@ -2583,6 +2729,11 @@ function bindEvents() {
 				? pendingInjuryTypes.delete(v)
 				: pendingInjuryTypes.add(v);
 			injuryTypeBtn.classList.toggle("selected", pendingInjuryTypes.has(v));
+			if (v === "Other")
+				$("#injuryTypeOtherWrap")?.classList.toggle(
+					"hidden",
+					!pendingInjuryTypes.has("Other"),
+				);
 			return;
 		}
 		const injuryIntBtn = event.target.closest("[data-injury-intervention]");
@@ -2595,6 +2746,11 @@ function bindEvents() {
 				"selected",
 				pendingInjuryInterventions.has(v),
 			);
+			if (v === "Other")
+				$("#injuryIntOtherWrap")?.classList.toggle(
+					"hidden",
+					!pendingInjuryInterventions.has("Other"),
+				);
 			return;
 		}
 		const removeInjury = event.target.closest("[data-remove-injury]");
@@ -2710,6 +2866,13 @@ function bindEvents() {
 	});
 }
 
+// =============================================================================
+// UI INTERACTION HANDLERS
+// Business logic for toggling chips, switching tabs, body-map interaction,
+// conveyance decisions, and other stateful UI updates.
+// =============================================================================
+
+/** Tracks injury types and interventions being built before they are committed. */
 let pendingInjuryTypes = new Set();
 let pendingInjuryInterventions = new Set();
 
@@ -2831,6 +2994,20 @@ function toggleAbc(button) {
 			}
 		}
 	}
+	// Show/hide tachycardic/bradycardic picker when rate chip toggled
+	if (button.dataset.normal === "Normal Rate") {
+		const wrap = $("#hrRateDetailWrap");
+		if (wrap) {
+			wrap.classList.toggle("hidden", next === "normal");
+			if (next === "normal") {
+				const hidden = $("#hrRateDetail");
+				if (hidden) hidden.value = "";
+				wrap
+					.querySelectorAll("[data-value]")
+					.forEach((c) => c.classList.remove("selected"));
+			}
+		}
+	}
 }
 
 function setAbcChipState(button, state) {
@@ -2859,13 +3036,29 @@ function syncDisabilityLinks(button) {
 
 function toggleRos(button) {
 	const isAbnormal = state.ros[button.dataset.stateId] === "abnormal";
-	state.ros[button.dataset.stateId] = isAbnormal ? "normal" : "abnormal";
+	const next = isAbnormal ? "normal" : "abnormal";
+	state.ros[button.dataset.stateId] = next;
 	button.classList.toggle("abnormal", !isAbnormal);
 	button.classList.toggle("selected", isAbnormal);
 	button.textContent = isAbnormal
 		? button.dataset.normal
 		: button.dataset.abnormal;
 	updateRosBadge(button.dataset.section);
+
+	// Show/hide breathing rate detail picker (tachypnoea / bradypnoea / apnoea)
+	if (button.dataset.stateId === "resp_breathingRate") {
+		const wrap = $("#rrDetailWrap");
+		if (wrap) {
+			wrap.classList.toggle("hidden", next === "normal");
+			if (next === "normal") {
+				const hidden = $("#rrDetail");
+				if (hidden) hidden.value = "";
+				wrap
+					.querySelectorAll("[data-value]")
+					.forEach((c) => c.classList.remove("selected"));
+			}
+		}
+	}
 }
 
 function updateRosBadge(section) {
@@ -2953,9 +3146,15 @@ function getSelectedParts(set) {
 function rosLine(section) {
 	return (
 		ROS[section].items
-			.map(([id, normal, abnormal]) =>
-				state.ros[`${section}_${id}`] === "abnormal" ? abnormal : normal,
-			)
+			.map(([id, normal, abnormal]) => {
+				if (state.ros[`${section}_${id}`] !== "abnormal") return normal;
+				// Substitute specific detail values when a sub-selection has been made
+				if (section === "resp" && id === "breathingRate") {
+					const detail = val("rrDetail");
+					if (detail) return detail;
+				}
+				return abnormal;
+			})
 			.join(". ") + "."
 	);
 }
@@ -2967,6 +3166,14 @@ function abcChipText(button) {
 		button.dataset.abcState === "abnormal"
 	) {
 		const detail = val("colourDetail");
+		if (detail) return detail;
+	}
+	// Substitute rate detail if "Tachycardic / Bradycardic" and a sub-selection has been made
+	if (
+		button.dataset.normal === "Normal Rate" &&
+		button.dataset.abcState === "abnormal"
+	) {
+		const detail = val("hrRateDetail");
 		if (detail) return detail;
 	}
 	return button.textContent;
@@ -2995,6 +3202,12 @@ function abcHandoverSummary() {
 	const lines = ABCDE.map(abcCompactLine).filter(Boolean);
 	return lines.length ? lines.join("\n") : "No ABCDE concerns identified.";
 }
+
+// =============================================================================
+// TEXT BUILDERS — CLINICAL OUTPUT (ADULT)
+// Functions that read current state and produce plain-text strings for each
+// output section.  All builders return "" when their section has no data.
+// =============================================================================
 
 function toggleEcgFinding(btn) {
 	const finding = btn.dataset.finding;
@@ -3162,6 +3375,8 @@ function rosBlock(section) {
 	return `${rosLine(section)} ${extras[section]?.() || val(`${section}Notes`) || ""}`.trim();
 }
 
+// --- Handover document builders ---
+
 function buildHandoverText() {
 	const format = val("handoverFormat") || "ASHICE";
 	const age = val("ptAge");
@@ -3246,8 +3461,258 @@ function buildHandoverText() {
 		].join("\n");
 	}
 
+	if (format === "Leave at Home") {
+		return buildLahSbarText();
+	}
+
 	return "";
 }
+
+// --- Leave at Home SBAR document ---
+
+function buildLahSbarText() {
+	const div = "─".repeat(44);
+	const age = val("ptAge");
+	const sex = val("ptSex");
+	const pc = getPc();
+	const decision = val("conveyanceDecision");
+
+	// ── SITUATION ──────────────────────────────────────────
+	const ptLine = [age ? `${age} years` : null, sex || null]
+		.filter(Boolean)
+		.join(", ");
+	const hpcCaller = val("hpcCaller");
+	const hpcCat = val("hpcCategory");
+	const hpcCatWord = hpcCat === "C4" ? "generated" : "dispatched";
+	const callLine =
+		hpcCaller && hpcCat
+			? `${hpcCaller}, ${hpcCat} ${hpcCatWord}`
+			: hpcCaller || (hpcCat ? `${hpcCat} ${hpcCatWord}` : "");
+	const situation = [
+		ptLine ? `Patient: ${ptLine}` : "Patient: Demographics not recorded",
+		`Presenting complaint: ${pc}`,
+		callLine
+			? `Call summary: ${[val("hpcEvents"), callLine].filter(Boolean).join(". ")}`
+			: val("hpcEvents") || null,
+	]
+		.filter(Boolean)
+		.join("\n");
+
+	// ── BACKGROUND ─────────────────────────────────────────
+	const pmh = isChecked("noPmh")
+		? "No significant PMH"
+		: val("pmh") || "Not documented";
+	const meds = isChecked("noMeds")
+		? "No regular medications"
+		: val("medications") || "Not documented";
+	const allergies = isChecked("nkda")
+		? "NKDA"
+		: val("allergies") || "Not documented";
+	const loi = [val("loiWhat"), val("loiTime")].filter(Boolean).join(" at ");
+	const background = [
+		`PMH: ${pmh}`,
+		`Medications: ${meds}`,
+		`Allergies: ${allergies}`,
+		loi ? `Last oral intake: ${loi}` : null,
+		val("prevDetails") ? `Previous episodes: ${val("prevDetails")}` : null,
+	]
+		.filter(Boolean)
+		.join("\n");
+
+	// ── ASSESSMENT ─────────────────────────────────────────
+	const assessParts = [];
+
+	// Observations
+	const obsText = buildObsText();
+	if (obsText) {
+		assessParts.push(
+			`Observations:\n${obsText
+				.split("\n")
+				.map((l) => `  ${l}`)
+				.join("\n")}`,
+		);
+	}
+
+	// Primary survey (ABCDE) — abnormals only
+	const abcSummary = abcHandoverSummary();
+	if (abcSummary && abcSummary !== "No ABCDE concerns identified.") {
+		assessParts.push(
+			`Primary survey:\n  ${abcSummary.split("\n").join("\n  ")}`,
+		);
+	} else {
+		assessParts.push("Primary survey: No ABCDE concerns identified.");
+	}
+
+	// ECG
+	syncAuscultationOutput();
+	const ecgText = buildEcgText();
+	if (ecgText) assessParts.push(ecgText);
+
+	// Auscultation
+	const aus = val("respAus");
+	if (aus) assessParts.push(`Auscultation: ${aus}`);
+
+	// PC-specific assessment tools
+	const pcSel = val("pcSelect");
+	if (pcSel === "Fall") {
+		assessParts.push(
+			`Falls assessment (SPLATT):\n  ${buildFallsText().split("\n").join("\n  ")}`,
+		);
+	} else if (pcSel === "Head injury") {
+		assessParts.push(
+			`Head injury assessment (NICE CG176):\n  ${buildHeadInjuryText().split("\n").join("\n  ")}`,
+		);
+	} else if (pcSel === "Seizure") {
+		assessParts.push(
+			`Seizure assessment:\n  ${buildSeizureText().split("\n").join("\n  ")}`,
+		);
+	} else if (MH_PCS.includes(pcSel)) {
+		assessParts.push(
+			`Mental health assessment (MSE):\n  ${buildMhAssessmentText().split("\n").join("\n  ")}`,
+		);
+	}
+
+	// SOCRATES pain assessment (if not suppressed)
+	if (!isChecked("noPain")) {
+		const site = getSelectedParts(state.siteParts);
+		const socratesParts = [
+			site ? `Site: ${site}` : null,
+			val("onsetType")
+				? `Onset: ${val("onsetType")}${onsetTime() ? `, ${onsetTime()}${onsetClockSuffix()}` : ""}${val("onsetDuration") ? `, duration ${val("onsetDuration")}` : ""}`
+				: null,
+			state.character.size
+				? `Character: ${listSet(state.character, "")}`
+				: null,
+			state.associated.size
+				? `Associated: ${listSet(state.associated, "")}`
+				: null,
+			val("severity")
+				? `Severity: ${val("severity")}/10 now${val("severityWorst") ? `, ${val("severityWorst")}/10 at worst` : ""}`
+				: null,
+			`Exacerbating: ${listFactors(state.exacerbating, "exacerbatingOther", "None identified")}`,
+			`Relieving: ${listFactors(state.relieving, "relievingOther", "None identified")}`,
+		]
+			.filter(Boolean)
+			.join("; ");
+		if (socratesParts)
+			assessParts.push(`Pain assessment (SOCRATES): ${socratesParts}`);
+	}
+
+	// ROS abnormals (only include if user documented something)
+	["resp", "cvs", "neuro", "gi", "urine", "integ", "msk", "psych"].forEach(
+		(section) => {
+			const block = rosBlock(section);
+			if (
+				block &&
+				!block.match(/^(Not auscultated|No cough)/) &&
+				block.trim() !== ""
+			) {
+				const sectionNames = {
+					resp: "Respiratory",
+					cvs: "Cardiovascular",
+					neuro: "Neurological",
+					gi: "Gastrointestinal",
+					urine: "Urinary",
+					integ: "Integumentary",
+					msk: "Musculoskeletal",
+					psych: "Mental health",
+				};
+				assessParts.push(`${sectionNames[section]}: ${block}`);
+			}
+		},
+	);
+
+	// On examination (free text)
+	if (val("oeText")) assessParts.push(`On examination: ${val("oeText")}`);
+
+	// Treatment given
+	const hasTx =
+		state.airwayInterventions.size ||
+		state.ivEntries.length ||
+		state.drugEntries.length ||
+		state.woundInterventions.size ||
+		state.manualHandling.size ||
+		val("otherInterventionsFree") ||
+		val("treatmentNotes");
+	if (hasTx) {
+		assessParts.push(
+			`Treatments/interventions:\n  ${buildTreatmentText().split("\n").join("\n  ")}`,
+		);
+	}
+
+	// Mental capacity
+	const capacity = buildCapacityText();
+	if (capacity && capacity !== "Not applicable.") {
+		assessParts.push(`Mental capacity: ${capacity}`);
+	}
+
+	const assessment = assessParts.join("\n");
+
+	// ── RECOMMENDATION ─────────────────────────────────────
+	const referrals = listSet(state.referrals, "none");
+	const followUp = val("followUp");
+	const checks = [
+		isChecked("riskExplained") && "risks explained",
+		isChecked("alternativesDiscussed") && "alternatives discussed",
+		isChecked("understandsRisk") && "patient understands risks",
+		isChecked("canRecontact") && "advised they can recontact 999/111",
+	]
+		.filter(Boolean)
+		.join("; ");
+	const legalChips = $$(".legal-chip.selected").map((c) => {
+		const map = {
+			ehcp: "EHCP consulted",
+			lpa: "LPA consulted",
+			"advance-decision": "Advance decision reviewed",
+			"family-carer": "Family/carer agreement obtained",
+		};
+		return map[c.dataset.legal] || c.dataset.legal;
+	});
+	const legalDetail = val("legalConsiderationsDetail");
+	const recommendation = [
+		`Decision: ${decision}`,
+		referrals !== "none" ? `Referred / signposted to: ${referrals}` : null,
+		followUp ? `Follow-up arrangements: ${followUp}` : null,
+		checks ? `Safety netting: ${checks}` : null,
+		legalChips.length
+			? `Legal / capacity: ${legalChips.join(", ")}${legalDetail ? ". " + legalDetail : ""}`
+			: legalDetail
+				? `Legal / capacity notes: ${legalDetail}`
+				: null,
+	]
+		.filter(Boolean)
+		.join("\n");
+
+	// ── ADDITIONAL INFORMATION ─────────────────────────────
+	const addlParts = [];
+	const worsening = buildWorseningText();
+	if (worsening && !worsening.toLowerCase().includes("not applicable")) {
+		addlParts.push(
+			`Worsening advice:\n  ${worsening.split("\n").join("\n  ")}`,
+		);
+	}
+	const sg = buildSafeguardingText();
+	if (sg) addlParts.push(`Safeguarding: ${sg}`);
+	if (val("conveyanceNotes")) addlParts.push(val("conveyanceNotes"));
+	if (val("handoverNotes")) addlParts.push(val("handoverNotes"));
+	if (state.clinicalChanges.length) {
+		addlParts.push(
+			`Clinical changes:\n  ${buildChangesText().split("\n").join("\n  ")}`,
+		);
+	}
+
+	return [
+		`SITUATION\n${situation}`,
+		`BACKGROUND\n${background}`,
+		`ASSESSMENT\n${assessment || "No specific findings documented."}`,
+		`RECOMMENDATION\n${recommendation}`,
+		...(addlParts.length
+			? [`ADDITIONAL INFORMATION\n${addlParts.join("\n")}`]
+			: []),
+	].join(`\n\n${div}\n\n`);
+}
+
+// --- Specialist assessment text builders ---
 
 function getNiceCTCriteria() {
 	const criteria = [];
@@ -3359,9 +3824,11 @@ function buildFallsText() {
 	].join("\n");
 }
 
-/* ── Red flag detection ──────────────────────────────────────────── */
+// RED FLAG DETECTION
+// Evaluates the current form state against a rule set and renders highlighted
+// alerts.  Re-evaluated on a short debounce after any user interaction.
+// rf* helper functions each test one specific clinical condition.
 
-// Helpers
 function rfPc(term) {
 	return getPc().toLowerCase().includes(term.toLowerCase());
 }
@@ -3787,6 +4254,10 @@ function bindRedFlagToggle() {
 	});
 }
 
+// OUTPUT GENERATION
+// Assembles all section text builders into an ordered list of sections,
+// renders them as copyable cards, and manages the clipboard helpers.
+
 function buildOutputSections() {
 	const pc = getPc();
 	const site = getSelectedParts(state.siteParts) || "Not localised";
@@ -3859,12 +4330,18 @@ function buildOutputSections() {
 		{
 			id: "background",
 			title: "BACKGROUND",
-			body: `Allergies: ${isChecked("nkda") ? "NKDA" : val("allergies") || "Not documented"}\nMedications: ${isChecked("noMeds") ? "No regular medications" : val("medications") || "Not documented"}\nPMH: ${isChecked("noPmh") ? "No significant past medical history" : val("pmh") || "Not documented"}\nLast oral intake: ${[val("loiWhat"), val("loiTime")].filter(Boolean).join(" at ") || "Not documented"}\nPrevious episodes: ${val("prevDetails") || "Not documented"}`,
+			body: `PMH: ${isChecked("noPmh") ? "No significant past medical history" : val("pmh") || "Not documented"}\nMedications: ${isChecked("noMeds") ? "No regular medications" : val("medications") || "Not documented"}\nAllergies: ${isChecked("nkda") ? "NKDA" : val("allergies") || "Not documented"}\nLast oral intake: ${[val("loiWhat"), val("loiTime")].filter(Boolean).join(" at ") || "Not documented"}\nPrevious episodes: ${val("prevDetails") || "Not documented"}`,
 		},
 		...(() => {
 			const card = $("#gynaeCard");
 			if (!card || card.classList.contains("hidden")) return [];
-			return [{ id: "gynae", title: "OBSTETRIC / GYNAECOLOGICAL", body: buildGynaeOutput() }];
+			return [
+				{
+					id: "gynae",
+					title: "OBSTETRIC / GYNAECOLOGICAL",
+					body: buildGynaeOutput(),
+				},
+			];
 		})(),
 		{
 			id: "primary",
@@ -3899,6 +4376,10 @@ function buildOutputSections() {
 						`Severity: ${[val("severity") ? `${val("severity")} now` : null, val("severityWorst") ? `${val("severityWorst")} at worst` : null].filter(Boolean).join(", ") || "Not documented"}`,
 					].join("\n"),
 		},
+		...(() => {
+			const obs = buildObsText();
+			return obs ? [{ id: "obs", title: "OBSERVATIONS", body: obs }] : [];
+		})(),
 		...(state.injuryEntries.length
 			? [
 					{
@@ -4011,7 +4492,10 @@ function buildOutputSections() {
 		})(),
 		{
 			id: "handover",
-			title: `HANDOVER — ${val("handoverFormat") || "ASHICE"}`,
+			title:
+				val("handoverFormat") === "Leave at Home"
+					? "LEAVE AT HOME — SBAR"
+					: `HANDOVER — ${val("handoverFormat") || "ASHICE"}`,
 			body: buildHandoverText(),
 		},
 		...(() => {
@@ -4032,8 +4516,379 @@ function buildOutputSections() {
 	];
 }
 
-// Plain-text bodies keyed by section id — bypasses DOM round-trips on copy
+// OBSERVATIONS & NEWS2
+// Supports multiple timed observation sets. Each set auto-calculates a NEWS2
+// score.  GCS within each obs set uses the shared buildGcsCalcHTML() helper
+// with a unique prefix to avoid ID collisions with the primary survey GCS.
+
+/** Monotonically increasing counter ensures each obs set gets a unique prefix. */
+let obsCounter = 0;
+
+function newsScore(rr, spo2, o2On, sbp, hr, temp, avpu) {
+	let score = 0;
+	let hasThree = false;
+	const add = (s) => {
+		score += s;
+		if (s === 3) hasThree = true;
+	};
+
+	if (!isNaN(rr))
+		add(rr <= 8 ? 3 : rr <= 11 ? 1 : rr <= 20 ? 0 : rr <= 24 ? 2 : 3);
+	if (!isNaN(spo2)) add(spo2 <= 91 ? 3 : spo2 <= 93 ? 2 : spo2 <= 95 ? 1 : 0);
+	if (o2On) add(2);
+	if (!isNaN(sbp))
+		add(sbp <= 90 ? 3 : sbp <= 100 ? 2 : sbp <= 110 ? 1 : sbp <= 219 ? 0 : 3);
+	if (!isNaN(hr))
+		add(
+			hr <= 40
+				? 3
+				: hr <= 50
+					? 1
+					: hr <= 90
+						? 0
+						: hr <= 110
+							? 1
+							: hr <= 130
+								? 2
+								: 3,
+		);
+	if (!isNaN(temp))
+		add(
+			temp <= 35.0
+				? 3
+				: temp <= 36.0
+					? 1
+					: temp <= 38.0
+						? 0
+						: temp <= 39.0
+							? 1
+							: 2,
+		);
+	if (avpu && avpu !== "A") add(3);
+
+	const risk = score >= 7 ? "HIGH" : score >= 5 || hasThree ? "MEDIUM" : "LOW";
+	return { score, risk, hasThree };
+}
+
+function updateNews2(setEl) {
+	const n = (field) => {
+		const v = parseFloat(
+			setEl.querySelector(`[data-obs-field="${field}"]`)?.value,
+		);
+		return isNaN(v) ? NaN : v;
+	};
+	const chip = (key) =>
+		setEl.querySelector(`[data-obs-key="${key}"].selected`)?.dataset.obsVal;
+
+	const rr = n("rr"),
+		spo2 = n("spo2"),
+		sbp = n("sbp"),
+		hr = n("hr"),
+		temp = n("temp");
+	const o2On = chip("o2") === "Supplemental";
+	const avpu = chip("avpu");
+
+	const anyEntered = [rr, spo2, sbp, hr, temp].some((v) => !isNaN(v)) || avpu;
+	const scoreEl = setEl.querySelector(".news2-score");
+	const riskEl = setEl.querySelector(".news2-risk");
+	const badgeEl = setEl.querySelector(".obs-news2");
+
+	if (!anyEntered) {
+		if (scoreEl) scoreEl.textContent = "–";
+		if (riskEl) {
+			riskEl.textContent = "";
+			riskEl.className = "news2-risk";
+		}
+		if (badgeEl) badgeEl.className = "obs-news2";
+		return;
+	}
+
+	const { score, risk } = newsScore(rr, spo2, o2On, sbp, hr, temp, avpu);
+	if (scoreEl) scoreEl.textContent = score;
+	const riskClass =
+		risk === "HIGH"
+			? "news2-high"
+			: risk === "MEDIUM"
+				? "news2-medium"
+				: "news2-low";
+	if (riskEl) {
+		riskEl.textContent = risk;
+		riskEl.className = `news2-risk ${riskClass}`;
+	}
+	if (badgeEl) badgeEl.className = `obs-news2 obs-news2--${risk.toLowerCase()}`;
+}
+
+function createObsSet() {
+	const idx = obsCounter++;
+	const gcsPfx = `obsGcs${idx}`;
+	const now = new Date();
+	const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+	// Build radio chip row using app's standard radio-chip class
+	const chips = (key, options) =>
+		`<div class="radio-chip-group" style="flex-wrap:wrap;gap:6px;margin-top:4px">` +
+		options
+			.map(
+				([v, l]) =>
+					`<button type="button" class="radio-chip" data-obs-key="${key}" data-obs-val="${v}">${l}</button>`,
+			)
+			.join("") +
+		`</div>`;
+
+	const div = document.createElement("div");
+	div.className = "obs-set";
+	div.dataset.obsIdx = idx;
+
+	div.innerHTML = `
+		<div class="obs-set-head">
+			<span class="obs-set-label">Obs set</span>
+			<input type="time" data-obs-field="time" value="${timeStr}" />
+			<button type="button" class="obs-remove">Remove</button>
+		</div>
+
+		<div class="obs-vitals-grid">
+			<div class="obs-field">
+				<label class="obs-label">RR (bpm)</label>
+				<input type="number" min="0" max="80" data-obs-field="rr" placeholder="—" />
+			</div>
+			<div class="obs-field">
+				<label class="obs-label">SpO₂ (%)</label>
+				<input type="number" min="50" max="100" data-obs-field="spo2" placeholder="—" />
+			</div>
+			<div class="obs-field">
+				<label class="obs-label">Temp (°C)</label>
+				<input type="number" min="25" max="45" step="0.1" data-obs-field="temp" placeholder="—" />
+			</div>
+			<div class="obs-field">
+				<label class="obs-label">BM (mmol/L)</label>
+				<input type="number" min="0" max="50" step="0.1" data-obs-field="bm" placeholder="—" />
+			</div>
+			<div class="obs-field">
+				<label class="obs-label">Ketones (mmol/L)</label>
+				<input type="number" min="0" max="20" step="0.1" data-obs-field="ketones" placeholder="—" />
+			</div>
+		</div>
+
+		<div class="obs-row-group">
+			<label class="obs-label">O₂</label>
+			<div class="obs-inline-row">
+				${chips("o2", [
+					["Air", "Air"],
+					["Supplemental", "Supplemental O₂"],
+				])}
+				<input type="number" min="1" max="15" step="0.5" data-obs-field="o2Flow"
+					placeholder="L/min" class="obs-o2-flow hidden" style="width:80px;margin-top:4px" />
+			</div>
+		</div>
+
+		<div class="obs-row-group">
+			<label class="obs-label">HR (bpm)</label>
+			<div class="obs-inline-row">
+				<input type="number" min="0" max="300" data-obs-field="hr"
+					placeholder="—" style="width:90px" />
+				${chips("hrRhythm", [
+					["Regular", "Regular"],
+					["Irregular", "Irregular"],
+				])}
+			</div>
+		</div>
+
+		<div class="obs-row-group">
+			<label class="obs-label">BP (mmHg)</label>
+			<div class="obs-inline-row" style="flex-wrap:wrap;gap:6px;align-items:center">
+				<input type="number" min="0" max="300" data-obs-field="sbp"
+					placeholder="Systolic" style="width:100px" />
+				<span style="color:var(--text-secondary);font-weight:600">/</span>
+				<input type="number" min="0" max="200" data-obs-field="dbp"
+					placeholder="Diastolic" style="width:100px" />
+				${chips("bpPos", [
+					["Lying", "Lying"],
+					["Sitting", "Sitting"],
+					["Standing", "Standing"],
+				])}
+				${chips("bpArm", [
+					["L", "L arm"],
+					["R", "R arm"],
+				])}
+			</div>
+		</div>
+
+		<div class="obs-row-group">
+			<label class="obs-label">AVPU</label>
+			${chips("avpu", [
+				["A", "A — Alert"],
+				["C", "C — Confusion"],
+				["V", "V — Voice"],
+				["P", "P — Pain"],
+				["U", "U — Unresponsive"],
+			])}
+		</div>
+
+		<div class="obs-row-group">
+			${buildGcsCalcHTML(gcsPfx)}
+		</div>
+
+		<div class="obs-news2">
+			<span class="news2-label">NEWS2</span>
+			<span class="news2-score">–</span>
+			<span class="news2-risk"></span>
+		</div>`;
+
+	// Remove button
+	div.querySelector(".obs-remove").addEventListener("click", () => {
+		div.remove();
+		updateObsSetNumbers();
+	});
+
+	// Obs radio chips — delegate on this set's container (tap again to deselect)
+	div.addEventListener("click", (e) => {
+		const chip = e.target.closest("[data-obs-key]");
+		if (!chip) return;
+		const key = chip.dataset.obsKey;
+		const wasSelected = chip.classList.contains("selected");
+		div
+			.querySelectorAll(`[data-obs-key="${key}"]`)
+			.forEach((c) => c.classList.remove("selected"));
+		if (!wasSelected) chip.classList.add("selected");
+		// Hide O2 flow input whenever Supplemental is not the active selection
+		if (key === "o2") {
+			const supplementalActive =
+				!wasSelected && chip.dataset.obsVal === "Supplemental";
+			div
+				.querySelector(".obs-o2-flow")
+				?.classList.toggle("hidden", !supplementalActive);
+		}
+		updateNews2(div);
+	});
+
+	// Number/time inputs
+	div.querySelectorAll("input").forEach((el) => {
+		el.addEventListener("input", () => updateNews2(div));
+	});
+
+	return div;
+}
+
+function updateObsSetNumbers() {
+	$$(".obs-set").forEach((set, i) => {
+		const label = set.querySelector(".obs-set-label");
+		if (label) label.textContent = `Obs set ${i + 1}`;
+	});
+}
+
+function readObsSetData(setEl) {
+	const n = (field) => {
+		const v = setEl.querySelector(`[data-obs-field="${field}"]`)?.value?.trim();
+		return v || null;
+	};
+	const chip = (key) =>
+		setEl.querySelector(`[data-obs-key="${key}"].selected`)?.dataset.obsVal ||
+		null;
+	// GCS values come from the calculator sentinels (data-gcs-selected on hidden spans)
+	const gcsPfx = `obsGcs${setEl.dataset.obsIdx}`;
+	const gcsE = $("#" + gcsPfx + "Eye")?.dataset.gcsSelected || null;
+	const gcsV = $("#" + gcsPfx + "Verbal")?.dataset.gcsSelected || null;
+	const gcsM = $("#" + gcsPfx + "Motor")?.dataset.gcsSelected || null;
+	return {
+		time: n("time"),
+		rr: n("rr"),
+		spo2: n("spo2"),
+		o2: chip("o2"),
+		o2Flow: n("o2Flow"),
+		hr: n("hr"),
+		hrRhythm: chip("hrRhythm"),
+		sbp: n("sbp"),
+		dbp: n("dbp"),
+		bpPos: chip("bpPos"),
+		bpArm: chip("bpArm"),
+		temp: n("temp"),
+		bm: n("bm"),
+		ketones: n("ketones"),
+		avpu: chip("avpu"),
+		gcsE,
+		gcsV,
+		gcsM,
+	};
+}
+
+function buildObsText() {
+	const sets = $$(".obs-set");
+	if (!sets.length) return null;
+	return sets
+		.map((setEl, i) => {
+			const d = readObsSetData(setEl);
+			const lines = [];
+
+			// Vitals line
+			const vitals = [];
+			if (d.rr) vitals.push(`RR: ${d.rr}`);
+			if (d.spo2) {
+				const o2Str =
+					d.o2 === "Supplemental"
+						? `supplemental O₂${d.o2Flow ? ` ${d.o2Flow}L/min` : ""}`
+						: "air";
+				vitals.push(`SpO₂: ${d.spo2}% (${o2Str})`);
+			}
+			if (d.hr) {
+				const rhythm = d.hrRhythm ? ` (${d.hrRhythm.toLowerCase()})` : "";
+				vitals.push(`HR: ${d.hr}${rhythm}`);
+			}
+			if (d.sbp || d.dbp) {
+				const bp = [d.sbp, d.dbp].filter(Boolean).join("/");
+				const pos = d.bpPos ? ` ${d.bpPos.toLowerCase()}` : "";
+				const arm = d.bpArm ? ` ${d.bpArm}` : "";
+				vitals.push(`BP: ${bp}mmHg${pos}${arm}`);
+			}
+			if (d.temp) vitals.push(`Temp: ${d.temp}°C`);
+			if (d.bm) vitals.push(`BM: ${d.bm} mmol/L`);
+			if (d.ketones) vitals.push(`Ketones: ${d.ketones} mmol/L`);
+			if (vitals.length) lines.push(vitals.join(", "));
+
+			// Neuro line
+			const neuro = [];
+			if (d.avpu) neuro.push(`AVPU: ${d.avpu}`);
+			if (d.gcsE && d.gcsV && d.gcsM) {
+				const total = parseInt(d.gcsE) + parseInt(d.gcsV) + parseInt(d.gcsM);
+				neuro.push(`GCS: ${total} (E${d.gcsE} V${d.gcsV} M${d.gcsM})`);
+			}
+			if (neuro.length) lines.push(neuro.join(", "));
+
+			// NEWS2
+			const rr = parseFloat(d.rr),
+				spo2 = parseFloat(d.spo2),
+				sbp = parseFloat(d.sbp),
+				hr = parseFloat(d.hr),
+				temp = parseFloat(d.temp);
+			const anyVitals =
+				[rr, spo2, sbp, hr, temp].some((v) => !isNaN(v)) || d.avpu;
+			if (anyVitals) {
+				const { score, risk } = newsScore(
+					rr,
+					spo2,
+					d.o2 === "Supplemental",
+					sbp,
+					hr,
+					temp,
+					d.avpu,
+				);
+				lines.push(`NEWS2: ${score} — ${risk}`);
+			}
+
+			const header = `Set ${i + 1}${d.time ? ` — ${d.time}` : ""}`;
+			return `${header}\n${lines.map((l) => `  ${l}`).join("\n")}`;
+		})
+		.join("\n\n");
+}
+
+// CLIPBOARD & COPY UTILITIES
+// Sections store their plain-text content in Maps rather than reading from the
+// DOM on copy — this avoids URL-encoding artefacts from innerHTML round-trips.
+
+/** Adult section plain-text bodies keyed by section ID. */
 const outputSectionTexts = new Map();
+
+/** Paediatric section plain-text bodies keyed by section ID. */
+const paedsOutputSectionTexts = new Map();
 
 function renderOutputSections(sections) {
 	outputSectionTexts.clear();
@@ -4173,6 +5028,31 @@ function handleConveyanceDisplay() {
 	$("#nonConveyedFields")?.classList.toggle("hidden", conveyed);
 	$("#worseningSection")?.classList.toggle("hidden", conveyed);
 	updateWorseningScript();
+
+	// Auto-select handover format based on conveyance decision
+	const currentFmt = val("handoverFormat");
+	const lahFormats = ["Leave at Home"];
+	const conveyFormats = ["SBAR", "ASHICE", "ATMIST"];
+	if (!conveyed && !lahFormats.includes(currentFmt)) {
+		$$("[data-radio-group='handoverFormat'] [data-value]").forEach((b) =>
+			b.classList.toggle("selected", b.dataset.value === "Leave at Home"),
+		);
+		const hiddenInput = $("#handoverFormat");
+		if (hiddenInput) {
+			hiddenInput.value = "Leave at Home";
+			hiddenInput.dispatchEvent(new Event("change"));
+		}
+	} else if (conveyed && lahFormats.includes(currentFmt)) {
+		$$("[data-radio-group='handoverFormat'] [data-value]").forEach((b) =>
+			b.classList.toggle("selected", b.dataset.value === "SBAR"),
+		);
+		const hiddenInput = $("#handoverFormat");
+		if (hiddenInput) {
+			hiddenInput.value = "SBAR";
+			hiddenInput.dispatchEvent(new Event("change"));
+		}
+	}
+
 	if (!conveyed) return;
 	$("#hospitalOtherWrap")?.classList.toggle(
 		"hidden",
@@ -4248,8 +5128,37 @@ function buildConveyanceText() {
 	]
 		.filter(Boolean)
 		.join("; ");
-	return `${decision}. Referred/signposted to: ${listSet(state.referrals, "not documented")}. ${val("followUp") ? val("followUp") + ". " : ""}${checks ? `Safety netting: ${checks}.` : ""}${notes ? " " + notes : ""}`.trim();
+
+	// Legal / capacity considerations (EHCP, LPA, advance decision)
+	const legalChips = $$(".legal-chip.selected").map((c) => {
+		const map = {
+			ehcp: "EHCP consulted",
+			lpa: "LPA consulted",
+			"advance-decision": "Advance decision reviewed",
+			"family-carer": "Family/carer agreement obtained",
+		};
+		return map[c.dataset.legal] || c.dataset.legal;
+	});
+	const legalDetail = val("legalConsiderationsDetail");
+	const legalLine = legalChips.length
+		? `Legal / capacity: ${legalChips.join(", ")}.${legalDetail ? " " + legalDetail : ""}`
+		: legalDetail
+			? `Legal / capacity: ${legalDetail}`
+			: null;
+
+	return [
+		`${decision}. Referred/signposted to: ${listSet(state.referrals, "not documented")}.`,
+		val("followUp") ? val("followUp") + "." : null,
+		checks ? `Safety netting: ${checks}.` : null,
+		legalLine,
+		notes || null,
+	]
+		.filter(Boolean)
+		.join(" ");
 }
+
+// UTILITY & RESET HELPERS
+// Body-map clearing, pain assessment reset, auscultation preview sync.
 
 function clearBodyMap() {
 	state.siteParts.clear();
@@ -4896,9 +5805,14 @@ const PAEDS_SAFEGUARDING = [
 	"Parent / carer unavailable",
 ];
 
-// Track whether paeds has been initialised
+// PAEDIATRIC ePRF — STATE & INITIALISATION
+// Separate state object and lazy-init flag for the paeds tool.
+// initPaeds() is called once on first entry to avoid duplicate DOM building.
+
+/** Guards against initialising the paeds tool more than once. */
 let _paedsInited = false;
-// State for paeds safeguarding chips
+
+/** Mutable state for the paediatric ePRF (mirrors the adult state object). */
 const paedsState = {
 	sgConcerns: new Set(),
 	pIvEntries: [],
@@ -5061,43 +5975,6 @@ function calcWetflag(weight) {
 	};
 }
 
-function renderWetflag(weight) {
-	const results = $("#wetflagResults");
-	if (!results) return;
-	const data = calcWetflag(weight);
-	if (!data) {
-		results.classList.add("hidden");
-		return;
-	}
-	const rows = [
-		{ letter: "W", label: "Weight", value: data.weight },
-		{ letter: "E", label: "Energy (defibrillation)", value: data.energy },
-		{ letter: "T", label: "Tube size", value: data.tube },
-		{ letter: "F", label: "Fluid bolus", value: data.fluid },
-		{ letter: "L", label: "Lorazepam (seizure)", value: data.lorazepam },
-		{
-			letter: "A",
-			label: "Adrenaline (cardiac arrest)",
-			value: data.adrenaline,
-		},
-		{ letter: "G", label: "Glucose (hypoglycaemia)", value: data.glucose },
-	];
-	results.classList.remove("hidden");
-	results.innerHTML = `
-		<div class="wf-header">WETFLAG — ${data.weight} Reference</div>
-		${rows
-			.map(
-				(r) => `
-			<div class="wf-row">
-				<span class="wf-letter">${r.letter}</span>
-				<span class="wf-label">${r.label}</span>
-				<span class="wf-value">${r.value}</span>
-			</div>`,
-			)
-			.join("")}
-		<div class="wf-disclaimer">Prompt only — always verify with JRCALC Plus. Not a prescription. Check weight is accurate before administration.</div>`;
-}
-
 /* ── FLACC total ─────────────────────────────────────────── */
 function updateFlaccTotal() {
 	const ids = [
@@ -5158,23 +6035,27 @@ function bindRadioChipGroups() {
 			const chip = e.target.closest("[data-value]");
 			if (!chip || !group.contains(chip)) return;
 			const fieldId = group.dataset.radioGroup;
+			const wasSelected = chip.classList.contains("selected");
 			// Deselect all chips in this group
 			group
 				.querySelectorAll("[data-value]")
 				.forEach((c) => c.classList.remove("selected"));
-			// Select tapped chip
-			chip.classList.add("selected");
-			// Update hidden input
+			// Toggle: re-select only if it wasn't already selected
+			if (!wasSelected) chip.classList.add("selected");
+			// Update hidden input (empty string if deselected)
 			const inp = $(`#${fieldId}`);
 			if (inp) {
-				inp.value = chip.dataset.value;
+				inp.value = wasSelected ? "" : chip.dataset.value;
 				inp.dispatchEvent(new Event("change"));
 			}
 		});
 	});
 }
 
-/* ── Bind all paeds events ───────────────────────────────── */
+// EVENT BINDING — PAEDIATRIC ePRF
+// All DOM event listeners for the paeds form, including WETFLAG, FLACC, PAT,
+// drug/IV entry, and the paeds output/copy buttons.
+
 function bindPaedsEvents() {
 	// ── Radio chip groups (single-select) ──────────────────
 	bindRadioChipGroups();
@@ -5343,8 +6224,7 @@ function bindPaedsEvents() {
 	// ── Generate buttons ───────────────────────────────────
 	$("#pCopyButton")?.addEventListener("click", async () => {
 		buildPaedsOutputSections();
-		const all = $$(`#pOutputSections .output-snippet`)
-			.map((el) => el.dataset.plaintext || el.innerText?.trim())
+		const all = [...paedsOutputSectionTexts.values()]
 			.filter(Boolean)
 			.join("\n\n");
 		if (all) await copyText(all);
@@ -5355,7 +6235,9 @@ function bindPaedsEvents() {
 	});
 }
 
-/* ── Build paeds output sections ─────────────────────────── */
+// OUTPUT GENERATION — PAEDIATRIC ePRF
+// Assembles all paeds section text builders and renders them as copyable cards.
+
 function buildPaedsOutputSections() {
 	const container = $("#pOutputSections");
 	if (!container) return;
@@ -5403,17 +6285,24 @@ function buildPaedsOutputSections() {
 					},
 				]
 			: []),
+		...(() => {
+			const wf = buildPaedsWetflagText();
+			return wf
+				? [{ id: "p-wetflag", title: "WETFLAG REFERENCE", body: wf }]
+				: [];
+		})(),
 	];
 
+	paedsOutputSectionTexts.clear();
 	sections.forEach(({ id, title, body }) => {
 		if (!body || !body.trim()) return;
+		paedsOutputSectionTexts.set(id, body);
 		const card = document.createElement("article");
 		card.className = "output-card";
 		card.innerHTML = `<div class="output-card-head"><h3>${title}</h3><button type="button" class="secondary-action" data-p-copy-section="${id}">Copy</button></div>`;
 		const pre = document.createElement("pre");
 		pre.className = "output-snippet";
 		pre.textContent = body;
-		pre.dataset.plaintext = body;
 		card.append(pre);
 		card
 			.querySelector("[data-p-copy-section]")
@@ -5424,7 +6313,9 @@ function buildPaedsOutputSections() {
 	});
 }
 
-/* ── Paeds text builders ─────────────────────────────────── */
+// TEXT BUILDERS — PAEDIATRIC ePRF
+// One function per output section.  All return "" when their section has no data.
+
 function buildTmtText() {
 	const lines = ["3 Minute Toolkit (Spotting the Sick Child)"];
 
@@ -5610,9 +6501,7 @@ function buildPaedsSgText() {
 	if (val("pSgDetail")) lines.push(`Detail: ${val("pSgDetail")}`);
 	if (isChecked("pSgReferral")) {
 		const ref = val("pSgReferralDetail");
-		lines.push(
-			`Safeguarding referral made.${ref ? ` ${ref}` : ""}`,
-		);
+		lines.push(`Safeguarding referral made.${ref ? ` ${ref}` : ""}`);
 	}
 	return lines.join("\n") || "Safeguarding: None identified on scene";
 }
@@ -5701,7 +6590,10 @@ function buildPaedsTreatmentSection() {
 	$("#pDrugName")?.addEventListener("change", () => {
 		const isOther = val("pDrugName") === "Other";
 		$("#pDrugNameOther")?.classList.toggle("hidden", !isOther);
-		if (!isOther) { const o = $("#pDrugNameOther"); if (o) o.value = ""; }
+		if (!isOther) {
+			const o = $("#pDrugNameOther");
+			if (o) o.value = "";
+		}
 	});
 
 	// Remove / repeat delegation
@@ -5775,7 +6667,8 @@ function renderPaedsIvEntries() {
 }
 
 function addPaedsDrugEntry() {
-	const drug = val("pDrugName") === "Other" ? val("pDrugNameOther") : val("pDrugName");
+	const drug =
+		val("pDrugName") === "Other" ? val("pDrugNameOther") : val("pDrugName");
 	if (!drug) return;
 	paedsState.pDrugEntries.push({
 		drug,
@@ -5839,7 +6732,6 @@ function repeatPaedsDrugEntry(index) {
 	nameEl?.scrollIntoView({ behavior: "smooth", block: "center" });
 	nameEl?.focus();
 }
-
 
 function buildPaedsTxText() {
 	const lines = [];
@@ -5914,7 +6806,10 @@ function buildPaedsWetflagText() {
 	].join("\n");
 }
 
-/* ── Paeds conveyance transfer chips ─────────────────────── */
+// PAEDIATRIC CONVEYANCE
+// Conveyance transfer checklist chips, destination/department, and conveyance
+// summary text builder for the paeds ePRF.
+
 function buildPConveyTransferChips() {
 	const root = $("#pConveyTransferGrid");
 	if (!root) return;
@@ -6155,6 +7050,10 @@ async function copySectionById(sectionId) {
 	if (text) await copyText(text);
 }
 
+// SECTION CARD ENHANCEMENTS
+// Adds context-sensitive hint text and copy-section shortcut buttons to
+// each collapsible section card after all content is built.
+
 function enhanceSectionCards() {
 	const descriptions = {
 		"Presenting Complaint": [
@@ -6205,9 +7104,8 @@ function enhanceSectionCards() {
 	});
 }
 
-/* =========================================
-   CrewMate Dark Mode Toggle
-========================================= */
+// DARK MODE TOGGLE
+// Persists the user's theme preference to localStorage.
 
 (function () {
 	const STORAGE_KEY = "crewmate-theme";
@@ -6254,7 +7152,8 @@ function enhanceSectionCards() {
 	}
 })();
 
-/* ── Resp Counter ───────────────────────────────────────────── */
+// RESPIRATORY RATE COUNTER
+// Standalone timed tapping tool for counting respiratory rate.
 
 const respCounter = {
 	duration: 30,

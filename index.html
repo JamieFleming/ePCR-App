@@ -505,6 +505,10 @@
 			</main>
 		</div>
 
+		<!-- =====================================================================
+		     ADULT ePRF TOOL
+		     Five-tab layout: History → Primary Survey → Assessment → Plan → Generate
+		     ===================================================================== -->
 		<div id="prf-tool" class="hidden">
 			<nav class="tabs" aria-label="Main sections">
 				<button class="tab active" data-tab="history" type="button">
@@ -545,6 +549,7 @@
 			</div>
 
 			<main>
+				<!-- ── HISTORY TAB ──────────────────────────────────────────────────── -->
 				<section class="panel active" id="panel-history">
 					<div class="notice">
 						Documentation support only. Record contemporaneously, use local
@@ -2348,7 +2353,7 @@
 									<label class="field-label" for="exacerbatingOther"
 										>Other exacerbating factors</label
 									>
-									<input id="exacerbatingOther" placeholder="Free text" />
+									<input id="exacerbatingOther" placeholder="Other" />
 								</div>
 							</div>
 							<div class="socrates-group">
@@ -2360,7 +2365,7 @@
 									<label class="field-label" for="relievingOther"
 										>Other relieving factors</label
 									>
-									<input id="relievingOther" placeholder="Free text" />
+									<input id="relievingOther" placeholder="Other" />
 								</div>
 							</div>
 							<div class="toolbar pain-toolbar">
@@ -2379,9 +2384,11 @@
 						<div class="section-body grid-2">
 							<div>
 								<label class="check-row"
-									><input type="checkbox" id="nkda" checked /> NKDA</label
-								><label class="field-label" for="allergies">Allergies</label
-								><input id="allergies" />
+									><input type="checkbox" id="noPmh" checked /> No significant
+									PMH</label
+								><label class="field-label" for="pmh"
+									>Past medical history</label
+								><textarea id="pmh" rows="2"></textarea>
 							</div>
 							<div>
 								<label class="check-row"
@@ -2392,19 +2399,17 @@
 							</div>
 							<div>
 								<label class="check-row"
-									><input type="checkbox" id="noPmh" checked /> No significant
-									PMH</label
-								><label class="field-label" for="pmh"
-									>Past medical history</label
-								><textarea id="pmh" rows="2"></textarea>
+									><input type="checkbox" id="nkda" checked /> NKDA</label
+								><label class="field-label" for="allergies">Allergies</label
+								><input id="allergies" />
 							</div>
 							<div>
-								<!-- <label class="field-label">Last oral intake</label>
+								<label class="field-label">Last oral intake</label>
 								<div class="split">
 									<input id="loiWhat" placeholder="Food / fluid" /><input
 										id="loiTime"
 										type="time" />
-								</div> -->
+								</div>
 								<label class="field-label" for="prevDetails"
 									>Previous episodes</label
 								><textarea
@@ -2416,6 +2421,7 @@
 					</details>
 				</section>
 
+				<!-- ── PRIMARY SURVEY TAB ───────────────────────────────────────────── -->
 				<section class="panel" id="panel-primary">
 					<details class="section-card">
 						<summary><span>On Arrival</span><small>OA</small></summary>
@@ -2536,7 +2542,21 @@
 					<div id="abcdeContainer"></div>
 				</section>
 
+				<!-- ── ASSESSMENT TAB ───────────────────────────────────────────────── -->
 				<section class="panel" id="panel-assessment">
+					<details class="section-card" id="obsCard" open>
+						<summary><span>Observations</span><small>OBS</small></summary>
+						<div class="section-body">
+							<div id="obsContainer"></div>
+							<button
+								type="button"
+								class="secondary-action"
+								id="addObsBtn"
+								style="margin-top: 10px">
+								+ Add observations
+							</button>
+						</div>
+					</details>
 					<details class="section-card">
 						<summary><span>Review of Systems</span><small>ROS</small></summary>
 						<div id="rosContainer" class="nested-sections"></div>
@@ -2634,8 +2654,26 @@
 							</div>
 							<label class="field-label">Injury type</label>
 							<div class="square-grid" id="injuryTypeGrid"></div>
-							<label class="field-label">Interventions</label>
+							<div
+								id="injuryTypeOtherWrap"
+								class="hidden"
+								style="margin-top: 6px">
+								<input
+									id="injuryTypeOther"
+									placeholder="Other injury type..." />
+							</div>
+							<label class="field-label" style="margin-top: 10px"
+								>Interventions</label
+							>
 							<div class="square-grid" id="injuryInterventionGrid"></div>
+							<div
+								id="injuryIntOtherWrap"
+								class="hidden"
+								style="margin-top: 6px">
+								<input
+									id="injuryIntOther"
+									placeholder="Other intervention..." />
+							</div>
 							<button
 								id="addInjuryButton"
 								type="button"
@@ -3500,6 +3538,7 @@
 					</details>
 				</section>
 
+				<!-- ── PLAN TAB ─────────────────────────────────────────────────────── -->
 				<section class="panel" id="panel-plan">
 					<details class="section-card">
 						<summary><span>Conveyance</span><small>Plan</small></summary>
@@ -3716,6 +3755,44 @@
 										recontact advised</label
 									>
 								</div>
+
+								<label class="field-label" style="margin-top: 12px"
+									>Legal / capacity considerations</label
+								>
+								<div
+									class="chip-multi-group"
+									style="margin-top: 6px"
+									id="legalConsiderationsChips">
+									<button
+										type="button"
+										class="square-btn legal-chip"
+										data-legal="ehcp">
+										EHCP consulted
+									</button>
+									<button
+										type="button"
+										class="square-btn legal-chip"
+										data-legal="lpa">
+										LPA consulted
+									</button>
+									<button
+										type="button"
+										class="square-btn legal-chip"
+										data-legal="advance-decision">
+										Advance decision reviewed
+									</button>
+									<button
+										type="button"
+										class="square-btn legal-chip"
+										data-legal="family-carer">
+										Family / carer agreement
+									</button>
+								</div>
+								<textarea
+									id="legalConsiderationsDetail"
+									rows="2"
+									placeholder="e.g. EHCP reference, LPA holder name, advance decision details, family / carer present and in agreement..."
+									style="margin-top: 6px"></textarea>
 							</div>
 
 							<label class="field-label" for="conveyanceNotes"
@@ -3814,14 +3891,20 @@
 								<button
 									type="button"
 									class="radio-chip selected"
-									data-value="ASHICE">
-									ASHICE
-								</button>
-								<button type="button" class="radio-chip" data-value="SBAR">
+									data-value="SBAR">
 									SBAR
 								</button>
 								<button type="button" class="radio-chip" data-value="ATMIST">
 									ATMIST
+								</button>
+								<button type="button" class="radio-chip" data-value="ASHICE">
+									ASHICE
+								</button>
+								<button
+									type="button"
+									class="radio-chip"
+									data-value="Leave at Home">
+									Leave at Home
 								</button>
 							</div>
 							<div id="handoverEtaWrap">
@@ -3843,6 +3926,7 @@
 					</details>
 				</section>
 
+				<!-- ── GENERATE TAB ─────────────────────────────────────────────────── -->
 				<section class="panel" id="panel-output">
 					<div class="output-panel-body">
 						<div class="toolbar">
@@ -5899,7 +5983,6 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 				</div>
 			</footer>
 		</div>
-		<!-- /#paeds-tool -->
 
 		<div class="toast" id="toast">Copied</div>
 		<script src="app.js" defer></script>
