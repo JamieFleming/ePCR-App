@@ -875,10 +875,32 @@ const HEAD_RETRO_DURATION_OPTIONS = [
 ];
 const HEAD_VOMITING_OPTIONS = [
 	["None / not reported", "None"],
-	["1 episode", "1"],
-	["2 episodes", "2"],
-	["3 or more episodes", "3+"],
+	["1 episode", "1×"],
+	["2 episodes", "2×"],
+	["3 or more episodes", "3+×"],
 ];
+const HEAD_GCS_EYES_OPTIONS = [
+	["1", "1 — None"],
+	["2", "2 — Pain"],
+	["3", "3 — Voice"],
+	["4", "4 — Spontaneous"],
+];
+const HEAD_GCS_VERBAL_OPTIONS = [
+	["1", "1 — None"],
+	["2", "2 — Sounds"],
+	["3", "3 — Words"],
+	["4", "4 — Confused"],
+	["5", "5 — Oriented"],
+];
+const HEAD_GCS_MOTOR_OPTIONS = [
+	["1", "1 — None"],
+	["2", "2 — Extension"],
+	["3", "3 — Flex."],
+	["4", "4 — Withdrawal"],
+	["5", "5 — Localises"],
+	["6", "6 — Obeys"],
+];
+const HEAD_ANTICOAG_OPTIONS = ["Yes", "No", "Unknown"];
 
 function populateHeadInjuryChips() {
 	populateChipGroup("headLOC", HEAD_LOC_OPTIONS);
@@ -887,6 +909,10 @@ function populateHeadInjuryChips() {
 	populateChipGroup("headRetroDuration", HEAD_RETRO_DURATION_OPTIONS);
 	populateChipGroup("headAnterograde", HEAD_AMNESIA_OPTIONS);
 	populateChipGroup("headVomitingCount", HEAD_VOMITING_OPTIONS);
+	populateChipGroup("headGcsE", HEAD_GCS_EYES_OPTIONS);
+	populateChipGroup("headGcsV", HEAD_GCS_VERBAL_OPTIONS);
+	populateChipGroup("headGcsM", HEAD_GCS_MOTOR_OPTIONS);
+	populateChipGroup("headAnticoag", HEAD_ANTICOAG_OPTIONS);
 }
 
 const MOBILITY_OPTIONS = [
@@ -3017,6 +3043,26 @@ function bindEvents() {
 		const v = val("headRetrograde");
 		$("#headRetroDurationWrap")?.classList.toggle("hidden", v !== "Yes");
 	});
+	// GCS calculator — recalculate total whenever E, V, or M changes
+	["headGcsE", "headGcsV", "headGcsM"].forEach((id) => {
+		$("#" + id)?.addEventListener("change", () => {
+			const e = parseInt(val("headGcsE")) || 0;
+			const v = parseInt(val("headGcsV")) || 0;
+			const m = parseInt(val("headGcsM")) || 0;
+			const total = e + v + m;
+			const hasAll = e && v && m;
+			const display = $("#headGcsTotalDisplay");
+			const valueEl = $("#headGcsTotalValue");
+			if (hasAll && display && valueEl) {
+				valueEl.textContent = total;
+				valueEl.style.color = total < 15 ? "#c0392b" : "#1a7a3c";
+				display.classList.remove("hidden");
+			} else if (display) {
+				display.classList.add("hidden");
+			}
+			if ($("#headGcsTotal")) $("#headGcsTotal").value = hasAll ? String(total) : "";
+		});
+	});
 	$("#handoverFormat").addEventListener("change", () => {
 		const fmt = $("#handoverFormat").value;
 		const isLah = fmt === "Leave at Home";
@@ -4132,7 +4178,8 @@ function buildLahSbarText() {
 
 function getNiceCTCriteria() {
 	const criteria = [];
-	if (isChecked("headGcsReduced"))
+	const gcsTotal = parseInt(val("headGcsTotal")) || 0;
+	if (gcsTotal > 0 && gcsTotal < 15)
 		criteria.push("GCS <15 at assessment or 2 hours post-injury");
 	if (
 		state.headSigns.has("Suspected open fracture") ||
@@ -4159,7 +4206,7 @@ function getNiceCTCriteria() {
 		val("headRetroDuration") === "> 30 minutes"
 	)
 		criteria.push("retrograde amnesia > 30 minutes");
-	if (isChecked("headAnticoag"))
+	if (val("headAnticoag") === "Yes")
 		criteria.push("on anticoagulants — CT within 8 hours");
 	return criteria;
 }
@@ -4196,7 +4243,13 @@ function buildHeadInjuryText() {
 			: "";
 	const symptomsLine = `Symptoms: ${listSet(state.headSymptoms, "None reported")}${vomitSuffix}.`;
 
-	const signsLine = `Clinical findings: ${listSet(state.headSigns, "None identified")}.${isChecked("headGcsReduced") ? " GCS <15." : ""}${isChecked("headAnticoag") ? " On anticoagulants." : ""}`;
+	const gcsE = val("headGcsE"), gcsV = val("headGcsV"), gcsM = val("headGcsM");
+	const gcsTotal = parseInt(val("headGcsTotal")) || 0;
+	const gcsSuffix = gcsTotal
+		? ` GCS ${gcsTotal}/15 (E${gcsE} V${gcsV} M${gcsM}).`
+		: "";
+	const anticoagSuffix = val("headAnticoag") === "Yes" ? " On anticoagulants." : "";
+	const signsLine = `Clinical findings: ${listSet(state.headSigns, "None identified")}.${gcsSuffix}${anticoagSuffix}`;
 
 	const criteria = getNiceCTCriteria();
 	const niceLine = criteria.length

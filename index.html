@@ -14,7 +14,7 @@
 		<link
 			href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
 			rel="stylesheet" />
-		<link rel="stylesheet" href="styles.css?v=1779660094" />
+		<link rel="stylesheet" href="styles.css?v=1779660578" />
 		<link rel="icon" type="image/png" href="assets/favicon.png" />
 		<link rel="apple-touch-icon" href="assets/favicon.png" />
 	</head>
@@ -1812,14 +1812,34 @@
 								<div
 									class="square-grid multi-group"
 									data-state="headSigns"></div>
-								<div class="grid-2 compact" style="margin-top: 12px">
-									<label class="check-row"
-										><input type="checkbox" id="headGcsReduced" /> GCS &lt;15
-										(at assessment or 2 hrs)</label
-									><label class="check-row"
-										><input type="checkbox" id="headAnticoag" /> On
-										anticoagulants</label
-									>
+								<!-- GCS Calculator -->
+								<div style="margin-top: 12px">
+									<label class="field-label">GCS</label>
+									<div style="margin-top: 6px">
+										<label class="field-label" style="font-size: 12px; color: #666; margin-bottom: 2px">Eyes (E)</label>
+										<input type="hidden" id="headGcsE" />
+										<div class="radio-chip-group" data-radio-group="headGcsE" style="margin-top: 4px"></div>
+									</div>
+									<div style="margin-top: 8px">
+										<label class="field-label" style="font-size: 12px; color: #666; margin-bottom: 2px">Verbal (V)</label>
+										<input type="hidden" id="headGcsV" />
+										<div class="radio-chip-group" data-radio-group="headGcsV" style="margin-top: 4px"></div>
+									</div>
+									<div style="margin-top: 8px">
+										<label class="field-label" style="font-size: 12px; color: #666; margin-bottom: 2px">Motor (M)</label>
+										<input type="hidden" id="headGcsM" />
+										<div class="radio-chip-group" data-radio-group="headGcsM" style="margin-top: 4px"></div>
+									</div>
+									<input type="hidden" id="headGcsTotal" />
+									<div id="headGcsTotalDisplay" class="hidden" style="margin-top: 10px; font-weight: 600; font-size: 15px">
+										GCS Total: <span id="headGcsTotalValue"></span>/15
+									</div>
+								</div>
+								<!-- Anticoagulants -->
+								<div style="margin-top: 12px">
+									<label class="field-label">Anticoagulants</label>
+									<input type="hidden" id="headAnticoag" />
+									<div class="radio-chip-group" data-radio-group="headAnticoag" style="margin-top: 4px"></div>
 								</div>
 							</div>
 							<!-- Additional notes -->
@@ -5644,6 +5664,6 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 		</div>
 
 		<div class="toast" id="toast">Copied</div>
-		<script src="app.js?v=1779660094"></script>
+		<script src="app.js?v=1779660578"></script>
 	</body>
 </html>
