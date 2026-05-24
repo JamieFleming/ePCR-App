@@ -14,7 +14,7 @@
 		<link
 			href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
 			rel="stylesheet" />
-		<link rel="stylesheet" href="styles.css?v=1779584221" />
+		<link rel="stylesheet" href="styles.css?v=1779660094" />
 		<link rel="icon" type="image/png" href="assets/favicon.png" />
 		<link rel="apple-touch-icon" href="assets/favicon.png" />
 	</head>
@@ -369,7 +369,6 @@
 					<span class="card-badge soon">Coming soon</span>
 				</div>
 			</div>
-			<!-- /.dashboard-grid -->
 
 			<div class="disclaimer-banner">
 				<p class="disclaimer-heading">&#9888; Under Testing &amp; Review</p>
@@ -393,8 +392,8 @@
 				</p>
 			</div>
 		</div>
-		<!-- /#dashboard -->
 
+		<!-- Resp Counter -->
 		<div id="resp-tool" class="hidden tool-page">
 			<main class="resp-counter-page">
 				<section class="resp-hero section-card">
@@ -505,11 +504,9 @@
 			</main>
 		</div>
 
-		<!-- =====================================================================
-		     ADULT ePRF TOOL
-		     Five-tab layout: History → Primary Survey → Assessment → Plan → Generate
-		     ===================================================================== -->
+		<!-- ePRF TOOL -->
 		<div id="prf-tool" class="hidden">
+			<!-- Navigation tabs -->
 			<nav class="tabs" aria-label="Main sections">
 				<button class="tab active" data-tab="history" type="button">
 					History
@@ -525,7 +522,8 @@
 			</nav>
 
 			<!-- Red flag clinical prompts bar -->
-			<div
+			<!-- Currently hidden -->
+			<!-- <div
 				id="redFlagBar"
 				class="rf-bar hidden"
 				aria-live="polite"
@@ -546,16 +544,17 @@
 						apply clinical judgement and follow local protocols.
 					</p>
 				</div>
-			</div>
+			</div> -->
 
 			<main>
-				<!-- ── HISTORY TAB ──────────────────────────────────────────────────── -->
+				<!-- HISTORY TAB -->
 				<section class="panel active" id="panel-history">
 					<div class="notice">
 						Documentation support only. Record contemporaneously, use local
 						policy, and apply clinical judgement.
 					</div>
 
+					<!-- Patient Demographics -->
 					<details class="section-card" open id="patientCard">
 						<summary><span>Patient</span><small>Pt</small></summary>
 						<div class="section-body">
@@ -595,6 +594,7 @@
 						</div>
 					</details>
 
+					<!-- Presenting complaint -->
 					<details class="section-card">
 						<summary>
 							<span>Presenting Complaint</span><small>PC</small>
@@ -605,57 +605,6 @@
 							>
 							<select id="pcSelect">
 								<option value="">Select a presentation</option>
-								<optgroup label="Cardiovascular">
-									<option>Chest pain</option>
-									<option>Palpitations</option>
-									<option>Collapse / syncope</option>
-									<option>Hypertension</option>
-									<option>Hypotension</option>
-									<option>Cardiac arrest</option>
-								</optgroup>
-								<optgroup label="Respiratory">
-									<option>Shortness of breath</option>
-									<option>Asthma / COPD exacerbation</option>
-									<option>Chest infection symptoms</option>
-									<option>Respiratory arrest</option>
-									<option>Choking / airway problem</option>
-								</optgroup>
-								<optgroup label="Neurological">
-									<option>Headache</option>
-									<option>Dizziness / vertigo</option>
-									<option>Seizure</option>
-									<option>Stroke / FAST positive</option>
-									<option>Reduced consciousness</option>
-									<option>Confusion / delirium</option>
-								</optgroup>
-								<optgroup label="Gastrointestinal / Urinary">
-									<option>Abdominal pain</option>
-									<option>Nausea / vomiting</option>
-									<option>Diarrhoea</option>
-									<option>Haematemesis / melaena</option>
-									<option>Urinary symptoms</option>
-									<option>Catheter problem</option>
-								</optgroup>
-								<optgroup label="Trauma / Musculoskeletal">
-									<option>Fall</option>
-									<option>Trauma / injury</option>
-									<option>Back pain</option>
-									<option>Limb pain / swelling</option>
-									<option>Wound / laceration</option>
-									<option>Burns / scalds</option>
-									<option>Head injury</option>
-								</optgroup>
-								<optgroup label="Medical / Other">
-									<option>Allergic reaction</option>
-									<option>Diabetic emergency</option>
-									<option>Fever / pyrexia</option>
-									<option>Sepsis concern</option>
-									<option>Overdose / poisoning</option>
-									<option>Mental health crisis</option>
-									<option>Self-harm</option>
-									<option>Social concern / welfare check</option>
-									<option>Other</option>
-								</optgroup>
 							</select>
 							<div id="pcOtherWrap" class="hidden">
 								<label class="field-label" for="pcOther"
@@ -666,6 +615,7 @@
 						</div>
 					</details>
 
+					<!-- History of Presenting Complaint -->
 					<details class="section-card">
 						<summary>
 							<span>History of Presenting Complaint</span><small>HPC</small>
@@ -677,32 +627,13 @@
 							<textarea
 								id="hpcEvents"
 								rows="5"
-								placeholder="Timeline, mechanism, symptoms, relevant negatives, prior actions, collateral history..."></textarea>
+								placeholder="Timeline, mechanism, symptoms, relevant negatives, prior actions, history..."></textarea>
 							<div class="grid-2">
 								<div>
 									<label class="field-label" for="hpcCaller"
 										>Called / referred by</label
 									><select id="hpcCaller">
 										<option value="">Not documented</option>
-										<optgroup label="Emergency line">
-											<option>Patient called 999</option>
-											<option>Bystander called 999</option>
-											<option>Carer / relative called 999</option>
-											<option>Patient called 111</option>
-											<option>Carer / relative called 111</option>
-										</optgroup>
-										<optgroup label="Clinical referral">
-											<option>GP referral</option>
-											<option>HCP referral</option>
-											<option>Community nurse referral</option>
-											<option>District nurse referral</option>
-											<option>Mental health team referral</option>
-										</optgroup>
-										<optgroup label="Other">
-											<option>Police request</option>
-											<option>Fire service request</option>
-											<option>Other service referral</option>
-										</optgroup>
 									</select>
 								</div>
 								<div>
@@ -727,774 +658,120 @@
 									</div>
 								</div>
 							</div>
-							<!-- <label class="check-row"
-								><input type="checkbox" id="noTravel" checked /> No recent
-								travel</label
-							> -->
 						</div>
 					</details>
 
-					<details class="section-card hidden" id="fallsAssessmentCard">
-						<summary>
-							<span>Falls Assessment</span><small>SPLATT</small>
-						</summary>
+					<!-- Background -->
+					<details class="section-card">
+						<summary><span>Background</span><small>Hx</small></summary>
+						<div class="section-body grid-2">
+							<div>
+								<label class="check-row"
+									><input type="checkbox" id="noPmh" checked /> No significant
+									PMH</label
+								><label class="field-label" for="pmh"
+									>Past medical history</label
+								><textarea id="pmh" rows="2"></textarea>
+							</div>
+							<div>
+								<label class="check-row"
+									><input type="checkbox" id="noMeds" checked /> No regular
+									medications</label
+								><label class="field-label" for="medications">Medications</label
+								><textarea id="medications" rows="2"></textarea>
+							</div>
+							<div>
+								<label class="check-row"
+									><input type="checkbox" id="nkda" checked /> NKDA</label
+								><label class="field-label" for="allergies">Allergies</label
+								><textarea id="allergies" row="2"></textarea>
+							</div>
+							<div>
+								<label class="field-label">Last oral intake</label>
+								<div class="split">
+									<input id="loiWhat" placeholder="Food / fluid" /><input
+										id="loiTime"
+										type="time" />
+								</div>
+								<label class="field-label" for="prevDetails"
+									>Other Details</label
+								><textarea
+									id="prevDetails"
+									rows="2"
+									placeholder="Family history, social history, etc."></textarea>
+							</div>
+						</div>
+					</details>
+				</section>
+
+				<!-- PRIMARY SURVEY TAB -->
+				<section class="panel" id="panel-primary">
+					<details class="section-card">
+						<summary><span>On Arrival</span><small>OA</small></summary>
 						<div class="section-body">
-							<div class="socrates-group">
-								<label class="field-label"
-									>S — Symptoms / precipitating factors</label
+							<div class="grid-2">
+								<!-- On arrival  -->
+								<div>
+									<label class="field-label" for="oaFound">On Arrival</label
+									><select id="oaFound">
+										<option value="">Select first contact</option>
+									</select>
+								</div>
+								<div>
+									<label class="field-label" for="oaLocation">Location</label
+									><input id="oaLocation" placeholder="e.g. living room" />
+								</div>
+								<!-- Mobility -->
+								<div>
+									<label class="field-label">Mobility</label>
+									<input type="hidden" id="oaMobility" />
+									<div
+										class="radio-chip-group wrap-grid"
+										data-radio-group="oaMobility"
+										style="margin-top: 4px"></div>
+								</div>
+								<div>
+									<label class="field-label" for="oaNotes"
+										>Additional notes</label
+									><input id="oaNotes" />
+								</div>
+							</div>
+							<div class="grid-2 compact">
+								<label class="check-row"
+									><input type="checkbox" id="oaConsent" checked /> Consented to
+									assessment</label
+								><label class="check-row"
+									><input type="checkbox" id="oaNoABC" checked /> No immediate
+									ABC concerns</label
+								><label class="check-row"
+									><input type="checkbox" id="oaNormalPresentation" checked />
+									Normal presentation on arrival</label
 								>
-								<div
-									class="square-grid multi-group"
-									data-state="fallsSymptoms"></div>
-								<div
-									id="fallsSymptomsOtherWrap"
-									class="hidden"
-									style="margin-top: 6px">
-									<input
-										id="fallsSymptomsOther"
-										placeholder="Describe other symptom..." />
-								</div>
-								<div class="grid-2 compact" style="margin-top: 12px">
-									<label class="check-row"
-										><input type="checkbox" id="fallsLOC" /> Loss of
-										consciousness</label
-									>
-									<label class="check-row"
-										><input type="checkbox" id="fallsWitnessed" />
-										Witnessed</label
-									>
-								</div>
-							</div>
-							<div class="socrates-group">
-								<label class="field-label">P — Previous falls</label>
-								<div class="grid-2">
-									<div>
-										<label class="field-label">Falls in past year</label>
-										<input type="hidden" id="fallsPreviousCount" />
-										<div
-											class="radio-chip-group"
-											data-radio-group="fallsPreviousCount"
-											style="margin-top: 4px">
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="None — first fall">
-												First fall
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="1 previous fall">
-												1 prev
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="2–3 previous falls">
-												2–3 prev
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="4 or more falls">
-												4+ falls
-											</button>
-										</div>
-									</div>
-									<div>
-										<label class="check-row" style="margin-top: 36px"
-											><input type="checkbox" id="fallsPreviousInjury" />
-											Previous fall-related injury</label
-										>
-									</div>
-								</div>
-							</div>
-							<div class="socrates-group">
-								<label class="field-label">L — Location</label>
-								<div class="grid-2">
-									<div>
-										<label class="field-label">Where did the fall occur?</label>
-										<input type="hidden" id="fallsLocation" />
-										<div
-											class="square-grid multi-group"
-											data-state="fallsLocation"></div>
-										<div id="fallsLocationOtherWrap" class="hidden">
-											<label class="field-label" for="fallsLocationOther">
-												Other location
-											</label>
-											<input
-												id="fallsLocationOther"
-												type="text"
-												placeholder="Enter location" />
-										</div>
-									</div>
-
-									<div>
-										<label class="field-label" for="fallsSurface"
-											>Surface / environment</label
-										><input
-											id="fallsSurface"
-											placeholder="e.g. wet floor, ice" />
-									</div>
-								</div>
-							</div>
-							<div class="socrates-group">
-								<label class="field-label">A — Activity at time of fall</label>
-								<div
-									class="square-grid multi-group"
-									data-state="fallsActivity"></div>
-								<div
-									id="fallsActivityOtherWrap"
-									class="hidden"
-									style="margin-top: 6px">
-									<input
-										id="fallsActivityOther"
-										placeholder="Describe activity..." />
-								</div>
-							</div>
-							<div class="socrates-group">
-								<label class="field-label">T — Time</label>
-								<div class="grid-2">
-									<div>
-										<label class="field-label" for="fallsTime"
-											>Time of fall</label
-										><input
-											id="fallsTime"
-											placeholder="e.g. 14:30, this morning" />
-									</div>
-									<div>
-										<label class="field-label">Time on floor</label>
-										<input type="hidden" id="fallsLieTime" />
-										<div
-											class="radio-chip-group wrap-grid"
-											data-radio-group="fallsLieTime"
-											style="margin-top: 4px">
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Just fell">
-												Just fell
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="&lt; 30 minutes">
-												&lt; 30 min
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="30 min – 1 hour">
-												30 min–1 hr
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="1–2 hours">
-												1–2 hrs
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="2–4 hours">
-												2–4 hrs
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="4–8 hours">
-												4–8 hrs
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="&gt; 8 hours">
-												&gt; 8 hrs
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Unknown">
-												Unknown
-											</button>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="socrates-group">
-								<label class="field-label">T — Trauma / injuries</label>
-								<div
-									class="square-grid multi-group"
-									data-state="fallsInjuries"></div>
-								<div class="grid-2 compact" style="margin-top: 12px">
-									<label class="check-row"
-										><input type="checkbox" id="fallsHeadStrike" /> Head
-										strike</label
-									>
-									<label class="check-row"
-										><input type="checkbox" id="fallsAnticoag" /> On
-										anticoagulants</label
-									>
-								</div>
-							</div>
-							<div class="socrates-group">
-								<label class="field-label" for="fallsNotes"
-									>Additional notes</label
-								><textarea id="fallsNotes" rows="2"></textarea>
 							</div>
 						</div>
 					</details>
+					<!-- ABC's -->
+					<div id="abcdeContainer"></div>
+				</section>
 
-					<details class="section-card hidden" id="headInjuryCard">
-						<summary>
-							<span>Head Injury Assessment</span><small>NICE CG176</small>
-						</summary>
+				<!-- ── ASSESSMENT TAB ───────────────────────────────────────────────── -->
+				<section class="panel" id="panel-assessment">
+					<!-- Observations -->
+					<details class="section-card" id="obsCard" open>
+						<summary><span>Observations</span><small>OBS</small></summary>
 						<div class="section-body">
-							<div class="socrates-group">
-								<label class="field-label">Mechanism</label>
-								<div
-									class="square-grid multi-group"
-									data-state="headMechanism"></div>
-								<input
-									id="headMechanismDetail"
-									placeholder="e.g. fell 3 metres onto concrete, unrestrained passenger"
-									style="margin-top: 8px" />
-							</div>
-							<div class="socrates-group">
-								<label class="field-label"
-									>Loss of consciousness &amp; amnesia</label
-								>
-								<div class="grid-2">
-									<div>
-										<label class="check-row"
-											><input type="checkbox" id="headLOC" /> Loss of
-											consciousness</label
-										>
-										<div
-											id="headLOCDurationWrap"
-											class="hidden"
-											style="margin-top: 8px">
-											<label class="field-label">Duration of LOC</label>
-											<input type="hidden" id="headLOCDuration" />
-											<div
-												class="radio-chip-group"
-												data-radio-group="headLOCDuration"
-												style="margin-top: 4px">
-												<button
-													type="button"
-													class="radio-chip"
-													data-value="Unknown">
-													Unknown
-												</button>
-												<button
-													type="button"
-													class="radio-chip"
-													data-value="Brief (< 5 minutes)">
-													&lt; 5 min
-												</button>
-												<button
-													type="button"
-													class="radio-chip"
-													data-value="5–15 minutes">
-													5–15 min
-												</button>
-												<button
-													type="button"
-													class="radio-chip"
-													data-value="15–30 minutes">
-													15–30 min
-												</button>
-												<button
-													type="button"
-													class="radio-chip"
-													data-value="&gt; 30 minutes">
-													&gt; 30 min
-												</button>
-											</div>
-										</div>
-									</div>
-									<div>
-										<label class="check-row"
-											><input type="checkbox" id="headRetrograde" /> Retrograde
-											amnesia</label
-										>
-										<div
-											id="headRetroDurationWrap"
-											class="hidden"
-											style="margin-top: 8px">
-											<label class="field-label">Duration</label>
-											<input type="hidden" id="headRetroDuration" />
-											<div
-												class="radio-chip-group"
-												data-radio-group="headRetroDuration"
-												style="margin-top: 4px">
-												<button
-													type="button"
-													class="radio-chip"
-													data-value="&lt; 30 minutes">
-													&lt; 30 min
-												</button>
-												<button
-													type="button"
-													class="radio-chip"
-													data-value="&gt; 30 minutes">
-													&gt; 30 min
-												</button>
-											</div>
-										</div>
-										<label class="check-row" style="margin-top: 10px"
-											><input type="checkbox" id="headAnterograde" />
-											Anterograde amnesia</label
-										>
-									</div>
-								</div>
-							</div>
-							<div class="socrates-group">
-								<label class="field-label">Symptoms</label>
-								<div
-									class="square-grid multi-group"
-									data-state="headSymptoms"></div>
-								<div style="margin-top: 10px">
-									<label class="field-label">Vomiting episodes</label>
-									<input type="hidden" id="headVomitingCount" />
-									<div
-										class="radio-chip-group"
-										data-radio-group="headVomitingCount"
-										style="margin-top: 4px">
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="None / not reported">
-											None
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="1 episode">
-											1×
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="2 episodes">
-											2×
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="3 or more episodes">
-											3+×
-										</button>
-									</div>
-								</div>
-							</div>
-							<div class="socrates-group">
-								<label class="field-label">Clinical findings</label>
-								<div
-									class="square-grid multi-group"
-									data-state="headSigns"></div>
-								<div class="grid-2 compact" style="margin-top: 12px">
-									<label class="check-row"
-										><input type="checkbox" id="headGcsReduced" /> GCS &lt;15
-										(at assessment or 2 hrs)</label
-									><label class="check-row"
-										><input type="checkbox" id="headAnticoag" /> On
-										anticoagulants</label
-									>
-								</div>
-							</div>
-							<div class="socrates-group">
-								<label class="field-label" for="headInjuryNotes"
-									>Additional notes</label
-								><textarea id="headInjuryNotes" rows="2"></textarea>
-							</div>
+							<div id="obsContainer"></div>
+							<button
+								type="button"
+								class="secondary-action"
+								id="addObsBtn"
+								style="margin-top: 10px">
+								+ Add observations
+							</button>
 						</div>
 					</details>
 
-					<details class="section-card hidden" id="seizureAssessmentCard">
-						<summary>
-							<span>Seizure Assessment</span><small>Seizure</small>
-						</summary>
-						<div class="section-body">
-							<label class="field-label">Seizure type</label>
-							<div class="square-grid" id="seizureTypeGrid"></div>
-
-							<div class="grid-2" style="margin-top: 12px">
-								<div>
-									<label class="field-label">Number of seizures</label>
-									<input type="hidden" id="seizureCount" />
-									<div
-										class="radio-chip-group"
-										data-radio-group="seizureCount"
-										style="margin-top: 4px">
-										<button type="button" class="radio-chip" data-value="1">
-											1
-										</button>
-										<button type="button" class="radio-chip" data-value="2">
-											2
-										</button>
-										<button type="button" class="radio-chip" data-value="3">
-											3
-										</button>
-										<button type="button" class="radio-chip" data-value="4">
-											4
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="5 or more">
-											5+
-										</button>
-									</div>
-								</div>
-								<div>
-									<label class="field-label" for="seizureDuration"
-										>Duration of seizure</label
-									>
-									<input
-										id="seizureDuration"
-										placeholder="e.g. approx 2 minutes" />
-								</div>
-							</div>
-
-							<div class="grid-2" style="margin-top: 8px">
-								<div>
-									<label class="field-label" for="seizureTime"
-										>Time of onset</label
-									>
-									<input id="seizureTime" placeholder="e.g. 14:20" />
-								</div>
-								<div
-									style="
-										display: flex;
-										flex-direction: column;
-										gap: 6px;
-										padding-top: 20px;
-									">
-									<label class="check-row">
-										<input type="checkbox" id="seizureWitnessed" /> Witnessed
-									</label>
-									<label class="check-row">
-										<input type="checkbox" id="seizureLOC" /> Loss of
-										consciousness
-									</label>
-								</div>
-							</div>
-
-							<div id="seizureWitnessedByWrap">
-								<label class="field-label" for="seizureWitnessedBy"
-									>Witnessed by</label
-								>
-								<input
-									id="seizureWitnessedBy"
-									placeholder="e.g. Family member, bystander, crew" />
-							</div>
-
-							<label class="field-label" style="margin-top: 12px"
-								>Features during seizure</label
-							>
-							<div class="square-grid" id="seizureFeaturesGrid"></div>
-
-							<label class="field-label" style="margin-top: 12px"
-								>Post-seizure findings on examination</label
-							>
-							<div class="square-grid" id="seizureFindingsGrid"></div>
-
-							<div class="grid-2" style="margin-top: 12px">
-								<div>
-									<label class="check-row">
-										<input type="checkbox" id="seizurePostictal" /> Postictal
-										phase observed
-									</label>
-									<input
-										id="seizurePostictalDuration"
-										placeholder="Postictal duration"
-										style="margin-top: 6px" />
-								</div>
-								<div>
-									<label class="field-label">Recovery to baseline</label>
-									<input type="hidden" id="seizureRecovery" />
-									<div
-										class="radio-chip-group"
-										data-radio-group="seizureRecovery"
-										style="margin-top: 4px">
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Full recovery">
-											Full recovery
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Partial recovery">
-											Partial
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Not recovered at handover">
-											Not recovered
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Unclear">
-											Unclear
-										</button>
-									</div>
-								</div>
-							</div>
-
-							<div style="margin-top: 14px">
-								<label class="check-row">
-									<input type="checkbox" id="seizureKnownEpileptic" /> Known
-									epileptic
-								</label>
-							</div>
-							<div id="seizureEpilepsyWrap" style="margin-top: 8px">
-								<div class="grid-2">
-									<div>
-										<label class="field-label" for="seizureEpilepsyDiagnosis"
-											>Epilepsy diagnosis / type</label
-										>
-										<input
-											id="seizureEpilepsyDiagnosis"
-											placeholder="e.g. JME, temporal lobe epilepsy" />
-									</div>
-									<div>
-										<label class="field-label" for="seizureLastPrior"
-											>Last seizure prior to today</label
-										>
-										<input
-											id="seizureLastPrior"
-											placeholder="e.g. 3 weeks ago" />
-									</div>
-								</div>
-								<div style="margin-top: 8px">
-									<label class="field-label" for="seizureUsualPattern"
-										>Usual seizure pattern</label
-									>
-									<input
-										id="seizureUsualPattern"
-										placeholder="e.g. Same as usual / atypical — more prolonged" />
-								</div>
-								<label class="field-label" style="margin-top: 10px"
-									>AED compliance</label
-								>
-								<div class="square-grid" id="aedComplianceGrid"></div>
-							</div>
-
-							<label class="field-label" style="margin-top: 14px"
-								>Precipitating factors</label
-							>
-							<div class="square-grid" id="seizurePrecipitantsGrid"></div>
-
-							<label
-								class="field-label"
-								for="seizureNotes"
-								style="margin-top: 12px"
-								>Notes</label
-							>
-							<textarea id="seizureNotes" rows="2"></textarea>
-						</div>
-					</details>
-
-					<details class="section-card hidden" id="mhAssessmentCard">
-						<summary>
-							<span>Mental Health Assessment</span><small>MH / OD / SH</small>
-						</summary>
-						<div class="section-body">
-							<label class="field-label">Intent</label>
-							<div class="square-grid" id="mhIntentGrid"></div>
-
-							<label class="field-label" style="margin-top: 12px"
-								>Nature of act</label
-							>
-							<div class="square-grid" id="mhPlanningGrid"></div>
-
-							<div style="margin-top: 12px">
-								<label class="field-label" for="mhTriggers"
-									>Triggers / precipitants</label
-								>
-								<input
-									id="mhTriggers"
-									placeholder="e.g. Relationship breakdown, financial stress, bereavement" />
-							</div>
-
-							<label class="check-row" style="margin-top: 12px">
-								<input type="checkbox" id="mhPrevious" /> Previous episodes of
-								self-harm / overdose
-							</label>
-							<textarea
-								id="mhPreviousDetails"
-								rows="2"
-								placeholder="Details of previous episodes..."></textarea>
-
-							<!-- Overdose-specific -->
-							<div id="odDetailsWrap" class="hidden" style="margin-top: 14px">
-								<p
-									class="field-label"
-									style="font-weight: 600; margin-bottom: 8px">
-									Overdose details
-								</p>
-								<label class="field-label" for="odSubstance"
-									>Substance(s) taken</label
-								>
-								<input
-									id="odSubstance"
-									placeholder="e.g. Paracetamol, alcohol, ibuprofen" />
-								<div class="grid-2" style="margin-top: 8px">
-									<div>
-										<label class="field-label" for="odAmount"
-											>Amount / estimated dose</label
-										>
-										<input id="odAmount" placeholder="e.g. Up to 16 tablets" />
-									</div>
-									<div>
-										<label class="field-label" for="odTime">Time taken</label>
-										<input
-											id="odTime"
-											placeholder="e.g. 22:00, approx 2 hours ago" />
-									</div>
-								</div>
-								<div class="grid-2" style="margin-top: 8px">
-									<div>
-										<label class="field-label">Route</label>
-										<input type="hidden" id="odRoute" />
-										<div
-											class="radio-chip-group"
-											data-radio-group="odRoute"
-											style="margin-top: 4px">
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Oral (ingested)">
-												Oral / ingested
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="IV / injected">
-												IV / injected
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Inhalation">
-												Inhalation
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Topical / transdermal">
-												Topical
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Other / unknown">
-												Other / unknown
-											</button>
-										</div>
-									</div>
-									<div
-										style="
-											display: flex;
-											align-items: center;
-											padding-top: 20px;
-										">
-										<label class="check-row">
-											<input type="checkbox" id="odAlcohol" /> Alcohol
-											co-ingestion
-										</label>
-									</div>
-								</div>
-								<label class="field-label" style="margin-top: 8px"
-									>Medication source</label
-								>
-								<div class="square-grid" id="odPrescribedGrid"></div>
-							</div>
-
-							<!-- Self-harm specific -->
-							<div id="shDetailsWrap" class="hidden" style="margin-top: 14px">
-								<p
-									class="field-label"
-									style="font-weight: 600; margin-bottom: 8px">
-									Self-harm details
-								</p>
-								<label class="field-label">Method</label>
-								<div class="square-grid" id="shMethodGrid"></div>
-								<label class="field-label" style="margin-top: 10px"
-									>Wound depth</label
-								>
-								<div class="square-grid" id="shDepthGrid"></div>
-							</div>
-
-							<!-- Mental State Examination -->
-							<div style="margin-top: 16px">
-								<p
-									class="field-label"
-									style="font-weight: 600; margin-bottom: 8px">
-									Mental State Examination (MSE)
-								</p>
-
-								<label class="field-label">A — Appearance</label>
-								<div class="square-grid" id="mseAppearanceGrid"></div>
-
-								<label class="field-label" style="margin-top: 10px"
-									>B — Behaviour</label
-								>
-								<div class="square-grid" id="mseBehaviourGrid"></div>
-
-								<label class="field-label" style="margin-top: 10px"
-									>C — Communication / speech</label
-								>
-								<div class="square-grid" id="mseSpeechGrid"></div>
-
-								<label class="field-label" style="margin-top: 10px"
-									>D — Delusions / thought content</label
-								>
-								<div class="square-grid" id="mseThoughtContentGrid"></div>
-
-								<label class="field-label" style="margin-top: 10px"
-									>E — Emotion / affect</label
-								>
-								<div class="square-grid" id="mseAffectGrid"></div>
-
-								<label class="field-label" style="margin-top: 10px"
-									>F — Form of thought</label
-								>
-								<div class="square-grid" id="mseThoughtFormGrid"></div>
-
-								<label class="field-label" style="margin-top: 10px"
-									>H — Hallucinations / perception</label
-								>
-								<div class="square-grid" id="msePerceptionGrid"></div>
-
-								<label class="field-label" style="margin-top: 10px"
-									>I — Insight</label
-								>
-								<div class="square-grid" id="mseInsightGrid"></div>
-							</div>
-
-							<div style="margin-top: 14px">
-								<label class="field-label" for="mhCurrentServices"
-									>Current MH services / care team</label
-								>
-								<input
-									id="mhCurrentServices"
-									placeholder="e.g. CMHT, Crisis team, Psychiatry — Dr Smith" />
-							</div>
-							<div style="margin-top: 8px">
-								<label class="field-label" for="mhNotes"
-									>Additional notes</label
-								>
-								<textarea id="mhNotes" rows="2"></textarea>
-							</div>
-						</div>
-					</details>
-
+					<!-- Pain Assessment -->
 					<details class="section-card" id="painDetails">
 						<summary>
 							<span>Pain Assessment</span><small>SOCRATES</small>
@@ -1504,6 +781,7 @@
 								><input type="checkbox" id="noPain" /> No pain / not
 								applicable</label
 							>
+							<!-- Body map -->
 							<div id="painBodyMapWrap" class="body-map-layout">
 								<div class="body-map-panel">
 									<p class="body-map-label">Front</p>
@@ -2008,37 +1286,23 @@
 									</button>
 								</div>
 							</div>
+
+							<!-- SOCRATES -->
+							<!-- Onset, timing and severity  -->
 							<div class="socrates-group">
 								<label class="field-label">Onset, timing &amp; severity</label>
 								<div class="grid-2">
+									<!-- Onset time -->
 									<div>
 										<label class="field-label" for="onsetTime"
 											>Approximate time</label
 										><select id="onsetTime">
 											<option value="">Unknown / not documented</option>
-											<option>Just now</option>
-											<option>~5 minutes ago</option>
-											<option>~10 minutes ago</option>
-											<option>~15 minutes ago</option>
-											<option>~20 minutes ago</option>
-											<option>~30 minutes ago</option>
-											<option>~45 minutes ago</option>
-											<option>~1 hour ago</option>
-											<option>~90 minutes ago</option>
-											<option>~2 hours ago</option>
-											<option>~3 hours ago</option>
-											<option>~4 hours ago</option>
-											<option>~6 hours ago</option>
-											<option>~12 hours ago</option>
-											<option>~24 hours ago</option>
-											<option>Earlier today</option>
-											<option>Yesterday</option>
-											<option value="Other">Other (specify)</option>
 										</select>
 										<input
 											id="onsetTimeOther"
 											class="hidden"
-											placeholder="e.g. 3–4 days ago, last week"
+											placeholder="e.g. 3–4 days ago, last week, etc."
 											style="margin-top: 6px" />
 										<div
 											style="
@@ -2055,89 +1319,32 @@
 											<input type="time" id="onsetClockTime" />
 										</div>
 									</div>
+									<!-- Onset timing-->
 									<div>
 										<label class="field-label">Onset</label>
 										<input type="hidden" id="onsetType" />
 										<div
 											class="radio-chip-group"
 											data-radio-group="onsetType"
-											style="margin-top: 4px">
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Sudden">
-												Sudden
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Gradual">
-												Gradual
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Insidious">
-												Insidious
-											</button>
-										</div>
+											style="margin-top: 4px"></div>
 									</div>
+									<!-- Duration -->
 									<div>
 										<label class="field-label" for="onsetDuration"
 											>Duration</label
 										><input id="onsetDuration" placeholder="e.g. 30 minutes" />
 									</div>
+									<!-- Timing -->
 									<div>
 										<label class="field-label">Timing</label>
 										<input type="hidden" id="timingSelect" />
 										<div
 											class="radio-chip-group wrap-grid"
 											data-radio-group="timingSelect"
-											style="margin-top: 4px">
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Constant">
-												Constant
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Intermittent">
-												Intermittent
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Episodic">
-												Episodic
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Waxing and waning">
-												Waxing &amp; waning
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Colicky">
-												Colicky
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Only on movement">
-												On movement
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Only on exertion">
-												On exertion
-											</button>
-										</div>
+											style="margin-top: 4px"></div>
 									</div>
+									<!-- Pain score -->
+									<!-- Current -->
 									<div style="grid-column: 1 / -1">
 										<label class="field-label">Severity now (NRS 0–10)</label>
 										<input type="hidden" id="severity" />
@@ -2210,6 +1417,7 @@
 											</button>
 										</div>
 									</div>
+									<!-- At worst -->
 									<div style="grid-column: 1 / -1; margin-top: 8px">
 										<label class="field-label"
 											>Severity at worst (NRS 0–10)</label
@@ -2286,6 +1494,7 @@
 									</div>
 								</div>
 							</div>
+							<!-- Character -->
 							<div class="socrates-group" id="painCharacterGroup">
 								<label class="field-label">Character</label>
 								<div
@@ -2298,6 +1507,7 @@
 									<input id="characterOther" placeholder="Other" />
 								</div>
 							</div>
+							<!-- Associated symptoms -->
 							<div class="socrates-group">
 								<label class="field-label">Associated symptoms</label>
 								<div
@@ -2310,6 +1520,7 @@
 									<input id="associatedOther" placeholder="Other" />
 								</div>
 							</div>
+							<!-- Exacerbating factors -->
 							<div class="socrates-group">
 								<label class="field-label">Exacerbating factors</label>
 								<div
@@ -2322,6 +1533,7 @@
 									<input id="exacerbatingOther" placeholder="Other" />
 								</div>
 							</div>
+							<!-- Relieving factors -->
 							<div class="socrates-group">
 								<label class="field-label">Relieving factors</label>
 								<div
@@ -2334,6 +1546,7 @@
 									<input id="relievingOther" placeholder="Other" />
 								</div>
 							</div>
+							<!-- Clear button -->
 							<div class="toolbar pain-toolbar">
 								<button
 									id="clearPainButton"
@@ -2345,211 +1558,668 @@
 						</div>
 					</details>
 
-					<details class="section-card">
-						<summary><span>Background</span><small>Hx</small></summary>
-						<div class="section-body grid-2">
-							<div>
-								<label class="check-row"
-									><input type="checkbox" id="noPmh" checked /> No significant
-									PMH</label
-								><label class="field-label" for="pmh"
-									>Past medical history</label
-								><textarea id="pmh" rows="2"></textarea>
-							</div>
-							<div>
-								<label class="check-row"
-									><input type="checkbox" id="noMeds" checked /> No regular
-									medications</label
-								><label class="field-label" for="medications">Medications</label
-								><textarea id="medications" rows="2"></textarea>
-							</div>
-							<div>
-								<label class="check-row"
-									><input type="checkbox" id="nkda" checked /> NKDA</label
-								><label class="field-label" for="allergies">Allergies</label
-								><input id="allergies" />
-							</div>
-							<div>
-								<label class="field-label">Last oral intake</label>
-								<div class="split">
-									<input id="loiWhat" placeholder="Food / fluid" /><input
-										id="loiTime"
-										type="time" />
+					<!-- Falls assessment -->
+					<details class="section-card hidden" id="fallsAssessmentCard">
+						<summary>
+							<span>Falls Assessment</span><small>SPLATT</small>
+						</summary>
+						<!-- SPLATT assessment -->
+						<div class="section-body">
+							<!-- Symptoms/precipitating factors -->
+							<div class="socrates-group">
+								<label class="field-label"
+									>S — Symptoms / precipitating factors</label
+								>
+								<div
+									class="square-grid multi-group"
+									data-state="fallsSymptoms"></div>
+								<div
+									id="fallsSymptomsOtherWrap"
+									class="hidden"
+									style="margin-top: 6px">
+									<input
+										id="fallsSymptomsOther"
+										placeholder="Describe other symptom..." />
 								</div>
-								<label class="field-label" for="prevDetails"
-									>Previous episodes</label
+								<div class="grid-2" style="margin-top: 12px">
+									<div>
+										<label class="field-label">Loss of consciousness</label>
+										<input type="hidden" id="fallsLOC" />
+										<div
+											class="radio-chip-group"
+											data-radio-group="fallsLOC"
+											style="margin-top: 4px"></div>
+									</div>
+									<div>
+										<label class="field-label">Witnessed</label>
+										<input type="hidden" id="fallsWitnessed" />
+										<div
+											class="radio-chip-group"
+											data-radio-group="fallsWitnessed"
+											style="margin-top: 4px"></div>
+									</div>
+								</div>
+							</div>
+							<!-- Previous falls -->
+							<div class="socrates-group">
+								<label class="field-label">P — Previous falls</label>
+								<div class="grid-2">
+									<div>
+										<label class="field-label">Falls in past year</label>
+										<input type="hidden" id="fallsPreviousCount" />
+										<div
+											class="radio-chip-group"
+											data-radio-group="fallsPreviousCount"
+											style="margin-top: 4px"></div>
+									</div>
+								</div>
+							</div>
+							<!-- Location -->
+							<div class="socrates-group">
+								<label class="field-label">L — Location</label>
+								<div class="grid-2">
+									<div>
+										<label class="field-label">Where did the fall occur?</label>
+										<input type="hidden" id="fallsLocation" />
+										<div
+											class="square-grid multi-group"
+											data-state="fallsLocation"></div>
+										<div id="fallsLocationOtherWrap" class="hidden">
+											<label class="field-label" for="fallsLocationOther">
+												Other location
+											</label>
+											<input
+												id="fallsLocationOther"
+												type="text"
+												placeholder="Enter location" />
+										</div>
+									</div>
+
+									<div>
+										<label class="field-label" for="fallsSurface"
+											>Surface / environment</label
+										><input
+											id="fallsSurface"
+											placeholder="e.g. wet floor, ice, hard, carpet, etc." />
+									</div>
+								</div>
+							</div>
+							<!-- Activity -->
+							<div class="socrates-group">
+								<label class="field-label">A — Activity at time of fall</label>
+								<div
+									class="square-grid multi-group"
+									data-state="fallsActivity"></div>
+								<div
+									id="fallsActivityOtherWrap"
+									class="hidden"
+									style="margin-top: 6px">
+									<input
+										id="fallsActivityOther"
+										placeholder="Describe activity..." />
+								</div>
+							</div>
+							<!-- Time -->
+							<div class="socrates-group">
+								<label class="field-label">T — Time</label>
+								<div class="grid-2">
+									<div>
+										<label class="field-label">Time of fall</label>
+										<div
+											style="
+												display: flex;
+												gap: 6px;
+												align-items: center;
+												margin-top: 4px;
+											">
+											<input type="time" id="fallsTime" style="flex: 1" />
+											<button
+												type="button"
+												class="radio-chip"
+												id="fallsTimeUnknownBtn"
+												data-value="Unknown"
+												style="white-space: nowrap">
+												Unknown
+											</button>
+										</div>
+									</div>
+									<div>
+										<label class="field-label">Time on floor</label>
+										<input type="hidden" id="fallsLieTime" />
+										<div
+											class="radio-chip-group wrap-grid"
+											data-radio-group="fallsLieTime"
+											style="margin-top: 4px"></div>
+									</div>
+								</div>
+							</div>
+							<!-- Trauma/injuries -->
+							<div class="socrates-group">
+								<label class="field-label">T — Trauma / injuries</label>
+								<div
+									class="square-grid multi-group"
+									data-state="fallsInjuries"></div>
+								<div style="margin-top: 12px">
+									<label class="field-label">Anticoagulants</label>
+									<input type="hidden" id="fallsAnticoag" />
+									<div
+										class="radio-chip-group"
+										data-radio-group="fallsAnticoag"
+										style="margin-top: 4px"></div>
+								</div>
+							</div>
+							<!-- Additional notes -->
+							<div class="socrates-group">
+								<label class="field-label" for="fallsNotes"
+									>Additional notes</label
 								><textarea
-									id="prevDetails"
+									id="fallsNotes"
 									rows="2"
-									placeholder="If applicable"></textarea>
+									placeholder="Further information"></textarea>
 							</div>
 						</div>
 					</details>
-				</section>
 
-				<!-- ── PRIMARY SURVEY TAB ───────────────────────────────────────────── -->
-				<section class="panel" id="panel-primary">
-					<details class="section-card">
-						<summary><span>On Arrival</span><small>OA</small></summary>
+					<!-- Head injury assessment -->
+					<details class="section-card hidden" id="headInjuryCard">
+						<summary>
+							<span>Head Injury Assessment</span><small>NICE CG176</small>
+						</summary>
 						<div class="section-body">
-							<div class="grid-2">
-								<div>
-									<label class="field-label" for="oaFound">First contact</label
-									><select id="oaFound">
-										<optgroup label="Greeted by">
-											<option>Greeted by patient</option>
-											<option>Greeted by relative</option>
-											<option>Greeted by carer</option>
-											<option>Greeted by neighbour</option>
-											<option>Greeted by care home staff</option>
-											<option>Greeted by passer-by / bystander</option>
-											<option>Greeted by police</option>
-											<option>Greeted by fire service</option>
-											<option>Greeted by other healthcare professional</option>
-										</optgroup>
-										<optgroup label="Found on arrival">
-											<option>Found seated in chair</option>
-											<option>Found in bed</option>
-											<option>Found on floor</option>
-											<option>Found standing</option>
-											<option>Found in vehicle</option>
-											<option>Found in bathroom</option>
-											<option>Found collapsed / reduced consciousness</option>
-											<option>No one present on arrival</option>
-										</optgroup>
-										<optgroup label="Other">
-											<option>Handover from another crew</option>
-											<option>Met at scene as arranged</option>
-										</optgroup>
-									</select>
+							<!-- Mechanism -->
+							<div class="socrates-group">
+								<label class="field-label">Mechanism</label>
+								<div
+									class="square-grid multi-group"
+									data-state="headMechanism"></div>
+								<input
+									id="headMechanismDetail"
+									placeholder="e.g. fell 3 metres onto concrete, unrestrained passenger"
+									style="margin-top: 8px" />
+							</div>
+							<!-- Loss of consciousness and amnesia -->
+							<div class="socrates-group">
+								<label class="field-label"
+									>Loss of consciousness &amp; amnesia</label
+								>
+								<div class="grid-2">
+									<div>
+										<label class="field-label">Loss of consciousness</label>
+										<input type="hidden" id="headLOC" />
+										<div
+											class="radio-chip-group"
+											data-radio-group="headLOC"
+											style="margin-top: 4px"></div>
+										<div
+											id="headLOCDurationWrap"
+											class="hidden"
+											style="margin-top: 8px">
+											<label class="field-label">Duration of LOC</label>
+											<input type="hidden" id="headLOCDuration" />
+											<div
+												class="radio-chip-group"
+												data-radio-group="headLOCDuration"
+												style="margin-top: 4px"></div>
+										</div>
+									</div>
+									<div>
+										<label class="field-label">Retrograde amnesia</label>
+										<input type="hidden" id="headRetrograde" />
+										<div
+											class="radio-chip-group"
+											data-radio-group="headRetrograde"
+											style="margin-top: 4px"></div>
+										<div
+											id="headRetroDurationWrap"
+											class="hidden"
+											style="margin-top: 8px">
+											<label class="field-label">Duration</label>
+											<input type="hidden" id="headRetroDuration" />
+											<div
+												class="radio-chip-group"
+												data-radio-group="headRetroDuration"
+												style="margin-top: 4px"></div>
+										</div>
+										<div style="margin-top: 12px">
+											<label class="field-label">Anterograde amnesia</label>
+											<input type="hidden" id="headAnterograde" />
+											<div
+												class="radio-chip-group"
+												data-radio-group="headAnterograde"
+												style="margin-top: 4px"></div>
+										</div>
+									</div>
 								</div>
-								<div>
-									<label class="field-label" for="oaLocation">Location</label
-									><input id="oaLocation" placeholder="e.g. living room" />
-								</div>
-								<div>
-									<label class="field-label">Mobility</label>
-									<input type="hidden" id="oaMobility" />
+							</div>
+							<!-- Symptoms -->
+							<div class="socrates-group">
+								<label class="field-label">Symptoms</label>
+								<div
+									class="square-grid multi-group"
+									data-state="headSymptoms"></div>
+								<div style="margin-top: 10px">
+									<label class="field-label">Vomiting episodes</label>
+									<input type="hidden" id="headVomitingCount" />
 									<div
-										class="radio-chip-group wrap-grid"
-										data-radio-group="oaMobility"
+										class="radio-chip-group"
+										data-radio-group="headVomitingCount"
+										style="margin-top: 4px"></div>
+								</div>
+							</div>
+							<!-- Findings -->
+							<div class="socrates-group">
+								<label class="field-label">Clinical findings</label>
+								<div
+									class="square-grid multi-group"
+									data-state="headSigns"></div>
+								<div class="grid-2 compact" style="margin-top: 12px">
+									<label class="check-row"
+										><input type="checkbox" id="headGcsReduced" /> GCS &lt;15
+										(at assessment or 2 hrs)</label
+									><label class="check-row"
+										><input type="checkbox" id="headAnticoag" /> On
+										anticoagulants</label
+									>
+								</div>
+							</div>
+							<!-- Additional notes -->
+							<div class="socrates-group">
+								<label class="field-label" for="headInjuryNotes"
+									>Additional notes</label
+								><textarea id="headInjuryNotes" rows="2"></textarea>
+							</div>
+						</div>
+					</details>
+
+					<!-- Seizure Assessment -->
+					<details class="section-card hidden" id="seizureAssessmentCard">
+						<summary>
+							<span>Seizure Assessment</span><small>Seizure</small>
+						</summary>
+						<div class="section-body">
+							<label class="field-label">Seizure type</label>
+							<div class="square-grid" id="seizureTypeGrid"></div>
+
+							<div class="grid-2" style="margin-top: 12px">
+								<div>
+									<label class="field-label">Number of seizures</label>
+									<input type="hidden" id="seizureCount" />
+									<div
+										class="radio-chip-group"
+										data-radio-group="seizureCount"
 										style="margin-top: 4px">
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Fully mobile">
-											Fully mobile
+										<button type="button" class="radio-chip" data-value="1">
+											1
+										</button>
+										<button type="button" class="radio-chip" data-value="2">
+											2
+										</button>
+										<button type="button" class="radio-chip" data-value="3">
+											3
+										</button>
+										<button type="button" class="radio-chip" data-value="4">
+											4
 										</button>
 										<button
 											type="button"
 											class="radio-chip"
-											data-value="Mobilised independently">
-											Independent
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Mobilised with assistance">
-											With assistance
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Non-mobile / unable to weight bear">
-											Non-mobile / NWB
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Non-mobile / carried">
-											Carried
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Confined to bed">
-											Bedbound
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Wheelchair user (baseline)">
-											Wheelchair (baseline)
+											data-value="5 or more">
+											5+
 										</button>
 									</div>
 								</div>
 								<div>
-									<label class="field-label" for="oaNotes"
-										>Additional notes</label
-									><input id="oaNotes" />
+									<label class="field-label" for="seizureDuration"
+										>Duration of seizure</label
+									>
+									<input
+										id="seizureDuration"
+										placeholder="e.g. approx 2 minutes" />
 								</div>
 							</div>
-							<div id="oaPatientContactWrap" style="display: none">
-								<label class="field-label" for="oaPatientFoundHow"
-									>On reaching patient</label
-								><input
-									id="oaPatientFoundHow"
-									placeholder="e.g. sat in chair, lying in bed" />
-							</div>
-							<div class="grid-2 compact">
-								<label class="check-row"
-									><input type="checkbox" id="oaConsent" checked /> Consented to
-									assessment</label
-								><label class="check-row"
-									><input type="checkbox" id="oaNoABC" checked /> No immediate
-									ABC concerns</label
-								><label class="check-row"
-									><input type="checkbox" id="oaNormalPresentation" checked />
-									Normal presentation on arrival</label
-								>
-							</div>
-						</div>
-					</details>
-					<div id="abcdeContainer"></div>
-				</section>
 
-				<!-- ── ASSESSMENT TAB ───────────────────────────────────────────────── -->
-				<section class="panel" id="panel-assessment">
-					<details class="section-card" id="obsCard" open>
-						<summary><span>Observations</span><small>OBS</small></summary>
-						<div class="section-body">
-							<div id="obsContainer"></div>
-							<button
-								type="button"
-								class="secondary-action"
-								id="addObsBtn"
-								style="margin-top: 10px">
-								+ Add observations
-							</button>
+							<div class="grid-2" style="margin-top: 8px">
+								<div>
+									<label class="field-label" for="seizureTime"
+										>Time of onset</label
+									>
+									<input id="seizureTime" placeholder="e.g. 14:20" />
+								</div>
+								<div
+									style="
+										display: flex;
+										flex-direction: column;
+										gap: 6px;
+										padding-top: 20px;
+									">
+									<label class="check-row">
+										<input type="checkbox" id="seizureWitnessed" /> Witnessed
+									</label>
+									<label class="check-row">
+										<input type="checkbox" id="seizureLOC" /> Loss of
+										consciousness
+									</label>
+								</div>
+							</div>
+
+							<div id="seizureWitnessedByWrap">
+								<label class="field-label" for="seizureWitnessedBy"
+									>Witnessed by</label
+								>
+								<input
+									id="seizureWitnessedBy"
+									placeholder="e.g. Family member, bystander, crew" />
+							</div>
+
+							<label class="field-label" style="margin-top: 12px"
+								>Features during seizure</label
+							>
+							<div class="square-grid" id="seizureFeaturesGrid"></div>
+
+							<label class="field-label" style="margin-top: 12px"
+								>Post-seizure findings on examination</label
+							>
+							<div class="square-grid" id="seizureFindingsGrid"></div>
+
+							<div class="grid-2" style="margin-top: 12px">
+								<div>
+									<label class="check-row">
+										<input type="checkbox" id="seizurePostictal" /> Postictal
+										phase observed
+									</label>
+									<input
+										id="seizurePostictalDuration"
+										placeholder="Postictal duration"
+										style="margin-top: 6px" />
+								</div>
+								<div>
+									<label class="field-label">Recovery to baseline</label>
+									<input type="hidden" id="seizureRecovery" />
+									<div
+										class="radio-chip-group"
+										data-radio-group="seizureRecovery"
+										style="margin-top: 4px">
+										<button
+											type="button"
+											class="radio-chip"
+											data-value="Full recovery">
+											Full recovery
+										</button>
+										<button
+											type="button"
+											class="radio-chip"
+											data-value="Partial recovery">
+											Partial
+										</button>
+										<button
+											type="button"
+											class="radio-chip"
+											data-value="Not recovered at handover">
+											Not recovered
+										</button>
+										<button
+											type="button"
+											class="radio-chip"
+											data-value="Unclear">
+											Unclear
+										</button>
+									</div>
+								</div>
+							</div>
+
+							<div style="margin-top: 14px">
+								<label class="check-row">
+									<input type="checkbox" id="seizureKnownEpileptic" /> Known
+									epileptic
+								</label>
+							</div>
+							<div id="seizureEpilepsyWrap" style="margin-top: 8px">
+								<div class="grid-2">
+									<div>
+										<label class="field-label" for="seizureEpilepsyDiagnosis"
+											>Epilepsy diagnosis / type</label
+										>
+										<input
+											id="seizureEpilepsyDiagnosis"
+											placeholder="e.g. JME, temporal lobe epilepsy" />
+									</div>
+									<div>
+										<label class="field-label" for="seizureLastPrior"
+											>Last seizure prior to today</label
+										>
+										<input
+											id="seizureLastPrior"
+											placeholder="e.g. 3 weeks ago" />
+									</div>
+								</div>
+								<div style="margin-top: 8px">
+									<label class="field-label" for="seizureUsualPattern"
+										>Usual seizure pattern</label
+									>
+									<input
+										id="seizureUsualPattern"
+										placeholder="e.g. Same as usual / atypical — more prolonged" />
+								</div>
+								<label class="field-label" style="margin-top: 10px"
+									>AED compliance</label
+								>
+								<div class="square-grid" id="aedComplianceGrid"></div>
+							</div>
+
+							<label class="field-label" style="margin-top: 14px"
+								>Precipitating factors</label
+							>
+							<div class="square-grid" id="seizurePrecipitantsGrid"></div>
+
+							<label
+								class="field-label"
+								for="seizureNotes"
+								style="margin-top: 12px"
+								>Notes</label
+							>
+							<textarea id="seizureNotes" rows="2"></textarea>
 						</div>
 					</details>
+
+					<!-- Mental health assessment -->
+					<details class="section-card hidden" id="mhAssessmentCard">
+						<summary>
+							<span>Mental Health Assessment</span><small>MH / OD / SH</small>
+						</summary>
+						<div class="section-body">
+							<label class="field-label">Intent</label>
+							<div class="square-grid" id="mhIntentGrid"></div>
+
+							<label class="field-label" style="margin-top: 12px"
+								>Nature of act</label
+							>
+							<div class="square-grid" id="mhPlanningGrid"></div>
+
+							<div style="margin-top: 12px">
+								<label class="field-label" for="mhTriggers"
+									>Triggers / precipitants</label
+								>
+								<input
+									id="mhTriggers"
+									placeholder="e.g. Relationship breakdown, financial stress, bereavement" />
+							</div>
+
+							<label class="check-row" style="margin-top: 12px">
+								<input type="checkbox" id="mhPrevious" /> Previous episodes of
+								self-harm / overdose
+							</label>
+							<textarea
+								id="mhPreviousDetails"
+								rows="2"
+								placeholder="Details of previous episodes..."></textarea>
+
+							<!-- Overdose-specific -->
+							<div id="odDetailsWrap" class="hidden" style="margin-top: 14px">
+								<p
+									class="field-label"
+									style="font-weight: 600; margin-bottom: 8px">
+									Overdose details
+								</p>
+								<label class="field-label" for="odSubstance"
+									>Substance(s) taken</label
+								>
+								<input
+									id="odSubstance"
+									placeholder="e.g. Paracetamol, alcohol, ibuprofen" />
+								<div class="grid-2" style="margin-top: 8px">
+									<div>
+										<label class="field-label" for="odAmount"
+											>Amount / estimated dose</label
+										>
+										<input id="odAmount" placeholder="e.g. Up to 16 tablets" />
+									</div>
+									<div>
+										<label class="field-label" for="odTime">Time taken</label>
+										<input
+											id="odTime"
+											placeholder="e.g. 22:00, approx 2 hours ago" />
+									</div>
+								</div>
+								<div class="grid-2" style="margin-top: 8px">
+									<div>
+										<label class="field-label">Route</label>
+										<input type="hidden" id="odRoute" />
+										<div
+											class="radio-chip-group"
+											data-radio-group="odRoute"
+											style="margin-top: 4px">
+											<button
+												type="button"
+												class="radio-chip"
+												data-value="Oral (ingested)">
+												Oral / ingested
+											</button>
+											<button
+												type="button"
+												class="radio-chip"
+												data-value="IV / injected">
+												IV / injected
+											</button>
+											<button
+												type="button"
+												class="radio-chip"
+												data-value="Inhalation">
+												Inhalation
+											</button>
+											<button
+												type="button"
+												class="radio-chip"
+												data-value="Topical / transdermal">
+												Topical
+											</button>
+											<button
+												type="button"
+												class="radio-chip"
+												data-value="Other / unknown">
+												Other / unknown
+											</button>
+										</div>
+									</div>
+									<div
+										style="
+											display: flex;
+											align-items: center;
+											padding-top: 20px;
+										">
+										<label class="check-row">
+											<input type="checkbox" id="odAlcohol" /> Alcohol
+											co-ingestion
+										</label>
+									</div>
+								</div>
+								<label class="field-label" style="margin-top: 8px"
+									>Medication source</label
+								>
+								<div class="square-grid" id="odPrescribedGrid"></div>
+							</div>
+
+							<!-- Self-harm specific -->
+							<div id="shDetailsWrap" class="hidden" style="margin-top: 14px">
+								<p
+									class="field-label"
+									style="font-weight: 600; margin-bottom: 8px">
+									Self-harm details
+								</p>
+								<label class="field-label">Method</label>
+								<div class="square-grid" id="shMethodGrid"></div>
+								<label class="field-label" style="margin-top: 10px"
+									>Wound depth</label
+								>
+								<div class="square-grid" id="shDepthGrid"></div>
+							</div>
+
+							<!-- Mental State Examination -->
+							<div style="margin-top: 16px">
+								<p
+									class="field-label"
+									style="font-weight: 600; margin-bottom: 8px">
+									Mental State Examination (MSE)
+								</p>
+
+								<label class="field-label">A — Appearance</label>
+								<div class="square-grid" id="mseAppearanceGrid"></div>
+
+								<label class="field-label" style="margin-top: 10px"
+									>B — Behaviour</label
+								>
+								<div class="square-grid" id="mseBehaviourGrid"></div>
+
+								<label class="field-label" style="margin-top: 10px"
+									>C — Communication / speech</label
+								>
+								<div class="square-grid" id="mseSpeechGrid"></div>
+
+								<label class="field-label" style="margin-top: 10px"
+									>D — Delusions / thought content</label
+								>
+								<div class="square-grid" id="mseThoughtContentGrid"></div>
+
+								<label class="field-label" style="margin-top: 10px"
+									>E — Emotion / affect</label
+								>
+								<div class="square-grid" id="mseAffectGrid"></div>
+
+								<label class="field-label" style="margin-top: 10px"
+									>F — Form of thought</label
+								>
+								<div class="square-grid" id="mseThoughtFormGrid"></div>
+
+								<label class="field-label" style="margin-top: 10px"
+									>H — Hallucinations / perception</label
+								>
+								<div class="square-grid" id="msePerceptionGrid"></div>
+
+								<label class="field-label" style="margin-top: 10px"
+									>I — Insight</label
+								>
+								<div class="square-grid" id="mseInsightGrid"></div>
+							</div>
+
+							<div style="margin-top: 14px">
+								<label class="field-label" for="mhCurrentServices"
+									>Current MH services / care team</label
+								>
+								<input
+									id="mhCurrentServices"
+									placeholder="e.g. CMHT, Crisis team, Psychiatry — Dr Smith" />
+							</div>
+							<div style="margin-top: 8px">
+								<label class="field-label" for="mhNotes"
+									>Additional notes</label
+								>
+								<textarea id="mhNotes" rows="2"></textarea>
+							</div>
+						</div>
+					</details>
+
 					<details class="section-card">
 						<summary><span>Review of Systems</span><small>ROS</small></summary>
 						<div id="rosContainer" class="nested-sections"></div>
-					</details>
-					<details class="section-card">
-						<summary>
-							<span>Secondary Survey / On Examination</span><small>OE</small>
-						</summary>
-						<div class="section-body">
-							<div class="toolbar">
-								<button
-									id="generateOeButton"
-									class="primary-action"
-									type="button">
-									Generate OE from findings</button
-								><button
-									id="clearOeButton"
-									class="secondary-action"
-									type="button">
-									Clear
-								</button>
-							</div>
-							<textarea
-								id="oeText"
-								rows="10"
-								placeholder="On examination / secondary survey..."></textarea>
-						</div>
 					</details>
 					<details class="section-card">
 						<summary>
@@ -2648,6 +2318,30 @@
 								Add injury
 							</button>
 							<div id="injuryEntries"></div>
+						</div>
+					</details>
+					<details class="section-card">
+						<summary>
+							<span>Secondary Survey / On Examination</span><small>OE</small>
+						</summary>
+						<div class="section-body">
+							<div class="toolbar">
+								<button
+									id="generateOeButton"
+									class="primary-action"
+									type="button">
+									Generate OE from findings</button
+								><button
+									id="clearOeButton"
+									class="secondary-action"
+									type="button">
+									Clear
+								</button>
+							</div>
+							<textarea
+								id="oeText"
+								rows="10"
+								placeholder="On examination / secondary survey..."></textarea>
 						</div>
 					</details>
 
@@ -4000,9 +3694,8 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 				</div>
 			</footer>
 		</div>
-		<!-- /#prf-tool -->
 
-		<!-- ═══════════════ PAEDIATRIC PRF ═══════════════ -->
+		<!-- PAEDIATRIC PRF -->
 		<div id="paeds-tool" class="hidden">
 			<nav
 				class="tabs"
@@ -5951,6 +5644,6 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 		</div>
 
 		<div class="toast" id="toast">Copied</div>
-		<script src="app.js?v=1779584221"></script>
+		<script src="app.js?v=1779660094"></script>
 	</body>
 </html>

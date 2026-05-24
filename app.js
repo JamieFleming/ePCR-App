@@ -354,14 +354,14 @@ const OPTIONS = {
 		"Dull",
 		"Aching",
 		"Burning",
-		"Crushing / pressure",
+		"Crushing",
+		"Pressure",
 		"Stabbing",
 		"Throbbing",
 		"Colicky",
 		"Tearing",
-		"Tight",
 		"Cramping",
-		"Squeezing",
+		"Tight / Squeezing",
 		"Other",
 	],
 	associated: [
@@ -371,6 +371,7 @@ const OPTIONS = {
 		"Dizziness",
 		"Shortness of breath",
 		"Palpitations",
+		"Confusion",
 		"Headache",
 		"Fever",
 		"Fatigue",
@@ -381,13 +382,15 @@ const OPTIONS = {
 		"Syncope",
 		"Back pain",
 		"Chest tightness",
+		"Photophobia",
 		"Other",
 	],
 	exacerbating: [
 		"Movement",
-		"Deep breathing",
+		"Inspiration",
+		"Expiration",
 		"Palpation",
-		"Eating",
+		"After eating",
 		"Exertion",
 		"Lying flat",
 		"Standing",
@@ -403,12 +406,16 @@ const OPTIONS = {
 		"Rest",
 		"Analgesia",
 		"Sitting forward",
+		"Sitting up",
+		"Lying down",
+		"Movement",
 		"Antacids",
 		"Ice",
 		"Heat",
-		"Position change",
 		"Eating",
 		"Vomiting",
+		"Opening bowels",
+		"Passing wind",
 		"GTN",
 		"None",
 		"Other",
@@ -438,17 +445,19 @@ const OPTIONS = {
 	fallsSymptoms: [
 		"Dizziness",
 		"Pre-syncope",
+		"Syncope",
 		"Palpitations",
 		"Chest pain",
 		"Shortness of breath",
 		"Sudden weakness",
 		"Leg gave way",
+		"Lost balance",
 		"Blurred vision",
 		"Tripped",
 		"Slipped",
 		"Mechanical",
-		"No warning",
-		"Cannot recall",
+		"Intoxicated",
+		"Unknown",
 		"Other",
 	],
 	fallsLocation: [
@@ -458,13 +467,14 @@ const OPTIONS = {
 		"Living Room",
 		"Hallway",
 		"Stairs",
-		"Garden/Outside",
+		"Outside",
 		"Care Home",
 		"Public Place",
 		"Other",
 	],
 	fallsActivity: [
 		"Walking",
+		"Turning",
 		"Getting up from chair",
 		"Getting up from bed",
 		"Going to toilet",
@@ -480,11 +490,17 @@ const OPTIONS = {
 		"RTC — cyclist",
 		"RTC — vehicle occupant",
 		"Fall from height",
+		"Fall >1m",
+		"Fall <1m",
 		"Fall on stairs",
 		"Fall from standing",
+		"Seizure-related fall",
 		"Assault",
 		"Sports injury",
 		"Object struck head",
+		"Head struck object",
+		"Struck by moving object",
+		"Unknown/unwitnessed",
 		"Other",
 	],
 	headSymptoms: [
@@ -493,8 +509,13 @@ const OPTIONS = {
 		"Vomiting",
 		"Dizziness",
 		"Visual disturbance",
+		"Photophobia",
 		"Confusion",
+		"Behaviour change",
 		"Limb weakness / numbness",
+		"Unsteadiness",
+		"Drowsiness",
+		"Neck pain",
 		"Slurred speech",
 		"Seizure",
 	],
@@ -513,18 +534,23 @@ const OPTIONS = {
 	fallsInjuries: [
 		"Head",
 		"Face",
-		"Neck / spine",
+		"Neck",
+		"Spine",
 		"Upper back",
 		"Lower back",
 		"Shoulder",
 		"Arm",
-		"Chest / ribs",
 		"Wrist",
+		"Hand",
+		"Elbow",
+		"Chest / ribs",
 		"Hip",
 		"Pelvis",
 		"Knee",
 		"Lower leg",
-		"No injury found",
+		"Ankle",
+		"Foot",
+		"No apparent injury found",
 	],
 	abdoRegions: [
 		"R Hypochondriac",
@@ -558,6 +584,361 @@ const ABDO_FINDING_SHORT = {
 	Rovsings: "Rv",
 };
 
+// Presenting complaint options
+const PC_OPTIONS = [
+	{
+		group: "Cardiovascular",
+		items: [
+			"Chest pain",
+			"Palpitations",
+			"Collapse / syncope",
+			"Hypertension",
+			"Hypotension",
+			"Cardiac arrest",
+		],
+	},
+	{
+		group: "Respiratory",
+		items: [
+			"Shortness of breath",
+			"Exacerbation of Asthma / COPD",
+			"Chest infection symptoms",
+			"Cough",
+			"Haemoptysis",
+			"Respiratory arrest",
+			"Choking / airway problem",
+		],
+	},
+	{
+		group: "Neurological",
+		items: [
+			"Confusion",
+			"Headache",
+			"Dizziness",
+			"Stroke",
+			"New weakness",
+			"Numbness / tingling",
+			"Speech abnormality",
+			"Visual disturbance",
+			"Collapse",
+			"Reduced consciousness",
+			"Seizure",
+		],
+	},
+	{
+		group: "Gastrointestinal / Urinary",
+		items: [
+			"Abdominal pain",
+			"Nausea / vomiting",
+			"Diarrhoea",
+			"Constipation",
+			"Haematemesis / melaena",
+			"Urinary symptoms",
+			"Urinary retention",
+			"Catheter problem",
+		],
+	},
+	{
+		group: "Obstetric / Gynaecological",
+		items: ["PV bleed", "Pregnancy related", "Labour"],
+	},
+	{
+		group: "Trauma / Musculoskeletal",
+		items: [
+			"Fall",
+			"Reduced mobility/Off legs",
+			"Trauma / injury",
+			"Back pain",
+			"Neck pain",
+			"Hip pain",
+			"Limb pain / swelling",
+			"Wound / laceration",
+			"Burns / scalds",
+			"Head injury",
+		],
+	},
+	{
+		group: "Medical / Other",
+		items: [
+			"General weakness",
+			"Allergic reaction",
+			"Diabetic emergency",
+			"Fever / pyrexia",
+			"Sepsis concern",
+			"Overdose / poisoning",
+			"Mental health crisis",
+			"Self-harm",
+			"Social concern / welfare check",
+			"Palliative/end-of-life care",
+			"Alcohol intoxication",
+			"Substance misuse",
+			"Other",
+		],
+	},
+];
+
+// Caller options
+const CALLER_OPTIONS = [
+	{
+		group: "Emergency",
+		items: [
+			"Patient called 999",
+			"Passerby called 999",
+			"Carer called 999",
+			"Relative called 999",
+			"Patient called 111",
+			"Carer called 111",
+			"Relative called 111",
+		],
+	},
+	{
+		group: "Clinical referral",
+		items: [
+			"GP referral",
+			"HCP referral",
+			"District nurse referral",
+			"Crisis team referral",
+		],
+	},
+	{
+		group: "Other",
+		items: [
+			"Police request",
+			"Fire request",
+			"Other service referral",
+			"Other",
+		],
+	},
+];
+
+// Onset time options — entries are [value, label]; omit value to use label as both.
+const ONSET_TIME_OPTIONS = [
+	["Just now", "Just now"],
+	["5 minutes ago", "5 minutes ago"],
+	["10 minutes ago", "10 minutes ago"],
+	["15 minutes ago", "15 minutes ago"],
+	["20 minutes ago", "20 minutes ago"],
+	["30 minutes ago", "30 minutes ago"],
+	["45 minutes ago", "45 minutes ago"],
+	["1 hour ago", "1 hour ago"],
+	["90 minutes ago", "90 minutes ago"],
+	["2 hours ago", "2 hours ago"],
+	["3 hours ago", "3 hours ago"],
+	["4 hours ago", "4 hours ago"],
+	["6 hours ago", "6 hours ago"],
+	["12 hours ago", "12 hours ago"],
+	["24 hours ago", "24 hours ago"],
+	["Earlier today", "Earlier today"],
+	["Yesterday", "Yesterday"],
+	["Other", "Other (specify)"],
+];
+
+function populateFlatSelect(selectId, options) {
+	const select = $(`#${selectId}`);
+	if (!select) return;
+	options.forEach(([value, label]) => {
+		const opt = document.createElement("option");
+		opt.value = value;
+		opt.textContent = label;
+		select.appendChild(opt);
+	});
+}
+
+function populateOnsetTimeSelect() {
+	populateFlatSelect("onsetTime", ONSET_TIME_OPTIONS);
+}
+
+// On arrival options
+const OA_FOUND_OPTIONS = [
+	{
+		group: "Greeted by",
+		items: [
+			"Greeted by patient",
+			"Greeted by relative",
+			"Greeted by carer",
+			"Greeted by neighbour",
+			"Greeted by care home staff",
+			"Greeted by passer-by / bystander",
+			"Greeted by police",
+			"Greeted by fire service",
+			"Greeted by other healthcare professional",
+			"Greeted by other",
+		],
+	},
+	{
+		group: "Found on arrival",
+		items: [
+			"Found sitting",
+			"Found standing",
+			"Found in lying",
+			"Found on floor",
+			"Found unconscious",
+			"No patient found",
+		],
+	},
+	{
+		group: "Other",
+		items: ["Handover from another crew", "Other"],
+	},
+];
+
+// Populates a radio-chip-group container with buttons from a [value, label] array.
+// If an item is a plain string, value and label are both that string.
+function populateChipGroup(radioGroup, items) {
+	const group = $(`[data-radio-group='${radioGroup}']`);
+	if (!group) return;
+	items.forEach((item) => {
+		const [value, label] = Array.isArray(item) ? item : [item, item];
+		const btn = document.createElement("button");
+		btn.type = "button";
+		btn.className = "radio-chip";
+		btn.dataset.value = value;
+		btn.textContent = label;
+		group.appendChild(btn);
+	});
+}
+
+const ONSET_TYPE_OPTIONS = ["Sudden", "Gradual", "Insidious"];
+const TIMING_OPTIONS = [
+	"Constant",
+	"Intermittent",
+	"Episodic",
+	"Recurrent",
+	["Waxing and waning", "Waxing & waning"],
+	"Colicky",
+	"Progressively worsening",
+	"Improving",
+];
+
+function populateOnsetTypeChips() {
+	populateChipGroup("onsetType", ONSET_TYPE_OPTIONS);
+}
+function populateTimingChips() {
+	populateChipGroup("timingSelect", TIMING_OPTIONS);
+}
+
+const FALLS_PREV_COUNT_OPTIONS = [
+	["None — first fall", "First fall"],
+	["1 previous fall", "1 prev"],
+	["2–3 previous falls", "2–3 prev"],
+	["4 or more falls", "4+ falls"],
+];
+
+function populateFallsPrevCountChips() {
+	populateChipGroup("fallsPreviousCount", FALLS_PREV_COUNT_OPTIONS);
+}
+
+const FALLS_LOC_OPTIONS = ["LOC", "Possible LOC", "Unknown", "No LOC"];
+const FALLS_WITNESSED_OPTIONS = ["Witnessed", "Unwitnessed", "Unknown"];
+const FALLS_LIE_TIME_OPTIONS = [
+	"Just fell",
+	["< 30 minutes", "< 30 min"],
+	["30 min – 1 hour", "30 min–1 hr"],
+	["1–2 hours", "1–2 hrs"],
+	["2–4 hours", "2–4 hrs"],
+	["4–8 hours", "4–8 hrs"],
+	["> 8 hours", "> 8 hrs"],
+	"Unknown",
+];
+const FALLS_ANTICOAG_OPTIONS = [
+	["On anticoagulants", "On anticoagulants"],
+	["Not on anticoagulants", "Not on anticoagulants"],
+	["Unknown", "Unknown"],
+];
+
+function populateFallsLocChips() {
+	populateChipGroup("fallsLOC", FALLS_LOC_OPTIONS);
+}
+function populateFallsWitnessedChips() {
+	populateChipGroup("fallsWitnessed", FALLS_WITNESSED_OPTIONS);
+}
+function populateFallsLieTimeChips() {
+	populateChipGroup("fallsLieTime", FALLS_LIE_TIME_OPTIONS);
+}
+function populateFallsAnticoagChips() {
+	populateChipGroup("fallsAnticoag", FALLS_ANTICOAG_OPTIONS);
+}
+
+// Head injury — LOC & amnesia chips
+const HEAD_LOC_OPTIONS = ["LOC", "Possible LOC", "No LOC", "Unknown"];
+const HEAD_LOC_DURATION_OPTIONS = [
+	"Unknown",
+	["Brief (< 5 minutes)", "< 5 min"],
+	["5–15 minutes", "5–15 min"],
+	["15–30 minutes", "15–30 min"],
+	["> 30 minutes", "> 30 min"],
+];
+const HEAD_AMNESIA_OPTIONS = ["Yes", "No", "Unknown"];
+const HEAD_RETRO_DURATION_OPTIONS = [
+	["< 30 minutes", "< 30 min"],
+	["> 30 minutes", "> 30 min"],
+];
+const HEAD_VOMITING_OPTIONS = [
+	["None / not reported", "None"],
+	["1 episode", "1"],
+	["2 episodes", "2"],
+	["3 or more episodes", "3+"],
+];
+
+function populateHeadInjuryChips() {
+	populateChipGroup("headLOC", HEAD_LOC_OPTIONS);
+	populateChipGroup("headLOCDuration", HEAD_LOC_DURATION_OPTIONS);
+	populateChipGroup("headRetrograde", HEAD_AMNESIA_OPTIONS);
+	populateChipGroup("headRetroDuration", HEAD_RETRO_DURATION_OPTIONS);
+	populateChipGroup("headAnterograde", HEAD_AMNESIA_OPTIONS);
+	populateChipGroup("headVomitingCount", HEAD_VOMITING_OPTIONS);
+}
+
+const MOBILITY_OPTIONS = [
+	{ value: "Fully mobile", label: "Fully mobile" },
+	{ value: "Mobilised independently", label: "Independent" },
+	{ value: "Mobilised with assistance", label: "With assistance" },
+	{ value: "Non-mobile / unable to weight bear", label: "Non-mobile / NWB" },
+	{ value: "Confined to bed", label: "Bedbound" },
+	{ value: "Wheelchair user (baseline)", label: "Wheelchair (baseline)" },
+];
+
+function populateGroupedSelect(selectId, groups) {
+	const select = $(`#${selectId}`);
+	if (!select) return;
+	groups.forEach(({ group, items }) => {
+		const optgroup = document.createElement("optgroup");
+		optgroup.label = group;
+		items.forEach((label) => {
+			const opt = document.createElement("option");
+			opt.value = label;
+			opt.textContent = label;
+			optgroup.appendChild(opt);
+		});
+		select.appendChild(optgroup);
+	});
+}
+
+function populatePcSelect() {
+	populateGroupedSelect("pcSelect", PC_OPTIONS);
+}
+
+function populateCallerSelect() {
+	populateGroupedSelect("hpcCaller", CALLER_OPTIONS);
+}
+
+function populateOaFoundSelect() {
+	populateGroupedSelect("oaFound", OA_FOUND_OPTIONS);
+}
+
+function populateMobilityChips() {
+	const group = $("[data-radio-group='oaMobility']");
+	if (!group) return;
+	MOBILITY_OPTIONS.forEach(({ value, label }) => {
+		const btn = document.createElement("button");
+		btn.type = "button";
+		btn.className = "radio-chip";
+		btn.dataset.value = value;
+		btn.textContent = label;
+		group.appendChild(btn);
+	});
+}
+
 // CLINICAL CONTENT — ABCDE CONFIGURATION
 // Drives the dynamic ABCDE primary-survey card builder.  Each entry defines
 // the section key/title, normal/abnormal chip pairs, inline vital inputs, and
@@ -570,7 +951,7 @@ const ABCDE = [
 		chips: [
 			["Patent", "Obstructed"],
 			["Self-maintained", "Airway support required"],
-			["No abnormal sounds", "Airway sounds present"],
+			["No abnormal sounds", "Abnormal airway sounds"],
 		],
 		notes: "airwayNotes",
 	},
@@ -582,6 +963,7 @@ const ABCDE = [
 			["No cyanosis", "Cyanosis present"],
 			["Full sentences", "Unable to complete full sentences"],
 			["No wheeze", "Wheeze present"],
+			["No accessory muscle use", "Accessory muscle use"],
 		],
 		notes: "breathingNotes",
 	},
@@ -595,7 +977,8 @@ const ABCDE = [
 			["Radial pulse palpable", "Radial pulse weak / absent"],
 			["Regular pulse rhythm", "Irregular pulses"],
 			["CRT <2s", "CRT ≥2s"],
-			["No haemorrhage", "Haemorrhage"],
+			["Well perfused", "Poor perfusion"],
+			["No catastrophic haemorrhage", "Catastrophic haemorrhage"],
 		],
 		notes: "circulationNotes",
 		extras:
@@ -611,6 +994,7 @@ const ABCDE = [
 			["PEARL", "Pupils unequal / unreactive"],
 			["Speech clear", "Speech impaired"],
 			["Normal mobility", "Reduced mobility"],
+			["No seizure activity", "Seizure activity"],
 		],
 		notes: "disabilityNotes",
 	},
@@ -621,10 +1005,12 @@ const ABCDE = [
 			["Apyrexial", "Pyrexia"],
 			["No rigors", "Rigors present"],
 			["Normal skin colour", "Abnormal skin colour"],
+			["Warm to touch", "Cool to touch"],
 			["Not clammy", "Clammy"],
 			["Not diaphoretic", "Diaphoretic"],
 			["No injuries", "Injury found"],
 			["No rash", "Rash present"],
+			["No immediate safeguarding concerns", "Safeguarding concerns"],
 		],
 		notes: "exposureNotes",
 	},
@@ -868,6 +1254,19 @@ function initDashboard() {
 }
 
 function init() {
+	populatePcSelect();
+	populateCallerSelect();
+	populateOaFoundSelect();
+	populateMobilityChips();
+	populateOnsetTimeSelect();
+	populateOnsetTypeChips();
+	populateTimingChips();
+	populateFallsPrevCountChips();
+	populateFallsLocChips();
+	populateFallsWitnessedChips();
+	populateFallsLieTimeChips();
+	populateFallsAnticoagChips();
+	populateHeadInjuryChips();
 	buildAbcde();
 	buildRos();
 	buildOptionButtons(); // after buildRos so ROS containers exist
@@ -2349,8 +2748,8 @@ function buildEdHandoverText() {
 	const hasPain = !isChecked("noPain");
 	const site = getSelectedParts(state.siteParts);
 	const radiation = getSelectedParts(state.radiationParts);
-	const character = listSet(state.character, "characterOther", "");
-	const associated = listSet(state.associated, "associatedOther", "");
+	const character = listFactors(state.character, "characterOther", "");
+	const associated = listFactors(state.associated, "associatedOther", "");
 	const exacerbating = listFactors(state.exacerbating, "exacerbatingOther", "");
 	const relieving = listFactors(state.relieving, "relievingOther", "");
 	const severityNow = val("severity");
@@ -2466,6 +2865,14 @@ function bindEvents() {
 	$$(".tab").forEach((tab) =>
 		tab.addEventListener("click", () => switchTab(tab.dataset.tab)),
 	);
+	$("#fallsTimeUnknownBtn")?.addEventListener("click", () => {
+		const btn = $("#fallsTimeUnknownBtn");
+		const input = $("#fallsTime");
+		const isUnknown = btn.classList.toggle("selected");
+		input.disabled = isUnknown;
+		input.style.opacity = isUnknown ? "0.4" : "";
+		if (isUnknown) input.value = "";
+	});
 	$("#resetButton").addEventListener("click", () => {
 		if (confirm("Clear all data and start a new PRF?")) location.reload();
 	});
@@ -2517,7 +2924,10 @@ function bindEvents() {
 
 	$("#capacityStatus").addEventListener("change", handleCapacityDisplay);
 	$("#onsetTime").addEventListener("change", () => {
-		$("#onsetTimeOther")?.classList.toggle("hidden", onsetTime() !== "Other");
+		$("#onsetTimeOther")?.classList.toggle(
+			"hidden",
+			val("onsetTime") !== "Other",
+		);
 	});
 	$("#coughType").addEventListener("change", () => {
 		$("#sputumWrap")?.classList.toggle(
@@ -2597,18 +3007,16 @@ function bindEvents() {
 			$("#oaPatientFoundHow").value = "";
 		}
 	});
-	$("#headLOC").addEventListener("change", () =>
-		$("#headLOCDurationWrap").classList.toggle(
-			"hidden",
-			!$("#headLOC").checked,
-		),
-	);
-	$("#headRetrograde").addEventListener("change", () =>
-		$("#headRetroDurationWrap").classList.toggle(
-			"hidden",
-			!$("#headRetrograde").checked,
-		),
-	);
+	// Show duration wrap when LOC chip is anything other than "No LOC"
+	$("#headLOC")?.addEventListener("change", () => {
+		const v = val("headLOC");
+		$("#headLOCDurationWrap")?.classList.toggle("hidden", !v || v === "No LOC");
+	});
+	// Show retro duration wrap when retrograde amnesia is "Yes"
+	$("#headRetrograde")?.addEventListener("change", () => {
+		const v = val("headRetrograde");
+		$("#headRetroDurationWrap")?.classList.toggle("hidden", v !== "Yes");
+	});
 	$("#handoverFormat").addEventListener("change", () => {
 		const fmt = $("#handoverFormat").value;
 		const isLah = fmt === "Leave at Home";
@@ -3318,7 +3726,6 @@ function getPc() {
 }
 
 function listFactors(set, otherFieldId, fallback) {
-	console.log(set, otherFieldId, val(otherFieldId));
 	const items = [...set].filter((value) => value !== "Other");
 	const other = val(otherFieldId);
 	if (set.has("Other") && other) items.push(other);
@@ -3748,7 +4155,7 @@ function getNiceCTCriteria() {
 	if (vomitCount && vomitCount !== "1 episode")
 		criteria.push("more than one episode of vomiting");
 	if (
-		isChecked("headRetrograde") &&
+		val("headRetrograde") === "Yes" &&
 		val("headRetroDuration") === "> 30 minutes"
 	)
 		criteria.push("retrograde amnesia > 30 minutes");
@@ -3762,15 +4169,23 @@ function buildHeadInjuryText() {
 	const detail = val("headMechanismDetail");
 	const mechanismLine = `Mechanism: ${[mechanism, detail].filter(Boolean).join(" — ")}.`;
 
-	const locLine = isChecked("headLOC")
-		? `LOC: Yes. Duration: ${val("headLOCDuration") || "unknown"}.`
-		: "LOC: Not reported.";
+	const locVal = val("headLOC");
+	const locLine =
+		locVal && locVal !== "No LOC"
+			? `LOC: ${locVal}. Duration: ${val("headLOCDuration") || "unknown"}.`
+			: "LOC: Not reported.";
 
 	const amnesiaLines = [
-		isChecked("headRetrograde")
-			? `Retrograde amnesia: ${val("headRetroDuration") || "duration unknown"}.`
-			: "No retrograde amnesia reported.",
-		isChecked("headAnterograde") ? "Anterograde amnesia reported." : "",
+		val("headRetrograde") === "Yes"
+			? `Retrograde amnesia: Yes. Duration: ${val("headRetroDuration") || "unknown"}.`
+			: val("headRetrograde")
+				? `Retrograde amnesia: ${val("headRetrograde")}.`
+				: "Retrograde amnesia: Not assessed.",
+		val("headAnterograde") === "Yes"
+			? "Anterograde amnesia: Yes."
+			: val("headAnterograde")
+				? `Anterograde amnesia: ${val("headAnterograde")}.`
+				: "",
 	]
 		.filter(Boolean)
 		.join(" ");
@@ -3816,7 +4231,12 @@ function buildFallsText() {
 		"fallsActivityOther",
 		"Not documented",
 	);
-	const time = val("fallsTime") || "Not documented";
+	const timeUnknown = $("#fallsTimeUnknownBtn")?.classList.contains("selected");
+	const time = timeUnknown
+		? "Unknown time"
+		: val("fallsTime")
+			? val("fallsTime")
+			: "Not documented";
 	const lieTime = val("fallsLieTime") || "Unknown";
 	const injuries = listSet(state.fallsInjuries, "No injury documented");
 	const prevCount = val("fallsPreviousCount") || "Not asked";
@@ -3827,12 +4247,12 @@ function buildFallsText() {
 		lieTime,
 	);
 	return [
-		`S — Symptoms: ${symptoms}. ${isChecked("fallsLOC") ? "LOC reported." : "No LOC reported."} ${isChecked("fallsWitnessed") ? "Witnessed." : "Unwitnessed."}`.trim(),
+		`S — Symptoms: ${symptoms}. ${val("fallsLOC") ? `${val("fallsLOC")}.` : ""} ${val("fallsWitnessed") ? `${val("fallsWitnessed")}.` : ""}`.trim(),
 		`P — Previous falls: ${prevCount}.${isChecked("fallsPreviousInjury") ? " Previous fall-related injury." : ""}`,
 		`L — Location: ${locLine}.`,
 		`A — Activity: ${activity}.`,
 		`T — Time: ${time}. On floor: ${lieTime}.${longLie ? " Long lie." : ""}`,
-		`T — Trauma: ${injuries}.${isChecked("fallsHeadStrike") ? " Head strike." : ""}${isChecked("fallsAnticoag") ? " On anticoagulants." : ""}`,
+		`T — Trauma: ${injuries}.${val("fallsAnticoag") ? ` ${val("fallsAnticoag")}.` : ""}`,
 		...(val("fallsNotes") ? [`Notes: ${val("fallsNotes")}`] : []),
 	].join("\n");
 }
