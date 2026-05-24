@@ -14,7 +14,7 @@
 		<link
 			href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
 			rel="stylesheet" />
-		<link rel="stylesheet" href="styles.css?v=1779660578" />
+		<link rel="stylesheet" href="styles.css?v=1779661890" />
 		<link rel="icon" type="image/png" href="assets/favicon.png" />
 		<link rel="apple-touch-icon" href="assets/favicon.png" />
 	</head>
@@ -554,9 +554,9 @@
 						policy, and apply clinical judgement.
 					</div>
 
-					<!-- Patient Demographics -->
-					<details class="section-card" open id="patientCard">
-						<summary><span>Patient</span><small>Pt</small></summary>
+					<!-- Patient Details -->
+					<details class="section-card" id="patientCard">
+						<summary><span>Patient Details</span><small>Pt</small></summary>
 						<div class="section-body">
 							<div class="grid-2">
 								<div>
@@ -757,7 +757,7 @@
 				<!-- ── ASSESSMENT TAB ───────────────────────────────────────────────── -->
 				<section class="panel" id="panel-assessment">
 					<!-- Observations -->
-					<details class="section-card" id="obsCard" open>
+					<details class="section-card" id="obsCard">
 						<summary><span>Observations</span><small>OBS</small></summary>
 						<div class="section-body">
 							<div id="obsContainer"></div>
@@ -1816,22 +1816,46 @@
 								<div style="margin-top: 12px">
 									<label class="field-label">GCS</label>
 									<div style="margin-top: 6px">
-										<label class="field-label" style="font-size: 12px; color: #666; margin-bottom: 2px">Eyes (E)</label>
+										<label
+											class="field-label"
+											style="font-size: 12px; color: #666; margin-bottom: 2px"
+											>Eyes (E)</label
+										>
 										<input type="hidden" id="headGcsE" />
-										<div class="radio-chip-group" data-radio-group="headGcsE" style="margin-top: 4px"></div>
+										<div
+											class="radio-chip-group"
+											data-radio-group="headGcsE"
+											style="margin-top: 4px"></div>
 									</div>
 									<div style="margin-top: 8px">
-										<label class="field-label" style="font-size: 12px; color: #666; margin-bottom: 2px">Verbal (V)</label>
+										<label
+											class="field-label"
+											style="font-size: 12px; color: #666; margin-bottom: 2px"
+											>Verbal (V)</label
+										>
 										<input type="hidden" id="headGcsV" />
-										<div class="radio-chip-group" data-radio-group="headGcsV" style="margin-top: 4px"></div>
+										<div
+											class="radio-chip-group"
+											data-radio-group="headGcsV"
+											style="margin-top: 4px"></div>
 									</div>
 									<div style="margin-top: 8px">
-										<label class="field-label" style="font-size: 12px; color: #666; margin-bottom: 2px">Motor (M)</label>
+										<label
+											class="field-label"
+											style="font-size: 12px; color: #666; margin-bottom: 2px"
+											>Motor (M)</label
+										>
 										<input type="hidden" id="headGcsM" />
-										<div class="radio-chip-group" data-radio-group="headGcsM" style="margin-top: 4px"></div>
+										<div
+											class="radio-chip-group"
+											data-radio-group="headGcsM"
+											style="margin-top: 4px"></div>
 									</div>
 									<input type="hidden" id="headGcsTotal" />
-									<div id="headGcsTotalDisplay" class="hidden" style="margin-top: 10px; font-weight: 600; font-size: 15px">
+									<div
+										id="headGcsTotalDisplay"
+										class="hidden"
+										style="margin-top: 10px; font-weight: 600; font-size: 15px">
 										GCS Total: <span id="headGcsTotalValue"></span>/15
 									</div>
 								</div>
@@ -1839,7 +1863,10 @@
 								<div style="margin-top: 12px">
 									<label class="field-label">Anticoagulants</label>
 									<input type="hidden" id="headAnticoag" />
-									<div class="radio-chip-group" data-radio-group="headAnticoag" style="margin-top: 4px"></div>
+									<div
+										class="radio-chip-group"
+										data-radio-group="headAnticoag"
+										style="margin-top: 4px"></div>
 								</div>
 							</div>
 							<!-- Additional notes -->
@@ -3744,7 +3771,7 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 						follow JRCALC guidelines and local safeguarding procedures.
 					</div>
 
-					<details class="section-card" open>
+					<details class="section-card">
 						<summary><span>Patient</span><small>Demographics</small></summary>
 						<div class="section-body">
 							<div class="grid-2">
@@ -4150,7 +4177,7 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 
 				<!-- ── PRIMARY SURVEY ────────────────────────────── -->
 				<section class="panel" id="paeds-panel-primary">
-					<details class="section-card tmt-card" data-section-icon="p-tmt" open>
+					<details class="section-card tmt-card" data-section-icon="p-tmt">
 						<summary>
 							<span>Primary Survey</span><small>3 Minute Toolkit · SttSC</small>
 						</summary>
@@ -5501,7 +5528,7 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 					</details>
 
 					<!-- Worsening advice -->
-					<details class="section-card" open>
+					<details class="section-card">
 						<summary>
 							<span>Worsening Advice</span><small>Advice</small>
 						</summary>
@@ -5664,6 +5691,6 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 		</div>
 
 		<div class="toast" id="toast">Copied</div>
-		<script src="app.js?v=1779660578"></script>
+		<script src="app.js?v=1779661890"></script>
 	</body>
 </html>
