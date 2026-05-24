@@ -1,37 +1,39 @@
-"use strict";
+// import {
+// 	renderRedFlags,
+// 	scheduleRedFlags,
+// 	bindRedFlagToggle,
+// } from "./redFlags.js";
 
-// =============================================================================
+("use strict");
+
 // UTILITY HELPERS
 // Shorthand DOM selectors and commonly-used field readers.
-// =============================================================================
 
-/** Selects the first matching element within an optional root (defaults to document). */
+// Selects the first matching element within an optional root (defaults to document).
 const $ = (selector, root = document) => root.querySelector(selector);
 
-/** Selects all matching elements, returned as a real Array, within an optional root. */
+// Selects all matching elements, returned as a real Array, within an optional root.
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
-/** Returns the trimmed value of an input/select/textarea by ID, or "" if absent. */
+// Returns the trimmed value of an input/select/textarea by ID, or "" if absent.
 const val = (id) => ($(`#${id}`)?.value || "").trim();
 
-/** Returns true if the checkbox or radio with the given ID is checked. */
+// Returns true if the checkbox or radio with the given ID is checked.
 const isChecked = (id) => Boolean($(`#${id}`)?.checked);
 
-/** Returns the resolved onset time — uses the free-type value when "Other" is chosen. */
+// Returns the resolved onset time — uses the free-type value when "Other" is chosen.
 const onsetTime = () =>
 	val("onsetTime") === "Other" ? val("onsetTimeOther") : val("onsetTime");
 
-/** Returns a formatted clock-time suffix string, e.g. " (at 14:30)", or "". */
+// Returns a formatted clock-time suffix string, e.g. " (at 14:30)", or "".
 const onsetClockSuffix = () => {
 	const t = val("onsetClockTime");
 	return t ? ` (at ${t})` : "";
 };
 
-// =============================================================================
 // APPLICATION STATE
 // Mutable state shared across all adult ePRF sections. Sets hold multi-select
 // chip values; arrays hold structured entry records (drugs, IV, injuries, etc.).
-// =============================================================================
 
 const state = {
 	mapMode: "site",
@@ -45,6 +47,7 @@ const state = {
 	fallsSymptoms: new Set(),
 	fallsActivity: new Set(),
 	fallsInjuries: new Set(),
+	fallsLocation: new Set(),
 	headMechanism: new Set(),
 	headSymptoms: new Set(),
 	headSigns: new Set(),
@@ -85,13 +88,10 @@ const state = {
 	pReferrals: new Set(),
 };
 
-// CLINICAL CONTENT — WORSENING ADVICE
-// Generic 999 triggers shown to all patients, plus presenting-complaint-specific
-// items appended based on the selected PC.
-
-/** When one disability chip is set abnormal, linked chips flip too. */
+// When one disability chip is set abnormal, linked chips flip too
 const ABC_DISABILITY_LINKS = [["GCS 15", "AOx4"]];
 
+// Conveyance options - What happened en route, information en route
 const CONVEY_TRANSFER = [
 	["Consent to conveyance obtained", "Consent not obtained"],
 	["Continuous monitoring and reassessment", "Monitoring not maintained"],
@@ -106,22 +106,9 @@ const CONVEY_TRANSFER = [
 	["No clinical change", "Clinical change during conveyance"],
 ];
 
-const ABDO_FINDINGS = [
-	"Tenderness",
-	"Guarding",
-	"Rigidity",
-	"Rebound Tenderness",
-	"Mass / Lump",
-	"Pulsating Mass",
-];
-
-const ABDO_FINDING_SHORT = {
-	Tenderness: "T",
-	Guarding: "G",
-	Rigidity: "Ri",
-	Rebound: "Rb",
-	"Mass / lump": "M",
-};
+// CLINICAL CONTENT — WORSENING ADVICE
+// Generic 999 triggers shown to all patients, plus presenting-complaint-specific
+// items appended based on the selected PC.
 
 const WORSENING_GENERIC = [
 	"chest pain",
@@ -464,6 +451,18 @@ const OPTIONS = {
 		"Cannot recall",
 		"Other",
 	],
+	fallsLocation: [
+		"Bedroom",
+		"Bathroom",
+		"Kitchen",
+		"Living Room",
+		"Hallway",
+		"Stairs",
+		"Garden/Outside",
+		"Care Home",
+		"Public Place",
+		"Other",
+	],
 	fallsActivity: [
 		"Walking",
 		"Getting up from chair",
@@ -528,16 +527,35 @@ const OPTIONS = {
 		"No injury found",
 	],
 	abdoRegions: [
-		"R Hypocondriac",
-		"Epigastric",
-		"L Hypocondriac",
+		"R Hypochondriac",
+		"Epigastrium",
+		"L Hypochondriac",
 		"R Lumbar",
 		"Umbilical",
 		"L Lumbar",
-		"R Iliac ",
-		"Hypogastric",
-		"L Iliac",
+		"R Iliac Fossa",
+		"Hypogastric/Suprapubic",
+		"L Iliac Fossa",
 	],
+};
+
+const ABDO_FINDINGS = [
+	"Tenderness",
+	"Rebound Tenderness",
+	"Voluntary Guarding",
+	"Involuntary Guarding/Rigidity",
+	"Mass / Lump",
+	"Pulsating Mass",
+	"Rovsing's Sign",
+];
+
+const ABDO_FINDING_SHORT = {
+	Tenderness: "T",
+	Rebound: "Rb",
+	Guarding: "Vg",
+	Rigidity: "Ri",
+	"Mass / lump": "M",
+	Rovsings: "Rv",
 };
 
 // CLINICAL CONTENT — ABCDE CONFIGURATION
@@ -801,10 +819,8 @@ document.addEventListener("DOMContentLoaded", () => {
 	initRespCounter();
 });
 
-// =============================================================================
 // NAVIGATION
 // Dashboard / feature switching — shows and hides the relevant tool panel.
-// =============================================================================
 
 function showDashboard() {
 	$("#dashboard")?.classList.remove("hidden");
@@ -872,11 +888,10 @@ function init() {
 	handleConveyanceDisplay();
 	enhanceSectionCards();
 	renderConveyanceSuggestion();
-	bindRedFlagToggle();
-	// Live red flag evaluation on any interaction
-	document.addEventListener("click", scheduleRedFlags, { passive: true });
-	document.addEventListener("input", scheduleRedFlags, { passive: true });
-	document.addEventListener("change", scheduleRedFlags, { passive: true });
+	// bindRedFlagToggle();
+	// document.addEventListener("click", scheduleRedFlags, { passive: true });
+	// document.addEventListener("input", scheduleRedFlags, { passive: true });
+	// document.addEventListener("change", scheduleRedFlags, { passive: true });
 	bindRadioChipGroups();
 }
 
@@ -2334,8 +2349,8 @@ function buildEdHandoverText() {
 	const hasPain = !isChecked("noPain");
 	const site = getSelectedParts(state.siteParts);
 	const radiation = getSelectedParts(state.radiationParts);
-	const character = listSet(state.character, "");
-	const associated = listSet(state.associated, "");
+	const character = listSet(state.character, "characterOther", "");
+	const associated = listSet(state.associated, "associatedOther", "");
 	const exacerbating = listFactors(state.exacerbating, "exacerbatingOther", "");
 	const relieving = listFactors(state.relieving, "relievingOther", "");
 	const severityNow = val("severity");
@@ -2471,6 +2486,7 @@ function bindEvents() {
 		if (state.worseningAuto) applyWorseningDefault();
 		else updateWorseningScript();
 	});
+
 	// ── Demographics → conditional sections ──────────────────
 	$("#ptSex")?.addEventListener("change", updateDemographicVisibility);
 	$("#ptAge")?.addEventListener("input", updateDemographicVisibility);
@@ -2858,13 +2874,11 @@ function bindEvents() {
 	});
 }
 
-// =============================================================================
 // UI INTERACTION HANDLERS
 // Business logic for toggling chips, switching tabs, body-map interaction,
 // conveyance decisions, and other stateful UI updates.
-// =============================================================================
 
-/** Tracks injury types and interventions being built before they are committed. */
+// Tracks injury types and interventions being built before they are committed.
 let pendingInjuryTypes = new Set();
 let pendingInjuryInterventions = new Set();
 
@@ -2895,9 +2909,12 @@ function toggleMulti(button) {
 
 function setOtherFactorVisible(stateKey, visible) {
 	const wrapIds = {
+		character: "characterOtherWrap",
+		associated: "associatedOtherWrap",
 		exacerbating: "exacerbatingOtherWrap",
 		relieving: "relievingOtherWrap",
 		fallsSymptoms: "fallsSymptomsOtherWrap",
+		fallsLocation: "fallsLocationOtherWrap",
 		fallsActivity: "fallsActivityOtherWrap",
 	};
 	const wrapId = wrapIds[stateKey];
@@ -3173,7 +3190,7 @@ function abcChipText(button) {
 
 function abcLine(section) {
 	const values = $$(`[data-abc="${section.key}"]`).map(abcChipText);
-	const vitals = section.vitals
+	const vitals = (section.vitals || [])
 		.map(([id, label]) => (val(id) ? `${label}: ${val(id)}` : null))
 		.filter(Boolean);
 	const notes = val(section.notes);
@@ -3195,11 +3212,9 @@ function abcHandoverSummary() {
 	return lines.length ? lines.join("\n") : "No ABCDE concerns identified.";
 }
 
-// =============================================================================
 // TEXT BUILDERS — CLINICAL OUTPUT (ADULT)
 // Functions that read current state and produce plain-text strings for each
 // output section.  All builders return "" when their section has no data.
-// =============================================================================
 
 function toggleEcgFinding(btn) {
 	const finding = btn.dataset.finding;
@@ -3303,6 +3318,7 @@ function getPc() {
 }
 
 function listFactors(set, otherFieldId, fallback) {
+	console.log(set, otherFieldId, val(otherFieldId));
 	const items = [...set].filter((value) => value !== "Other");
 	const other = val(otherFieldId);
 	if (set.has("Other") && other) items.push(other);
@@ -3564,7 +3580,7 @@ function buildLahSbarText() {
 		);
 	}
 
-	// SOCRATES pain assessment (if not suppressed)
+	// SOCRATES pain assessment (if not hidden)
 	if (!isChecked("noPain")) {
 		const site = getSelectedParts(state.siteParts);
 		const socratesParts = [
@@ -3572,11 +3588,12 @@ function buildLahSbarText() {
 			val("onsetType")
 				? `Onset: ${val("onsetType")}${onsetTime() ? `, ${onsetTime()}${onsetClockSuffix()}` : ""}${val("onsetDuration") ? `, duration ${val("onsetDuration")}` : ""}`
 				: null,
-			state.character.size
-				? `Character: ${listSet(state.character, "")}`
+			state.character.size || val("characterOther")
+				? `Character: ${listFactors(state.character, "characterOther", "Not characterised")}`
 				: null,
-			state.associated.size
-				? `Associated: ${listSet(state.associated, "")}`
+
+			state.associated.size || val("associatedOther")
+				? `Associated: ${listFactors(state.associated, "associatedOther", "None reported")}`
 				: null,
 			val("severity")
 				? `Severity: ${val("severity")}/10 now${val("severityWorst") ? `, ${val("severityWorst")}/10 at worst` : ""}`
@@ -3783,18 +3800,22 @@ function buildHeadInjuryText() {
 }
 
 function buildFallsText() {
-	const symptomsOther = val("fallsSymptomsOther");
-	const symptomsRaw = listSet(state.fallsSymptoms, "Not documented");
-	const symptoms = symptomsOther
-		? symptomsRaw.replace("Other", `Other (${symptomsOther})`)
-		: symptomsRaw;
-	const loc = val("fallsLocation") || "Not documented";
+	const symptoms = listFactors(
+		state.fallsSymptoms,
+		"fallsSymptomsOther",
+		"Not Documented",
+	);
+	const loc = listFactors(
+		state.fallsLocation,
+		"fallsLocationOther",
+		"Not documented",
+	);
 	const surface = val("fallsSurface");
-	const activityOther = val("fallsActivityOther");
-	const activityRaw = listSet(state.fallsActivity, "Not documented");
-	const activity = activityOther
-		? activityRaw.replace("Other", `Other (${activityOther})`)
-		: activityRaw;
+	const activity = listFactors(
+		state.fallsActivity,
+		"fallsActivityOther",
+		"Not documented",
+	);
 	const time = val("fallsTime") || "Not documented";
 	const lieTime = val("fallsLieTime") || "Unknown";
 	const injuries = listSet(state.fallsInjuries, "No injury documented");
@@ -3814,436 +3835,6 @@ function buildFallsText() {
 		`T — Trauma: ${injuries}.${isChecked("fallsHeadStrike") ? " Head strike." : ""}${isChecked("fallsAnticoag") ? " On anticoagulants." : ""}`,
 		...(val("fallsNotes") ? [`Notes: ${val("fallsNotes")}`] : []),
 	].join("\n");
-}
-
-// RED FLAG DETECTION
-// Evaluates the current form state against a rule set and renders highlighted
-// alerts.  Re-evaluated on a short debounce after any user interaction.
-// rf* helper functions each test one specific clinical condition.
-
-function rfPc(term) {
-	return getPc().toLowerCase().includes(term.toLowerCase());
-}
-function rfAbcAbnormal(section, label) {
-	return $$(`[data-abc="${section}"]`).some(
-		(b) => b.dataset.abcState === "abnormal" && b.dataset.abnormal === label,
-	);
-}
-function rfAnySectionAbnormal(section) {
-	return $$(`[data-abc="${section}"]`).some(
-		(b) => b.dataset.abcState === "abnormal",
-	);
-}
-function rfAssoc(term) {
-	return state.associated.has(term);
-}
-function rfChar(term) {
-	return state.character.has(term);
-}
-function rfEcg(term) {
-	return state.ecgFindings.has(term);
-}
-function rfSystolic() {
-	const m = val("bp").match(/^(\d+)/);
-	return m ? parseInt(m[1]) : null;
-}
-function rfHR() {
-	return parseInt(val("hr"));
-}
-function rfRR() {
-	return parseInt(val("rr"));
-}
-function rfSpo2() {
-	return parseInt(val("spo2"));
-}
-function rfBm() {
-	return parseFloat(val("bm"));
-}
-function rfGcs() {
-	return parseInt(val("gcsScore"));
-}
-function rfHypotensive() {
-	const s = rfSystolic();
-	return s !== null && s < 90;
-}
-function rfTachycardic() {
-	const h = rfHR();
-	return !isNaN(h) && h > 100;
-}
-function rfBradycardic() {
-	const h = rfHR();
-	return !isNaN(h) && h < 50;
-}
-function rfHypoxic() {
-	const s = rfSpo2();
-	return !isNaN(s) && s < 94;
-}
-function rfTachypnoeic() {
-	const r = rfRR();
-	return !isNaN(r) && r > 20;
-}
-function rfHypertensive() {
-	const s = rfSystolic();
-	return s !== null && s >= 180;
-}
-function rfGcsReduced() {
-	const g = rfGcs();
-	return !isNaN(g) && g < 15;
-}
-function rfGcsCritical() {
-	const g = rfGcs();
-	return !isNaN(g) && g <= 8;
-}
-
-const RED_FLAGS = [
-	// ── CARDIAC ───────────────────────────────────────────────────
-	{
-		id: "vf",
-		level: "critical",
-		title: "Ventricular fibrillation",
-		body: "VF detected on ECG. Confirm pulselessness — if confirmed, treat as shockable cardiac arrest. Manage as per JRCALC guidelines.",
-		check: () => rfEcg("VF"),
-	},
-	{
-		id: "vt",
-		level: "critical",
-		title: "Ventricular tachycardia",
-		body: "VT on ECG. Assess for pulse — if pulseless, treat as shockable arrest. If pulse present, assess haemodynamic stability. Manage as per JRCALC guidelines.",
-		check: () => rfEcg("VT"),
-	},
-	{
-		id: "stemi",
-		level: "critical",
-		title: "Possible STEMI",
-		body: "ST elevation on ECG. Consider immediate PPCI centre activation and pre-alert. Manage as per JRCALC guidelines.",
-		check: () => rfEcg("ST elevation"),
-	},
-	{
-		id: "chb",
-		level: "critical",
-		title: "Complete heart block (3° CHB)",
-		body: "Third-degree AV block on ECG. Pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () => rfEcg("3° CHB"),
-	},
-	{
-		id: "acs-shock",
-		level: "critical",
-		title: "ACS with haemodynamic compromise",
-		body: "Chest pain with cold/clammy peripheries and hypotension — consistent with cardiogenic shock. High-risk STEMI/NSTEMI. Pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () =>
-			rfPc("chest pain") &&
-			(rfAbcAbnormal("C", "Cold / clammy") ||
-				rfAbcAbnormal("E", "Diaphoretic")) &&
-			rfHypotensive(),
-	},
-	{
-		id: "acs-classic",
-		level: "high",
-		title: "High-risk ACS features",
-		body: "Chest pain with diaphoresis, radiation, or pressure character. Classic ACS pattern — early 12-lead ECG and pre-alert. Manage as per JRCALC guidelines.",
-		check: () =>
-			rfPc("chest pain") &&
-			(rfAbcAbnormal("E", "Diaphoretic") || rfAssoc("Sweating")) &&
-			(rfChar("Crushing / pressure") ||
-				rfChar("Tight") ||
-				rfChar("Squeezing") ||
-				state.radiationParts.size > 0),
-	},
-	{
-		id: "aortic-dissection",
-		level: "critical",
-		title: "Possible aortic dissection",
-		body: "Tearing chest or back pain with haemodynamic compromise. Consider type A/B dissection — pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () =>
-			(rfPc("chest pain") || rfPc("back pain")) &&
-			rfChar("Tearing") &&
-			(rfHypotensive() || rfTachycardic()),
-	},
-	{
-		id: "bradycardia-compromise",
-		level: "high",
-		title: "Bradycardia with haemodynamic compromise",
-		body: "HR <50 with hypotension or reduced perfusion. Consider complete heart block, medication toxicity, or vagal cause. Pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () =>
-			rfBradycardic() &&
-			(rfHypotensive() ||
-				rfGcsReduced() ||
-				rfAbcAbnormal("C", "Cold / clammy")),
-	},
-	// ── RESPIRATORY ───────────────────────────────────────────────
-	{
-		id: "resp-failure",
-		level: "critical",
-		title: "Respiratory failure",
-		body: "SpO₂ <94% with increased work of breathing. Pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () => rfHypoxic() && rfAnySectionAbnormal("B"),
-	},
-	{
-		id: "pe-massive",
-		level: "critical",
-		title: "Massive / high-risk PE",
-		body: "Chest pain/dyspnoea with tachycardia, hypoxia, and hypotension. Massive PE criteria — pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () =>
-			(rfPc("chest pain") || rfPc("shortness of breath")) &&
-			rfTachycardic() &&
-			rfHypoxic() &&
-			rfHypotensive(),
-	},
-	{
-		id: "pe-suspected",
-		level: "high",
-		title: "Possible pulmonary embolism",
-		body: "Chest pain/dyspnoea with tachycardia and hypoxia. PE on differential — pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () =>
-			(rfPc("chest pain") || rfPc("shortness of breath")) &&
-			rfTachycardic() &&
-			rfHypoxic() &&
-			!rfHypotensive(),
-	},
-	{
-		id: "anaphylaxis",
-		level: "critical",
-		title: "Possible anaphylaxis",
-		body: "Allergic reaction with airway/breathing/circulatory compromise. Anaphylaxis criteria — pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () =>
-			rfPc("allergic reaction") &&
-			(rfAbcAbnormal("A", "Airway support required") ||
-				rfAbcAbnormal("B", "Wheeze present") ||
-				rfHypotensive() ||
-				rfTachycardic()),
-	},
-	// ── NEUROLOGICAL ──────────────────────────────────────────────
-	{
-		id: "stroke",
-		level: "critical",
-		title: "Stroke / FAST positive",
-		body: "Stroke suspected. Time-critical — identify nearest HASU and pre-alert. Record onset time. Manage as per JRCALC guidelines.",
-		check: () => rfPc("stroke") || rfPc("fast positive"),
-	},
-	{
-		id: "sah",
-		level: "critical",
-		title: "Possible subarachnoid haemorrhage",
-		body: "Sudden severe 'thunderclap' headache is SAH until proven otherwise. Pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () =>
-			rfPc("headache") &&
-			rfAssoc("Vomiting") &&
-			(val("onsetType").toLowerCase().includes("sudden") ||
-				val("hpc").toLowerCase().includes("thunderclap") ||
-				val("hpc").toLowerCase().includes("worst")),
-	},
-	{
-		id: "raised-icp",
-		level: "high",
-		title: "Possible raised intracranial pressure",
-		body: "Headache with vomiting and reduced GCS. Consider Cushing's triad (hypertension, bradycardia, irregular respirations). Pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () =>
-			(rfPc("headache") || rfAssoc("Headache")) &&
-			rfAssoc("Vomiting") &&
-			rfGcsReduced(),
-	},
-	{
-		id: "meningitis",
-		level: "critical",
-		title: "Possible meningococcal septicaemia / meningitis",
-		body: "Fever with non-blanching rash. Consider meningococcal disease — pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () =>
-			(rfPc("fever") ||
-				rfPc("sepsis") ||
-				rfAssoc("Fever") ||
-				rfAbcAbnormal("E", "Pyrexia")) &&
-			rfAbcAbnormal("E", "Rash present"),
-	},
-	{
-		id: "head-injury-gcs",
-		level: "high",
-		title: "Significant head injury with reduced GCS",
-		body: "Head injury with altered consciousness. Consider intracranial bleed — pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () => rfPc("head injury") && rfGcsReduced(),
-	},
-	// ── SEPSIS ────────────────────────────────────────────────────
-	{
-		id: "septic-shock",
-		level: "critical",
-		title: "Possible septic shock",
-		body: "Suspected infection with hypotension and altered GCS. Septic shock criteria — pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () =>
-			(rfPc("sepsis") ||
-				rfPc("fever") ||
-				rfAssoc("Fever") ||
-				rfAbcAbnormal("E", "Pyrexia")) &&
-			rfHypotensive() &&
-			rfGcsReduced(),
-	},
-	{
-		id: "sepsis",
-		level: "high",
-		title: "Sepsis concern (NEWS2 trigger)",
-		body: "Suspected infection with tachycardia and tachypnoea. Assess NEWS2 score — pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () =>
-			(rfPc("sepsis") ||
-				rfPc("fever") ||
-				rfAssoc("Fever") ||
-				rfAbcAbnormal("E", "Pyrexia")) &&
-			rfTachycardic() &&
-			rfTachypnoeic(),
-	},
-	// ── VASCULAR / ABDOMINAL ──────────────────────────────────────
-	{
-		id: "aaa",
-		level: "critical",
-		title: "Possible ruptured AAA",
-		body: "Abdominal pain with back pain and haemodynamic compromise. Ruptured AAA until proven otherwise — pre-alert receiving unit, do not delay transport. Manage as per JRCALC guidelines.",
-		check: () =>
-			rfPc("abdominal pain") &&
-			rfAssoc("Back pain") &&
-			(rfHypotensive() || rfAbcAbnormal("C", "Cold / clammy")),
-	},
-	{
-		id: "gi-bleed-shock",
-		level: "critical",
-		title: "GI haemorrhage with haemodynamic compromise",
-		body: "Haematemesis/melaena with cardiovascular compromise. Significant upper GI bleed — pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () =>
-			rfPc("haematemesis") &&
-			(rfHypotensive() ||
-				rfTachycardic() ||
-				rfAbcAbnormal("C", "Cold / clammy")),
-	},
-	// ── SPINAL ────────────────────────────────────────────────────
-	{
-		id: "cauda-equina",
-		level: "critical",
-		title: "Cauda equina syndrome — red flag",
-		body: "Back pain with lower limb neurology (numbness, weakness, tingling). Cauda equina syndrome until excluded — pre-alert receiving unit, do not delay transfer. Manage as per JRCALC guidelines.",
-		check: () =>
-			rfPc("back pain") &&
-			(rfAssoc("Numbness") || rfAssoc("Weakness") || rfAssoc("Tingling")),
-	},
-	// ── DIABETIC ──────────────────────────────────────────────────
-	{
-		id: "hypoglycaemia",
-		level: "high",
-		title: "Hypoglycaemia with altered consciousness",
-		body: "BM <4 mmol/L with reduced GCS. Pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () => {
-			const bm = rfBm();
-			return !isNaN(bm) && bm < 4.0 && rfGcsReduced();
-		},
-	},
-	{
-		id: "hyperglycaemia-crisis",
-		level: "high",
-		title: "Possible DKA / HHS",
-		body: "Elevated BM >15 mmol/L with vomiting, tachypnoea, or altered GCS. Consider DKA/HHS — pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () => {
-			const bm = rfBm();
-			return (
-				!isNaN(bm) &&
-				bm > 15 &&
-				(rfAssoc("Vomiting") || rfTachypnoeic() || rfGcsReduced())
-			);
-		},
-	},
-	// ── HYPERTENSIVE ──────────────────────────────────────────────
-	{
-		id: "hypertensive-emergency",
-		level: "high",
-		title: "Hypertensive emergency",
-		body: "BP ≥180 mmHg systolic with end-organ symptoms. Pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () =>
-			rfHypertensive() &&
-			(rfAssoc("Headache") ||
-				rfPc("chest pain") ||
-				rfAssoc("Visual change") ||
-				rfGcsReduced()),
-	},
-	// ── ECG ───────────────────────────────────────────────────────
-	{
-		id: "heart-block-2",
-		level: "high",
-		title: "Second-degree AV block",
-		body: "2° AV block on ECG. Monitor for progression to complete heart block — pre-alert receiving unit. Manage as per JRCALC guidelines.",
-		check: () => rfEcg("2° AV block"),
-	},
-];
-
-function evaluateRedFlags() {
-	return RED_FLAGS.filter((rule) => {
-		try {
-			return rule.check();
-		} catch (_) {
-			return false;
-		}
-	});
-}
-
-function renderRedFlags() {
-	const bar = $("#redFlagBar");
-	if (!bar) return;
-	const active = evaluateRedFlags();
-	if (!active.length) {
-		bar.classList.add("hidden");
-		return;
-	}
-	bar.classList.remove("hidden");
-	const hasCritical = active.some((f) => f.level === "critical");
-	const hasHigh = active.some((f) => f.level === "high");
-	bar.className = `rf-bar${hasCritical ? " rf-critical" : hasHigh ? " rf-high" : " rf-moderate"}`;
-	// Preserve open state
-	const isOpen = bar.dataset.open === "true";
-	const summary = $("#rfSummary");
-	if (summary) {
-		const counts = { critical: 0, high: 0, moderate: 0 };
-		active.forEach((f) => counts[f.level]++);
-		const parts = [];
-		if (counts.critical) parts.push(`${counts.critical} critical`);
-		if (counts.high) parts.push(`${counts.high} high`);
-		if (counts.moderate) parts.push(`${counts.moderate} moderate`);
-		summary.textContent = `${active.length} clinical prompt${active.length !== 1 ? "s" : ""} · ${parts.join(", ")}`;
-	}
-	const cards = $("#rfCards");
-	if (cards) {
-		cards.innerHTML = "";
-		[...active]
-			.sort((a, b) => {
-				const o = { critical: 0, high: 1, moderate: 2 };
-				return o[a.level] - o[b.level];
-			})
-			.forEach((flag) => {
-				const icon =
-					flag.level === "critical"
-						? "🔴"
-						: flag.level === "high"
-							? "🟠"
-							: "🟡";
-				const div = document.createElement("div");
-				div.className = `rf-card ${flag.level}`;
-				div.innerHTML = `<div class="rf-card-title">${icon} ${flag.title}</div><div class="rf-card-body">${flag.body}</div>`;
-				cards.append(div);
-			});
-	}
-}
-
-let _rfTimer;
-function scheduleRedFlags() {
-	clearTimeout(_rfTimer);
-	_rfTimer = setTimeout(() => {
-		renderRedFlags();
-		renderConveyanceSuggestion();
-	}, 200);
-}
-
-function bindRedFlagToggle() {
-	$("#rfToggle")?.addEventListener("click", () => {
-		const bar = $("#redFlagBar");
-		const panel = $("#rfPanel");
-		if (!bar || !panel) return;
-		const open = bar.dataset.open === "true";
-		bar.dataset.open = String(!open);
-		panel.classList.toggle("hidden", open);
-		$("#rfToggle")?.setAttribute("aria-expanded", String(!open));
-	});
 }
 
 // OUTPUT GENERATION
@@ -4350,7 +3941,7 @@ function buildOutputSections() {
 			body: isChecked("noPain")
 				? [
 						`Onset: ${val("onsetType") || "Not documented"}${onsetTime() ? `, ${onsetTime()}${onsetClockSuffix()}` : ""}${val("onsetDuration") ? `, duration ${val("onsetDuration")}` : ""}`,
-						`Associated symptoms: ${listSet(state.associated, "None reported")}`,
+						`Associated symptoms: ${listFactors(state.associated, "associatedOther", "None reported")}`,
 						`Timing: ${val("timingSelect") || "Not documented"}`,
 						`Exacerbating factors: ${listFactors(state.exacerbating, "exacerbatingOther", "None identified")}`,
 						`Relieving factors: ${listFactors(state.relieving, "relievingOther", "None identified")}`,
@@ -4359,9 +3950,9 @@ function buildOutputSections() {
 				: [
 						`Site: ${site}`,
 						`Onset: ${val("onsetType") || "Not documented"}${onsetTime() ? `, ${onsetTime()}${onsetClockSuffix()}` : ""}${val("onsetDuration") ? `, duration ${val("onsetDuration")}` : ""}`,
-						`Character: ${listSet(state.character, "Not characterised")}`,
+						`Character: ${listFactors(state.character, "characterOther", "Not characterised")}`,
 						`Radiation: ${radiation}`,
-						`Associated symptoms: ${listSet(state.associated, "None reported")}`,
+						`Associated symptoms: ${listFactors(state.associated, "associatedOther", "None reported")}`,
 						`Timing: ${val("timingSelect") || "Not documented"}`,
 						`Exacerbating factors: ${listFactors(state.exacerbating, "exacerbatingOther", "None identified")}`,
 						`Relieving factors: ${listFactors(state.relieving, "relievingOther", "None identified")}`,
@@ -4513,7 +4104,7 @@ function buildOutputSections() {
 // score.  GCS within each obs set uses the shared buildGcsCalcHTML() helper
 // with a unique prefix to avoid ID collisions with the primary survey GCS.
 
-/** Monotonically increasing counter ensures each obs set gets a unique prefix. */
+// Monotonically increasing counter ensures each obs set gets a unique prefix.
 let obsCounter = 0;
 
 function newsScore(rr, spo2, o2On, sbp, hr, temp, avpu) {
@@ -4876,10 +4467,10 @@ function buildObsText() {
 // Sections store their plain-text content in Maps rather than reading from the
 // DOM on copy — this avoids URL-encoding artefacts from innerHTML round-trips.
 
-/** Adult section plain-text bodies keyed by section ID. */
+// Adult section plain-text bodies keyed by section ID.
 const outputSectionTexts = new Map();
 
-/** Paediatric section plain-text bodies keyed by section ID. */
+// Paediatric section plain-text bodies keyed by section ID.
 const paedsOutputSectionTexts = new Map();
 
 function renderOutputSections(sections) {
@@ -5180,6 +4771,8 @@ function clearPainAssessment() {
 		"timingSelect",
 		"severity",
 		"severityWorst",
+		"characterOther",
+		"associatedOther",
 		"exacerbatingOther",
 		"relievingOther",
 	].forEach((id) => {
@@ -5218,11 +4811,9 @@ function syncAuscultationOutput() {
 	if (preview) preview.textContent = text;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   PAEDIATRIC PRF — constants, helpers, init
-   ═══════════════════════════════════════════════════════════ */
+// PAEDIATRIC PRF — constants, helpers, init
 
-/* ── Paeds treatment constants ───────────────────────────── */
+// ── Paeds treatment constants ─────────────────────────────
 const PAEDS_TX_AIRWAY = [
 	"Jaw thrust",
 	"Head tilt / chin lift",
@@ -5400,7 +4991,7 @@ const PAEDS_ABCDENT = [
 	},
 ];
 
-/* ── Paediatric worsening advice ────────────────────────── */
+// ── Paediatric worsening advice ──────────────────────────
 const PAEDS_WORSENING_GENERIC = [
 	"breathing becomes very fast, noisy, or your child is working hard to breathe",
 	"your child's lips, tongue or fingernails turn blue",
@@ -5801,10 +5392,10 @@ const PAEDS_SAFEGUARDING = [
 // Separate state object and lazy-init flag for the paeds tool.
 // initPaeds() is called once on first entry to avoid duplicate DOM building.
 
-/** Guards against initialising the paeds tool more than once. */
+// Guards against initialising the paeds tool more than once.
 let _paedsInited = false;
 
-/** Mutable state for the paediatric ePRF (mirrors the adult state object). */
+// Mutable state for the paediatric ePRF (mirrors the adult state object).
 const paedsState = {
 	sgConcerns: new Set(),
 	pIvEntries: [],
@@ -5827,7 +5418,7 @@ function initPaeds() {
 	updateFlaccTotal();
 }
 
-/* ── Build ABCDENT sections ─────────────────────────────── */
+// ── Build ABCDENT sections ───────────────────────────────
 function buildPaedsAbcdent() {
 	const root = $("#paedsAbcdentContainer");
 	if (!root) return;
@@ -5868,7 +5459,7 @@ function buildPaedsAbcdent() {
 	});
 }
 
-/* ── Build paeds safeguarding chip grid ──────────────────── */
+// ── Build paeds safeguarding chip grid ────────────────────
 function buildPaedsSafeguardingGrid() {
 	const grid = $("#pSgGrid");
 	if (!grid) return;
@@ -5883,7 +5474,7 @@ function buildPaedsSafeguardingGrid() {
 	});
 }
 
-/* ── APLS weight & vital sign reference ──────────────────── */
+// ── APLS weight & vital sign reference ────────────────────
 function aplsWeight(ageYears, ageMonths) {
 	const totalMonths = (ageYears || 0) * 12 + (ageMonths || 0);
 	const yrs = ageYears || 0;
@@ -5949,7 +5540,7 @@ function updatePaedsAgeRef() {
 	}
 }
 
-/* ── WETFLAG calculator ──────────────────────────────────── */
+// ── WETFLAG calculator ────────────────────────────────────
 function calcWetflag(weight) {
 	if (!weight || weight <= 0) return null;
 	const w = parseFloat(weight);
@@ -5967,7 +5558,7 @@ function calcWetflag(weight) {
 	};
 }
 
-/* ── FLACC total ─────────────────────────────────────────── */
+// ── FLACC total ───────────────────────────────────────────
 function updateFlaccTotal() {
 	const ids = [
 		"flaccFace",
@@ -5997,12 +5588,11 @@ function updateFlaccTotal() {
 	el.textContent = `FLACC total: ${total} / 10 — ${label}`;
 }
 
-/* ── Radio chip group helpers ────────────────────────────── */
+// ── Radio chip group helpers ──────────────────────────────
 
-/**
- * Programmatically select a chip in a radio group and update its hidden input.
- * Used by auto-detection (e.g. age group).
- */
+// Programmatically select a chip in a radio group and update its hidden input.
+// Used by auto-detection (e.g. age group).
+
 function setRadioChip(fieldId, value) {
 	const group = $(`[data-radio-group="${fieldId}"]`);
 	const inp = $(`#${fieldId}`);
@@ -6013,13 +5603,13 @@ function setRadioChip(fieldId, value) {
 	inp.value = value;
 }
 
-/**
- * Wire up all .radio-chip-group elements so that tapping a chip:
- * 1. Adds .selected to the tapped chip, removes it from siblings
- * 2. Updates the matching hidden <input id="...">
- * 3. Dispatches a synthetic "change" event on the hidden input
- *    so any existing listeners (pain tool toggle, convey decision, etc.) still fire.
- */
+//
+// Wire up all .radio-chip-group elements so that tapping a chip:
+// 1. Adds .selected to the tapped chip, removes it from siblings
+// 2. Updates the matching hidden <input id="...">
+// 3. Dispatches a synthetic "change" event on the hidden input
+//    so any existing listeners (pain tool toggle, convey decision, etc.) still fire.
+
 function bindRadioChipGroups() {
 	// Standard radio chip groups (class="radio-chip") and faces chip groups
 	$$("[data-radio-group]").forEach((group) => {
@@ -6498,7 +6088,7 @@ function buildPaedsSgText() {
 	return lines.join("\n") || "Safeguarding: None identified on scene";
 }
 
-/* ── Build paeds treatment section ──────────────────────── */
+// ── Build paeds treatment section ────────────────────────
 function buildPaedsTreatmentSection() {
 	// Build chip grids
 	const buildPaedsTxGrid = (gridId, items, stateKey) => {

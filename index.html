@@ -816,65 +816,19 @@
 										<label class="field-label">Where did the fall occur?</label>
 										<input type="hidden" id="fallsLocation" />
 										<div
-											class="radio-chip-group wrap-grid"
-											data-radio-group="fallsLocation"
-											style="margin-top: 4px">
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Bedroom">
-												Bedroom
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Bathroom / toilet">
-												Bathroom
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Kitchen">
-												Kitchen
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Living room">
-												Living room
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Hallway / stairs">
-												Hallway / stairs
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Garden / outside">
-												Garden / outside
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Care home">
-												Care home
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Public place">
-												Public place
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Other">
-												Other
-											</button>
+											class="square-grid multi-group"
+											data-state="fallsLocation"></div>
+										<div id="fallsLocationOtherWrap" class="hidden">
+											<label class="field-label" for="fallsLocationOther">
+												Other location
+											</label>
+											<input
+												id="fallsLocationOther"
+												type="text"
+												placeholder="Enter location" />
 										</div>
 									</div>
+
 									<div>
 										<label class="field-label" for="fallsSurface"
 											>Surface / environment</label
@@ -2337,12 +2291,24 @@
 								<div
 									class="square-grid multi-group"
 									data-state="character"></div>
+								<div id="characterOtherWrap" class="hidden">
+									<label class="field-label" for="characterOther"
+										>Other Characteristic</label
+									>
+									<input id="characterOther" placeholder="Other" />
+								</div>
 							</div>
 							<div class="socrates-group">
 								<label class="field-label">Associated symptoms</label>
 								<div
 									class="square-grid multi-group"
 									data-state="associated"></div>
+								<div id="associatedOtherWrap" class="hidden">
+									<label class="field-label" for="associatedOther"
+										>Other Associated Symptoms</label
+									>
+									<input id="associatedOther" placeholder="Other" />
+								</div>
 							</div>
 							<div class="socrates-group">
 								<label class="field-label">Exacerbating factors</label>
@@ -5985,6 +5951,6 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 		</div>
 
 		<div class="toast" id="toast">Copied</div>
-		<script src="app.js" defer></script>
+		<script src="app.js"></script>
 	</body>
 </html>
