@@ -60,6 +60,15 @@ const state = {
 	seizureFeatures: new Set(),
 	seizureFindings: new Set(),
 	seizurePrecipitants: new Set(),
+	seizurePostictalFeatures: new Set(),
+	strokeFaceFindings: new Set(),
+	strokeArmFindings: new Set(),
+	strokeSpeechFindings: new Set(),
+	strokeEyeFindings: new Set(),
+	strokeAssociated: new Set(),
+	strokeRiskFactors: new Set(),
+	urinaryVolumeFeatures: new Set(),
+	urinaryColourFeatures: new Set(),
 	aedCompliance: new Set(),
 	mhIntent: new Set(),
 	mhPlanning: new Set(),
@@ -655,6 +664,108 @@ const OPTIONS = {
 		],
 	},
 
+	// ── Seizure ─────────────────────────────────────────────────────
+	seizure: {
+		count: [
+			["1", "1"],
+			["2", "2"],
+			["3", "3"],
+			["4", "4"],
+			["5 or more", "5+"],
+		],
+		witnessed: ["Witnessed", "Unwitnessed", "Unknown"],
+		postictal: ["Yes", "No", "Unknown"],
+		postictalFeatures: [
+			"Confusion",
+			"Drowsiness",
+			"Agitation / aggression",
+			"Headache",
+			"Nausea / vomiting",
+			"Weakness",
+			"Speech difficulty",
+			"Memory impairment",
+			"Incontinence",
+			"Fatigue",
+			"Other",
+		],
+		recovery: [
+			["Full recovery", "Full recovery"],
+			["Partial recovery", "Partial"],
+			["Not recovered at handover", "Not recovered"],
+			["Unclear", "Unclear"],
+		],
+	},
+
+	// ── Stroke / BE-FAST PASTA ──────────────────────────────────────
+	stroke: {
+		yesNoUnknown: ["Yes", "No", "Unknown"],
+		side: ["Left", "Right", "Bilateral"],
+		onsetType: ["Sudden", "On waking", "Gradual", "Unknown"],
+		faceFindings: [
+			"Facial droop",
+			"Facial numbness",
+			"Asymmetric smile",
+			"Perioral numbness",
+		],
+		armFindings: [
+			"Arm weakness",
+			"Arm drift",
+			"Leg weakness",
+			"Arm & leg weakness",
+			"Limb numbness",
+		],
+		speechFindings: [
+			"Dysarthria",
+			"Expressive aphasia",
+			"Receptive aphasia",
+			"Word-finding difficulty",
+		],
+		eyeFindings: [
+			"Double Vision",
+			"Visual field defect",
+			"Sudden vision loss",
+			"Blurred vision",
+		],
+		associatedSymptoms: [
+			"Severe headache",
+			"Nausea / vomiting",
+			"Vertigo",
+			"Syncope",
+			"Confusion",
+			"Ataxia",
+			"Dysphagia",
+		],
+		riskFactors: [
+			"Hypertension",
+			"AF / arrhythmia",
+			"Previous TIA",
+			"Previous stroke",
+			"Diabetes",
+			"Smoking",
+			"Hyperlipidaemia",
+			"Anticoagulated",
+		],
+	},
+
+	urinary: {
+		volumeFeatures: [
+			"Polyuria (increased output)",
+			"Oliguria (reduced output)",
+			"Anuria (no output)",
+			"Nocturia",
+			"Frequency increased",
+			"Frequency decreased",
+		],
+		colourFeatures: [
+			"Dark / concentrated",
+			"Light / dilute",
+			"Cloudy / turbid",
+			"Haematuria (blood-stained)",
+			"Orange / amber",
+			"Brown / tea-coloured",
+		],
+	},
+
 	// Presenting Complaint
 	presentingComplaint: [
 		{
@@ -1089,7 +1200,7 @@ const ROS = {
 	resp: {
 		title: "Respiratory",
 		items: [
-			["breathingRate", "Breathing rate normal", "Tachypnoea noted"],
+			["breathingRate", "Respiratory Rate Normal", "Respiratory Rate Abnormal"],
 			["cyanosis", "No cyanosis", "Cyanosis present"],
 			["wheeze", "No wheeze", "Wheeze noted"],
 			["haemoptysis", "No haemoptysis", "Haemoptysis present"],
@@ -1108,13 +1219,14 @@ const ROS = {
 	cvs: {
 		title: "Cardiovascular",
 		items: [
-			["colour", "Good colour", "Poor colour noted"],
+			["perfusion", "Well Perfused", "Poor Perfusion"],
 			["warm", "Warm to touch", "Cool / cold peripheries"],
 			[
 				"pulses",
 				"Peripheral pulses palpable",
 				"Peripheral pulses weak / absent",
 			],
+			["pulseReg", "Regular Pulse", "Irregular Pulse"],
 			["crt", "CRT <2s", "CRT >=2s"],
 			["chestPain", "No chest pain", "Chest pain present"],
 			["palpitations", "No palpitations", "Palpitations reported"],
@@ -1124,6 +1236,9 @@ const ROS = {
 				"No calf pain or tenderness",
 				"Calf pain / tenderness noted",
 			],
+			["syncope", "No syncope", "Syncope Reported"],
+			["presyncope", "No pre-syncope", "Pre-syncope Reported"],
+			["diaphoresis", "No diaphoresis", "Diaphoretic"],
 		],
 		extras:
 			'<label class="field-label" for="bpStatus">Blood pressure status</label><select id="bpStatus"><option>Normotensive</option><option>Hypotensive</option><option>Hypertensive</option></select><label class="field-label">ECG findings</label><div class="square-grid ecg-grid" id="ecgFindingsGrid"></div><div id="ecgLeadPanel" class="hidden" style="margin-top:10px"><label class="field-label">Affected leads <span class="field-hint" style="display:inline;font-size:11px">(select all that apply)</span></label><div class="ecg-lead-grid" id="ecgLeadsGrid"></div></div><label class="field-label" for="cvsNotes" style="margin-top:10px">Additional notes</label><textarea id="cvsNotes" rows="2"></textarea>',
@@ -1131,11 +1246,16 @@ const ROS = {
 	neuro: {
 		title: "Neurological",
 		items: [
-			["aox4", "Alert and orientated x4", "Not fully orientated"],
+			["aox4", "Alert and orientated", "Not fully orientated"],
 			["gcs15", "GCS 15/15", "GCS reduced"],
 			["pearl", "PEARL", "Pupils unequal / unreactive"],
 			["fast", "FAST negative", "FAST positive"],
 			["confusion", "No confusion", "Confusion noted"],
+			["memory", "No memory impairment", "Memory impairment noted"],
+			["vision", "No visual disturbance", "Visual disturbance"],
+			["ataxia", "No ataxia or gair disturbance", "Ataxia/Gait disturbance"],
+			["photophobia", "No photophobia", "Photophobia"],
+			["neckStiffness", "No neck stiffness", "Neck stiffness noted"],
 			["headache", "No headache", "Headache present"],
 			["dizziness", "No dizziness", "Dizziness present"],
 			["weakness", "No focal weakness", "Weakness noted"],
@@ -1144,6 +1264,7 @@ const ROS = {
 				"No numbness / altered sensation",
 				"Numbness / altered sensation noted",
 			],
+			["tremor", "No tremor", "Tremor noted"],
 			["loc", "No loss of consciousness", "Loss of consciousness reported"],
 			["seizure", "No seizure activity", "Seizure activity reported"],
 			["speech", "Speech clear and coherent", "Speech difficulty noted"],
@@ -1160,6 +1281,8 @@ const ROS = {
 			["vomiting", "No vomiting", "Vomiting reported"],
 			["haematemesis", "No haematemesis", "Haematemesis reported"],
 			["bowelHabit", "Bowel habits unchanged", "Change in bowel habit"],
+			["diarrhoea", "No diarrhoea", "Diarrhoea reported"],
+			["constipation", "No constipation", "Constipation reported"],
 			["distension", "No distension", "Abdominal distension noted"],
 			["soft", "Abdomen soft", "Abdomen rigid"],
 			["tender", "Non-tender", "Tenderness on palpation"],
@@ -1178,7 +1301,7 @@ const ROS = {
 				"Change in urinary frequency",
 			],
 			["volume", "Volume unchanged", "Change in urinary volume"],
-			["dysuria", "No pain on micturition", "Dysuria / pain on micturition"],
+			["dysuria", "No pain on micturition", "Dysuria / pain on urination"],
 			["haematuria", "No haematuria", "Haematuria present"],
 			["odour", "No offensive odour", "Offensive urinary odour noted"],
 			["colour", "No change in urine colour", "Change in urine colour noted"],
@@ -1187,9 +1310,10 @@ const ROS = {
 				"No urinary incontinence",
 				"Urinary incontinence reported",
 			],
+			["flankPain", "No flank pain", "Flank pain reported"],
 		],
 		extras:
-			'<label class="check-row" style="margin-bottom:8px"><input type="checkbox" id="catheterPresent" /> Patient has urinary catheter</label><div id="catheterDetails" class="hidden"><label class="field-label" for="catheterOutput">Catheter output</label><select id="catheterOutput"><option value="">Not assessed</option><option>Normal output</option><option>Reduced output</option><option>No output / blocked</option><option>Bypassing</option></select><label class="field-label" for="urineAppearance">Urine appearance</label><select id="urineAppearance"><option value="">Not assessed</option><option>Clear</option><option>Pale yellow</option><option>Dark yellow / concentrated</option><option>Orange / brown</option><option>Cloudy</option><option>Blood-stained</option><option>Offensive</option></select></div><label class="field-label" for="urineNotes" style="margin-top:8px">Additional notes</label><textarea id="urineNotes" rows="2"></textarea>',
+			'<div id="urinaryVolumeWrap" class="hidden" style="margin-top:8px"><label class="field-label">Volume change — features</label><div class="square-grid" id="urinaryVolumeGrid"></div></div><div id="urinaryColourWrap" class="hidden" style="margin-top:8px"><label class="field-label">Colour / appearance</label><div class="square-grid" id="urinaryColourGrid"></div></div><label class="check-row" style="margin-bottom:8px;margin-top:10px"><input type="checkbox" id="catheterPresent" /> Patient has urinary catheter</label><div id="catheterDetails" class="hidden"><label class="field-label" for="catheterOutput">Catheter output</label><select id="catheterOutput"><option value="">Not assessed</option><option>Normal output</option><option>Reduced output</option><option>No output / blocked</option><option>Bypassing</option></select><label class="field-label" for="urineAppearance">Urine appearance</label><select id="urineAppearance"><option value="">Not assessed</option><option>Clear</option><option>Pale yellow</option><option>Dark yellow / concentrated</option><option>Orange / brown</option><option>Cloudy</option><option>Blood-stained</option><option>Offensive</option></select></div><label class="field-label" for="urineNotes" style="margin-top:8px">Additional notes</label><textarea id="urineNotes" rows="2"></textarea>',
 	},
 	integ: {
 		title: "Integumentary",
@@ -1203,7 +1327,13 @@ const ROS = {
 			["bruising", "No bruising", "Bruising noted"],
 			["laceration", "No lacerations", "Lacerations present"],
 			["rash", "No rash", "Rash noted"],
+			["mottling", "No mottling", "Mottling present"],
 			["turgor", "Normal skin turgor", "Reduced skin turgor"],
+			[
+				"pressure",
+				"No pressure sores",
+				"Pressure sores / skin breakdown noted",
+			],
 		],
 		extras:
 			'<label class="field-label" for="integNotes">Additional notes</label><textarea id="integNotes" rows="2"></textarea>',
@@ -1212,6 +1342,11 @@ const ROS = {
 		title: "Mental Health",
 		items: [
 			["moodAppropriate", "Mood appropriate", "Mood low or elevated"],
+			["anxiety", "No significant anxiety", "Anxiety evident"],
+			["paranoia", "No paranoia expressed", "Paranoia expressed"],
+			["withdrawn", "Engaged appropriately", "Withdrawn/socially isolated"],
+			["agitation", "Not agitated", "Agitation/restlessness noted"],
+			["sleep", "No sleep disturbance reported", "Sleep disturbance reported"],
 			["affectAppropriate", "Affect appropriate", "Flat or blunted affect"],
 			[
 				"thoughtCoherent",
@@ -1236,6 +1371,16 @@ const ROS = {
 				"No self-harm evident on examination",
 				"Self-harm evident on examination",
 			],
+			[
+				"noHI",
+				"No thoughts of harming others expressed",
+				"Thoughts of harming others expressed",
+			],
+			[
+				"intoxication",
+				"No intoxication evident",
+				"Alcohol/drug intoxication suspected",
+			],
 		],
 		extras:
 			'<label class="field-label" for="psychBehaviour">Appearance and behaviour</label><input id="psychBehaviour" type="text" placeholder="e.g. Appropriately dressed, cooperative"><label class="field-label" for="psychSpeech">Speech</label><input id="psychSpeech" type="text" placeholder="e.g. Normal rate and volume"><label class="field-label" for="psychRisk">Risk level</label><select id="psychRisk"><option value="">Not assessed</option><option>Low</option><option>Medium</option><option>High</option><option>Very high</option></select><label class="field-label" for="psychProtective">Protective factors</label><input id="psychProtective" type="text" placeholder="e.g. Family support, future plans, engagement with services"><label class="field-label" for="psychNotes">Notes</label><textarea id="psychNotes" rows="2"></textarea>',
@@ -1244,8 +1389,11 @@ const ROS = {
 		title: "Musculoskeletal",
 		items: [
 			["jointPain", "No joint pain", "Joint pain present"],
+			["tenderness", "No tenderness", "Tenderness present"],
 			["stiffness", "No stiffness", "Stiffness reported"],
 			["swelling", "No swelling", "Swelling noted"],
+			["erythema", "No erythema", "Erythema noted"],
+			["deformity", "No deformity", "Deformity noted"],
 			["injury", "No obvious signs of injury", "Signs of injury present"],
 			[
 				"rom",
@@ -1257,6 +1405,12 @@ const ROS = {
 				"Normal power and tone throughout",
 				"Reduced power / altered tone",
 			],
+			[
+				"weightBearing",
+				"Able to weight bear",
+				"Unable/reduced ability to weight bear",
+			],
+			["gait", "Gait normal", "Gait disturbance noted"],
 		],
 		extras:
 			'<label class="field-label" for="mskNotes">Additional notes</label><textarea id="mskNotes" rows="2"></textarea>',
@@ -1333,6 +1487,7 @@ function init() {
 	populateHeadInjuryChips();
 	buildAbcde();
 	buildRos();
+	buildUrinaryChips(); // after buildRos so ROS DOM elements exist
 	buildOptionButtons(); // after buildRos so ROS containers exist
 	buildAbdoGrid(); // after buildOptionButtons so #abdoRegionsGrid exists
 	buildAuscGrid();
@@ -1341,6 +1496,7 @@ function init() {
 	buildTreatmentSection();
 	buildSeizureSection();
 	buildMhSection();
+	buildStrokeCard();
 	buildConveyTransferChips();
 	buildSafeguardingSection();
 	bindEvents();
@@ -1693,9 +1849,12 @@ const SEIZURE_TYPES = [
 	"Tonic-clonic (grand mal)",
 	"Absence",
 	"Focal / partial onset",
+	"Focal to bi-lateral tonic-clonic",
 	"Myoclonic",
 	"Atonic (drop attack)",
 	"Status epilepticus",
+	"Non-epileptic",
+	"Febrile",
 	"Unknown / unwitnessed",
 ];
 const SEIZURE_FEATURES = [
@@ -1706,9 +1865,13 @@ const SEIZURE_FEATURES = [
 	"Cyanosis",
 	"Frothing at mouth",
 	"Head turning",
+	"Apnoea",
+	"Loss of consciousness",
+	"Post-ictal confusion",
+	"Staring episode",
 ];
 const SEIZURE_FINDINGS = [
-	"Tongue laceration / bite mark",
+	"Tongue biting",
 	"Lip / cheek biting",
 	"Urinary incontinence",
 	"Faecal soiling",
@@ -1718,17 +1881,22 @@ const SEIZURE_FINDINGS = [
 	"Back / spinal tenderness",
 	"Shoulder dislocation",
 	"Burn / contact injury",
+	"Vomiting / aspiration",
 	"No injuries found",
 ];
 const SEIZURE_PRECIPITANTS = [
 	"Missed medication",
+	"Medication change",
 	"Sleep deprivation",
 	"Alcohol / substance use",
+	"Alcohol/Drug Withdrawal",
 	"Fever / illness",
+	"Infection",
 	"Stress",
 	"Flickering / visual stimulus",
 	"Hypoglycaemia",
 	"Head injury",
+	"Pregnancy",
 	"Unknown",
 ];
 const AED_COMPLIANCE = [
@@ -2348,6 +2516,39 @@ function buildSeizureSection() {
 		"aed",
 		"szValue",
 	);
+	populateChipGroup("seizureCount", OPTIONS.seizure.count);
+	populateChipGroup("seizureWitnessed", OPTIONS.seizure.witnessed);
+	populateChipGroup("seizurePostictal", OPTIONS.seizure.postictal);
+	populateChipGroup("seizureRecovery", OPTIONS.seizure.recovery);
+	// Postictal features multi-select grid
+	const postictalGrid = $("#seizurePostictalFeaturesGrid");
+	if (postictalGrid) {
+		OPTIONS.seizure.postictalFeatures.forEach((feature) => {
+			const btn = document.createElement("button");
+			btn.type = "button";
+			btn.className = "square-btn";
+			btn.textContent = feature;
+			btn.dataset.value = feature;
+			postictalGrid.append(btn);
+		});
+	}
+}
+
+function buildUrinaryChips() {
+	const buildGrid = (id, options) => {
+		const grid = $(`#${id}`);
+		if (!grid) return;
+		options.forEach((feature) => {
+			const btn = document.createElement("button");
+			btn.type = "button";
+			btn.className = "square-btn";
+			btn.textContent = feature;
+			btn.dataset.value = feature;
+			grid.append(btn);
+		});
+	};
+	buildGrid("urinaryVolumeGrid", OPTIONS.urinary.volumeFeatures);
+	buildGrid("urinaryColourGrid", OPTIONS.urinary.colourFeatures);
 }
 
 function buildSeizureText() {
@@ -2358,15 +2559,18 @@ function buildSeizureText() {
 		lines.push(`Number of seizures: ${val("seizureCount")}.`);
 	if (val("seizureDuration"))
 		lines.push(`Duration: ${val("seizureDuration")}.`);
-	if (val("seizureTime")) lines.push(`Time of onset: ${val("seizureTime")}.`);
-	if (isChecked("seizureWitnessed")) {
+	const szTimeUnknown = $("#seizureTimeUnknownBtn")?.classList.contains(
+		"selected",
+	);
+	const szTime = szTimeUnknown ? "Unknown" : val("seizureTime");
+	if (szTime) lines.push(`Time of onset: ${szTime}.`);
+	const szWitnessed = val("seizureWitnessed");
+	if (szWitnessed) {
 		const by = val("seizureWitnessedBy");
-		lines.push(`Witnessed: Yes${by ? ` — ${by}` : ""}.`);
-	} else {
-		lines.push("Witnessed: No / unknown.");
+		lines.push(
+			`Witnessed: ${szWitnessed}${szWitnessed === "Witnessed" && by ? ` — ${by}` : ""}.`,
+		);
 	}
-	if (isChecked("seizureLOC"))
-		lines.push("Loss of consciousness during seizure: Yes.");
 	if (state.seizureFeatures.size)
 		lines.push(
 			`Features during seizure: ${[...state.seizureFeatures].join(", ")}.`,
@@ -2375,10 +2579,17 @@ function buildSeizureText() {
 		lines.push(
 			`Post-seizure findings on examination: ${[...state.seizureFindings].join(", ")}.`,
 		);
-	const postictal = isChecked("seizurePostictal");
+	const postictal = val("seizurePostictal");
 	if (postictal) {
 		const dur = val("seizurePostictalDuration");
-		lines.push(`Postictal phase: Yes${dur ? ` — duration ${dur}` : ""}.`);
+		const features = state.seizurePostictalFeatures.size
+			? ` Features: ${[...state.seizurePostictalFeatures].join(", ")}.`
+			: "";
+		lines.push(
+			postictal === "Yes"
+				? `Postictal phase: Yes${dur ? ` — duration ${dur}` : ""}.${features}`
+				: `Postictal phase: ${postictal}.`,
+		);
 	}
 	if (val("seizureRecovery"))
 		lines.push(`Recovery to baseline: ${val("seizureRecovery")}.`);
@@ -2476,6 +2687,359 @@ function buildMhSection() {
 		"mseInsight",
 		"mhValue",
 	);
+}
+
+// ── FAST-PASTA stroke card builder ──────────────────────────────────────────
+
+function buildStrokeCard() {
+	const card = $("#strokeAssessmentCard");
+	if (!card) return;
+
+	// Helper: create a chip-group row with label
+	function row(label, radioGroup, items, stateKey) {
+		const wrap = document.createElement("div");
+		wrap.style.marginTop = "10px";
+		const lbl = document.createElement("label");
+		lbl.className = "field-label";
+		lbl.textContent = label;
+		wrap.appendChild(lbl);
+		if (stateKey) {
+			// Multi-select grid
+			const grid = document.createElement("div");
+			grid.className = "square-grid";
+			grid.id = `${radioGroup}Grid`;
+			grid.style.marginTop = "4px";
+			items.forEach((item) => {
+				const btn = document.createElement("button");
+				btn.type = "button";
+				btn.className = "square-btn";
+				btn.textContent = item;
+				btn.dataset.value = item;
+				grid.appendChild(btn);
+			});
+			document.addEventListener("click", (e) => {
+				const b = e.target.closest(`#${radioGroup}Grid .square-btn`);
+				if (!b) return;
+				b.classList.toggle("selected");
+				if (b.classList.contains("selected"))
+					state[stateKey].add(b.dataset.value);
+				else state[stateKey].delete(b.dataset.value);
+			});
+			wrap.appendChild(grid);
+		} else {
+			// Radio chip group — populate directly (element not yet in DOM)
+			const hidden = document.createElement("input");
+			hidden.type = "hidden";
+			hidden.id = radioGroup;
+			wrap.appendChild(hidden);
+			const group = document.createElement("div");
+			group.className = "radio-chip-group";
+			group.dataset.radioGroup = radioGroup;
+			group.style.marginTop = "4px";
+			items.forEach((item) => {
+				const [value, chipLabel] = Array.isArray(item) ? item : [item, item];
+				const btn = document.createElement("button");
+				btn.type = "button";
+				btn.className = "radio-chip";
+				btn.dataset.value = value;
+				btn.textContent = chipLabel;
+				group.appendChild(btn);
+			});
+			wrap.appendChild(group);
+		}
+		return wrap;
+	}
+
+	const body = card.querySelector(".section-body");
+	if (!body) return;
+
+	// F — Face
+	const faceWrap = document.createElement("div");
+	faceWrap.innerHTML = `<label class="field-label" style="font-size:13px;font-weight:700;color:#003087">F — Face</label>`;
+	faceWrap.appendChild(
+		row("Facial symptoms present?", "strokeFace", OPTIONS.stroke.yesNoUnknown),
+	);
+	const faceDetails = document.createElement("div");
+	faceDetails.id = "strokeFaceDetailsWrap";
+	faceDetails.className = "hidden";
+	faceDetails.style.marginTop = "8px";
+	faceDetails.style.paddingLeft = "12px";
+	faceDetails.style.borderLeft = "3px solid #dbeeff";
+	const faceFindingsWrap = row(
+		"Findings",
+		"strokeFaceFindings",
+		OPTIONS.stroke.faceFindings,
+		"strokeFaceFindings",
+	);
+	const faceSideWrap = row(
+		"Side affected",
+		"strokeFaceSide",
+		OPTIONS.stroke.side,
+	);
+	faceDetails.appendChild(faceFindingsWrap);
+	faceDetails.appendChild(faceSideWrap);
+	faceWrap.appendChild(faceDetails);
+	body.appendChild(faceWrap);
+
+	// A — Arms/Legs
+	const armWrap = document.createElement("div");
+	armWrap.style.marginTop = "14px";
+	armWrap.innerHTML = `<label class="field-label" style="font-size:13px;font-weight:700;color:#003087">A — Arms / Legs</label>`;
+	armWrap.appendChild(
+		row("Motor deficit present?", "strokeArm", OPTIONS.stroke.yesNoUnknown),
+	);
+	const armDetails = document.createElement("div");
+	armDetails.id = "strokeArmDetailsWrap";
+	armDetails.className = "hidden";
+	armDetails.style.marginTop = "8px";
+	armDetails.style.paddingLeft = "12px";
+	armDetails.style.borderLeft = "3px solid #dbeeff";
+	armDetails.appendChild(
+		row(
+			"Findings",
+			"strokeArmFindings",
+			OPTIONS.stroke.armFindings,
+			"strokeArmFindings",
+		),
+	);
+	armDetails.appendChild(
+		row("Side affected", "strokeArmSide", OPTIONS.stroke.side),
+	);
+	armWrap.appendChild(armDetails);
+	body.appendChild(armWrap);
+
+	// S — Speech
+	const speechWrap = document.createElement("div");
+	speechWrap.style.marginTop = "14px";
+	speechWrap.innerHTML = `<label class="field-label" style="font-size:13px;font-weight:700;color:#003087">S — Speech</label>`;
+	speechWrap.appendChild(
+		row(
+			"Speech difficulty present?",
+			"strokeSpeech",
+			OPTIONS.stroke.yesNoUnknown,
+		),
+	);
+	const speechDetails = document.createElement("div");
+	speechDetails.id = "strokeSpeechDetailsWrap";
+	speechDetails.className = "hidden";
+	speechDetails.style.marginTop = "8px";
+	speechDetails.style.paddingLeft = "12px";
+	speechDetails.style.borderLeft = "3px solid #dbeeff";
+	speechDetails.appendChild(
+		row(
+			"Type",
+			"strokeSpeechFindings",
+			OPTIONS.stroke.speechFindings,
+			"strokeSpeechFindings",
+		),
+	);
+	speechWrap.appendChild(speechDetails);
+	body.appendChild(speechWrap);
+
+	// E — Eyes
+	const eyeWrap = document.createElement("div");
+	eyeWrap.style.marginTop = "14px";
+	eyeWrap.innerHTML = `<label class="field-label" style="font-size:13px;font-weight:700;color:#003087">E — Eyes</label>`;
+	eyeWrap.appendChild(
+		row("Visual symptoms present?", "strokeEyes", OPTIONS.stroke.yesNoUnknown),
+	);
+	const eyeDetails = document.createElement("div");
+	eyeDetails.id = "strokeEyesDetailsWrap";
+	eyeDetails.className = "hidden";
+	eyeDetails.style.marginTop = "8px";
+	eyeDetails.style.paddingLeft = "12px";
+	eyeDetails.style.borderLeft = "3px solid #dbeeff";
+	eyeDetails.appendChild(
+		row(
+			"Findings",
+			"strokeEyeFindings",
+			OPTIONS.stroke.eyeFindings,
+			"strokeEyeFindings",
+		),
+	);
+	eyeDetails.appendChild(
+		row("Side affected", "strokeEyeSide", OPTIONS.stroke.side),
+	);
+	eyeWrap.appendChild(eyeDetails);
+	body.appendChild(eyeWrap);
+
+	// T — Time
+	const timeWrap = document.createElement("div");
+	timeWrap.style.marginTop = "14px";
+	timeWrap.innerHTML = `<label class="field-label" style="font-size:13px;font-weight:700;color:#003087">T — Time</label>
+		<label class="field-label" style="margin-top:6px">Onset type</label>`;
+	const hiddenOnset = document.createElement("input");
+	hiddenOnset.type = "hidden";
+	hiddenOnset.id = "strokeOnsetType";
+	const onsetGroup = document.createElement("div");
+	onsetGroup.className = "radio-chip-group";
+	onsetGroup.dataset.radioGroup = "strokeOnsetType";
+	onsetGroup.style.marginTop = "4px";
+	OPTIONS.stroke.onsetType.forEach((item) => {
+		const [value, chipLabel] = Array.isArray(item) ? item : [item, item];
+		const btn = document.createElement("button");
+		btn.type = "button";
+		btn.className = "radio-chip";
+		btn.dataset.value = value;
+		btn.textContent = chipLabel;
+		onsetGroup.appendChild(btn);
+	});
+	timeWrap.appendChild(hiddenOnset);
+	timeWrap.appendChild(onsetGroup);
+	const lastWellDiv = document.createElement("div");
+	lastWellDiv.style.marginTop = "8px";
+	lastWellDiv.innerHTML = `<label class="field-label">Last known well (time)</label>
+		<div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+			<input type="time" id="strokeLastWell" style="flex:1" />
+			<button type="button" class="radio-chip" id="strokeLastWellUnknownBtn">Unknown</button>
+		</div>`;
+	timeWrap.appendChild(lastWellDiv);
+	body.appendChild(timeWrap);
+
+	// P — Past history / A — Anticoagulants (PASTA section)
+	const pastaWrap = document.createElement("div");
+	pastaWrap.style.marginTop = "14px";
+	pastaWrap.innerHTML = `<label class="field-label" style="font-size:13px;font-weight:700;color:#003087">Stroke Risk Factors</label>`;
+	pastaWrap.appendChild(
+		row(
+			"Risk factors",
+			"strokeRiskFactors",
+			OPTIONS.stroke.riskFactors,
+			"strokeRiskFactors",
+		),
+	);
+	body.appendChild(pastaWrap);
+
+	// Associated symptoms
+	const assocWrap = document.createElement("div");
+	assocWrap.style.marginTop = "14px";
+	assocWrap.innerHTML = `<label class="field-label" style="font-size:13px;font-weight:700;color:#003087">Associated Symptoms</label>`;
+	assocWrap.appendChild(
+		row(
+			"Symptoms",
+			"strokeAssociated",
+			OPTIONS.stroke.associatedSymptoms,
+			"strokeAssociated",
+		),
+	);
+	body.appendChild(assocWrap);
+
+	// Notes
+	const notesWrap = document.createElement("div");
+	notesWrap.style.marginTop = "12px";
+	notesWrap.innerHTML = `<label class="field-label" for="strokeNotes">Additional notes</label>
+		<textarea id="strokeNotes" rows="2" style="margin-top:4px"></textarea>`;
+	body.appendChild(notesWrap);
+
+	// Wire up show/hide for sub-sections
+	["strokeFace", "strokeArm", "strokeSpeech", "strokeEyes"].forEach((id) => {
+		const el = document.getElementById(id);
+		if (!el) return;
+		el.addEventListener("change", () => {
+			const v = el.value;
+			const wrapId =
+				id.replace("stroke", "stroke").replace(/([A-Z])/, (m) => m) +
+				"DetailsWrap";
+			// Construct wrap ID: strokeFace → strokeFaceDetailsWrap
+			const detailsId = id + "DetailsWrap";
+			document
+				.getElementById(detailsId)
+				?.classList.toggle("hidden", v !== "Yes");
+		});
+	});
+
+	// Last well unknown toggle
+	const lastWellUnknown = document.getElementById("strokeLastWellUnknownBtn");
+	const lastWellInput = document.getElementById("strokeLastWell");
+	lastWellUnknown?.addEventListener("click", () => {
+		const isUnknown = lastWellUnknown.classList.toggle("selected");
+		if (lastWellInput) {
+			lastWellInput.disabled = isUnknown;
+			lastWellInput.style.opacity = isUnknown ? "0.4" : "";
+			if (isUnknown) lastWellInput.value = "";
+		}
+	});
+}
+
+function buildStrokeText() {
+	const lines = ["FAST-PASTA STROKE ASSESSMENT"];
+
+	// F
+	const face = val("strokeFace");
+	if (face) {
+		const findings = state.strokeFaceFindings.size
+			? ` — ${[...state.strokeFaceFindings].join(", ")}`
+			: "";
+		const side = val("strokeFaceSide") ? ` (${val("strokeFaceSide")})` : "";
+		lines.push(`F — Face: ${face}${face === "Yes" ? findings + side : ""}.`);
+	}
+
+	// A
+	const arm = val("strokeArm");
+	if (arm) {
+		const findings = state.strokeArmFindings.size
+			? ` — ${[...state.strokeArmFindings].join(", ")}`
+			: "";
+		const side = val("strokeArmSide") ? ` (${val("strokeArmSide")})` : "";
+		lines.push(`A — Arms/Legs: ${arm}${arm === "Yes" ? findings + side : ""}.`);
+	}
+
+	// S
+	const speech = val("strokeSpeech");
+	if (speech) {
+		const findings = state.strokeSpeechFindings.size
+			? ` — ${[...state.strokeSpeechFindings].join(", ")}`
+			: "";
+		lines.push(`S — Speech: ${speech}${speech === "Yes" ? findings : ""}.`);
+	}
+
+	// E
+	const eyes = val("strokeEyes");
+	if (eyes) {
+		const findings = state.strokeEyeFindings.size
+			? ` — ${[...state.strokeEyeFindings].join(", ")}`
+			: "";
+		const side = val("strokeEyeSide") ? ` (${val("strokeEyeSide")})` : "";
+		lines.push(`E — Eyes: ${eyes}${eyes === "Yes" ? findings + side : ""}.`);
+	}
+
+	// T
+	const lastWellUnknown = document
+		.getElementById("strokeLastWellUnknownBtn")
+		?.classList.contains("selected");
+	const lastWell = lastWellUnknown ? "Unknown" : val("strokeLastWell");
+	const onsetType = val("strokeOnsetType");
+	if (onsetType || lastWell) {
+		const parts = [];
+		if (onsetType) parts.push(`Onset: ${onsetType}`);
+		if (lastWell) parts.push(`Last known well: ${lastWell}`);
+		lines.push(`T — Time: ${parts.join(" | ")}.`);
+	}
+
+	if (state.strokeAssociated.size)
+		lines.push(
+			`Associated symptoms: ${[...state.strokeAssociated].join(", ")}.`,
+		);
+
+	if (state.strokeRiskFactors.size)
+		lines.push(`Risk factors: ${[...state.strokeRiskFactors].join(", ")}.`);
+
+	// Clinical — pull from obs already captured
+	const bm = val("bm");
+	const bp = val("bp");
+	const hr = val("hr");
+	const obs = [
+		bm ? `BM ${bm} mmol/L` : null,
+		bp ? `BP ${bp} mmHg` : null,
+		hr ? `HR ${hr}bpm` : null,
+	]
+		.filter(Boolean)
+		.join(" | ");
+	if (obs) lines.push(`Observations: ${obs}.`);
+
+	if (val("strokeNotes")) lines.push(val("strokeNotes"));
+
+	return lines.join("\n");
 }
 
 function buildMhAssessmentText() {
@@ -2900,27 +3464,33 @@ function buildEdHandoverText() {
 		(e) => `${e.time ? `[${e.time}] ` : ""}${e.text}`,
 	);
 
-	// ── Assessment — ROS system by system ───────────────────────
+	//  Assessment — ROS
 	const ROS_LABELS = {
-		resp:  "Respiratory",
-		cvs:   "Cardiovascular",
+		resp: "Respiratory",
+		cvs: "Cardiovascular",
 		neuro: "Neurological",
-		gi:    "Gastrointestinal",
+		gi: "Gastrointestinal",
 		urine: "Urinary",
 		integ: "Integumentary",
-		msk:   "Musculoskeletal",
+		msk: "Musculoskeletal",
 		psych: "Mental health",
 	};
 	// Free-text notes fields per section — only count as extras if actually filled
 	const ROS_NOTES_FIELDS = {
-		resp:  ["respNotes", "sputumDesc"],
-		cvs:   ["cvsNotes"],
+		resp: ["respNotes", "sputumDesc"],
+		cvs: ["cvsNotes"],
 		neuro: ["neuroNotes"],
-		gi:    ["giNotes"],
+		gi: ["giNotes"],
 		urine: ["urineNotes"],
 		integ: ["integNotes"],
-		msk:   ["mskNotes"],
-		psych: ["psychNotes", "psychBehaviour", "psychSpeech", "psychRisk", "psychProtective"],
+		msk: ["mskNotes"],
+		psych: [
+			"psychNotes",
+			"psychBehaviour",
+			"psychSpeech",
+			"psychRisk",
+			"psychProtective",
+		],
 	};
 	const assessmentLines = [];
 	Object.entries(ROS_LABELS).forEach(([section, label]) => {
@@ -2945,7 +3515,9 @@ function buildEdHandoverText() {
 		`PMH: ${isChecked("noPmh") ? "No significant past medical history" : val("pmh") || "Not documented"}`,
 		`Medications: ${isChecked("noMeds") ? "No regular medications" : val("medications") || "Not documented"}`,
 		`Allergies: ${isChecked("nkda") ? "NKDA" : val("allergies") || "Not documented"}`,
-		val("prevDetails") ? `Social / family history: ${val("prevDetails")}` : null,
+		val("prevDetails")
+			? `Social / family history: ${val("prevDetails")}`
+			: null,
 		"",
 		"HISTORY",
 		val("hpcEvents") || "History not documented.",
@@ -2992,6 +3564,49 @@ function bindEvents() {
 		input.disabled = isUnknown;
 		input.style.opacity = isUnknown ? "0.4" : "";
 		if (isUnknown) input.value = "";
+	});
+	$("#seizureTimeUnknownBtn")?.addEventListener("click", () => {
+		const btn = $("#seizureTimeUnknownBtn");
+		const input = $("#seizureTime");
+		const isUnknown = btn.classList.toggle("selected");
+		input.disabled = isUnknown;
+		input.style.opacity = isUnknown ? "0.4" : "";
+		if (isUnknown) input.value = "";
+	});
+	$("#seizureWitnessed")?.addEventListener("change", () => {
+		const v = val("seizureWitnessed");
+		$("#seizureWitnessedByWrap")?.classList.toggle("hidden", v !== "Witnessed");
+	});
+	$("#seizurePostictal")?.addEventListener("change", () => {
+		const v = val("seizurePostictal");
+		$("#seizurePostictalDetailsWrap")?.classList.toggle("hidden", v !== "Yes");
+	});
+	document.addEventListener("click", (e) => {
+		const btn = e.target.closest("#seizurePostictalFeaturesGrid .square-btn");
+		if (!btn) return;
+		btn.classList.toggle("selected");
+		const feature = btn.dataset.value;
+		if (btn.classList.contains("selected"))
+			state.seizurePostictalFeatures.add(feature);
+		else state.seizurePostictalFeatures.delete(feature);
+	});
+	document.addEventListener("click", (e) => {
+		const btn = e.target.closest("#urinaryVolumeGrid .square-btn");
+		if (!btn) return;
+		btn.classList.toggle("selected");
+		const feature = btn.dataset.value;
+		if (btn.classList.contains("selected"))
+			state.urinaryVolumeFeatures.add(feature);
+		else state.urinaryVolumeFeatures.delete(feature);
+	});
+	document.addEventListener("click", (e) => {
+		const btn = e.target.closest("#urinaryColourGrid .square-btn");
+		if (!btn) return;
+		btn.classList.toggle("selected");
+		const feature = btn.dataset.value;
+		if (btn.classList.contains("selected"))
+			state.urinaryColourFeatures.add(feature);
+		else state.urinaryColourFeatures.delete(feature);
 	});
 	$("#resetButton").addEventListener("click", () => {
 		if (confirm("Clear all data and start a new PRF?")) location.reload();
@@ -3603,6 +4218,12 @@ function toggleRos(button) {
 		: button.dataset.abnormal;
 	updateRosBadge(button.dataset.section);
 
+	// Show/hide FAST-PASTA stroke card when FAST chip toggled
+	if (button.dataset.stateId === "neuro_fast") {
+		const card = $("#strokeAssessmentCard");
+		if (card) card.classList.toggle("hidden", next === "normal");
+	}
+
 	// Show/hide breathing rate detail picker (tachypnoea / bradypnoea / apnoea)
 	if (button.dataset.stateId === "resp_breathingRate") {
 		const wrap = $("#rrDetailWrap");
@@ -3614,6 +4235,34 @@ function toggleRos(button) {
 				wrap
 					.querySelectorAll("[data-value]")
 					.forEach((c) => c.classList.remove("selected"));
+			}
+		}
+	}
+
+	// Show/hide urinary volume feature chips when volume chip toggled
+	if (button.dataset.stateId === "urine_volume") {
+		const wrap = $("#urinaryVolumeWrap");
+		if (wrap) {
+			wrap.classList.toggle("hidden", next === "normal");
+			if (next === "normal") {
+				state.urinaryVolumeFeatures.clear();
+				wrap
+					.querySelectorAll(".square-btn")
+					.forEach((b) => b.classList.remove("selected"));
+			}
+		}
+	}
+
+	// Show/hide urinary colour feature chips when colour chip toggled
+	if (button.dataset.stateId === "urine_colour") {
+		const wrap = $("#urinaryColourWrap");
+		if (wrap) {
+			wrap.classList.toggle("hidden", next === "normal");
+			if (next === "normal") {
+				state.urinaryColourFeatures.clear();
+				wrap
+					.querySelectorAll(".square-btn")
+					.forEach((b) => b.classList.remove("selected"));
 			}
 		}
 	}
@@ -3906,6 +4555,14 @@ function rosBlock(section) {
 		},
 		urine: () => {
 			const parts = [];
+			if (state.urinaryVolumeFeatures.size)
+				parts.push(
+					`Volume change — features: ${[...state.urinaryVolumeFeatures].join(", ")}.`,
+				);
+			if (state.urinaryColourFeatures.size)
+				parts.push(
+					`Colour/appearance: ${[...state.urinaryColourFeatures].join(", ")}.`,
+				);
 			if (isChecked("catheterPresent")) {
 				const out = val("catheterOutput");
 				const app = val("urineAppearance");
@@ -4532,6 +5189,15 @@ function buildOutputSections() {
 						id: "mhassessment",
 						title: "MENTAL HEALTH ASSESSMENT",
 						body: buildMhAssessmentText(),
+					},
+				]
+			: []),
+		...(state.ros["neuro_fast"] === "abnormal"
+			? [
+					{
+						id: "stroke",
+						title: "FAST-PASTA STROKE ASSESSMENT",
+						body: buildStrokeText(),
 					},
 				]
 			: []),

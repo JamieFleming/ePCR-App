@@ -14,7 +14,7 @@
 		<link
 			href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
 			rel="stylesheet" />
-		<link rel="stylesheet" href="styles.css?v=1779692516" />
+		<link rel="stylesheet" href="styles.css?v=1779695450" />
 		<link rel="icon" type="image/png" href="assets/favicon.png" />
 		<link rel="apple-touch-icon" href="assets/favicon.png" />
 	</head>
@@ -1883,38 +1883,23 @@
 						<summary>
 							<span>Seizure Assessment</span><small>Seizure</small>
 						</summary>
+
 						<div class="section-body">
+							<!-- Type -->
 							<label class="field-label">Seizure type</label>
 							<div class="square-grid" id="seizureTypeGrid"></div>
 
 							<div class="grid-2" style="margin-top: 12px">
+								<!-- Number of seizures -->
 								<div>
 									<label class="field-label">Number of seizures</label>
 									<input type="hidden" id="seizureCount" />
 									<div
 										class="radio-chip-group"
 										data-radio-group="seizureCount"
-										style="margin-top: 4px">
-										<button type="button" class="radio-chip" data-value="1">
-											1
-										</button>
-										<button type="button" class="radio-chip" data-value="2">
-											2
-										</button>
-										<button type="button" class="radio-chip" data-value="3">
-											3
-										</button>
-										<button type="button" class="radio-chip" data-value="4">
-											4
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="5 or more">
-											5+
-										</button>
-									</div>
+										style="margin-top: 4px"></div>
 								</div>
+								<!-- Duration -->
 								<div>
 									<label class="field-label" for="seizureDuration"
 										>Duration of seizure</label
@@ -1926,30 +1911,37 @@
 							</div>
 
 							<div class="grid-2" style="margin-top: 8px">
+								<!-- Onset Time -->
 								<div>
-									<label class="field-label" for="seizureTime"
-										>Time of onset</label
-									>
-									<input id="seizureTime" placeholder="e.g. 14:20" />
+									<label class="field-label">Time of onset</label>
+									<div
+										style="
+											display: flex;
+											align-items: center;
+											gap: 8px;
+											margin-top: 4px;
+										">
+										<input type="time" id="seizureTime" style="flex: 1" />
+										<button
+											type="button"
+											class="radio-chip"
+											id="seizureTimeUnknownBtn">
+											Unknown
+										</button>
+									</div>
 								</div>
-								<div
-									style="
-										display: flex;
-										flex-direction: column;
-										gap: 6px;
-										padding-top: 20px;
-									">
-									<label class="check-row">
-										<input type="checkbox" id="seizureWitnessed" /> Witnessed
-									</label>
-									<label class="check-row">
-										<input type="checkbox" id="seizureLOC" /> Loss of
-										consciousness
-									</label>
+								<!-- Witnessed/Unwitnessed -->
+								<div>
+									<label class="field-label">Witnessed</label>
+									<input type="hidden" id="seizureWitnessed" />
+									<div
+										class="radio-chip-group"
+										data-radio-group="seizureWitnessed"
+										style="margin-top: 4px"></div>
 								</div>
 							</div>
 
-							<div id="seizureWitnessedByWrap">
+							<div id="seizureWitnessedByWrap" class="hidden">
 								<label class="field-label" for="seizureWitnessedBy"
 									>Witnessed by</label
 								>
@@ -1958,6 +1950,7 @@
 									placeholder="e.g. Family member, bystander, crew" />
 							</div>
 
+							<!-- Features -->
 							<label class="field-label" style="margin-top: 12px"
 								>Features during seizure</label
 							>
@@ -1968,52 +1961,47 @@
 							>
 							<div class="square-grid" id="seizureFindingsGrid"></div>
 
+							<!-- Post-ictal details -->
 							<div class="grid-2" style="margin-top: 12px">
+								<!-- Postictal chip -->
 								<div>
-									<label class="check-row">
-										<input type="checkbox" id="seizurePostictal" /> Postictal
-										phase observed
-									</label>
-									<input
-										id="seizurePostictalDuration"
-										placeholder="Postictal duration"
-										style="margin-top: 6px" />
+									<label class="field-label">Postictal phase</label>
+									<input type="hidden" id="seizurePostictal" />
+									<div
+										class="radio-chip-group"
+										data-radio-group="seizurePostictal"
+										style="margin-top: 4px"></div>
 								</div>
+								<!-- Recovery -->
 								<div>
 									<label class="field-label">Recovery to baseline</label>
 									<input type="hidden" id="seizureRecovery" />
 									<div
 										class="radio-chip-group"
 										data-radio-group="seizureRecovery"
-										style="margin-top: 4px">
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Full recovery">
-											Full recovery
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Partial recovery">
-											Partial
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Not recovered at handover">
-											Not recovered
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Unclear">
-											Unclear
-										</button>
-									</div>
+										style="margin-top: 4px"></div>
 								</div>
 							</div>
+							<!-- Postictal details (shown when Yes) -->
+							<div
+								id="seizurePostictalDetailsWrap"
+								class="hidden"
+								style="margin-top: 10px">
+								<label class="field-label">Postictal duration</label>
+								<input
+									id="seizurePostictalDuration"
+									placeholder="e.g. 10 minutes"
+									style="margin-top: 4px" />
+								<label class="field-label" style="margin-top: 10px"
+									>Postictal features</label
+								>
+								<div
+									class="square-grid"
+									id="seizurePostictalFeaturesGrid"
+									style="margin-top: 4px"></div>
+							</div>
 
+							<!-- Seizure hx -->
 							<div style="margin-top: 14px">
 								<label class="check-row">
 									<input type="checkbox" id="seizureKnownEpileptic" /> Known
@@ -2048,7 +2036,7 @@
 										placeholder="e.g. Same as usual / atypical — more prolonged" />
 								</div>
 								<label class="field-label" style="margin-top: 10px"
-									>AED compliance</label
+									>Anti-Epileptic compliance</label
 								>
 								<div class="square-grid" id="aedComplianceGrid"></div>
 							</div>
@@ -2264,10 +2252,22 @@
 						</div>
 					</details>
 
+					<!-- Review of systems -->
 					<details class="section-card">
 						<summary><span>Review of Systems</span><small>ROS</small></summary>
 						<div id="rosContainer" class="nested-sections"></div>
 					</details>
+
+					<!-- FAST-PASTA Stroke Assessment (shown when FAST+ in neuro ROS) -->
+					<details class="section-card hidden" id="strokeAssessmentCard">
+						<summary>
+							<span>FAST-PASTA Stroke Assessment</span>
+							<small style="background:#c0392b;color:#fff">FAST +ve</small>
+						</summary>
+						<div class="section-body"></div>
+					</details>
+
+					<!-- Injury assessment -->
 					<details class="section-card">
 						<summary>
 							<span>Injury Assessment</span><small>Trauma</small>
@@ -5691,6 +5691,6 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 		</div>
 
 		<div class="toast" id="toast">Copied</div>
-		<script src="app.js?v=1779692516"></script>
+		<script src="app.js?v=1779695450"></script>
 	</body>
 </html>
