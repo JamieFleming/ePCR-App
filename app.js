@@ -2900,16 +2900,52 @@ function buildEdHandoverText() {
 		(e) => `${e.time ? `[${e.time}] ` : ""}${e.text}`,
 	);
 
+	// ── Assessment — ROS system by system ───────────────────────
+	const ROS_LABELS = {
+		resp:  "Respiratory",
+		cvs:   "Cardiovascular",
+		neuro: "Neurological",
+		gi:    "Gastrointestinal",
+		urine: "Urinary",
+		integ: "Integumentary",
+		msk:   "Musculoskeletal",
+		psych: "Mental health",
+	};
+	// Free-text notes fields per section — only count as extras if actually filled
+	const ROS_NOTES_FIELDS = {
+		resp:  ["respNotes", "sputumDesc"],
+		cvs:   ["cvsNotes"],
+		neuro: ["neuroNotes"],
+		gi:    ["giNotes"],
+		urine: ["urineNotes"],
+		integ: ["integNotes"],
+		msk:   ["mskNotes"],
+		psych: ["psychNotes", "psychBehaviour", "psychSpeech", "psychRisk", "psychProtective"],
+	};
+	const assessmentLines = [];
+	Object.entries(ROS_LABELS).forEach(([section, label]) => {
+		const hasAbnormal =
+			ROS[section]?.items?.some(
+				([id]) => state.ros[`${section}_${id}`] === "abnormal",
+			) || false;
+		const hasNotes = (ROS_NOTES_FIELDS[section] || []).some((f) => val(f));
+		if (hasAbnormal || hasNotes) {
+			assessmentLines.push(`${label}: ${rosBlock(section)}`);
+		}
+	});
+	const oeText = val("oeText");
+
 	const lines = [
 		`ED HANDOVER ── ${timeStr}`,
 		"",
 		"PATIENT",
 		`${demographics ? demographics + " | " : ""}${pc}`,
-		`Allergies: ${isChecked("nkda") ? "NKDA" : val("allergies") || "None known"}`,
-		!isChecked("noMeds") && val("medications")
-			? `Medications: ${val("medications")}`
-			: null,
-		!isChecked("noPmh") && val("pmh") ? `PMH: ${val("pmh")}` : null,
+		"",
+		"BACKGROUND",
+		`PMH: ${isChecked("noPmh") ? "No significant past medical history" : val("pmh") || "Not documented"}`,
+		`Medications: ${isChecked("noMeds") ? "No regular medications" : val("medications") || "Not documented"}`,
+		`Allergies: ${isChecked("nkda") ? "NKDA" : val("allergies") || "Not documented"}`,
+		val("prevDetails") ? `Social / family history: ${val("prevDetails")}` : null,
 		"",
 		"HISTORY",
 		val("hpcEvents") || "History not documented.",
@@ -2919,8 +2955,13 @@ function buildEdHandoverText() {
 		socratesLines.length ? "" : null,
 		obs ? `OBSERVATIONS\n${obs}` : null,
 		obs ? "" : null,
+		"ASSESSMENT",
 		abcdeSummary,
 		ecgLine ? `ECG: ${ecgLine.replace("ECG: ", "")}` : null,
+		assessmentLines.length
+			? assessmentLines.join("\n")
+			: "Systems review: No abnormalities detected.",
+		oeText ? `\nOn examination: ${oeText}` : null,
 		"",
 		txLines.length ? "INTERVENTIONS" : null,
 		txLines.length ? txLines.join("\n") : null,
