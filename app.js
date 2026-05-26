@@ -1471,6 +1471,26 @@ function initDashboard() {
 	$("#backButton")?.addEventListener("click", showDashboard);
 }
 
+function buildPainScoreGrids() {
+	[
+		{ gridId: "painScoreGrid", inputId: "severity" },
+		{ gridId: "painScoreWorstGrid", inputId: "severityWorst" },
+	].forEach(({ gridId, inputId }) => {
+		const grid = $(`#${gridId}`);
+		if (!grid) return;
+		for (let i = 0; i <= 10; i++) {
+			const btn = document.createElement("button");
+			btn.type = "button";
+			btn.className = "pain-score-btn";
+			btn.dataset.score = String(i);
+			btn.dataset.grid = gridId;
+			btn.dataset.input = inputId;
+			btn.textContent = String(i);
+			grid.append(btn);
+		}
+	});
+}
+
 function init() {
 	populatePcSelect();
 	populateCallerSelect();
@@ -1485,6 +1505,7 @@ function init() {
 	populateFallsLieTimeChips();
 	populateFallsAnticoagChips();
 	populateHeadInjuryChips();
+	buildPainScoreGrids();
 	buildAbcde();
 	buildRos();
 	buildUrinaryChips(); // after buildRos so ROS DOM elements exist
@@ -3710,25 +3731,19 @@ function bindEvents() {
 	$("#conveyDepartment")?.addEventListener("change", handleConveyanceDisplay);
 	$("#clearPainButton")?.addEventListener("click", clearPainAssessment);
 	$("#clearBodyMapButton")?.addEventListener("click", clearBodyMap);
-	[
-		{ gridId: "painScoreGrid", inputId: "severity" },
-		{ gridId: "painScoreWorstGrid", inputId: "severityWorst" },
-	].forEach(({ gridId, inputId }) => {
-		$$("#" + gridId + " .pain-score-btn").forEach((btn) => {
-			btn.addEventListener("click", () => {
-				const score = btn.dataset.score;
-				const already = btn.classList.contains("selected");
-				$$("#" + gridId + " .pain-score-btn").forEach((b) =>
-					b.classList.remove("selected"),
-				);
-				if (!already) {
-					btn.classList.add("selected");
-					$("#" + inputId).value = `${score}/10`;
-				} else {
-					$("#" + inputId).value = "";
-				}
-			});
-		});
+	document.addEventListener("click", (e) => {
+		const btn = e.target.closest(".pain-score-btn");
+		if (!btn) return;
+		const gridId = btn.dataset.grid;
+		const inputId = btn.dataset.input;
+		const already = btn.classList.contains("selected");
+		$$("#" + gridId + " .pain-score-btn").forEach((b) => b.classList.remove("selected"));
+		if (!already) {
+			btn.classList.add("selected");
+			$("#" + inputId).value = `${btn.dataset.score}/10`;
+		} else {
+			$("#" + inputId).value = "";
+		}
 	});
 	$("#noPain").addEventListener("change", () => {
 		const noPain = $("#noPain").checked;
