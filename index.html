@@ -14,7 +14,7 @@
 		<link
 			href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
 			rel="stylesheet" />
-		<link rel="stylesheet" href="styles.css?v=1779695878" />
+		<link rel="stylesheet" href="styles.css?v=1779777665" />
 		<link rel="icon" type="image/png" href="assets/favicon.png" />
 		<link rel="apple-touch-icon" href="assets/favicon.png" />
 	</head>
@@ -1352,7 +1352,9 @@
 									</div>
 									<!-- At worst -->
 									<div style="grid-column: 1 / -1; margin-top: 8px">
-										<label class="field-label">Severity at worst (NRS 0–10)</label>
+										<label class="field-label"
+											>Severity at worst (NRS 0–10)</label
+										>
 										<input type="hidden" id="severityWorst" />
 										<div class="pain-score-grid" id="painScoreWorstGrid"></div>
 									</div>
@@ -2126,7 +2128,7 @@
 					<details class="section-card hidden" id="strokeAssessmentCard">
 						<summary>
 							<span>FAST-PASTA Stroke Assessment</span>
-							<small style="background:#c0392b;color:#fff">FAST +ve</small>
+							<small style="background: #c0392b; color: #fff">FAST +ve</small>
 						</summary>
 						<div class="section-body"></div>
 					</details>
@@ -2138,67 +2140,24 @@
 						</summary>
 						<div class="section-body">
 							<div class="grid-2">
+								<!-- Injury Location -->
 								<div>
 									<label class="field-label" for="injuryRegion"
 										>Body region</label
 									><select id="injuryRegion">
 										<option value="">Select region</option>
-										<optgroup label="Head and neck">
-											<option>Head</option>
-											<option>Face / scalp</option>
-											<option>Neck</option>
-										</optgroup>
-										<optgroup label="Trunk">
-											<option>Left chest</option>
-											<option>Right chest</option>
-											<option>Sternum</option>
-											<option>Abdomen</option>
-											<option>Pelvis / groin</option>
-											<option>Upper back</option>
-											<option>Lower back</option>
-										</optgroup>
-										<optgroup label="Upper limb (left)">
-											<option>Left shoulder</option>
-											<option>Left upper arm</option>
-											<option>Left elbow</option>
-											<option>Left forearm</option>
-											<option>Left wrist</option>
-											<option>Left hand</option>
-										</optgroup>
-										<optgroup label="Upper limb (right)">
-											<option>Right shoulder</option>
-											<option>Right upper arm</option>
-											<option>Right elbow</option>
-											<option>Right forearm</option>
-											<option>Right wrist</option>
-											<option>Right hand</option>
-										</optgroup>
-										<optgroup label="Lower limb (left)">
-											<option>Left hip</option>
-											<option>Left thigh</option>
-											<option>Left knee</option>
-											<option>Left lower leg</option>
-											<option>Left ankle</option>
-											<option>Left foot</option>
-										</optgroup>
-										<optgroup label="Lower limb (right)">
-											<option>Right hip</option>
-											<option>Right thigh</option>
-											<option>Right knee</option>
-											<option>Right lower leg</option>
-											<option>Right ankle</option>
-											<option>Right foot</option>
-										</optgroup>
 									</select>
 								</div>
-								<div>
-									<label class="field-label" for="injuryNv"
-										>Neurovascular status</label
-									><input
-										id="injuryNv"
-										placeholder="e.g. distal pulse present, sensation intact, full movement" />
+								<div style="grid-column: 1 / -1">
+									<label class="field-label">Neurovascular status</label>
+									<div class="square-grid" id="injuryNvGrid"></div>
+									<input
+										id="injuryNvNotes"
+										placeholder="Additional NV notes (optional)"
+										style="margin-top: 6px" />
 								</div>
 							</div>
+							<!-- Injury Type -->
 							<label class="field-label">Injury type</label>
 							<div class="square-grid" id="injuryTypeGrid"></div>
 							<div
@@ -2209,6 +2168,7 @@
 									id="injuryTypeOther"
 									placeholder="Other injury type..." />
 							</div>
+							<!-- Interventions -->
 							<label class="field-label" style="margin-top: 10px"
 								>Interventions</label
 							>
@@ -2231,581 +2191,8 @@
 							<div id="injuryEntries"></div>
 						</div>
 					</details>
-					<details class="section-card">
-						<summary>
-							<span>Secondary Survey / On Examination</span><small>OE</small>
-						</summary>
-						<div class="section-body">
-							<div class="toolbar">
-								<button
-									id="generateOeButton"
-									class="primary-action"
-									type="button">
-									Generate OE from findings</button
-								><button
-									id="clearOeButton"
-									class="secondary-action"
-									type="button">
-									Clear
-								</button>
-							</div>
-							<textarea
-								id="oeText"
-								rows="10"
-								placeholder="On examination / secondary survey..."></textarea>
-						</div>
-					</details>
 
-					<details class="section-card">
-						<summary>
-							<span>Treatments &amp; Interventions</span><small>Rx</small>
-						</summary>
-						<div class="section-body">
-							<label class="field-label"
-								>Airway / breathing interventions</label
-							>
-							<div class="square-grid" id="airwayInterventionGrid"></div>
-
-							<label class="field-label" style="margin-top: 14px"
-								>Vascular access</label
-							>
-							<div class="grid-2">
-								<div>
-									<label class="field-label">Type</label>
-									<input type="hidden" id="vaType" />
-									<div
-										class="radio-chip-group"
-										data-radio-group="vaType"
-										style="margin-top: 4px">
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="IV Cannula">
-											IV Cannula
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="IO Access">
-											IO Access
-										</button>
-									</div>
-								</div>
-								<div id="vaGaugeWrap" class="hidden">
-									<label class="field-label">Gauge</label>
-									<input type="hidden" id="vaGauge" />
-									<div
-										class="radio-chip-group"
-										data-radio-group="vaGauge"
-										style="margin-top: 4px">
-										<button
-											type="button"
-											class="radio-chip a-gauge-14"
-											data-value="14G (Orange)">
-											14G
-										</button>
-										<button
-											type="button"
-											class="radio-chip a-gauge-16"
-											data-value="16G (Grey)">
-											16G
-										</button>
-										<button
-											type="button"
-											class="radio-chip a-gauge-18"
-											data-value="18G (Green)">
-											18G
-										</button>
-										<button
-											type="button"
-											class="radio-chip a-gauge-20"
-											data-value="20G (Pink)">
-											20G
-										</button>
-										<button
-											type="button"
-											class="radio-chip a-gauge-22"
-											data-value="22G (Blue)">
-											22G
-										</button>
-										<button
-											type="button"
-											class="radio-chip a-gauge-24"
-											data-value="24G (Yellow)">
-											24G
-										</button>
-									</div>
-								</div>
-							</div>
-							<label class="field-label" style="margin-top: 8px">Site</label>
-							<input type="hidden" id="vaSite" />
-							<div
-								id="vaIvSites"
-								class="radio-chip-group wrap-grid hidden"
-								data-radio-group="vaSite"
-								style="margin-top: 4px">
-								<button type="button" class="radio-chip" data-value="L ACF">
-									L ACF
-								</button>
-								<button type="button" class="radio-chip" data-value="R ACF">
-									R ACF
-								</button>
-								<button type="button" class="radio-chip" data-value="L hand">
-									L Hand
-								</button>
-								<button type="button" class="radio-chip" data-value="R hand">
-									R Hand
-								</button>
-								<button type="button" class="radio-chip" data-value="L forearm">
-									L Forearm
-								</button>
-								<button type="button" class="radio-chip" data-value="R forearm">
-									R Forearm
-								</button>
-								<button
-									type="button"
-									class="radio-chip"
-									data-value="L cephalic">
-									L Cephalic
-								</button>
-								<button
-									type="button"
-									class="radio-chip"
-									data-value="R cephalic">
-									R Cephalic
-								</button>
-								<button type="button" class="radio-chip" data-value="L basilic">
-									L Basilic
-								</button>
-								<button type="button" class="radio-chip" data-value="R basilic">
-									R Basilic
-								</button>
-								<button type="button" class="radio-chip" data-value="L EJ">
-									L EJ
-								</button>
-								<button type="button" class="radio-chip" data-value="R EJ">
-									R EJ
-								</button>
-								<button type="button" class="radio-chip" data-value="L foot">
-									L Foot
-								</button>
-								<button type="button" class="radio-chip" data-value="R foot">
-									R Foot
-								</button>
-							</div>
-							<div
-								id="vaIoSites"
-								class="radio-chip-group wrap-grid hidden"
-								data-radio-group="vaSite"
-								style="margin-top: 4px">
-								<button
-									type="button"
-									class="radio-chip"
-									data-value="L prox tibia">
-									L Prox tibia
-								</button>
-								<button
-									type="button"
-									class="radio-chip"
-									data-value="R prox tibia">
-									R Prox tibia
-								</button>
-								<button
-									type="button"
-									class="radio-chip"
-									data-value="L prox humerus">
-									L Prox humerus
-								</button>
-								<button
-									type="button"
-									class="radio-chip"
-									data-value="R prox humerus">
-									R Prox humerus
-								</button>
-								<button type="button" class="radio-chip" data-value="Sternal">
-									Sternal
-								</button>
-							</div>
-							<div class="grid-2" style="margin-top: 8px">
-								<div>
-									<label class="field-label">Outcome</label>
-									<input type="hidden" id="vaOutcome" />
-									<div
-										class="radio-chip-group"
-										data-radio-group="vaOutcome"
-										style="margin-top: 4px">
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Successful — patent and flushed">
-											Successful
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Failed attempt">
-											Failed
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="In-situ (pre-existing)">
-											Pre-existing
-										</button>
-									</div>
-								</div>
-							</div>
-							<div id="vaFlushWrap" class="hidden" style="margin-top: 8px">
-								<label class="field-label">Flush</label>
-								<input type="hidden" id="vaFlushed" />
-								<div
-									class="radio-chip-group"
-									data-radio-group="vaFlushed"
-									style="margin-top: 4px">
-									<button
-										type="button"
-										class="radio-chip"
-										data-value="Flushed — 5ml NaCl 0.9%">
-										✓ Flushed (5ml NaCl 0.9%)
-									</button>
-									<button
-										type="button"
-										class="radio-chip"
-										data-value="Not flushed">
-										✗ Not flushed
-									</button>
-								</div>
-							</div>
-							<div style="margin-top: 8px">
-								<label class="field-label" for="vaFluids"
-									>Additional fluids</label
-								>
-								<input
-									id="vaFluids"
-									placeholder="e.g. 500ml NaCl 0.9%, Hartmann's 250ml" />
-							</div>
-							<button
-								id="addVaButton"
-								type="button"
-								class="secondary-action"
-								style="margin-top: 10px">
-								Add access
-							</button>
-							<div id="vaEntries"></div>
-
-							<label class="field-label" style="margin-top: 14px"
-								>Medications given</label
-							>
-							<div class="grid-2">
-								<div>
-									<label class="field-label" for="drugName">Drug</label>
-									<select id="drugName">
-										<option value="">Select drug</option>
-										<optgroup label="Black bag">
-											<option>Paracetamol 500mg</option>
-											<option>Paracetamol 250mg/ml</option>
-											<option>Paracetamol 120mg Sachet</option>
-											<option>Ibuprofen 100mg/5ml</option>
-											<option>Ibuprofen 200mg</option>
-											<option>Oral Morphine 10mg/5ml</option>
-										</optgroup>
-										<optgroup label="Yellow bag">
-											<option>Glucagon 1mg</option>
-											<option>Glucose 40% Gel</option>
-											<option>Benzylpenicillin 600mg</option>
-											<option>Ondansetron 4mg/2ml</option>
-											<option>Diazapam 5mg Rectal</option>
-											<option>Naloxone 400mcg</option>
-										</optgroup>
-										<optgroup label="Blue bag">
-											<option>Salbutamol 5mg</option>
-											<option>Salbutamol 2.5mg</option>
-											<option>Chlorphenamine 10mg/ml</option>
-											<option>Atropine 600mcg</option>
-											<option>Hydrocortisone 100mg</option>
-											<option>Ipratropium Bromide 250mcg</option>
-											<option>Adrenaline 1mg/ml</option>
-											<option>Furosemide 20mg/2ml</option>
-											<option>Tranexamic Acid 500mg/5ml</option>
-											<option>Aspirin 300mg</option>
-											<option>GTN 400mcg</option>
-											<option>Dexamethasone 2mg</option>
-											<option>Prednisolone 5mg</option>
-										</optgroup>
-										<optgroup label="Red bag">
-											<option>Adrenaline 1:10,000</option>
-											<option>Amiodarone 300mg/10ml</option>
-											<option>Naloxone 400mcg</option>
-										</optgroup>
-										<optgroup label="Controlled">
-											<option>Morphine Sulfate 10mg/ml</option>
-											<option>Diazapam 10mg/2ml</option>
-										</optgroup>
-										<optgroup label="Gasses">
-											<option>Oxygen</option>
-											<option>Entonox</option>
-										</optgroup>
-										<option value="Other">Other (specify)</option>
-									</select>
-									<input
-										id="drugNameOther"
-										class="hidden"
-										placeholder="Enter drug name"
-										style="margin-top: 6px" />
-								</div>
-								<div>
-									<label class="field-label" for="drugDose">Dose</label>
-									<input id="drugDose" placeholder="e.g. 5mg, 2 puffs" />
-								</div>
-							</div>
-							<div class="grid-2">
-								<div>
-									<label class="field-label">Route</label>
-									<input type="hidden" id="drugRoute" />
-									<div
-										class="radio-chip-group wrap-grid"
-										data-radio-group="drugRoute"
-										style="margin-top: 4px">
-										<button type="button" class="radio-chip" data-value="IV">
-											IV
-										</button>
-										<button type="button" class="radio-chip" data-value="IM">
-											IM
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="IN (intranasal)">
-											IN
-										</button>
-										<button type="button" class="radio-chip" data-value="Oral">
-											Oral
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Sublingual">
-											SL
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="PR (rectal)">
-											PR
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="SC (subcutaneous)">
-											SC
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Nebulised">
-											Neb
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Inhaled">
-											Inhaled
-										</button>
-										<button type="button" class="radio-chip" data-value="IO">
-											IO
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Buccal">
-											Buccal
-										</button>
-									</div>
-								</div>
-								<div>
-									<label class="field-label" for="drugTime">Time given</label>
-									<input id="drugTime" placeholder="e.g. 14:32" />
-								</div>
-							</div>
-							<button
-								id="addDrugButton"
-								type="button"
-								class="secondary-action"
-								style="margin-top: 10px">
-								Add medication
-							</button>
-							<div id="drugEntries"></div>
-
-							<label class="field-label" style="margin-top: 14px"
-								>Wound management</label
-							>
-							<div class="square-grid" id="woundInterventionGrid"></div>
-							<div id="woundOtherWrap" class="hidden">
-								<input
-									id="woundOther"
-									placeholder="Describe wound intervention"
-									style="margin-top: 8px" />
-							</div>
-
-							<label class="field-label" style="margin-top: 14px"
-								>Manual handling</label
-							>
-							<div class="square-grid" id="manualHandlingGrid"></div>
-							<div id="manualOtherWrap" class="hidden">
-								<input
-									id="manualOther"
-									placeholder="Describe handling method"
-									style="margin-top: 8px" />
-							</div>
-
-							<label
-								class="field-label"
-								for="otherInterventionsFree"
-								style="margin-top: 14px"
-								>Other interventions</label
-							>
-							<textarea
-								id="otherInterventionsFree"
-								rows="2"
-								placeholder="Describe any other interventions performed…"></textarea>
-
-							<label
-								class="field-label"
-								for="treatmentNotes"
-								style="margin-top: 14px"
-								>Treatment notes</label
-							>
-							<textarea id="treatmentNotes" rows="2"></textarea>
-						</div>
-					</details>
-
-					<details class="section-card">
-						<summary>
-							<span>Clinical Changes &amp; Additional Information</span
-							><small>Changes</small>
-						</summary>
-						<div class="section-body">
-							<p class="field-label" style="margin-bottom: 4px">
-								Document clinical changes observed during assessment
-							</p>
-							<div
-								class="entry-form grid-2"
-								style="gap: 8px; margin-bottom: 8px">
-								<input
-									type="time"
-									id="changeTime"
-									placeholder="Time (optional)" />
-								<div style="display: flex; gap: 6px; grid-column: span 1">
-									<input
-										id="changeDesc"
-										placeholder="Describe change…"
-										style="flex: 1" />
-									<button
-										type="button"
-										id="addChangeButton"
-										class="secondary-action">
-										Add
-									</button>
-								</div>
-							</div>
-							<div id="changeEntries" class="entry-list"></div>
-							<label
-								class="field-label"
-								for="additionalInfo"
-								style="margin-top: 12px; display: block"
-								>Additional information</label
-							>
-							<textarea
-								id="additionalInfo"
-								rows="3"
-								placeholder="Any additional information not captured elsewhere…"></textarea>
-						</div>
-					</details>
-
-					<details class="section-card">
-						<summary>
-							<span>Mental Capacity and Consent</span><small>MCA</small>
-						</summary>
-						<div class="section-body">
-							<label class="field-label">Capacity status</label>
-							<input type="hidden" id="capacityStatus" value="Has capacity" />
-							<div
-								class="radio-chip-group"
-								data-radio-group="capacityStatus"
-								style="margin-top: 4px">
-								<button
-									type="button"
-									class="radio-chip selected"
-									data-value="Has capacity">
-									Has capacity
-								</button>
-								<button
-									type="button"
-									class="radio-chip"
-									data-value="Lacks capacity">
-									Lacks capacity
-								</button>
-								<button
-									type="button"
-									class="radio-chip"
-									data-value="Not applicable">
-									N/A
-								</button>
-							</div>
-							<div id="capacityChecks" class="grid-2 compact">
-								<label class="check-row"
-									><input type="checkbox" id="mcaUnderstand" checked />
-									Understands</label
-								><label class="check-row"
-									><input type="checkbox" id="mcaRetain" checked />
-									Retains</label
-								><label class="check-row"
-									><input type="checkbox" id="mcaWeigh" checked /> Weighs
-									information</label
-								><label class="check-row"
-									><input type="checkbox" id="mcaCommunicate" checked />
-									Communicates decision</label
-								>
-							</div>
-							<div id="lacksCapReasons" class="hidden" style="margin-top: 8px">
-								<label class="field-label"
-									>Unable to (select all that apply)</label
-								>
-								<div class="grid-2 compact">
-									<label class="check-row"
-										><input type="checkbox" id="lacksUnderstand" /> Understand
-										information</label
-									>
-									<label class="check-row"
-										><input type="checkbox" id="lacksRetain" /> Retain
-										information</label
-									>
-									<label class="check-row"
-										><input type="checkbox" id="lacksWeigh" /> Weigh / use
-										information</label
-									>
-									<label class="check-row"
-										><input type="checkbox" id="lacksCommunicate" /> Communicate
-										decision</label
-									>
-								</div>
-								<label
-									class="field-label"
-									for="lacksCausation"
-									style="margin-top: 8px"
-									>Reason for incapacity</label
-								>
-								<input
-									id="lacksCausation"
-									placeholder="e.g. GCS reduced, acute intoxication, dementia" />
-							</div>
-							<textarea
-								id="bestInterests"
-								class="hidden"
-								rows="3"
-								placeholder="Best interests decision / rationale"></textarea>
-						</div>
-					</details>
+					<!-- Obstetric / Gynaecological Assessment -->
 					<details class="section-card hidden" id="gynaeCard">
 						<summary>
 							<span>Obstetric / Gynaecological</span><small>OB/GYN</small>
@@ -2818,26 +2205,7 @@
 									<div
 										class="radio-chip-group"
 										data-radio-group="pregnancyStatus"
-										style="margin-top: 4px">
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Not pregnant">
-											Not pregnant
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Possibly pregnant">
-											Possibly
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Confirmed pregnant">
-											Confirmed
-										</button>
-									</div>
+										style="margin-top: 4px"></div>
 								</div>
 								<div>
 									<label class="field-label" for="lmp"
@@ -2893,26 +2261,10 @@
 
 							<div style="margin-top: 12px">
 								<label class="field-label">Gynaecological symptoms</label>
-								<div class="chip-multi-group" style="margin-top: 6px">
-									<button
-										type="button"
-										class="square-btn gynae-symptom"
-										data-gynae-symptom="pvBleed">
-										PV bleeding
-									</button>
-									<button
-										type="button"
-										class="square-btn gynae-symptom"
-										data-gynae-symptom="pelvicPain">
-										Pelvic pain
-									</button>
-									<button
-										type="button"
-										class="square-btn gynae-symptom"
-										data-gynae-symptom="discharge">
-										Vaginal discharge
-									</button>
-								</div>
+								<div
+									class="chip-multi-group"
+									id="gynaeSymptomGrid"
+									style="margin-top: 6px"></div>
 							</div>
 
 							<div id="pvBleedDetail" class="hidden" style="margin-top: 10px">
@@ -2921,143 +2273,36 @@
 								<div
 									class="radio-chip-group"
 									data-radio-group="pvBleedSeverity"
-									style="margin-top: 4px">
-									<button
-										type="button"
-										class="radio-chip"
-										data-value="Spotting">
-										Spotting
-									</button>
-									<button type="button" class="radio-chip" data-value="Light">
-										Light
-									</button>
-									<button
-										type="button"
-										class="radio-chip"
-										data-value="Moderate">
-										Moderate
-									</button>
-									<button type="button" class="radio-chip" data-value="Heavy">
-										Heavy
-									</button>
-								</div>
+									style="margin-top: 4px"></div>
 								<label class="field-label" style="margin-top: 8px"
 									>Character</label
 								>
-								<div class="chip-multi-group" style="margin-top: 6px">
-									<button
-										type="button"
-										class="square-btn gynae-char"
-										data-gynae-char="bright">
-										Bright red
-									</button>
-									<button
-										type="button"
-										class="square-btn gynae-char"
-										data-gynae-char="dark">
-										Dark / old blood
-									</button>
-									<button
-										type="button"
-										class="square-btn gynae-char"
-										data-gynae-char="clots">
-										Clots passed
-									</button>
-								</div>
+								<div
+									class="chip-multi-group"
+									id="pvBleedCharGrid"
+									style="margin-top: 6px"></div>
 							</div>
 
 							<div id="dischargeDetail" class="hidden" style="margin-top: 10px">
 								<label class="field-label"
 									>Vaginal discharge — colour / appearance</label
 								>
-								<div class="chip-multi-group" style="margin-top: 6px">
-									<button
-										type="button"
-										class="square-btn gynae-disc"
-										data-gynae-disc="clear">
-										Clear / white
-									</button>
-									<button
-										type="button"
-										class="square-btn gynae-disc"
-										data-gynae-disc="yellow">
-										Yellow
-									</button>
-									<button
-										type="button"
-										class="square-btn gynae-disc"
-										data-gynae-disc="green">
-										Green
-									</button>
-									<button
-										type="button"
-										class="square-btn gynae-disc"
-										data-gynae-disc="grey">
-										Grey
-									</button>
-									<button
-										type="button"
-										class="square-btn gynae-disc"
-										data-gynae-disc="brown">
-										Brown
-									</button>
-									<button
-										type="button"
-										class="square-btn gynae-disc"
-										data-gynae-disc="blood">
-										Blood-stained
-									</button>
-								</div>
+								<div
+									class="chip-multi-group"
+									id="dischargeColourGrid"
+									style="margin-top: 6px"></div>
 								<label class="field-label" style="margin-top: 8px"
 									>Consistency</label
 								>
-								<div class="chip-multi-group" style="margin-top: 6px">
-									<button
-										type="button"
-										class="square-btn gynae-disc"
-										data-gynae-disc="watery">
-										Watery
-									</button>
-									<button
-										type="button"
-										class="square-btn gynae-disc"
-										data-gynae-disc="thick">
-										Thick
-									</button>
-									<button
-										type="button"
-										class="square-btn gynae-disc"
-										data-gynae-disc="cottage">
-										Cottage cheese
-									</button>
-									<button
-										type="button"
-										class="square-btn gynae-disc"
-										data-gynae-disc="frothy">
-										Frothy
-									</button>
-								</div>
+								<div
+									class="chip-multi-group"
+									id="dischargeConsistencyGrid"
+									style="margin-top: 6px"></div>
 								<label class="field-label" style="margin-top: 8px">Odour</label>
-								<div class="chip-multi-group" style="margin-top: 6px">
-									<button
-										type="button"
-										class="square-btn gynae-disc"
-										data-gynae-disc="no-odour">
-										No odour
-									</button>
-									<button
-										type="button"
-										class="square-btn gynae-disc"
-										data-gynae-disc="offensive">
-										Offensive
-									</button>
-									<button
-										type="button"
-										class="square-btn gynae-disc"
-										data-gynae-disc="fishy">
-										Fishy
-									</button>
-								</div>
+								<div
+									class="chip-multi-group"
+									id="dischargeOdourGrid"
+									style="margin-top: 6px"></div>
 								<label class="field-label" style="margin-top: 8px"
 									>Amount</label
 								>
@@ -3065,26 +2310,7 @@
 								<div
 									class="radio-chip-group"
 									data-radio-group="dischargeAmount"
-									style="margin-top: 4px">
-									<button
-										type="button"
-										class="radio-chip"
-										data-value="Spotting">
-										Spotting
-									</button>
-									<button type="button" class="radio-chip" data-value="Light">
-										Light
-									</button>
-									<button
-										type="button"
-										class="radio-chip"
-										data-value="Moderate">
-										Moderate
-									</button>
-									<button type="button" class="radio-chip" data-value="Heavy">
-										Heavy
-									</button>
-								</div>
+									style="margin-top: 4px"></div>
 								<label class="field-label" style="margin-top: 8px"
 									>Duration / onset</label
 								>
@@ -3105,6 +2331,285 @@
 								rows="2"
 								placeholder="Any additional obstetric or gynaecological details..."
 								style="margin-top: 4px"></textarea>
+						</div>
+					</details>
+
+					<!-- Secondary Survey - Auto-Generates from given info -->
+					<details class="section-card">
+						<summary>
+							<span>Secondary Survey / On Examination</span><small>OE</small>
+						</summary>
+						<div class="section-body">
+							<div class="toolbar">
+								<button
+									id="generateOeButton"
+									class="primary-action"
+									type="button">
+									Generate OE from findings</button
+								><button
+									id="clearOeButton"
+									class="secondary-action"
+									type="button">
+									Clear
+								</button>
+							</div>
+							<textarea
+								id="oeText"
+								rows="10"
+								placeholder="On examination / secondary survey..."></textarea>
+						</div>
+					</details>
+
+					<!-- Treatment -->
+					<details class="section-card">
+						<summary>
+							<span>Treatments &amp; Interventions</span><small>Rx</small>
+						</summary>
+						<div class="section-body">
+							<!-- Airways -->
+							<label class="field-label"
+								>Airway / breathing interventions</label
+							>
+							<div class="square-grid" id="airwayInterventionGrid"></div>
+
+							<!-- Access -->
+							<label class="field-label" style="margin-top: 14px"
+								>Vascular access</label
+							>
+							<div class="grid-2">
+								<div>
+									<label class="field-label">Type</label>
+									<input type="hidden" id="vaType" />
+									<div
+										class="radio-chip-group"
+										data-radio-group="vaType"
+										style="margin-top: 4px"></div>
+								</div>
+								<div id="vaGaugeWrap" class="hidden">
+									<label class="field-label">Gauge</label>
+									<input type="hidden" id="vaGauge" />
+									<div
+										class="radio-chip-group"
+										data-radio-group="vaGauge"
+										style="margin-top: 4px"></div>
+								</div>
+							</div>
+							<label class="field-label" style="margin-top: 8px">Site</label>
+							<input type="hidden" id="vaSite" />
+							<div
+								id="vaIvSites"
+								class="radio-chip-group wrap-grid hidden"
+								data-radio-group="vaSite"
+								style="margin-top: 4px"></div>
+							<div
+								id="vaIoSites"
+								class="radio-chip-group wrap-grid hidden"
+								data-radio-group="vaSite"
+								style="margin-top: 4px"></div>
+							<label class="field-label" style="margin-top: 8px">Time</label>
+							<input type="time" id="vaTime" />
+							<div class="grid-2" style="margin-top: 8px">
+								<div>
+									<label class="field-label">Outcome</label>
+									<input type="hidden" id="vaOutcome" />
+									<div
+										class="radio-chip-group"
+										data-radio-group="vaOutcome"
+										style="margin-top: 4px"></div>
+								</div>
+							</div>
+							<div id="vaFlushWrap" class="hidden" style="margin-top: 8px">
+								<label class="field-label">Flush</label>
+								<input type="hidden" id="vaFlushed" />
+								<div
+									class="radio-chip-group"
+									data-radio-group="vaFlushed"
+									style="margin-top: 4px">
+									<button
+										type="button"
+										class="radio-chip"
+										data-value="Flushed — 5ml NaCl 0.9%">
+										✓ Flushed (5ml NaCl 0.9%)
+									</button>
+									<button
+										type="button"
+										class="radio-chip"
+										data-value="Not flushed">
+										✗ Not flushed
+									</button>
+								</div>
+							</div>
+							<button
+								id="addVaButton"
+								type="button"
+								class="secondary-action"
+								style="margin-top: 10px">
+								Add access
+							</button>
+							<div id="vaEntries"></div>
+
+							<!-- Drugs -->
+							<label class="field-label" style="margin-top: 14px"
+								>Medications given</label
+							>
+							<div class="grid-2">
+								<select id="drugName">
+									<option value="">Select a Drug</option>
+								</select>
+								<div>
+									<label class="field-label" for="drugDose">Dose</label>
+									<input id="drugDose" placeholder="e.g. 5mg, 2 puffs" />
+								</div>
+							</div>
+							<div class="grid-2">
+								<div>
+									<label class="field-label">Route</label>
+									<input type="hidden" id="drugRoute" />
+									<div
+										class="radio-chip-group wrap-grid"
+										data-radio-group="drugRoute"
+										style="margin-top: 4px"></div>
+								</div>
+								<div>
+									<label class="field-label" for="drugTime">Time given</label>
+									<input type="time" id="drugTime" />
+								</div>
+							</div>
+							<button
+								id="addDrugButton"
+								type="button"
+								class="secondary-action"
+								style="margin-top: 10px">
+								Add medication
+							</button>
+							<div id="drugEntries"></div>
+
+							<!-- Wound Management -->
+							<label class="field-label" style="margin-top: 14px"
+								>Wound management</label
+							>
+							<div class="square-grid" id="woundInterventionGrid"></div>
+							<div id="woundOtherWrap" class="hidden">
+								<input
+									id="woundOther"
+									placeholder="Describe wound intervention"
+									style="margin-top: 8px" />
+							</div>
+
+							<!-- Manual Handling -->
+							<label class="field-label" style="margin-top: 14px"
+								>Manual handling</label
+							>
+							<div class="square-grid" id="manualHandlingGrid"></div>
+							<div id="manualOtherWrap" class="hidden">
+								<input
+									id="manualOther"
+									placeholder="Describe handling method"
+									style="margin-top: 8px" />
+							</div>
+
+							<!-- Other interventions -->
+							<label
+								class="field-label"
+								for="otherInterventionsFree"
+								style="margin-top: 14px"
+								>Other interventions</label
+							>
+							<textarea
+								id="otherInterventionsFree"
+								rows="2"
+								placeholder="Describe any other interventions performed…"></textarea>
+
+							<label
+								class="field-label"
+								for="treatmentNotes"
+								style="margin-top: 14px"
+								>Treatment notes</label
+							>
+							<textarea id="treatmentNotes" rows="2"></textarea>
+						</div>
+					</details>
+
+					<!-- CLinical changes -->
+					<details class="section-card">
+						<summary>
+							<span>Clinical Changes &amp; Additional Information</span
+							><small>Changes</small>
+						</summary>
+						<div class="section-body">
+							<p class="field-label" style="margin-bottom: 4px">
+								Document clinical changes observed during assessment
+							</p>
+							<div
+								class="entry-form grid-2"
+								style="gap: 8px; margin-bottom: 8px">
+								<input
+									type="time"
+									id="changeTime"
+									placeholder="Time (optional)" />
+								<div style="display: flex; gap: 6px; grid-column: span 1">
+									<input
+										id="changeDesc"
+										placeholder="Describe change…"
+										style="flex: 1" />
+									<button
+										type="button"
+										id="addChangeButton"
+										class="secondary-action">
+										Add
+									</button>
+								</div>
+							</div>
+							<div id="changeEntries" class="entry-list"></div>
+							<label
+								class="field-label"
+								for="additionalInfo"
+								style="margin-top: 12px; display: block"
+								>Additional information</label
+							>
+							<textarea
+								id="additionalInfo"
+								rows="3"
+								placeholder="Any additional information not captured elsewhere…"></textarea>
+						</div>
+					</details>
+
+					<!-- Mental Capacity -->
+					<details class="section-card">
+						<summary>
+							<span>Mental Capacity and Consent</span><small>MCA</small>
+						</summary>
+						<div class="section-body">
+							<label class="field-label">Capacity status</label>
+							<input type="hidden" id="capacityStatus" value="Has capacity" />
+							<div
+								class="radio-chip-group"
+								data-radio-group="capacityStatus"
+								style="margin-top: 4px"></div>
+							<div
+								id="capacityChecks"
+								class="square-grid"
+								style="margin-top: 8px"></div>
+							<div id="lacksCapReasons" class="hidden" style="margin-top: 8px">
+								<label class="field-label"
+									>Unable to (select all that apply)</label
+								>
+								<div class="square-grid" id="lacksCapGrid"></div>
+								<label
+									class="field-label"
+									for="lacksCausation"
+									style="margin-top: 8px"
+									>Reason for incapacity</label
+								>
+								<input
+									id="lacksCausation"
+									placeholder="e.g. GCS reduced, acute intoxication, dementia" />
+							</div>
+							<textarea
+								id="bestInterests"
+								class="hidden"
+								rows="3"
+								placeholder="Best interests decision / rationale"></textarea>
 						</div>
 					</details>
 				</section>
@@ -4709,20 +4214,7 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 									<div
 										class="radio-chip-group"
 										data-radio-group="pVaType"
-										style="margin-top: 4px">
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="IV Cannula">
-											IV Cannula
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="IO Access">
-											IO Access
-										</button>
-									</div>
+										style="margin-top: 4px"></div>
 								</div>
 								<div id="pVaGaugeWrap" class="hidden">
 									<label class="field-label">Gauge</label>
@@ -4730,50 +4222,7 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 									<div
 										class="radio-chip-group"
 										data-radio-group="pVaGauge"
-										style="margin-top: 4px">
-										<button
-											type="button"
-											class="radio-chip a-gauge-14"
-											data-value="14G (Orange)">
-											14G
-										</button>
-										<button
-											type="button"
-											class="radio-chip a-gauge-16"
-											data-value="16G (Grey)">
-											16G
-										</button>
-										<button
-											type="button"
-											class="radio-chip a-gauge-18"
-											data-value="18G (Green)">
-											18G
-										</button>
-										<button
-											type="button"
-											class="radio-chip a-gauge-20"
-											data-value="20G (Pink)">
-											20G
-										</button>
-										<button
-											type="button"
-											class="radio-chip a-gauge-22"
-											data-value="22G (Blue)">
-											22G
-										</button>
-										<button
-											type="button"
-											class="radio-chip a-gauge-24"
-											data-value="24G (Yellow)">
-											24G
-										</button>
-										<!-- <button
-											type="button"
-											class="radio-chip a-gauge-26"
-											data-value="26G (Purple)">
-											26G
-										</button> -->
-									</div>
+										style="margin-top: 4px"></div>
 								</div>
 							</div>
 							<label class="field-label" style="margin-top: 8px">Site</label>
@@ -4782,86 +4231,15 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 								id="pVaIvSites"
 								class="radio-chip-group wrap-grid hidden"
 								data-radio-group="pVaSite"
-								style="margin-top: 4px">
-								<button type="button" class="radio-chip" data-value="L ACF">
-									L ACF
-								</button>
-								<button type="button" class="radio-chip" data-value="R ACF">
-									R ACF
-								</button>
-								<button type="button" class="radio-chip" data-value="L hand">
-									L Hand
-								</button>
-								<button type="button" class="radio-chip" data-value="R hand">
-									R Hand
-								</button>
-								<button type="button" class="radio-chip" data-value="L forearm">
-									L Forearm
-								</button>
-								<button type="button" class="radio-chip" data-value="R forearm">
-									R Forearm
-								</button>
-								<button type="button" class="radio-chip" data-value="L foot">
-									L Foot
-								</button>
-								<button type="button" class="radio-chip" data-value="R foot">
-									R Foot
-								</button>
-								<button
-									type="button"
-									class="radio-chip"
-									data-value="L scalp vein">
-									L Scalp
-								</button>
-								<button
-									type="button"
-									class="radio-chip"
-									data-value="R scalp vein">
-									R Scalp
-								</button>
-							</div>
+								style="margin-top: 4px"></div>
 							<div
 								id="pVaIoSites"
 								class="radio-chip-group wrap-grid hidden"
 								data-radio-group="pVaSite"
-								style="margin-top: 4px">
-								<button
-									type="button"
-									class="radio-chip"
-									data-value="L proximal tibia">
-									L Prox tibia
-								</button>
-								<button
-									type="button"
-									class="radio-chip"
-									data-value="R proximal tibia">
-									R Prox tibia
-								</button>
-								<button
-									type="button"
-									class="radio-chip"
-									data-value="L distal femur">
-									L Distal femur
-								</button>
-								<button
-									type="button"
-									class="radio-chip"
-									data-value="R distal femur">
-									R Distal femur
-								</button>
-								<button
-									type="button"
-									class="radio-chip"
-									data-value="L proximal humerus">
-									L Prox humerus
-								</button>
-								<button
-									type="button"
-									class="radio-chip"
-									data-value="R proximal humerus">
-									R Prox humerus
-								</button>
-							</div>
+								style="margin-top: 4px"></div>
+							<!-- Time -->
+							<label class="field-label" style="margin-top: 8px">Time</label>
+							<input type="time" id="pVaTime" />
 							<div class="grid-2" style="margin-top: 8px">
 								<div>
 									<label class="field-label">Outcome</label>
@@ -4869,26 +4247,7 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 									<div
 										class="radio-chip-group"
 										data-radio-group="pVaOutcome"
-										style="margin-top: 4px">
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Successful">
-											Successful
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Failed attempt">
-											Failed
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="In-situ (pre-existing)">
-											Pre-existing
-										</button>
-									</div>
+										style="margin-top: 4px"></div>
 								</div>
 								<div>
 									<label class="field-label" for="pVaFluids"
@@ -5001,49 +4360,12 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 								<div
 									class="radio-chip-group"
 									data-radio-group="pDrugRoute"
-									style="margin-top: 4px">
-									<button type="button" class="radio-chip" data-value="IV">
-										IV
-									</button>
-									<button type="button" class="radio-chip" data-value="IO">
-										IO
-									</button>
-									<button type="button" class="radio-chip" data-value="IM">
-										IM
-									</button>
-									<button
-										type="button"
-										class="radio-chip"
-										data-value="IN (intranasal)">
-										IN
-									</button>
-									<button type="button" class="radio-chip" data-value="Buccal">
-										Buccal
-									</button>
-									<button
-										type="button"
-										class="radio-chip"
-										data-value="PR (rectal)">
-										PR
-									</button>
-									<button type="button" class="radio-chip" data-value="Oral">
-										Oral
-									</button>
-									<button
-										type="button"
-										class="radio-chip"
-										data-value="Nebulised">
-										Neb
-									</button>
-									<button type="button" class="radio-chip" data-value="Inhaled">
-										Inhaled
-									</button>
-								</div>
+									style="margin-top: 4px"></div>
 							</div>
 							<div class="grid-2" style="margin-top: 8px">
 								<div>
 									<label class="field-label" for="pDrugTime">Time</label>
-									<input id="pDrugTime" placeholder="e.g. 14:32" />
+									<input type="time" id="pDrugTime" />
 								</div>
 								<div>
 									<label class="field-label" for="pDrugSingleResponse"
@@ -5555,6 +4877,6 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 		</div>
 
 		<div class="toast" id="toast">Copied</div>
-		<script src="app.js?v=1779695878"></script>
+		<script src="app.js?v=1779999001"></script>
 	</body>
 </html>

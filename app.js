@@ -84,6 +84,8 @@ const state = {
 	msePerception: new Set(),
 	mseInsight: new Set(),
 	safeguardingConcerns: new Set(),
+	mcaAbilities: new Set(["Understands", "Retains", "Weighs information", "Communicates decision"]),
+	lacksCapAbilities: new Set(),
 	airwayInterventions: new Set(),
 	woundInterventions: new Set(),
 	manualHandling: new Set(),
@@ -100,7 +102,7 @@ const state = {
 // When one disability chip is set abnormal, linked chips flip too
 const ABC_DISABILITY_LINKS = [["GCS 15", "AOx4"]];
 
-// Conveyance options - What happened en route, information en route
+// Conveyance options
 const CONVEY_TRANSFER = [
 	["Consent to conveyance obtained", "Consent not obtained"],
 	["Continuous monitoring and reassessment", "Monitoring not maintained"],
@@ -115,9 +117,7 @@ const CONVEY_TRANSFER = [
 	["No clinical change", "Clinical change during conveyance"],
 ];
 
-// CLINICAL CONTENT — WORSENING ADVICE
-// Generic 999 triggers shown to all patients, plus presenting-complaint-specific
-// items appended based on the selected PC.
+// Worsening Adivxce
 
 const WORSENING_GENERIC = [
 	"chest pain",
@@ -766,6 +766,264 @@ const OPTIONS = {
 		],
 	},
 
+	vaTypes: ["IV Cannula", "IO Access"],
+
+	gynae: {
+		pregnancyStatus: ["Not pregnant", "Possibly pregnant", "Confirmed pregnant"],
+		symptoms: [
+			{ key: "pvBleed",     label: "PV bleeding" },
+			{ key: "pelvicPain",  label: "Pelvic pain" },
+			{ key: "discharge",   label: "Vaginal discharge" },
+		],
+		bleedSeverity: ["Spotting", "Light", "Moderate", "Heavy"],
+		bleedChar: [
+			{ key: "bright",  label: "Bright red" },
+			{ key: "dark",    label: "Dark / old blood" },
+			{ key: "clots",   label: "Clots passed" },
+		],
+		dischargeColour: [
+			{ key: "clear",  label: "Clear / white" },
+			{ key: "yellow", label: "Yellow" },
+			{ key: "green",  label: "Green" },
+			{ key: "grey",   label: "Grey" },
+			{ key: "brown",  label: "Brown" },
+			{ key: "blood",  label: "Blood-stained" },
+		],
+		dischargeConsistency: [
+			{ key: "watery",   label: "Watery" },
+			{ key: "thick",    label: "Thick" },
+			{ key: "cottage",  label: "Cottage cheese" },
+			{ key: "frothy",   label: "Frothy" },
+		],
+		dischargeOdour: [
+			{ key: "no-odour",  label: "No odour" },
+			{ key: "offensive", label: "Offensive" },
+			{ key: "fishy",     label: "Fishy" },
+		],
+		dischargeAmount: ["Spotting", "Light", "Moderate", "Heavy"],
+	},
+
+	capacityStatus: [
+		["Has capacity", "Has capacity"],
+		["Lacks capacity", "Lacks capacity"],
+		["Not applicable", "N/A"],
+	],
+	mcaAbilities: ["Understands", "Retains", "Weighs information", "Communicates decision"],
+	lacksCapReasons: ["Understand information", "Retain information", "Weigh / use information", "Communicate decision"],
+	drugRoutes: [
+		["IV", "IV"],
+		["IM", "IM"],
+		["IN (intranasal)", "IN"],
+		["IO", "IO"],
+		["Oral", "Oral"],
+		["Sublingual", "SL"],
+		["Buccal", "Buccal"],
+		["PR (rectal)", "PR"],
+		["SC (subcutaneous)", "SC"],
+		["Nebulised", "Neb"],
+		["Inhaled", "Inhaled"],
+	],
+	vaOutcomes: [
+		["Successful — patent and flushed", "Successful"],
+		["Failed attempt", "Failed"],
+		["In-situ (pre-existing)", "Pre-existing"],
+	],
+
+	gauges: [
+		{ value: "14G (Orange)", label: "14G", cls: "a-gauge-14" },
+		{ value: "16G (Grey)", label: "16G", cls: "a-gauge-16" },
+		{ value: "18G (Green)", label: "18G", cls: "a-gauge-18" },
+		{ value: "20G (Pink)", label: "20G", cls: "a-gauge-20" },
+		{ value: "22G (Blue)", label: "22G", cls: "a-gauge-22" },
+		{ value: "24G (Yellow)", label: "24G", cls: "a-gauge-24" },
+	],
+
+	vaSites: {
+		iv: [
+			["L ACF", "L ACF"],
+			["R ACF", "R ACF"],
+			["L hand", "L Hand"],
+			["R hand", "R Hand"],
+			["L forearm", "L Forearm"],
+			["R forearm", "R Forearm"],
+			["L cephalic", "L Cephalic"],
+			["R cephalic", "R Cephalic"],
+			["L basilic", "L Basilic"],
+			["R basilic", "R Basilic"],
+			["L EJ", "L EJ"],
+			["R EJ", "R EJ"],
+			["L foot", "L Foot"],
+			["R foot", "R Foot"],
+		],
+		io: [
+			["L prox tibia", "L Prox tibia"],
+			["R prox tibia", "R Prox tibia"],
+			["L prox humerus", "L Prox humerus"],
+			["R prox humerus", "R Prox humerus"],
+			["Sternal", "Sternal"],
+		],
+		ivPaeds: [
+			["L ACF", "L ACF"],
+			["R ACF", "R ACF"],
+			["L hand", "L Hand"],
+			["R hand", "R Hand"],
+			["L forearm", "L Forearm"],
+			["R forearm", "R Forearm"],
+			["L foot", "L Foot"],
+			["R foot", "R Foot"],
+			["L scalp vein", "L Scalp"],
+			["R scalp vein", "R Scalp"],
+		],
+		ioPaeds: [
+			["L proximal tibia", "L Prox tibia"],
+			["R proximal tibia", "R Prox tibia"],
+			["L distal femur", "L Distal femur"],
+			["R distal femur", "R Distal femur"],
+			["L proximal humerus", "L Prox humerus"],
+			["R proximal humerus", "R Prox humerus"],
+		],
+	},
+
+	injuryNv: [
+		{ key: "pulse", normal: "Pulse present", abnormal: "Pulse absent" },
+		{
+			key: "capRefill",
+			normal: "Cap refill < 2s",
+			abnormal: "Cap refill > 2s",
+		},
+		{
+			key: "sensation",
+			normal: "Sensation intact",
+			abnormal: "Sensation reduced / altered",
+		},
+		{
+			key: "movement",
+			normal: "Movement full",
+			abnormal: "Movement limited / absent",
+		},
+		{ key: "warmth", normal: "Warmth normal", abnormal: "Limb cold / cool" },
+	],
+
+	injuryRegions: [
+		{ group: "Head and neck", items: ["Head", "Face, Scalp", "Neck"] },
+		{
+			group: "Trunk",
+			items: [
+				"Left chest",
+				"Right chest",
+				"Sternum",
+				"Abdomen",
+				"Pelvis / groin",
+				"Upper back",
+				"Lower back",
+			],
+		},
+		{
+			group: "Upper limb (left)",
+			items: [
+				"Left shoulder",
+				"Left upper arm",
+				"Left elbow",
+				"Left forearm",
+				"Left wrist",
+				"Left hand",
+			],
+		},
+		{
+			group: "Upper limb (right)",
+			items: [
+				"Right shoulder",
+				"Right upper arm",
+				"Right elbow",
+				"Right forearm",
+				"Right wrist",
+				"Right hand",
+			],
+		},
+		{
+			group: "Lower limb (left)",
+			items: [
+				"Left hip",
+				"Left thigh",
+				"Left knee",
+				"Left lower leg",
+				"Left ankle",
+				"Left foot",
+			],
+		},
+		{
+			group: "Lower limb (right)",
+			items: [
+				"Right hip",
+				"Right thigh",
+				"Right knee",
+				"Right lower leg",
+				"Right ankle",
+				"Right foot",
+			],
+		},
+	],
+
+	// Drugs
+	drugs: [
+		{
+			group: "Black Bag",
+			items: [
+				"Paracetamol 500mg",
+				"Paracetamol 250mg/ml",
+				"Paracetamol 120mg Sachet",
+				"Ibuprofen 100mg/5ml",
+				"Ibuprogen 200mg",
+				"Oral Morphine 10mg/5ml",
+			],
+		},
+		{
+			group: "Blue Bag",
+			items: [
+				"Salbutamol 5mg",
+				"Salbutamol 2.5mg",
+				"Chlorphenamine 10mg/ml",
+				"Atropine 600mcg",
+				"Hydrocortisone 100mg",
+				"Ipratropium Bromide 250mcg",
+				"Adrenaline 1mg/ml",
+				"Furosemide 20mg/2ml",
+				"Tranexamic Acid 500mg/5ml",
+				"Aspirin 300mg",
+				"GTN 400mcg",
+				"Dexamethasone 2mg",
+				"Prednisolone 5mg",
+			],
+		},
+		{
+			group: "Yellow Bag",
+			items: [
+				"Glucagon 1mg",
+				"Glucose 40% Gel",
+				"Benzylpenicillin 600mg",
+				"Ondansetron 4mg/2ml",
+				"Diazapam 5mg Rectal",
+				"Naloxone 400mcg",
+			],
+		},
+		{
+			group: "Red Bag",
+			items: [
+				"Adrenaline 1:10,000",
+				"Amiodarone 300mg/10ml",
+				"Naloxone 400mcg",
+			],
+		},
+		{
+			group: "Controlled",
+			items: ["Morphine Sulfate 10mg/ml", "Diazapam 10mg/2ml"],
+		},
+		{
+			group: "Gasses",
+			items: ["Oxygen", "Entonox"],
+		},
+	],
+
 	// Presenting Complaint
 	presentingComplaint: [
 		{
@@ -893,7 +1151,7 @@ const OPTIONS = {
 		},
 	],
 
-	// ── On Arrival ──────────────────────────────────────────────────────────
+	//  On Arrival
 	onArrival: {
 		found: [
 			{
@@ -1045,6 +1303,32 @@ function populateChipGroup(radioGroup, items) {
 	});
 }
 
+function populateSiteChips(containerId, groupId, items) {
+	const container = $(`#${containerId}`);
+	if (!container) return;
+	items.forEach(([value, label]) => {
+		const btn = document.createElement("button");
+		btn.type = "button";
+		btn.className = "radio-chip";
+		btn.dataset.value = value;
+		btn.textContent = label;
+		container.appendChild(btn);
+	});
+}
+
+function populateGaugeChips(groupId) {
+	const group = $(`[data-radio-group='${groupId}']`);
+	if (!group) return;
+	OPTIONS.gauges.forEach(({ value, label, cls }) => {
+		const btn = document.createElement("button");
+		btn.type = "button";
+		btn.className = `radio-chip ${cls}`;
+		btn.dataset.value = value;
+		btn.textContent = label;
+		group.appendChild(btn);
+	});
+}
+
 // Domain populate functions
 
 function populatePcSelect() {
@@ -1118,6 +1402,10 @@ function populateHeadInjuryChips() {
 	populateChipGroup("headGcsV", OPTIONS.headInjury.gcs.verbal);
 	populateChipGroup("headGcsM", OPTIONS.headInjury.gcs.motor);
 	populateChipGroup("headAnticoag", OPTIONS.headInjury.anticoagulated);
+}
+
+function populateDrugSelect() {
+	populateGroupedSelect("drugName", OPTIONS.drugs);
 }
 
 // Primary Survey - ABCs
@@ -1494,8 +1782,21 @@ function buildPainScoreGrids() {
 function init() {
 	populatePcSelect();
 	populateCallerSelect();
+	populateDrugSelect();
 	populateOaFoundSelect();
 	populateMobilityChips();
+	populateChipGroup("drugRoute", OPTIONS.drugRoutes);
+	populateChipGroup("pDrugRoute", OPTIONS.drugRoutes);
+	populateChipGroup("vaType", OPTIONS.vaTypes);
+	populateChipGroup("pVaType", OPTIONS.vaTypes);
+	populateChipGroup("vaOutcome", OPTIONS.vaOutcomes);
+	populateChipGroup("pVaOutcome", OPTIONS.vaOutcomes);
+	populateGaugeChips("vaGauge");
+	populateGaugeChips("pVaGauge");
+	populateSiteChips("vaIvSites", "vaSite", OPTIONS.vaSites.iv);
+	populateSiteChips("vaIoSites", "vaSite", OPTIONS.vaSites.io);
+	populateSiteChips("pVaIvSites", "pVaSite", OPTIONS.vaSites.ivPaeds);
+	populateSiteChips("pVaIoSites", "pVaSite", OPTIONS.vaSites.ioPaeds);
 	populateOnsetTimeSelect();
 	populateOnsetTypeChips();
 	populateTimingChips();
@@ -1519,6 +1820,8 @@ function init() {
 	buildMhSection();
 	buildStrokeCard();
 	buildConveyTransferChips();
+	buildCapacitySection();
+	buildGynaeSection();
 	buildSafeguardingSection();
 	bindEvents();
 	updateMapTags();
@@ -1730,9 +2033,7 @@ function updateGcsTally(prefix) {
 	}
 }
 
-// CLINICAL CONTENT — SPECIALIST SECTION CONSTANTS
-// Option lists for auscultation, ECG interpretation, injury assessment,
-// treatment grids, seizure, mental health, MSE, and safeguarding.
+// ROS Findings
 
 const AUSC_REGIONS = ["R upper", "R lower", "L upper", "L lower"];
 const AUSC_FINDINGS = [
@@ -2108,6 +2409,35 @@ function buildInjurySection() {
 	const typeGrid = $("#injuryTypeGrid");
 	const intGrid = $("#injuryInterventionGrid");
 	if (!typeGrid || !intGrid) return;
+	// Populate neurovascular status chips (ROS-style: default normal, tap for abnormal)
+	const nvGrid = $("#injuryNvGrid");
+	if (nvGrid) {
+		OPTIONS.injuryNv.forEach(({ key, normal, abnormal }) => {
+			pendingInjuryNv[key] = "normal";
+			const btn = document.createElement("button");
+			btn.type = "button";
+			btn.className = "square-btn ros-chip selected";
+			btn.textContent = normal;
+			btn.dataset.injuryNv = key;
+			btn.dataset.normal = normal;
+			btn.dataset.abnormal = abnormal;
+			nvGrid.append(btn);
+		});
+	}
+	// Populate body region select
+	const regionSelect = $("#injuryRegion");
+	if (regionSelect) {
+		OPTIONS.injuryRegions.forEach(({ group, items }) => {
+			const og = document.createElement("optgroup");
+			og.label = group;
+			items.forEach((item) => {
+				const opt = document.createElement("option");
+				opt.textContent = item;
+				og.append(opt);
+			});
+			regionSelect.append(og);
+		});
+	}
 	INJURY_TYPES.forEach((type) => {
 		const btn = document.createElement("button");
 		btn.type = "button";
@@ -2140,18 +2470,38 @@ function addInjuryEntry() {
 	const interventions = [...pendingInjuryInterventions].map((i) =>
 		i === "Other" && intOther ? intOther : i,
 	);
+	// Collect abnormal NV findings; if all normal, record as "NV intact"
+	const nvAbnormal = OPTIONS.injuryNv
+		.filter(({ key }) => pendingInjuryNv[key] === "abnormal")
+		.map(({ abnormal }) => abnormal);
+	const nvNotes = val("injuryNvNotes");
+	const nv = nvAbnormal.length
+		? [...nvAbnormal, ...(nvNotes ? [nvNotes] : [])]
+		: nvNotes
+			? [nvNotes]
+			: [];
 
 	state.injuryEntries.push({
 		region,
 		types,
-		nv: val("injuryNv"),
+		nv,
 		interventions,
 	});
 
 	pendingInjuryTypes.clear();
 	pendingInjuryInterventions.clear();
+	OPTIONS.injuryNv.forEach(({ key, normal }) => {
+		pendingInjuryNv[key] = "normal";
+		const btn = $(`[data-injury-nv="${key}"]`);
+		if (btn) {
+			btn.classList.add("selected");
+			btn.classList.remove("abnormal");
+			btn.textContent = normal;
+		}
+	});
 	$("#injuryRegion").value = "";
-	$("#injuryNv").value = "";
+	const nvNotesEl = $("#injuryNvNotes");
+	if (nvNotesEl) nvNotesEl.value = "";
 	const typeOtherEl = $("#injuryTypeOther");
 	const intOtherEl = $("#injuryIntOther");
 	if (typeOtherEl) typeOtherEl.value = "";
@@ -2176,9 +2526,12 @@ function renderInjuryEntries() {
 	state.injuryEntries.forEach((entry, index) => {
 		const row = document.createElement("div");
 		row.className = "ausc-entry";
+		const nvText = entry.nv?.length
+			? `NV: ${entry.nv.join(", ")}`
+			: "NV intact";
 		const detail = [
 			entry.types.join(", "),
-			entry.nv,
+			nvText,
 			entry.interventions.length
 				? `Interventions: ${entry.interventions.join(", ")}`
 				: "",
@@ -2194,9 +2547,12 @@ function buildInjuryText() {
 	if (!state.injuryEntries.length) return "No injuries documented.";
 	return state.injuryEntries
 		.map((entry) => {
+			const nvText = entry.nv?.length
+				? `NV: ${entry.nv.join(", ")}`
+				: "NV intact";
 			const parts = [
 				entry.types.join(", "),
-				entry.nv,
+				nvText,
 				entry.interventions.length
 					? `Interventions: ${entry.interventions.join(", ")}`
 					: "",
@@ -2312,7 +2668,8 @@ const { render: renderIvEntries, remove: removeIvEntry } = makeEntryManager(
 		if (e.site) parts.push(`— ${e.site}`);
 		if (e.outcome) parts.push(`(${e.outcome})`);
 		if (e.fluids) parts.push(`• ${e.fluids}`);
-		return parts.join(" ");
+		const desc = parts.join(" ");
+		return e.time ? `[${e.time}] ${desc}` : desc;
 	},
 	"remove-va",
 );
@@ -2389,13 +2746,20 @@ function addIvEntry() {
 		site,
 		outcome: val("vaOutcome"),
 		fluids: fluidParts.join("; "),
+		time: val("vaTime"),
 	});
-	["vaType", "vaGauge", "vaSite", "vaOutcome", "vaFlushed", "vaFluids"].forEach(
-		(id) => {
-			const el = $(`#${id}`);
-			if (el) el.value = "";
-		},
-	);
+	[
+		"vaType",
+		"vaGauge",
+		"vaSite",
+		"vaOutcome",
+		"vaFlushed",
+		"vaFluids",
+		"vaTime",
+	].forEach((id) => {
+		const el = $(`#${id}`);
+		if (el) el.value = "";
+	});
 	$("#vaGaugeWrap")?.classList.add("hidden");
 	$("#vaIvSites")?.classList.add("hidden");
 	$("#vaIoSites")?.classList.add("hidden");
@@ -2467,7 +2831,8 @@ function buildTreatmentText() {
 			if (e.site) parts.push(`— ${e.site}`);
 			if (e.outcome) parts.push(`— ${e.outcome}`);
 			if (e.fluids) parts.push(`(${e.fluids})`);
-			lines.push(`  ${parts.join(" ")}`);
+			const desc = parts.join(" ");
+			lines.push(`  ${e.time ? `[${e.time}] ` : ""}${desc}`);
 		});
 	}
 	if (state.drugEntries.length) {
@@ -3151,6 +3516,115 @@ function buildRos() {
 	});
 }
 
+function buildCapacitySection() {
+	// Capacity status chips (with "Has capacity" pre-selected)
+	populateChipGroup("capacityStatus", OPTIONS.capacityStatus);
+	const defaultChip = $("[data-radio-group='capacityStatus'] [data-value='Has capacity']");
+	if (defaultChip) defaultChip.classList.add("selected");
+
+	// MCA four-criteria chips — all selected by default (has capacity)
+	const checksWrap = $("#capacityChecks");
+	if (checksWrap) {
+		OPTIONS.mcaAbilities.forEach((label) => {
+			const btn = document.createElement("button");
+			btn.type = "button";
+			btn.className = "square-btn selected";
+			btn.textContent = label;
+			btn.dataset.mcaAbility = label;
+			checksWrap.append(btn);
+		});
+	}
+
+	// "Lacks capacity" reason chips — none selected by default
+	const lacksWrap = $("#lacksCapGrid");
+	if (lacksWrap) {
+		OPTIONS.lacksCapReasons.forEach((label) => {
+			const btn = document.createElement("button");
+			btn.type = "button";
+			btn.className = "square-btn";
+			btn.textContent = label;
+			btn.dataset.lacksCapReason = label;
+			lacksWrap.append(btn);
+		});
+	}
+}
+
+function buildGynaeSection() {
+	// Pregnancy status chips
+	populateChipGroup("pregnancyStatus", OPTIONS.gynae.pregnancyStatus);
+
+	// Gynaecological symptom multi-select buttons
+	const symptomGrid = $("#gynaeSymptomGrid");
+	if (symptomGrid) {
+		OPTIONS.gynae.symptoms.forEach(({ key, label }) => {
+			const btn = document.createElement("button");
+			btn.type = "button";
+			btn.className = "square-btn gynae-symptom";
+			btn.dataset.gynaeSymptom = key;
+			btn.textContent = label;
+			symptomGrid.append(btn);
+		});
+	}
+
+	// PV bleed severity chips
+	populateChipGroup("pvBleedSeverity", OPTIONS.gynae.bleedSeverity);
+
+	// PV bleed character multi-select
+	const charGrid = $("#pvBleedCharGrid");
+	if (charGrid) {
+		OPTIONS.gynae.bleedChar.forEach(({ key, label }) => {
+			const btn = document.createElement("button");
+			btn.type = "button";
+			btn.className = "square-btn gynae-char";
+			btn.dataset.gynaeChar = key;
+			btn.textContent = label;
+			charGrid.append(btn);
+		});
+	}
+
+	// Discharge colour multi-select
+	const colourGrid = $("#dischargeColourGrid");
+	if (colourGrid) {
+		OPTIONS.gynae.dischargeColour.forEach(({ key, label }) => {
+			const btn = document.createElement("button");
+			btn.type = "button";
+			btn.className = "square-btn gynae-disc";
+			btn.dataset.gynaeDisc = key;
+			btn.textContent = label;
+			colourGrid.append(btn);
+		});
+	}
+
+	// Discharge consistency multi-select
+	const consistencyGrid = $("#dischargeConsistencyGrid");
+	if (consistencyGrid) {
+		OPTIONS.gynae.dischargeConsistency.forEach(({ key, label }) => {
+			const btn = document.createElement("button");
+			btn.type = "button";
+			btn.className = "square-btn gynae-disc";
+			btn.dataset.gynaeDisc = key;
+			btn.textContent = label;
+			consistencyGrid.append(btn);
+		});
+	}
+
+	// Discharge odour multi-select
+	const odourGrid = $("#dischargeOdourGrid");
+	if (odourGrid) {
+		OPTIONS.gynae.dischargeOdour.forEach(({ key, label }) => {
+			const btn = document.createElement("button");
+			btn.type = "button";
+			btn.className = "square-btn gynae-disc";
+			btn.dataset.gynaeDisc = key;
+			btn.textContent = label;
+			odourGrid.append(btn);
+		});
+	}
+
+	// Discharge amount chips
+	populateChipGroup("dischargeAmount", OPTIONS.gynae.dischargeAmount);
+}
+
 function buildSafeguardingSection() {
 	buildButtonGrid(
 		"safeguardingGrid",
@@ -3461,12 +3935,12 @@ function buildEdHandoverText() {
 		return parts.join(" ");
 	});
 	const ivLines = state.ivEntries.map((e) => {
-		const parts = ["IV access"];
+		const parts = [e.type || "IV access"];
 		if (e.gauge) parts.push(e.gauge);
 		if (e.site) parts.push(`— ${e.site}`);
-		if (e.attempts)
-			parts.push(`(${e.attempts} attempt${e.attempts !== "1" ? "s" : ""})`);
-		return parts.join(" ");
+		if (e.outcome) parts.push(`(${e.outcome})`);
+		const desc = parts.join(" ");
+		return e.time ? `[${e.time}] ${desc}` : desc;
 	});
 	const txLines = [
 		...(state.airwayInterventions.size
@@ -3629,6 +4103,22 @@ function bindEvents() {
 			state.urinaryColourFeatures.add(feature);
 		else state.urinaryColourFeatures.delete(feature);
 	});
+	document.addEventListener("click", (e) => {
+		const btn = e.target.closest("[data-mca-ability]");
+		if (!btn) return;
+		btn.classList.toggle("selected");
+		const v = btn.dataset.mcaAbility;
+		if (btn.classList.contains("selected")) state.mcaAbilities.add(v);
+		else state.mcaAbilities.delete(v);
+	});
+	document.addEventListener("click", (e) => {
+		const btn = e.target.closest("[data-lacks-cap-reason]");
+		if (!btn) return;
+		btn.classList.toggle("selected");
+		const v = btn.dataset.lacksCapReason;
+		if (btn.classList.contains("selected")) state.lacksCapAbilities.add(v);
+		else state.lacksCapAbilities.delete(v);
+	});
 	$("#resetButton").addEventListener("click", () => {
 		if (confirm("Clear all data and start a new PRF?")) location.reload();
 	});
@@ -3737,7 +4227,9 @@ function bindEvents() {
 		const gridId = btn.dataset.grid;
 		const inputId = btn.dataset.input;
 		const already = btn.classList.contains("selected");
-		$$("#" + gridId + " .pain-score-btn").forEach((b) => b.classList.remove("selected"));
+		$$("#" + gridId + " .pain-score-btn").forEach((b) =>
+			b.classList.remove("selected"),
+		);
 		if (!already) {
 			btn.classList.add("selected");
 			$("#" + inputId).value = `${btn.dataset.score}/10`;
@@ -3940,6 +4432,18 @@ function bindEvents() {
 				);
 			return;
 		}
+		const injuryNvBtn = event.target.closest("[data-injury-nv]");
+		if (injuryNvBtn) {
+			const key = injuryNvBtn.dataset.injuryNv;
+			const isAbnormal = pendingInjuryNv[key] === "abnormal";
+			pendingInjuryNv[key] = isAbnormal ? "normal" : "abnormal";
+			injuryNvBtn.classList.toggle("selected", isAbnormal);
+			injuryNvBtn.classList.toggle("abnormal", !isAbnormal);
+			injuryNvBtn.textContent = isAbnormal
+				? injuryNvBtn.dataset.normal
+				: injuryNvBtn.dataset.abnormal;
+			return;
+		}
 		const removeInjury = event.target.closest("[data-remove-injury]");
 		if (removeInjury)
 			return removeInjuryEntry(Number(removeInjury.dataset.removeInjury));
@@ -4060,6 +4564,7 @@ function bindEvents() {
 // Tracks injury types and interventions being built before they are committed.
 let pendingInjuryTypes = new Set();
 let pendingInjuryInterventions = new Set();
+let pendingInjuryNv = {}; // key → "normal" | "abnormal"
 
 function switchTab(tabName) {
 	$$(".tab").forEach((tab) =>
@@ -5832,16 +6337,7 @@ function buildCapacityText() {
 	const status = val("capacityStatus");
 	if (status === "Not applicable") return "Not applicable.";
 	if (status === "Lacks capacity") {
-		const unable = ["Understand", "Retain", "Weigh", "Communicate"]
-			.filter((_, i) =>
-				isChecked(
-					["lacksUnderstand", "lacksRetain", "lacksWeigh", "lacksCommunicate"][
-						i
-					],
-				),
-			)
-			.map((s) => s.toLowerCase() + " information")
-			.join(", ");
+		const unable = [...state.lacksCapAbilities].join(", ");
 		const reason = val("lacksCausation");
 		const bi = val("bestInterests");
 		return [
@@ -5853,13 +6349,11 @@ function buildCapacityText() {
 			.filter(Boolean)
 			.join(" ");
 	}
-	const tests = [
-		isChecked("mcaUnderstand") && "understand",
-		isChecked("mcaRetain") && "retain",
-		isChecked("mcaWeigh") && "weigh/use",
-		isChecked("mcaCommunicate") && "communicate",
-	].filter(Boolean);
-	return `Patient assessed as having capacity for the relevant decision. MCA elements documented: able to ${tests.join(", ")} information.`;
+	const abilities = [...state.mcaAbilities];
+	const ableText = abilities.length
+		? `MCA elements documented: able to ${abilities.join(", ")}.`
+		: "";
+	return `Patient assessed as having capacity for the relevant decision.${ableText ? " " + ableText : ""}`;
 }
 
 function handleConveyanceDisplay() {
@@ -7465,6 +7959,7 @@ function addPaedsIvEntry() {
 		outcome: val("pVaOutcome"),
 		flushed: val("pVaFlushed"),
 		fluids: val("pVaFluids"),
+		time: val("pVaTime"),
 	});
 	// Clear inputs
 	[
@@ -7474,6 +7969,7 @@ function addPaedsIvEntry() {
 		"pVaOutcome",
 		"pVaFlushed",
 		"pVaFluids",
+		"pVaTime",
 	].forEach((id) => {
 		const el = $(`#${id}`);
 		if (el) el.value = "";
@@ -7498,9 +7994,10 @@ function renderPaedsIvEntries() {
 		if (e.outcome) parts.push(`(${e.outcome})`);
 		if (e.flushed) parts.push(`• ${e.flushed}`);
 		if (e.fluids) parts.push(`+ ${e.fluids}`);
+		const desc = parts.join(" ");
 		const row = document.createElement("div");
 		row.className = "ausc-entry";
-		row.innerHTML = `<span>${parts.join(" ")}</span><button type="button" data-remove-pva="${i}" aria-label="Remove">×</button>`;
+		row.innerHTML = `<span>${e.time ? `[${e.time}] ` : ""}${desc}</span><button type="button" data-remove-pva="${i}" aria-label="Remove">×</button>`;
 		root.append(row);
 	});
 }
