@@ -1817,6 +1817,9 @@ function showDashboard() {
 	$("#dashboard")?.classList.remove("hidden");
 	$("#prf-tool")?.classList.add("hidden");
 	$("#resp-tool")?.classList.add("hidden");
+	$("#obs-recorder")?.classList.add("hidden");
+	$("#drug-finder-tool")?.classList.add("hidden");
+	$("#news2-tool")?.classList.add("hidden");
 	$("#backButton")?.classList.add("hidden");
 	$("#resetButton")?.classList.add("hidden");
 }
@@ -1838,6 +1841,18 @@ function showFeature(feature) {
 		$("#resp-tool")?.classList.remove("hidden");
 		$("#resetButton")?.classList.add("hidden");
 		resetRespCounter();
+	} else if (feature === "obs-recorder") {
+		$("#obs-recorder")?.classList.remove("hidden");
+		$("#resetButton")?.classList.add("hidden");
+	} else if (feature === "drug-finder") {
+		$("#drug-finder-tool")?.classList.remove("hidden");
+		$("#resetButton")?.classList.add("hidden");
+		// Focus the search input
+		setTimeout(() => $("#bnfSearchInput")?.focus(), 50);
+	} else if (feature === "news2") {
+		$("#news2-tool")?.classList.remove("hidden");
+		$("#resetButton")?.classList.add("hidden");
+		initNews2();
 	}
 }
 
@@ -1849,6 +1864,181 @@ function initDashboard() {
 		});
 	});
 	$("#backButton")?.addEventListener("click", showDashboard);
+
+	// BNF search form — opens NICE BNF in a new tab
+	$("#bnfSearchForm")?.addEventListener("submit", (e) => {
+		e.preventDefault();
+		const query = ($("#bnfSearchInput")?.value || "").trim();
+		if (!query) return;
+		const url = `https://bnf.nice.org.uk/search/?q=${encodeURIComponent(query)}`;
+		window.open(url, "_blank", "noopener,noreferrer");
+	});
+}
+
+// ── NEWS2 Tool ─────────────────────────────────────────────────────────────
+
+let _news2Inited = false;
+let _news2Scale = 1;
+
+const NEWS2_GUIDANCE = {
+	LOW: [
+		"Score 0 — Routine monitoring",
+		"Score 1–4 — Minimum 12-hourly monitoring",
+	],
+	MEDIUM_3: "Score 3 in single parameter — Minimum 1-hourly monitoring",
+	MEDIUM_56: "Score 5–6 — Urgent review by clinician with core competencies",
+	HIGH: "Score ≥7 — Emergency assessment by clinical team",
+};
+
+const NEWS2_PARAM_LABELS = {
+	rr: "Resp Rate",
+	spo2: "SpO₂",
+	o2: "O₂",
+	sbp: "Systolic BP",
+	hr: "Pulse",
+	cons: "Consciousness",
+	temp: "Temp",
+};
+
+function initNews2() {
+	if (_news2Inited) return;
+	_news2Inited = true;
+	_news2Scale = 1;
+
+	// Scale toggle
+	$$("[data-n2-scale]", $("#news2-tool")).forEach((btn) => {
+		btn.addEventListener("click", () => {
+			_news2Scale = parseInt(btn.dataset.n2Scale);
+			$$("[data-n2-scale]", $("#news2-tool")).forEach((b) =>
+				b.classList.toggle("selected", b === btn),
+			);
+			// Switch visible SpO2 chip group
+			$("#n2Spo2S1Group")?.classList.toggle("hidden", _news2Scale !== 1);
+			$("#n2Spo2S2Group")?.classList.toggle("hidden", _news2Scale !== 2);
+			// Clear any SpO2 selection when scale changes
+			$$("[data-n2-param='spo2']", $("#news2-tool")).forEach((c) =>
+				c.classList.remove("selected"),
+			);
+			updateNews2Score();
+		});
+	});
+
+	// Chip selection — tap to select, tap again to deselect
+	$$(".n2-chip", $("#news2-tool")).forEach((chip) => {
+		chip.addEventListener("click", () => {
+			const param = chip.dataset.n2Param;
+			const wasSelected = chip.classList.contains("selected");
+			$$(`[data-n2-param="${param}"]`, $("#news2-tool")).forEach((c) =>
+				c.classList.remove("selected"),
+			);
+			if (!wasSelected) chip.classList.add("selected");
+			updateNews2Score();
+		});
+	});
+
+	// Reset button
+	$("#n2ResetBtn")?.addEventListener("click", resetNews2);
+
+	updateNews2Score();
+}
+
+function resetNews2() {
+	$$(".n2-chip", $("#news2-tool")).forEach((c) => c.classList.remove("selected"));
+	_news2Scale = 1;
+	$$("[data-n2-scale]", $("#news2-tool")).forEach((b) =>
+		b.classList.toggle("selected", b.dataset.n2Scale === "1"),
+	);
+	$("#n2Spo2S1Group")?.classList.remove("hidden");
+	$("#n2Spo2S2Group")?.classList.add("hidden");
+	updateNews2Score();
+}
+
+function updateNews2Score() {
+	const tool = $("#news2-tool");
+	if (!tool) return;
+
+	const getParamScore = (param) => {
+		const sel = tool.querySelector(`[data-n2-param="${param}"].selected`);
+		return sel ? parseInt(sel.dataset.n2Score) : null;
+	};
+
+	const params = ["rr", "spo2", "o2", "sbp", "hr", "cons", "temp"];
+	const scores = params.map((p) => ({ param: p, score: getParamScore(p) }));
+	const selected = scores.filter((s) => s.score !== null);
+
+	const totalEl = $("#n2Total");
+	const riskBannerEl = $("#n2Risk");
+	const resultCircle = $("#n2ResultCircle");
+	const resultRisk = $("#n2ResultRisk");
+	const resultGuidance = $("#n2ResultGuidance");
+	const breakdown = $("#n2Breakdown");
+	const breakdownGrid = $("#n2BreakdownGrid");
+
+	if (selected.length === 0) {
+		if (totalEl) totalEl.textContent = "–";
+		if (riskBannerEl) {
+			riskBannerEl.textContent = "Select parameters below";
+			riskBannerEl.className = "n2-banner-risk";
+		}
+		if (resultCircle) {
+			resultCircle.textContent = "–";
+			resultCircle.className = "n2-result-circle";
+		}
+		if (resultRisk) resultRisk.textContent = "";
+		if (resultGuidance) resultGuidance.textContent = "Complete the parameters above to calculate your NEWS2 score";
+		if (breakdown) breakdown.style.display = "none";
+		return;
+	}
+
+	const total = selected.reduce((sum, s) => sum + s.score, 0);
+	const hasThree = selected.some((s) => s.score === 3);
+	const risk = total >= 7 ? "HIGH" : total >= 5 || hasThree ? "MEDIUM" : "LOW";
+
+	let guidance;
+	if (risk === "HIGH") {
+		guidance = NEWS2_GUIDANCE.HIGH;
+	} else if (risk === "MEDIUM") {
+		guidance = hasThree && total < 5 ? NEWS2_GUIDANCE.MEDIUM_3 : NEWS2_GUIDANCE.MEDIUM_56;
+	} else {
+		guidance = total === 0 ? NEWS2_GUIDANCE.LOW[0] : NEWS2_GUIDANCE.LOW[1];
+	}
+
+	const riskLower = risk.toLowerCase();
+
+	if (totalEl) totalEl.textContent = total;
+	if (riskBannerEl) {
+		riskBannerEl.textContent = `${risk} — ${guidance}`;
+		riskBannerEl.className = `n2-banner-risk news2-${riskLower}`;
+	}
+	if (resultCircle) {
+		resultCircle.textContent = total;
+		resultCircle.className = `n2-result-circle n2-circle--${riskLower}`;
+	}
+	if (resultRisk) {
+		resultRisk.textContent = risk;
+		resultRisk.className = `n2-result-risk-label n2-risk--${riskLower}`;
+	}
+	if (resultGuidance) resultGuidance.textContent = guidance;
+
+	// Breakdown
+	if (breakdown && breakdownGrid) {
+		breakdownGrid.innerHTML = selected
+			.map(
+				(s) =>
+					`<div class="n2-bd-item">
+						<span class="n2-bd-param">${NEWS2_PARAM_LABELS[s.param] || s.param}</span>
+						<span class="n2-bd-score n2-pts--${s.score}">+${s.score}</span>
+					</div>`,
+			)
+			.join("");
+		if (selected.length > 1) {
+			breakdownGrid.innerHTML += `<div class="n2-bd-item n2-bd-total">
+				<span class="n2-bd-param">Total</span>
+				<span class="n2-bd-score n2-pts--${Math.min(total, 3)}">= ${total}</span>
+			</div>`;
+		}
+		breakdown.style.display = "";
+	}
 }
 
 function buildPainScoreGrids() {
@@ -1913,7 +2103,9 @@ function init() {
 	buildStrokeCard();
 	// Handover format chips — default to SBAR
 	populateChipGroup("handoverFormat", OPTIONS.handoverFormat);
-	$("[data-radio-group='handoverFormat'] [data-value='SBAR']")?.classList.add("selected");
+	$("[data-radio-group='handoverFormat'] [data-value='SBAR']")?.classList.add(
+		"selected",
+	);
 
 	buildConveyTransferChips();
 
@@ -3869,7 +4061,7 @@ function renderConveyanceSuggestion() {
 
 function buildSafeguardingText() {
 	const concerns = [...state.safeguardingConcerns].map((c) =>
-		c === "Other" ? (val("safeguardingOtherText") || "Other") : c,
+		c === "Other" ? val("safeguardingOtherText") || "Other" : c,
 	);
 	if (!concerns.length && !val("safeguardingDetail")) return "";
 	const lines = [];
@@ -5385,14 +5577,21 @@ function buildLahSbarText() {
 	const decision = val("conveyanceDecision");
 
 	// ── S — SITUATION ──────────────────────────────────────
-	const ptStr = [age ? `${age}yr` : null, sex && sex !== "Not specified" ? sex : null].filter(Boolean).join(" ");
+	const ptStr = [
+		age ? `${age}yr` : null,
+		sex && sex !== "Not specified" ? sex : null,
+	]
+		.filter(Boolean)
+		.join(" ");
 	const hpcCat = val("hpcCategory");
 	const hpcCatWord = hpcCat === "C4" ? "generated" : "dispatched";
 	const callStr = [
 		val("hpcCaller"),
 		hpcCat ? `${hpcCat} ${hpcCatWord}` : null,
 		val("hpcEvents"),
-	].filter(Boolean).join(", ");
+	]
+		.filter(Boolean)
+		.join(", ");
 	const situationParts = [
 		ptStr ? `${ptStr}` : null,
 		`PC: ${pc}`,
@@ -5430,7 +5629,8 @@ function buildLahSbarText() {
 
 	// ECG — only if performed
 	const ecgText = buildEcgText();
-	if (ecgText && !ecgText.includes("Not performed")) assessParts.push(`ECG: ${ecgText.split("\n").join("; ")}`);
+	if (ecgText && !ecgText.includes("Not performed"))
+		assessParts.push(`ECG: ${ecgText.split("\n").join("; ")}`);
 
 	// Auscultation — only if documented
 	const aus = val("respAus");
@@ -5439,14 +5639,22 @@ function buildLahSbarText() {
 	// SOCRATES — compact inline
 	if (!isChecked("noPain")) {
 		const site = getSelectedParts(state.siteParts);
-		const sev = val("severity") ? `${val("severity")}/10${val("severityWorst") ? ` (worst ${val("severityWorst")}/10)` : ""}` : null;
+		const sev = val("severity")
+			? `${val("severity")}/10${val("severityWorst") ? ` (worst ${val("severityWorst")}/10)` : ""}`
+			: null;
 		const painParts = [
 			site || null,
-			val("onsetType") ? `${val("onsetType")}${onsetTime() ? ` ${onsetTime()}` : ""}` : null,
-			state.character.size ? listFactors(state.character, "characterOther", null) : null,
+			val("onsetType")
+				? `${val("onsetType")}${onsetTime() ? ` ${onsetTime()}` : ""}`
+				: null,
+			state.character.size
+				? listFactors(state.character, "characterOther", null)
+				: null,
 			sev,
 			val("radiation") || null,
-		].filter(Boolean).join(", ");
+		]
+			.filter(Boolean)
+			.join(", ");
 		if (painParts) assessParts.push(`Pain: ${painParts}`);
 	}
 
@@ -5467,31 +5675,62 @@ function buildLahSbarText() {
 	}
 
 	// ROS — only include sections with genuine abnormal findings
-	const rosAbbr = { resp: "Resp", cvs: "CVS", neuro: "Neuro", gi: "GI", urine: "Urine", integ: "Skin", msk: "MSK", psych: "Psych" };
+	const rosAbbr = {
+		resp: "Resp",
+		cvs: "CVS",
+		neuro: "Neuro",
+		gi: "GI",
+		urine: "Urine",
+		integ: "Skin",
+		msk: "MSK",
+		psych: "Psych",
+	};
 	const isNormalFinding = (f) => {
 		const l = f.toLowerCase();
 		// Starts with a negative/normal prefix
-		if (l.match(/^(no |not |nil |none|normal|regular |well |warm |peripheral|crt |gcs 15|pearl|alert|fast neg|speech clear|full range|able to|gait |mood |oriented|insight|bowel habits unchanged|abdomen soft|non-tender|normotensive|ecg: not|auscultation: not)/)) return true;
+		if (
+			l.match(
+				/^(no |not |nil |none|normal|regular |well |warm |peripheral|crt |gcs 15|pearl|alert|fast neg|speech clear|full range|able to|gait |mood |oriented|insight|bowel habits unchanged|abdomen soft|non-tender|normotensive|ecg: not|auscultation: not)/,
+			)
+		)
+			return true;
 		// Contains a word indicating normality anywhere
-		if (l.match(/\bnormal\b|\bunchanged\b|\bappropriate|\bcoherent\b|\bnegative\b|\bintact\b|\bpresent\b|\bpalpable\b|\bnormotensive\b|\bengaged\b/)) return true;
+		if (
+			l.match(
+				/\bnormal\b|\bunchanged\b|\bappropriate|\bcoherent\b|\bnegative\b|\bintact\b|\bpresent\b|\bpalpable\b|\bnormotensive\b|\bengaged\b/,
+			)
+		)
+			return true;
 		return false;
 	};
-	["resp", "cvs", "neuro", "gi", "urine", "integ", "msk", "psych"].forEach((s) => {
-		const block = rosBlock(s);
-		if (!block || !block.trim()) return;
-		const findings = block.split(/\.\s+/).map((f) => f.replace(/\.$/, "").trim()).filter(Boolean);
-		const abnormals = findings.filter((f) => !isNormalFinding(f));
-		if (abnormals.length) assessParts.push(`${rosAbbr[s]}: ${abnormals.join(". ")}`);
-	});
+	["resp", "cvs", "neuro", "gi", "urine", "integ", "msk", "psych"].forEach(
+		(s) => {
+			const block = rosBlock(s);
+			if (!block || !block.trim()) return;
+			const findings = block
+				.split(/\.\s+/)
+				.map((f) => f.replace(/\.$/, "").trim())
+				.filter(Boolean);
+			const abnormals = findings.filter((f) => !isNormalFinding(f));
+			if (abnormals.length)
+				assessParts.push(`${rosAbbr[s]}: ${abnormals.join(". ")}`);
+		},
+	);
 
 	// OE
 	if (val("oeText")) assessParts.push(`OE: ${val("oeText")}`);
 
 	// Treatment
-	const hasTx = state.airwayInterventions.size || state.ivEntries.length ||
-		state.drugEntries.length || state.woundInterventions.size ||
-		state.manualHandling.size || val("otherInterventionsFree") || val("treatmentNotes");
-	if (hasTx) assessParts.push(`Tx: ${buildTreatmentText().split("\n").join("; ")}`);
+	const hasTx =
+		state.airwayInterventions.size ||
+		state.ivEntries.length ||
+		state.drugEntries.length ||
+		state.woundInterventions.size ||
+		state.manualHandling.size ||
+		val("otherInterventionsFree") ||
+		val("treatmentNotes");
+	if (hasTx)
+		assessParts.push(`Tx: ${buildTreatmentText().split("\n").join("; ")}`);
 
 	// Capacity — brief summary only
 	const capacityStatus = val("capacityStatus");
@@ -5507,10 +5746,18 @@ function buildLahSbarText() {
 		isChecked("alternativesDiscussed") && "alternatives discussed",
 		isChecked("understandsRisk") && "understands risks",
 		isChecked("canRecontact") && "999/111 recontact advised",
-	].filter(Boolean).join(", ");
-	const legalChips = $$(".legal-chip.selected").map((c) => ({
-		ehcp: "EHCP", lpa: "LPA", "advance-decision": "Adv. decision", "family-carer": "Family/carer",
-	}[c.dataset.legal] || c.dataset.legal));
+	]
+		.filter(Boolean)
+		.join(", ");
+	const legalChips = $$(".legal-chip.selected").map(
+		(c) =>
+			({
+				ehcp: "EHCP",
+				lpa: "LPA",
+				"advance-decision": "Adv. decision",
+				"family-carer": "Family/carer",
+			})[c.dataset.legal] || c.dataset.legal,
+	);
 	const legalDetail = val("legalConsiderationsDetail");
 	const worsening = buildWorseningText();
 	const sg = buildSafeguardingText();
@@ -5519,8 +5766,14 @@ function buildLahSbarText() {
 		referrals !== "none" ? `Referred: ${referrals}` : null,
 		followUp ? `Follow-up: ${followUp}` : null,
 		checks ? `Safety netting: ${checks}` : null,
-		legalChips.length ? `Legal: ${legalChips.join(", ")}${legalDetail ? " — " + legalDetail : ""}` : legalDetail ? `Legal: ${legalDetail}` : null,
-		worsening && !worsening.toLowerCase().includes("not applicable") ? `Return if: ${worsening.split("\n").join("; ")}` : null,
+		legalChips.length
+			? `Legal: ${legalChips.join(", ")}${legalDetail ? " — " + legalDetail : ""}`
+			: legalDetail
+				? `Legal: ${legalDetail}`
+				: null,
+		worsening && !worsening.toLowerCase().includes("not applicable")
+			? `Return if: ${worsening.split("\n").join("; ")}`
+			: null,
 		sg ? `Safeguarding: ${sg.split("\n").join("; ")}` : null,
 		val("conveyanceNotes") || null,
 	].filter(Boolean);
@@ -5948,10 +6201,7 @@ function buildOutputSections() {
 	];
 }
 
-// OBSERVATIONS & NEWS2
-// Supports multiple timed observation sets. Each set auto-calculates a NEWS2
-// score.  GCS within each obs set uses the shared buildGcsCalcHTML() helper
-// with a unique prefix to avoid ID collisions with the primary survey GCS.
+// OBSERVATIONS
 
 // Monotonically increasing counter ensures each obs set gets a unique prefix.
 let obsCounter = 0;
@@ -7726,7 +7976,8 @@ function buildPaedsOutputFromAdultForm() {
 
 	// WETFLAG reference at end
 	const wf = buildPaedsWetflagText();
-	if (wf) result.push({ id: "p-wetflag", title: "WETFLAG REFERENCE", body: wf });
+	if (wf)
+		result.push({ id: "p-wetflag", title: "WETFLAG REFERENCE", body: wf });
 
 	return result;
 }
