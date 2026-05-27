@@ -3055,8 +3055,8 @@ function buildTreatmentSection() {
 		"txValue",
 	);
 
-	$("#addVaButton")?.addEventListener("click", addIvEntry);
-	$("#addDrugButton")?.addEventListener("click", addDrugEntry);
+	$("#addVaButton")?.addEventListener("click", () => addIvEntry());
+	$("#addDrugButton")?.addEventListener("click", () => addDrugEntry());
 	$("#addChangeButton")?.addEventListener("click", addChangeEntry);
 
 	$("#vaOutcome")?.addEventListener("change", () => {
