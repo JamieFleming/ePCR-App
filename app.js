@@ -84,7 +84,12 @@ const state = {
 	msePerception: new Set(),
 	mseInsight: new Set(),
 	safeguardingConcerns: new Set(),
-	mcaAbilities: new Set(["Understands", "Retains", "Weighs information", "Communicates decision"]),
+	mcaAbilities: new Set([
+		"Understands",
+		"Retains",
+		"Weighs information",
+		"Communicates decision",
+	]),
 	lacksCapAbilities: new Set(),
 	airwayInterventions: new Set(),
 	woundInterventions: new Set(),
@@ -112,7 +117,7 @@ const CONVEY_TRANSFER = [
 		"Communication concerns during transfer",
 	],
 	["Handover completed with receiving team", "Handover incomplete / delayed"],
-	["Pre-alert not given", "Pre-alert given"],
+	["Pre-alert not required", "Pre-alert given"],
 	["No escalation en route", "Care escalated en route"],
 	["No clinical change", "Clinical change during conveyance"],
 ];
@@ -768,37 +773,111 @@ const OPTIONS = {
 
 	vaTypes: ["IV Cannula", "IO Access"],
 
+	handoverFormat: ["SBAR", "ATMIST", "ASHICE", "Leave at Home"],
+
+	conveyanceDecision: [
+		["Conveyed", "Conveyed"],
+		["Treated and left", "Treated & left"],
+		["Declined conveyance", "Declined"],
+	],
+	pConveyDecision: [
+		["Conveyed", "Conveyed"],
+		["Treated and left", "Treated and left"],
+		["Declined by parent / carer", "Declined by parent / carer"],
+	],
+
+	riskChecks: [
+		{ id: "riskExplained", label: "Risks explained" },
+		{ id: "alternativesDiscussed", label: "Alternatives discussed" },
+		{ id: "understandsRisk", label: "Patient understands risks" },
+		{ id: "canRecontact", label: "999/111 recontact advised" },
+	],
+
+	legalChips: [
+		{ key: "ehcp", label: "EHCP consulted" },
+		{ key: "lpa", label: "LPA consulted" },
+		{ key: "advance-decision", label: "Advance decision reviewed" },
+		{ key: "family-carer", label: "Family / carer agreement" },
+	],
+
+	conveyHospitals: [
+		{
+			group: "North East England",
+			items: [
+				"NSECH — Northumbria Specialist Emergency Care Hospital",
+				"RVI — Royal Victoria Infirmary",
+				"QE — Queen Elizabeth Hospital (Gateshead)",
+				"James Cook University Hospital",
+				"North Tees Hospital",
+				"University Hospital of North Durham",
+				"Darlington Memorial Hospital",
+				"Sunderland Royal Hospital",
+				"South Tyneside District Hospital",
+				"Wansbeck General Hospital",
+				"Bishop Auckland Hospital",
+				"Friarage Hospital (Northallerton)",
+				"Berwick Infirmary",
+				"Freeman Hospital",
+			],
+		},
+	],
+
+	conveyDepartment: [
+		["ED — Emergency Department", "ED"],
+		["MAU — Medical Assessment Unit", "MAU"],
+		["SAU — Surgical Assessment Unit", "SAU"],
+		["SDEC — Same Day Emergency Care", "SDEC"],
+		["Ward", "Ward"],
+		["CCU — Coronary Care Unit", "CCU"],
+		["PPCI — Primary PCI (cath lab)", "PPCI / Cath lab"],
+		["Other department", "Other"],
+	],
+
+	mobilisationToVehicle: [
+		"Walked independently",
+		"Walked with assistance",
+		"Carry chair",
+		"Wheelchair",
+		"Stretcher / scoop",
+		"Carried by crew",
+		"Other",
+	],
+
 	gynae: {
-		pregnancyStatus: ["Not pregnant", "Possibly pregnant", "Confirmed pregnant"],
+		pregnancyStatus: [
+			"Not pregnant",
+			"Possibly pregnant",
+			"Confirmed pregnant",
+		],
 		symptoms: [
-			{ key: "pvBleed",     label: "PV bleeding" },
-			{ key: "pelvicPain",  label: "Pelvic pain" },
-			{ key: "discharge",   label: "Vaginal discharge" },
+			{ key: "pvBleed", label: "PV bleeding" },
+			{ key: "pelvicPain", label: "Pelvic pain" },
+			{ key: "discharge", label: "Vaginal discharge" },
 		],
 		bleedSeverity: ["Spotting", "Light", "Moderate", "Heavy"],
 		bleedChar: [
-			{ key: "bright",  label: "Bright red" },
-			{ key: "dark",    label: "Dark / old blood" },
-			{ key: "clots",   label: "Clots passed" },
+			{ key: "bright", label: "Bright red" },
+			{ key: "dark", label: "Dark / old blood" },
+			{ key: "clots", label: "Clots passed" },
 		],
 		dischargeColour: [
-			{ key: "clear",  label: "Clear / white" },
+			{ key: "clear", label: "Clear / white" },
 			{ key: "yellow", label: "Yellow" },
-			{ key: "green",  label: "Green" },
-			{ key: "grey",   label: "Grey" },
-			{ key: "brown",  label: "Brown" },
-			{ key: "blood",  label: "Blood-stained" },
+			{ key: "green", label: "Green" },
+			{ key: "grey", label: "Grey" },
+			{ key: "brown", label: "Brown" },
+			{ key: "blood", label: "Blood-stained" },
 		],
 		dischargeConsistency: [
-			{ key: "watery",   label: "Watery" },
-			{ key: "thick",    label: "Thick" },
-			{ key: "cottage",  label: "Cottage cheese" },
-			{ key: "frothy",   label: "Frothy" },
+			{ key: "watery", label: "Watery" },
+			{ key: "thick", label: "Thick" },
+			{ key: "cottage", label: "Cottage cheese" },
+			{ key: "frothy", label: "Frothy" },
 		],
 		dischargeOdour: [
-			{ key: "no-odour",  label: "No odour" },
+			{ key: "no-odour", label: "No odour" },
 			{ key: "offensive", label: "Offensive" },
-			{ key: "fishy",     label: "Fishy" },
+			{ key: "fishy", label: "Fishy" },
 		],
 		dischargeAmount: ["Spotting", "Light", "Moderate", "Heavy"],
 	},
@@ -808,8 +887,18 @@ const OPTIONS = {
 		["Lacks capacity", "Lacks capacity"],
 		["Not applicable", "N/A"],
 	],
-	mcaAbilities: ["Understands", "Retains", "Weighs information", "Communicates decision"],
-	lacksCapReasons: ["Understand information", "Retain information", "Weigh / use information", "Communicate decision"],
+	mcaAbilities: [
+		"Understands",
+		"Retains",
+		"Weighs information",
+		"Communicates decision",
+	],
+	lacksCapReasons: [
+		"Understand information",
+		"Retain information",
+		"Weigh / use information",
+		"Communicate decision",
+	],
 	drugRoutes: [
 		["IV", "IV"],
 		["IM", "IM"],
@@ -1715,9 +1804,18 @@ document.addEventListener("DOMContentLoaded", () => {
 // Dashboard / feature switching — shows and hides the relevant tool panel.
 
 function showDashboard() {
+	// Reset paeds mode
+	if (paedsMode) {
+		paedsMode = false;
+		_paedsInited = false;
+		$("#paedsBanner")?.classList.add("hidden");
+		$("#paedsInfoCard")?.classList.add("hidden");
+		$("#paedsAssessmentCard")?.classList.add("hidden");
+		$("#abcdeContainer")?.classList.remove("hidden");
+	}
+
 	$("#dashboard")?.classList.remove("hidden");
 	$("#prf-tool")?.classList.add("hidden");
-	$("#paeds-tool")?.classList.add("hidden");
 	$("#resp-tool")?.classList.add("hidden");
 	$("#backButton")?.classList.add("hidden");
 	$("#resetButton")?.classList.add("hidden");
@@ -1731,17 +1829,11 @@ function showFeature(feature) {
 		$("#resetButton")?.classList.remove("hidden");
 		switchTab("history");
 	} else if (feature === "paeds-prf") {
-		$("#paeds-tool")?.classList.remove("hidden");
+		paedsMode = true;
+		$("#prf-tool")?.classList.remove("hidden");
 		$("#resetButton")?.classList.remove("hidden");
 		initPaeds();
-		// Reset paeds tabs to history
-		$$("[data-paeds-tab]").forEach((t) =>
-			t.classList.toggle("active", t.dataset.paedsTab === "history"),
-		);
-		$$(".panel[id^='paeds-panel-']").forEach((p) =>
-			p.classList.remove("active"),
-		);
-		$("#paeds-panel-history")?.classList.add("active");
+		switchTab("history");
 	} else if (feature === "resp-timer") {
 		$("#resp-tool")?.classList.remove("hidden");
 		$("#resetButton")?.classList.add("hidden");
@@ -1819,7 +1911,67 @@ function init() {
 	buildSeizureSection();
 	buildMhSection();
 	buildStrokeCard();
+	// Handover format chips — default to SBAR
+	populateChipGroup("handoverFormat", OPTIONS.handoverFormat);
+	$("[data-radio-group='handoverFormat'] [data-value='SBAR']")?.classList.add("selected");
+
 	buildConveyTransferChips();
+
+	// Conveyance decision chips — default to "Conveyed" for both adult and paeds
+	populateChipGroup("conveyanceDecision", OPTIONS.conveyanceDecision);
+	$(
+		"[data-radio-group='conveyanceDecision'] [data-value='Conveyed']",
+	)?.classList.add("selected");
+	populateChipGroup("pConveyDecision", OPTIONS.pConveyDecision);
+	$(
+		"[data-radio-group='pConveyDecision'] [data-value='Conveyed']",
+	)?.classList.add("selected");
+
+	// Risk checkboxes (non-conveyance section) — all pre-checked
+	const riskGrid = $("#riskChecksGrid");
+	if (riskGrid) {
+		OPTIONS.riskChecks.forEach(({ id, label }) => {
+			const lbl = document.createElement("label");
+			lbl.className = "check-row";
+			const cb = document.createElement("input");
+			cb.type = "checkbox";
+			cb.id = id;
+			cb.checked = true;
+			lbl.appendChild(cb);
+			lbl.append(` ${label}`);
+			riskGrid.appendChild(lbl);
+		});
+	}
+
+	// Legal / capacity consideration chips
+	const legalGrid = $("#legalConsiderationsChips");
+	if (legalGrid) {
+		OPTIONS.legalChips.forEach(({ key, label }) => {
+			const btn = document.createElement("button");
+			btn.type = "button";
+			btn.className = "square-btn legal-chip";
+			btn.dataset.legal = key;
+			btn.textContent = label;
+			legalGrid.appendChild(btn);
+		});
+	}
+
+	// Receiving hospital grouped select + trailing "Other hospital" flat option
+	populateGroupedSelect("conveyHospital", OPTIONS.conveyHospitals);
+	(() => {
+		const sel = $("#conveyHospital");
+		if (!sel) return;
+		const opt = document.createElement("option");
+		opt.textContent = "Other hospital";
+		sel.appendChild(opt);
+	})();
+
+	// Receiving department chips
+	populateChipGroup("conveyDepartment", OPTIONS.conveyDepartment);
+
+	// Mobilisation to vehicle chips
+	populateChipGroup("mobilisationToVehicle", OPTIONS.mobilisationToVehicle);
+
 	buildCapacitySection();
 	buildGynaeSection();
 	buildSafeguardingSection();
@@ -2265,6 +2417,7 @@ const SAFEGUARDING_CONCERNS = [
 	"Non-accidental injury concern",
 	"Substance misuse concern",
 	"Mental health vulnerability",
+	"Other",
 ];
 
 const MSE_APPEARANCE = [
@@ -3519,7 +3672,9 @@ function buildRos() {
 function buildCapacitySection() {
 	// Capacity status chips (with "Has capacity" pre-selected)
 	populateChipGroup("capacityStatus", OPTIONS.capacityStatus);
-	const defaultChip = $("[data-radio-group='capacityStatus'] [data-value='Has capacity']");
+	const defaultChip = $(
+		"[data-radio-group='capacityStatus'] [data-value='Has capacity']",
+	);
 	if (defaultChip) defaultChip.classList.add("selected");
 
 	// MCA four-criteria chips — all selected by default (has capacity)
@@ -3713,7 +3868,9 @@ function renderConveyanceSuggestion() {
 // Gynaecology summary output and the pre-hospital ED handover document.
 
 function buildSafeguardingText() {
-	const concerns = [...state.safeguardingConcerns];
+	const concerns = [...state.safeguardingConcerns].map((c) =>
+		c === "Other" ? (val("safeguardingOtherText") || "Other") : c,
+	);
 	if (!concerns.length && !val("safeguardingDetail")) return "";
 	const lines = [];
 	if (concerns.length)
@@ -3721,8 +3878,10 @@ function buildSafeguardingText() {
 	if (val("safeguardingDetail"))
 		lines.push(`Detail: ${val("safeguardingDetail")}`);
 	if (isChecked("safeguardingReferral")) {
+		const uly = val("ulyssesNumber");
+		const ulyStr = uly ? ` Ulysses ref: ULY${uly}.` : "";
 		const ref = val("safeguardingReferralDetail");
-		lines.push(`Safeguarding referral made.${ref ? ` ${ref}` : ""}`);
+		lines.push(`Safeguarding referral made.${ulyStr}${ref ? ` ${ref}` : ""}`);
 	}
 	return lines.join("\n");
 }
@@ -4049,6 +4208,12 @@ function buildEdHandoverText() {
 // sit on document to handle dynamically-created elements (obs sets, entry rows).
 
 function bindEvents() {
+	$("#safeguardingReferral")?.addEventListener("change", () => {
+		$("#safeguardingReferralFields")?.classList.toggle(
+			"hidden",
+			!$("#safeguardingReferral").checked,
+		);
+	});
 	$$(".tab").forEach((tab) =>
 		tab.addEventListener("click", () => switchTab(tab.dataset.tab)),
 	);
@@ -4219,6 +4384,12 @@ function bindEvents() {
 	});
 	$("#conveyHospital")?.addEventListener("change", handleConveyanceDisplay);
 	$("#conveyDepartment")?.addEventListener("change", handleConveyanceDisplay);
+	$("#mobilisationToVehicle")?.addEventListener("change", () => {
+		$("#mobilisationOtherWrap")?.classList.toggle(
+			"hidden",
+			val("mobilisationToVehicle") !== "Other",
+		);
+	});
 	$("#clearPainButton")?.addEventListener("click", clearPainAssessment);
 	$("#clearBodyMapButton")?.addEventListener("click", clearBodyMap);
 	document.addEventListener("click", (e) => {
@@ -4509,6 +4680,10 @@ function bindEvents() {
 				state.safeguardingConcerns.size > 0 &&
 				!state.safeguardingConcerns.has("None identified on scene");
 			$("#safeguardingDetailWrap")?.classList.toggle("hidden", !hasConcerns);
+			$("#safeguardingOtherWrap")?.classList.toggle(
+				"hidden",
+				!state.safeguardingConcerns.has("Other"),
+			);
 			renderConveyanceSuggestion();
 			return;
 		}
@@ -5204,246 +5379,158 @@ function buildHandoverText() {
 // --- Leave at Home SBAR document ---
 
 function buildLahSbarText() {
-	const div = "─".repeat(44);
 	const age = val("ptAge");
 	const sex = val("ptSex");
 	const pc = getPc();
 	const decision = val("conveyanceDecision");
 
-	// ── SITUATION ──────────────────────────────────────────
-	const ptLine = [age ? `${age} years` : null, sex || null]
-		.filter(Boolean)
-		.join(", ");
-	const hpcCaller = val("hpcCaller");
+	// ── S — SITUATION ──────────────────────────────────────
+	const ptStr = [age ? `${age}yr` : null, sex && sex !== "Not specified" ? sex : null].filter(Boolean).join(" ");
 	const hpcCat = val("hpcCategory");
 	const hpcCatWord = hpcCat === "C4" ? "generated" : "dispatched";
-	const callLine =
-		hpcCaller && hpcCat
-			? `${hpcCaller}, ${hpcCat} ${hpcCatWord}`
-			: hpcCaller || (hpcCat ? `${hpcCat} ${hpcCatWord}` : "");
-	const situation = [
-		ptLine ? `Patient: ${ptLine}` : "Patient: Demographics not recorded",
-		`Presenting complaint: ${pc}`,
-		callLine
-			? `Call summary: ${[val("hpcEvents"), callLine].filter(Boolean).join(". ")}`
-			: val("hpcEvents") || null,
-	]
-		.filter(Boolean)
-		.join("\n");
+	const callStr = [
+		val("hpcCaller"),
+		hpcCat ? `${hpcCat} ${hpcCatWord}` : null,
+		val("hpcEvents"),
+	].filter(Boolean).join(", ");
+	const situationParts = [
+		ptStr ? `${ptStr}` : null,
+		`PC: ${pc}`,
+		callStr || null,
+	].filter(Boolean);
 
-	// ── BACKGROUND ─────────────────────────────────────────
-	const pmh = isChecked("noPmh")
-		? "No significant PMH"
-		: val("pmh") || "Not documented";
-	const meds = isChecked("noMeds")
-		? "No regular medications"
-		: val("medications") || "Not documented";
-	const allergies = isChecked("nkda")
-		? "NKDA"
-		: val("allergies") || "Not documented";
+	// ── B — BACKGROUND ─────────────────────────────────────
+	const pmh = isChecked("noPmh") ? "Nil significant" : val("pmh") || "—";
+	const meds = isChecked("noMeds") ? "None" : val("medications") || "—";
+	const allergies = isChecked("nkda") ? "NKDA" : val("allergies") || "—";
 	const loi = [val("loiWhat"), val("loiTime")].filter(Boolean).join(" at ");
-	const background = [
+	const backgroundParts = [
 		`PMH: ${pmh}`,
-		`Medications: ${meds}`,
+		`Meds: ${meds}`,
 		`Allergies: ${allergies}`,
-		loi ? `Last oral intake: ${loi}` : null,
-		val("prevDetails") ? `Previous episodes: ${val("prevDetails")}` : null,
-	]
-		.filter(Boolean)
-		.join("\n");
+		loi ? `LOI: ${loi}` : null,
+		val("prevDetails") ? `Prev: ${val("prevDetails")}` : null,
+	].filter(Boolean);
 
-	// ── ASSESSMENT ─────────────────────────────────────────
+	// ── A — ASSESSMENT ─────────────────────────────────────
 	const assessParts = [];
 
-	// Observations
+	// Obs — inline
 	const obsText = buildObsText();
-	if (obsText) {
-		assessParts.push(
-			`Observations:\n${obsText
-				.split("\n")
-				.map((l) => `  ${l}`)
-				.join("\n")}`,
-		);
-	}
+	if (obsText) assessParts.push(`Obs: ${obsText.split("\n").join(", ")}`);
 
-	// Primary survey (ABCDE) — abnormals only
+	// ABCDE
+	syncAuscultationOutput();
 	const abcSummary = abcHandoverSummary();
 	if (abcSummary && abcSummary !== "No ABCDE concerns identified.") {
-		assessParts.push(
-			`Primary survey:\n  ${abcSummary.split("\n").join("\n  ")}`,
-		);
+		assessParts.push(`ABCDE: ${abcSummary.split("\n").join("; ")}`);
 	} else {
-		assessParts.push("Primary survey: No ABCDE concerns identified.");
+		assessParts.push("ABCDE: No concerns");
 	}
 
-	// ECG
-	syncAuscultationOutput();
+	// ECG — only if performed
 	const ecgText = buildEcgText();
-	if (ecgText) assessParts.push(ecgText);
+	if (ecgText && !ecgText.includes("Not performed")) assessParts.push(`ECG: ${ecgText.split("\n").join("; ")}`);
 
-	// Auscultation
+	// Auscultation — only if documented
 	const aus = val("respAus");
-	if (aus) assessParts.push(`Auscultation: ${aus}`);
+	if (aus && aus !== "Not auscultated") assessParts.push(`Ausc: ${aus}`);
 
-	// PC-specific assessment tools
-	const pcSel = val("pcSelect");
-	if (pcSel === "Fall") {
-		assessParts.push(
-			`Falls assessment (SPLATT):\n  ${buildFallsText().split("\n").join("\n  ")}`,
-		);
-	} else if (pcSel === "Head injury") {
-		assessParts.push(
-			`Head injury assessment (NICE CG176):\n  ${buildHeadInjuryText().split("\n").join("\n  ")}`,
-		);
-	} else if (pcSel === "Seizure") {
-		assessParts.push(
-			`Seizure assessment:\n  ${buildSeizureText().split("\n").join("\n  ")}`,
-		);
-	} else if (MH_PCS.includes(pcSel)) {
-		assessParts.push(
-			`Mental health assessment (MSE):\n  ${buildMhAssessmentText().split("\n").join("\n  ")}`,
-		);
-	}
-
-	// SOCRATES pain assessment (if not hidden)
+	// SOCRATES — compact inline
 	if (!isChecked("noPain")) {
 		const site = getSelectedParts(state.siteParts);
-		const socratesParts = [
-			site ? `Site: ${site}` : null,
-			val("onsetType")
-				? `Onset: ${val("onsetType")}${onsetTime() ? `, ${onsetTime()}${onsetClockSuffix()}` : ""}${val("onsetDuration") ? `, duration ${val("onsetDuration")}` : ""}`
-				: null,
-			state.character.size || val("characterOther")
-				? `Character: ${listFactors(state.character, "characterOther", "Not characterised")}`
-				: null,
-
-			state.associated.size || val("associatedOther")
-				? `Associated: ${listFactors(state.associated, "associatedOther", "None reported")}`
-				: null,
-			val("severity")
-				? `Severity: ${val("severity")}/10 now${val("severityWorst") ? `, ${val("severityWorst")}/10 at worst` : ""}`
-				: null,
-			`Exacerbating: ${listFactors(state.exacerbating, "exacerbatingOther", "None identified")}`,
-			`Relieving: ${listFactors(state.relieving, "relievingOther", "None identified")}`,
-		]
-			.filter(Boolean)
-			.join("; ");
-		if (socratesParts)
-			assessParts.push(`Pain assessment (SOCRATES): ${socratesParts}`);
+		const sev = val("severity") ? `${val("severity")}/10${val("severityWorst") ? ` (worst ${val("severityWorst")}/10)` : ""}` : null;
+		const painParts = [
+			site || null,
+			val("onsetType") ? `${val("onsetType")}${onsetTime() ? ` ${onsetTime()}` : ""}` : null,
+			state.character.size ? listFactors(state.character, "characterOther", null) : null,
+			sev,
+			val("radiation") || null,
+		].filter(Boolean).join(", ");
+		if (painParts) assessParts.push(`Pain: ${painParts}`);
 	}
 
-	// ROS abnormals (only include if user documented something)
-	["resp", "cvs", "neuro", "gi", "urine", "integ", "msk", "psych"].forEach(
-		(section) => {
-			const block = rosBlock(section);
-			if (
-				block &&
-				!block.match(/^(Not auscultated|No cough)/) &&
-				block.trim() !== ""
-			) {
-				const sectionNames = {
-					resp: "Respiratory",
-					cvs: "Cardiovascular",
-					neuro: "Neurological",
-					gi: "Gastrointestinal",
-					urine: "Urinary",
-					integ: "Integumentary",
-					msk: "Musculoskeletal",
-					psych: "Mental health",
-				};
-				assessParts.push(`${sectionNames[section]}: ${block}`);
-			}
-		},
-	);
-
-	// On examination (free text)
-	if (val("oeText")) assessParts.push(`On examination: ${val("oeText")}`);
-
-	// Treatment given
-	const hasTx =
-		state.airwayInterventions.size ||
-		state.ivEntries.length ||
-		state.drugEntries.length ||
-		state.woundInterventions.size ||
-		state.manualHandling.size ||
-		val("otherInterventionsFree") ||
-		val("treatmentNotes");
-	if (hasTx) {
-		assessParts.push(
-			`Treatments/interventions:\n  ${buildTreatmentText().split("\n").join("\n  ")}`,
-		);
+	// PC-specific tools — first line only to keep it brief
+	const pcSel = val("pcSelect");
+	if (pcSel === "Fall") {
+		const ft = buildFallsText();
+		if (ft) assessParts.push(`Falls: ${ft.split("\n")[0]}`);
+	} else if (pcSel === "Head injury") {
+		const ht = buildHeadInjuryText();
+		if (ht) assessParts.push(`Head injury: ${ht.split("\n")[0]}`);
+	} else if (pcSel === "Seizure") {
+		const st = buildSeizureText();
+		if (st) assessParts.push(`Seizure: ${st.split("\n")[0]}`);
+	} else if (MH_PCS.includes(pcSel)) {
+		const mht = buildMhAssessmentText();
+		if (mht) assessParts.push(`MH: ${mht.split("\n")[0]}`);
 	}
 
-	// Mental capacity
-	const capacity = buildCapacityText();
-	if (capacity && capacity !== "Not applicable.") {
-		assessParts.push(`Mental capacity: ${capacity}`);
+	// ROS — only include sections with genuine abnormal findings
+	const rosAbbr = { resp: "Resp", cvs: "CVS", neuro: "Neuro", gi: "GI", urine: "Urine", integ: "Skin", msk: "MSK", psych: "Psych" };
+	const isNormalFinding = (f) => {
+		const l = f.toLowerCase();
+		// Starts with a negative/normal prefix
+		if (l.match(/^(no |not |nil |none|normal|regular |well |warm |peripheral|crt |gcs 15|pearl|alert|fast neg|speech clear|full range|able to|gait |mood |oriented|insight|bowel habits unchanged|abdomen soft|non-tender|normotensive|ecg: not|auscultation: not)/)) return true;
+		// Contains a word indicating normality anywhere
+		if (l.match(/\bnormal\b|\bunchanged\b|\bappropriate|\bcoherent\b|\bnegative\b|\bintact\b|\bpresent\b|\bpalpable\b|\bnormotensive\b|\bengaged\b/)) return true;
+		return false;
+	};
+	["resp", "cvs", "neuro", "gi", "urine", "integ", "msk", "psych"].forEach((s) => {
+		const block = rosBlock(s);
+		if (!block || !block.trim()) return;
+		const findings = block.split(/\.\s+/).map((f) => f.replace(/\.$/, "").trim()).filter(Boolean);
+		const abnormals = findings.filter((f) => !isNormalFinding(f));
+		if (abnormals.length) assessParts.push(`${rosAbbr[s]}: ${abnormals.join(". ")}`);
+	});
+
+	// OE
+	if (val("oeText")) assessParts.push(`OE: ${val("oeText")}`);
+
+	// Treatment
+	const hasTx = state.airwayInterventions.size || state.ivEntries.length ||
+		state.drugEntries.length || state.woundInterventions.size ||
+		state.manualHandling.size || val("otherInterventionsFree") || val("treatmentNotes");
+	if (hasTx) assessParts.push(`Tx: ${buildTreatmentText().split("\n").join("; ")}`);
+
+	// Capacity — brief summary only
+	const capacityStatus = val("capacityStatus");
+	if (capacityStatus && capacityStatus !== "Not applicable") {
+		assessParts.push(`Capacity: ${capacityStatus}`);
 	}
 
-	const assessment = assessParts.join("\n");
-
-	// ── RECOMMENDATION ─────────────────────────────────────
+	// ── R — RECOMMENDATION ─────────────────────────────────
 	const referrals = listSet(state.referrals, "none");
 	const followUp = val("followUp");
 	const checks = [
 		isChecked("riskExplained") && "risks explained",
 		isChecked("alternativesDiscussed") && "alternatives discussed",
-		isChecked("understandsRisk") && "patient understands risks",
-		isChecked("canRecontact") && "advised they can recontact 999/111",
-	]
-		.filter(Boolean)
-		.join("; ");
-	const legalChips = $$(".legal-chip.selected").map((c) => {
-		const map = {
-			ehcp: "EHCP consulted",
-			lpa: "LPA consulted",
-			"advance-decision": "Advance decision reviewed",
-			"family-carer": "Family/carer agreement obtained",
-		};
-		return map[c.dataset.legal] || c.dataset.legal;
-	});
+		isChecked("understandsRisk") && "understands risks",
+		isChecked("canRecontact") && "999/111 recontact advised",
+	].filter(Boolean).join(", ");
+	const legalChips = $$(".legal-chip.selected").map((c) => ({
+		ehcp: "EHCP", lpa: "LPA", "advance-decision": "Adv. decision", "family-carer": "Family/carer",
+	}[c.dataset.legal] || c.dataset.legal));
 	const legalDetail = val("legalConsiderationsDetail");
-	const recommendation = [
-		`Decision: ${decision}`,
-		referrals !== "none" ? `Referred / signposted to: ${referrals}` : null,
-		followUp ? `Follow-up arrangements: ${followUp}` : null,
-		checks ? `Safety netting: ${checks}` : null,
-		legalChips.length
-			? `Legal / capacity: ${legalChips.join(", ")}${legalDetail ? ". " + legalDetail : ""}`
-			: legalDetail
-				? `Legal / capacity notes: ${legalDetail}`
-				: null,
-	]
-		.filter(Boolean)
-		.join("\n");
-
-	// ── ADDITIONAL INFORMATION ─────────────────────────────
-	const addlParts = [];
 	const worsening = buildWorseningText();
-	if (worsening && !worsening.toLowerCase().includes("not applicable")) {
-		addlParts.push(
-			`Worsening advice:\n  ${worsening.split("\n").join("\n  ")}`,
-		);
-	}
 	const sg = buildSafeguardingText();
-	if (sg) addlParts.push(`Safeguarding: ${sg}`);
-	if (val("conveyanceNotes")) addlParts.push(val("conveyanceNotes"));
-	if (val("handoverNotes")) addlParts.push(val("handoverNotes"));
-	if (state.clinicalChanges.length) {
-		addlParts.push(
-			`Clinical changes:\n  ${buildChangesText().split("\n").join("\n  ")}`,
-		);
-	}
+	const recParts = [
+		`Decision: ${decision}`,
+		referrals !== "none" ? `Referred: ${referrals}` : null,
+		followUp ? `Follow-up: ${followUp}` : null,
+		checks ? `Safety netting: ${checks}` : null,
+		legalChips.length ? `Legal: ${legalChips.join(", ")}${legalDetail ? " — " + legalDetail : ""}` : legalDetail ? `Legal: ${legalDetail}` : null,
+		worsening && !worsening.toLowerCase().includes("not applicable") ? `Return if: ${worsening.split("\n").join("; ")}` : null,
+		sg ? `Safeguarding: ${sg.split("\n").join("; ")}` : null,
+		val("conveyanceNotes") || null,
+	].filter(Boolean);
 
 	return [
-		`SITUATION\n${situation}`,
-		`BACKGROUND\n${background}`,
-		`ASSESSMENT\n${assessment || "No specific findings documented."}`,
-		`RECOMMENDATION\n${recommendation}`,
-		...(addlParts.length
-			? [`ADDITIONAL INFORMATION\n${addlParts.join("\n")}`]
-			: []),
-	].join(`\n\n${div}\n\n`);
+		`S — SITUATION\n${situationParts.join("\n")}`,
+		`B — BACKGROUND\n${backgroundParts.join("\n")}`,
+		`A — ASSESSMENT\n${assessParts.join("\n") || "No specific findings documented."}`,
+		`R — RECOMMENDATION\n${recParts.join("\n")}`,
+	].join("\n\n");
 }
 
 // --- Specialist assessment text builders ---
@@ -6255,7 +6342,9 @@ function renderOutputSections(sections) {
 
 function generateOutput() {
 	syncAuscultationOutput();
-	const sections = buildOutputSections();
+	const sections = paedsMode
+		? buildPaedsOutputFromAdultForm()
+		: buildOutputSections();
 	renderOutputSections(sections);
 	const fullText = sections
 		.map((section) => section.body)
@@ -6280,8 +6369,8 @@ function applyWorseningDefault() {
 function buildPatientScript(declined) {
 	const pc = getPc();
 	const pcData = WORSENING_PC[pc];
-	const genericLines = WORSENING_GENERIC.map((i) => `• ${i}`).join("\n");
-	const specificLines = pcData?.items.map((i) => `• ${i}`).join("\n") || "";
+	const genericLines = WORSENING_GENERIC.map((i) => `- ${i}`).join("\n");
+	const specificLines = pcData?.items.map((i) => `- ${i}`).join("\n") || "";
 	const redFlags = pcData?.redFlags
 		? `\nImportant — call 999 immediately for:\n${pcData.redFlags}`
 		: "";
@@ -6289,12 +6378,12 @@ function buildPatientScript(declined) {
 	const declinedLine = declined
 		? "\nYou have declined conveyance to hospital today. You have the right to refuse treatment and transport, but please do not hesitate to call 999 again if you change your mind or feel worse at any time."
 		: "";
-	return `"Call 999 immediately if you notice:
+	return `Call 999 immediately if you notice:
 ${genericLines}
 
 ${specificLines ? `Specific to your condition today (${pc}), also call 999 for:\n${specificLines}\n` : ""}${redFlags}${extra}${declinedLine}
 
-For anything less urgent, please contact your GP or call 111. If you are ever unsure whether something is an emergency, always call 999 — it is better to call and check."`;
+For anything less urgent, please contact your GP or call 111. If you are ever unsure whether something is an emergency, always call 999 — it is better to call and check.`;
 }
 
 function updateWorseningScript() {
@@ -6439,8 +6528,15 @@ function buildConveyanceText() {
 		]
 			.filter(Boolean)
 			.join(" ");
+		const mobilisation = (() => {
+			const m = val("mobilisationToVehicle");
+			if (!m) return null;
+			const detail = m === "Other" ? val("mobilisationOther") || "Other" : m;
+			return `Mobilisation to vehicle: ${detail}.`;
+		})();
 		const lines = [
 			"Conveyance decision: Patient conveyed to hospital for further assessment and/or treatment.",
+			mobilisation,
 			destination
 				? `Destination: ${destination}.`
 				: "Destination: Not specified.",
@@ -7146,6 +7242,10 @@ const PAEDS_SAFEGUARDING = [
 // Guards against initialising the paeds tool more than once.
 let _paedsInited = false;
 
+// True when the user has launched Paediatric PRF — causes the adult ePRF to
+// show paeds-specific cards and output builders.
+let paedsMode = false;
+
 // Mutable state for the paediatric ePRF (mirrors the adult state object).
 const paedsState = {
 	sgConcerns: new Set(),
@@ -7160,10 +7260,17 @@ function initPaeds() {
 	if (_paedsInited) return;
 	_paedsInited = true;
 
+	// Show paeds-specific cards within the adult ePRF
+	$("#paedsBanner")?.classList.remove("hidden");
+	$("#paedsInfoCard")?.removeAttribute("hidden");
+	$("#paedsInfoCard")?.classList.remove("hidden");
+	$("#paedsAssessmentCard")?.classList.remove("hidden");
+
+	// Hide adult ABCDE (replaced by PAT/ABCDENT)
+	$("#abcdeContainer")?.classList.add("hidden");
+
+	// Build paeds-specific content
 	buildPaedsAbcdent();
-	buildPaedsSafeguardingGrid();
-	buildPaedsTreatmentSection();
-	buildPConveyTransferChips();
 	bindPaedsEvents();
 	updatePaedsAgeRef();
 	updateFlaccTotal();
@@ -7247,43 +7354,46 @@ function detectAgeGroup(ageYears, ageMonths) {
 }
 
 function updatePaedsAgeRef() {
-	const years = parseInt(val("pAgeYears")) || 0;
-	const months = parseInt(val("pAgeMonths")) || 0;
+	const years = parseInt(val("ptAge")) || 0; // adult age field
+	const months = parseInt(val("pAgeMonths")) || 0; // paeds info card (months for infants)
 	const manualGroup = val("pAgeGroup");
 
-	// APLS weight
+	// APLS weight estimate
 	const wt = aplsWeight(years, months);
-	const pill = $("#pAplsEstimate");
-	if (pill) {
-		pill.textContent =
-			years === 0 && months === 0
-				? "Enter age above"
-				: wt !== null
-					? `≈ ${wt} kg (APLS)`
-					: "Use actual weight";
-	}
+	const aplsStr =
+		years === 0 && months === 0
+			? "Enter age in the Patient Details card above"
+			: wt !== null
+				? `APLS estimated weight: ≈ ${wt} kg`
+				: "Child ≥ 13 yrs — use actual weight";
 
 	// Vitals reference
 	const group =
 		manualGroup ||
 		(years === 0 && months === 0 ? "" : detectAgeGroup(years, months));
 	const ref = PAEDS_VITALS_REF[group];
-	const refBox = $("#pVitalsRef");
-	if (!refBox) return;
+
+	// Render into #paedsAgeRefPanel (in #paedsInfoCard)
+	const panel = $("#paedsAgeRefPanel");
+	if (!panel) return;
+
 	if (!ref) {
-		refBox.classList.add("hidden");
+		panel.innerHTML = `<p class="field-hint" style="margin:0">${aplsStr}</p>`;
 		return;
 	}
-	refBox.classList.remove("hidden");
-	refBox.innerHTML = `
-		<strong>${ref.label} — Normal Ranges</strong>
-		<div class="pvr-grid">
-			<div class="pvr-item"><span class="pvr-label">HR: </span>${ref.hr} bpm</div>
-			<div class="pvr-item"><span class="pvr-label">RR: </span>${ref.rr} /min</div>
-			<div class="pvr-item"><span class="pvr-label">SBP: </span>${ref.sbp} mmHg</div>
-			<div class="pvr-item"><span class="pvr-label">SpO2: </span>${ref.spo2}%</div>
-		</div>
-		<div style="margin-top:5px;font-size:11px;color:#15803d;font-style:italic">Reference only — assess in clinical context (Spotting the Sick Child)</div>`;
+
+	panel.innerHTML = `
+		<div class="pvr-ref-card" style="background:#f0faf0;border:1px solid #a7d7a7;border-radius:6px;padding:8px 10px;font-size:12px">
+			<strong style="color:#1b5e20">${ref.label} — Normal Ranges</strong>
+			<div class="pvr-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:3px 12px;margin-top:4px">
+				<div><span style="color:#555">HR: </span>${ref.hr} bpm</div>
+				<div><span style="color:#555">RR: </span>${ref.rr} /min</div>
+				<div><span style="color:#555">SBP: </span>${ref.sbp} mmHg</div>
+				<div><span style="color:#555">SpO₂: </span>${ref.spo2}%</div>
+			</div>
+			<div style="margin-top:5px;color:#2e7d32">${aplsStr}</div>
+			<div style="margin-top:3px;font-style:italic;color:#666">Reference only — assess in clinical context</div>
+		</div>`;
 
 	// Also auto-select age group chip if not manually set
 	if (!manualGroup && group) {
@@ -7393,19 +7503,7 @@ function bindPaedsEvents() {
 	// ── Radio chip groups (single-select) ──────────────────
 	bindRadioChipGroups();
 
-	// ── Tab switching ──────────────────────────────────────
-	$$("[data-paeds-tab]").forEach((tab) => {
-		tab.addEventListener("click", () => {
-			const target = tab.dataset.paedsTab;
-			$$("[data-paeds-tab]").forEach((t) => t.classList.remove("active"));
-			tab.classList.add("active");
-			$$(".panel[id^='paeds-panel-']").forEach((p) =>
-				p.classList.remove("active"),
-			);
-			$(`#paeds-panel-${target}`)?.classList.add("active");
-			if (target === "output") buildPaedsOutputSections();
-		});
-	});
+	// Tab switching is handled by the adult ePRF tab system.
 
 	// ── ABCDENT chip toggle ────────────────────────────────
 	$("#paedsAbcdentContainer")?.addEventListener("click", (e) => {
@@ -7434,7 +7532,8 @@ function bindPaedsEvents() {
 	});
 
 	// ── Age inputs → reference update ─────────────────────
-	["pAgeYears", "pAgeMonths", "pAgeGroup"].forEach((id) => {
+	// ptAge = adult age field; pAgeMonths = paeds info card months for infants
+	["ptAge", "pAgeMonths", "pAgeGroup"].forEach((id) => {
 		$(`#${id}`)?.addEventListener("change", updatePaedsAgeRef);
 		$(`#${id}`)?.addEventListener("input", updatePaedsAgeRef);
 	});
@@ -7571,6 +7670,67 @@ function bindPaedsEvents() {
 // OUTPUT GENERATION — PAEDIATRIC ePRF
 // Assembles all paeds section text builders and renders them as copyable cards.
 
+// Builds paeds output using the adult ePRF form fields + paeds-specific
+// assessment sections (PAT, ABCDENT, WETFLAG). Called when paedsMode = true.
+function buildPaedsOutputFromAdultForm() {
+	const adultSections = buildOutputSections();
+
+	// Replace the PRIMARY SURVEY section with PAT + ABCDENT
+	const withoutPrimary = adultSections.filter((s) => s.id !== "primary");
+
+	// Paeds-specific sections (assessment tools)
+	const paedsSections = [
+		{
+			id: "p-patient-info",
+			title: "PAEDIATRIC — AGE & WEIGHT",
+			body: buildPaedsPatientText(),
+		},
+		{
+			id: "p-tmt",
+			title: "3 MINUTE TOOLKIT",
+			body: buildTmtText(),
+		},
+		{
+			id: "p-pat",
+			title: "PAT — ACROSS-THE-ROOM ASSESSMENT",
+			body: buildPaedsPATText(),
+		},
+		{
+			id: "p-primary",
+			title: "PRIMARY SURVEY (ABCDE + ENT + T + DEFG)",
+			body: buildPaedsAbcdentText(),
+		},
+	];
+
+	// Insert paeds sections after BACKGROUND (or at the start if not found)
+	const bgIdx = withoutPrimary.findIndex((s) => s.id === "background");
+	const insertAt = bgIdx >= 0 ? bgIdx + 1 : 0;
+
+	// Build pain section using paeds tools if FLACC / Faces selected
+	const paedsPainBody = buildPaedsPainText();
+	const paedsPainSection = paedsPainBody
+		? [{ id: "p-pain", title: "PAIN ASSESSMENT", body: paedsPainBody }]
+		: [];
+
+	// Remove adult pain (SOCRATES) since we use paeds pain
+	const withoutPain = withoutPrimary.filter(
+		(s) => s.id !== "pain" && !s.id.startsWith("ros-"),
+	);
+
+	const result = [
+		...withoutPain.slice(0, insertAt),
+		...paedsSections,
+		...paedsPainSection,
+		...withoutPain.slice(insertAt),
+	];
+
+	// WETFLAG reference at end
+	const wf = buildPaedsWetflagText();
+	if (wf) result.push({ id: "p-wetflag", title: "WETFLAG REFERENCE", body: wf });
+
+	return result;
+}
+
 function buildPaedsOutputSections() {
 	const container = $("#pOutputSections");
 	if (!container) return;
@@ -7682,13 +7842,14 @@ function buildTmtText() {
 }
 
 function buildPaedsPatientText() {
-	const yrs = val("pAgeYears");
+	// Read from adult ePRF fields (ptAge, ptSex) + paeds info card (pAgeMonths, pWeight)
+	const yrs = val("ptAge");
 	const mo = val("pAgeMonths");
 	const ageStr =
 		[yrs ? `${yrs} years` : null, mo ? `${mo} months` : null]
 			.filter(Boolean)
-			.join(" ") || "Age not recorded";
-	const sex = val("pSex") || "Sex not recorded";
+			.join(", ") || "Age not recorded";
+	const sex = val("ptSex") || "Sex not recorded";
 	const wt =
 		val("pWeight") ||
 		(aplsWeight(parseInt(yrs) || 0, parseInt(mo) || 0)
