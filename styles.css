@@ -1,15 +1,15 @@
-/* =============================================================================
+/*
    CrewMate — Stylesheet
    Professional clinical tablet/mobile interface for NEAS paramedics.
    Organised as: Design tokens → Base → Layout → Components → Sections →
                  Specialist grids → Output → Dark mode → Responsive
-   ============================================================================= */
+ */
 
-/* =============================================================================
+/*
    DESIGN TOKENS
    All colours, spacing, and typography variables in one place.
    Light-mode values here; overrides in [data-theme="dark"] block below.
-   ============================================================================= */
+*/
 
 :root {
 	/* CrewMate professional clinical palette */
