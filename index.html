@@ -201,7 +201,11 @@
 				</div>
 
 				<!-- NEWS2 Score -->
-				<div class="feature-card" data-feature="news2" role="button" tabindex="0">
+				<div
+					class="feature-card"
+					data-feature="news2"
+					role="button"
+					tabindex="0">
 					<div class="card-icon purple">
 						<svg
 							viewBox="0 0 24 24"
@@ -247,6 +251,33 @@
 						<h3 class="card-title">Obs Recorder</h3>
 						<p class="card-desc">
 							Track and trend vital signs over time on scene
+						</p>
+					</div>
+					<span class="card-badge live">Live</span>
+				</div>
+
+				<!-- Drug Finder -->
+				<div
+					class="feature-card"
+					data-feature="drug-finder"
+					role="button"
+					tabindex="0">
+					<div class="card-icon green">
+						<svg
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.75"
+							stroke-linecap="round"
+							stroke-linejoin="round">
+							<path d="M10.5 20.5L3.5 13.5a5 5 0 1 1 7-7l7 7a5 5 0 1 1-7 7z" />
+							<line x1="8.5" y1="8.5" x2="15.5" y2="15.5" />
+						</svg>
+					</div>
+					<div class="card-body">
+						<h3 class="card-title">Drug Finder</h3>
+						<p class="card-desc">
+							Search NICE BNF for drugs, doses, routes and indications
 						</p>
 					</div>
 					<span class="card-badge live">Live</span>
@@ -348,33 +379,6 @@
 						</p>
 					</div>
 					<span class="card-badge soon">Coming soon</span>
-				</div>
-
-				<!-- Drug Finder -->
-				<div
-					class="feature-card"
-					data-feature="drug-finder"
-					role="button"
-					tabindex="0">
-					<div class="card-icon green">
-						<svg
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="1.75"
-							stroke-linecap="round"
-							stroke-linejoin="round">
-							<path d="M10.5 20.5L3.5 13.5a5 5 0 1 1 7-7l7 7a5 5 0 1 1-7 7z" />
-							<line x1="8.5" y1="8.5" x2="15.5" y2="15.5" />
-						</svg>
-					</div>
-					<div class="card-body">
-						<h3 class="card-title">Drug Finder</h3>
-						<p class="card-desc">
-							Search NICE BNF for drugs, doses, routes and indications
-						</p>
-					</div>
-					<span class="card-badge live">Live</span>
 				</div>
 			</div>
 
@@ -531,11 +535,9 @@
 			</main>
 		</div>
 
-		<!-- Drug Finder (BNF Search) -->
-		<!-- NEWS2 TOOL -->
+		<!-- NEWS Score -->
 		<div id="news2-tool" class="tool-page hidden">
-
-			<!-- Sticky score banner -->
+			<!-- Banner -->
 			<div class="n2-banner" id="n2Banner">
 				<div class="n2-banner-inner">
 					<div class="n2-banner-label-group">
@@ -543,19 +545,35 @@
 						<span class="n2-banner-total" id="n2Total">–</span>
 					</div>
 					<div class="n2-banner-risk" id="n2Risk">Select parameters below</div>
-					<button type="button" class="ghost-button n2-reset-btn" id="n2ResetBtn">Reset</button>
+					<button
+						type="button"
+						class="ghost-button n2-reset-btn"
+						id="n2ResetBtn">
+						Reset
+					</button>
 				</div>
 			</div>
 
-			<main style="padding: 16px; max-width: 640px; margin: 0 auto; padding-bottom: 40px">
-
-				<!-- SpO2 Scale toggle -->
+			<main
+				style="
+					padding: 16px;
+					max-width: 640px;
+					margin: 0 auto;
+					padding-bottom: 40px;
+				">
+				<!-- Respiratory Failire Scale -->
 				<div class="section-card" style="margin-bottom: 12px">
 					<div class="section-body">
 						<label class="field-label">SpO₂ Scale</label>
-						<p class="field-hint" style="margin-bottom: 8px">Use Scale 2 only for confirmed hypercapnic respiratory failure (e.g. COPD with target 88–92%)</p>
+						<p class="field-hint" style="margin-bottom: 8px">
+							Use Scale 2 only for confirmed hypercapnic respiratory failure
+							(e.g. COPD with target 88–92%)
+						</p>
 						<div class="radio-chip-group" id="n2ScaleGroup">
-							<button type="button" class="radio-chip selected" data-n2-scale="1">
+							<button
+								type="button"
+								class="radio-chip selected"
+								data-n2-scale="1">
 								Scale 1
 								<small>Standard (most patients)</small>
 							</button>
@@ -567,16 +585,48 @@
 					</div>
 				</div>
 
-				<!-- Respiration Rate -->
+				<!-- RR -->
 				<div class="section-card" style="margin-bottom: 12px">
 					<div class="section-body">
-						<label class="field-label">Respiration Rate <span class="n2-unit">breaths/min</span></label>
+						<label class="field-label"
+							>Respiration Rate <span class="n2-unit">breaths/min</span></label
+						>
 						<div class="radio-chip-group wrap-grid" id="n2RrGroup">
-							<button type="button" class="radio-chip n2-chip" data-n2-param="rr" data-n2-score="3">≤8<small class="n2-pts n2-pts--3">+3</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="rr" data-n2-score="1">9–11<small class="n2-pts n2-pts--1">+1</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="rr" data-n2-score="0">12–20<small class="n2-pts n2-pts--0">+0</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="rr" data-n2-score="2">21–24<small class="n2-pts n2-pts--2">+2</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="rr" data-n2-score="3">≥25<small class="n2-pts n2-pts--3">+3</small></button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="rr"
+								data-n2-score="3">
+								≤8<small class="n2-pts n2-pts--3">+3</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="rr"
+								data-n2-score="1">
+								9–11<small class="n2-pts n2-pts--1">+1</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="rr"
+								data-n2-score="0">
+								12–20<small class="n2-pts n2-pts--0">+0</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="rr"
+								data-n2-score="2">
+								21–24<small class="n2-pts n2-pts--2">+2</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="rr"
+								data-n2-score="3">
+								≥25<small class="n2-pts n2-pts--3">+3</small>
+							</button>
 						</div>
 					</div>
 				</div>
@@ -584,39 +634,115 @@
 				<!-- SpO2 -->
 				<div class="section-card" style="margin-bottom: 12px">
 					<div class="section-body">
-						<label class="field-label">SpO₂ <span class="n2-unit">%</span></label>
+						<label class="field-label"
+							>SpO₂ <span class="n2-unit">%</span></label
+						>
 
-						<!-- Scale 1 chips -->
+						<!-- Scale 1 -->
 						<div class="radio-chip-group wrap-grid" id="n2Spo2S1Group">
-							<button type="button" class="radio-chip n2-chip" data-n2-param="spo2" data-n2-score="3">≤91%<small class="n2-pts n2-pts--3">+3</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="spo2" data-n2-score="2">92–93%<small class="n2-pts n2-pts--2">+2</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="spo2" data-n2-score="1">94–95%<small class="n2-pts n2-pts--1">+1</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="spo2" data-n2-score="0">≥96%<small class="n2-pts n2-pts--0">+0</small></button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="spo2"
+								data-n2-score="3">
+								≤91%<small class="n2-pts n2-pts--3">+3</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="spo2"
+								data-n2-score="2">
+								92–93%<small class="n2-pts n2-pts--2">+2</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="spo2"
+								data-n2-score="1">
+								94–95%<small class="n2-pts n2-pts--1">+1</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="spo2"
+								data-n2-score="0">
+								≥96%<small class="n2-pts n2-pts--0">+0</small>
+							</button>
 						</div>
 
-						<!-- Scale 2 chips (hidden by default) -->
+						<!-- Scale 2 -->
 						<div class="radio-chip-group wrap-grid hidden" id="n2Spo2S2Group">
-							<button type="button" class="radio-chip n2-chip" data-n2-param="spo2" data-n2-score="3">≤83%<small class="n2-pts n2-pts--3">+3</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="spo2" data-n2-score="2">84–85%<small class="n2-pts n2-pts--2">+2</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="spo2" data-n2-score="1">86–87%<small class="n2-pts n2-pts--1">+1</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="spo2" data-n2-score="0">88–92%<small class="n2-pts n2-pts--0">+0</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="spo2" data-n2-score="1">93–94%<small class="n2-pts n2-pts--1">+1 (air only)</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="spo2" data-n2-score="2">95–96%<small class="n2-pts n2-pts--2">+2 (air only)</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="spo2" data-n2-score="3">≥97%<small class="n2-pts n2-pts--3">+3 (air only)</small></button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="spo2"
+								data-n2-score="3">
+								≤83%<small class="n2-pts n2-pts--3">+3</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="spo2"
+								data-n2-score="2">
+								84–85%<small class="n2-pts n2-pts--2">+2</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="spo2"
+								data-n2-score="1">
+								86–87%<small class="n2-pts n2-pts--1">+1</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="spo2"
+								data-n2-score="0">
+								88–92%<small class="n2-pts n2-pts--0">+0</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="spo2"
+								data-n2-score="1">
+								93–94%<small class="n2-pts n2-pts--1">+1 (On O2)</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="spo2"
+								data-n2-score="2">
+								95–96%<small class="n2-pts n2-pts--2">+2 (On O2)</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="spo2"
+								data-n2-score="3">
+								≥97%<small class="n2-pts n2-pts--3">+3 (On O2)</small>
+							</button>
 						</div>
 					</div>
 				</div>
 
-				<!-- Air or Supplemental O2 -->
+				<!-- Air or O2 -->
 				<div class="section-card" style="margin-bottom: 12px">
 					<div class="section-body">
-						<label class="field-label">Air or Supplemental O₂</label>
+						<label class="field-label">Air or O₂</label>
 						<div class="radio-chip-group" id="n2O2Group">
-							<button type="button" class="radio-chip n2-chip" data-n2-param="o2" data-n2-score="0">
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="o2"
+								data-n2-score="0">
 								Room air
 								<small class="n2-pts n2-pts--0">+0</small>
 							</button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="o2" data-n2-score="2">
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="o2"
+								data-n2-score="2">
 								Supplemental O₂
 								<small class="n2-pts n2-pts--2">+2</small>
 							</button>
@@ -624,59 +750,193 @@
 					</div>
 				</div>
 
-				<!-- Systolic BP -->
+				<!-- BP -->
 				<div class="section-card" style="margin-bottom: 12px">
 					<div class="section-body">
-						<label class="field-label">Systolic BP <span class="n2-unit">mmHg</span></label>
+						<label class="field-label"
+							>Systolic BP <span class="n2-unit">mmHg</span></label
+						>
 						<div class="radio-chip-group wrap-grid" id="n2SbpGroup">
-							<button type="button" class="radio-chip n2-chip" data-n2-param="sbp" data-n2-score="3">≤90<small class="n2-pts n2-pts--3">+3</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="sbp" data-n2-score="2">91–100<small class="n2-pts n2-pts--2">+2</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="sbp" data-n2-score="1">101–110<small class="n2-pts n2-pts--1">+1</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="sbp" data-n2-score="0">111–219<small class="n2-pts n2-pts--0">+0</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="sbp" data-n2-score="3">≥220<small class="n2-pts n2-pts--3">+3</small></button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="sbp"
+								data-n2-score="3">
+								≤90<small class="n2-pts n2-pts--3">+3</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="sbp"
+								data-n2-score="2">
+								91–100<small class="n2-pts n2-pts--2">+2</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="sbp"
+								data-n2-score="1">
+								101–110<small class="n2-pts n2-pts--1">+1</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="sbp"
+								data-n2-score="0">
+								111–219<small class="n2-pts n2-pts--0">+0</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="sbp"
+								data-n2-score="3">
+								≥220<small class="n2-pts n2-pts--3">+3</small>
+							</button>
 						</div>
 					</div>
 				</div>
 
-				<!-- Pulse -->
+				<!-- HR -->
 				<div class="section-card" style="margin-bottom: 12px">
 					<div class="section-body">
-						<label class="field-label">Pulse <span class="n2-unit">beats/min</span></label>
+						<label class="field-label"
+							>HR <span class="n2-unit">beats/min</span></label
+						>
 						<div class="radio-chip-group wrap-grid" id="n2HrGroup">
-							<button type="button" class="radio-chip n2-chip" data-n2-param="hr" data-n2-score="3">≤40<small class="n2-pts n2-pts--3">+3</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="hr" data-n2-score="1">41–50<small class="n2-pts n2-pts--1">+1</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="hr" data-n2-score="0">51–90<small class="n2-pts n2-pts--0">+0</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="hr" data-n2-score="1">91–110<small class="n2-pts n2-pts--1">+1</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="hr" data-n2-score="2">111–130<small class="n2-pts n2-pts--2">+2</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="hr" data-n2-score="3">≥131<small class="n2-pts n2-pts--3">+3</small></button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="hr"
+								data-n2-score="3">
+								≤40<small class="n2-pts n2-pts--3">+3</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="hr"
+								data-n2-score="1">
+								41–50<small class="n2-pts n2-pts--1">+1</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="hr"
+								data-n2-score="0">
+								51–90<small class="n2-pts n2-pts--0">+0</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="hr"
+								data-n2-score="1">
+								91–110<small class="n2-pts n2-pts--1">+1</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="hr"
+								data-n2-score="2">
+								111–130<small class="n2-pts n2-pts--2">+2</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="hr"
+								data-n2-score="3">
+								≥131<small class="n2-pts n2-pts--3">+3</small>
+							</button>
 						</div>
 					</div>
 				</div>
 
-				<!-- Consciousness ACVPU -->
+				<!-- ACVPU -->
 				<div class="section-card" style="margin-bottom: 12px">
 					<div class="section-body">
-						<label class="field-label">Consciousness <span class="n2-unit">ACVPU</span></label>
+						<label class="field-label"
+							>Consciousness <span class="n2-unit">ACVPU</span></label
+						>
 						<div class="radio-chip-group wrap-grid" id="n2ConsGroup">
-							<button type="button" class="radio-chip n2-chip" data-n2-param="cons" data-n2-score="0">Alert<small class="n2-pts n2-pts--0">+0</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="cons" data-n2-score="3">New Confusion<small class="n2-pts n2-pts--3">+3</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="cons" data-n2-score="3">Voice<small class="n2-pts n2-pts--3">+3</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="cons" data-n2-score="3">Pain<small class="n2-pts n2-pts--3">+3</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="cons" data-n2-score="3">Unresponsive<small class="n2-pts n2-pts--3">+3</small></button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="cons"
+								data-n2-score="0">
+								Alert<small class="n2-pts n2-pts--0">+0</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="cons"
+								data-n2-score="3">
+								Confusion<small class="n2-pts n2-pts--3">+3</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="cons"
+								data-n2-score="3">
+								Voice<small class="n2-pts n2-pts--3">+3</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="cons"
+								data-n2-score="3">
+								Pain<small class="n2-pts n2-pts--3">+3</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="cons"
+								data-n2-score="3">
+								Unresponsive<small class="n2-pts n2-pts--3">+3</small>
+							</button>
 						</div>
 					</div>
 				</div>
 
-				<!-- Temperature -->
+				<!-- Temp -->
 				<div class="section-card" style="margin-bottom: 20px">
 					<div class="section-body">
-						<label class="field-label">Temperature <span class="n2-unit">°C</span></label>
+						<label class="field-label"
+							>Temperature <span class="n2-unit">°C</span></label
+						>
 						<div class="radio-chip-group wrap-grid" id="n2TempGroup">
-							<button type="button" class="radio-chip n2-chip" data-n2-param="temp" data-n2-score="3">≤35.0°<small class="n2-pts n2-pts--3">+3</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="temp" data-n2-score="1">35.1–36.0°<small class="n2-pts n2-pts--1">+1</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="temp" data-n2-score="0">36.1–38.0°<small class="n2-pts n2-pts--0">+0</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="temp" data-n2-score="1">38.1–39.0°<small class="n2-pts n2-pts--1">+1</small></button>
-							<button type="button" class="radio-chip n2-chip" data-n2-param="temp" data-n2-score="2">≥39.1°<small class="n2-pts n2-pts--2">+2</small></button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="temp"
+								data-n2-score="3">
+								≤35.0°<small class="n2-pts n2-pts--3">+3</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="temp"
+								data-n2-score="1">
+								35.1–36.0°<small class="n2-pts n2-pts--1">+1</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="temp"
+								data-n2-score="0">
+								36.1–38.0°<small class="n2-pts n2-pts--0">+0</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="temp"
+								data-n2-score="1">
+								38.1–39.0°<small class="n2-pts n2-pts--1">+1</small>
+							</button>
+							<button
+								type="button"
+								class="radio-chip n2-chip"
+								data-n2-param="temp"
+								data-n2-score="2">
+								≥39.1°<small class="n2-pts n2-pts--2">+2</small>
+							</button>
 						</div>
 					</div>
 				</div>
@@ -688,20 +948,30 @@
 							<div class="n2-result-circle" id="n2ResultCircle">–</div>
 							<div class="n2-result-detail">
 								<div class="n2-result-risk-label" id="n2ResultRisk"></div>
-								<div class="n2-result-guidance" id="n2ResultGuidance">Complete the parameters above to calculate your NEWS2 score</div>
+								<div class="n2-result-guidance" id="n2ResultGuidance">
+									Complete the parameters above to calculate your NEWS2 score
+								</div>
 							</div>
 						</div>
-						<div class="n2-breakdown" id="n2Breakdown" style="display:none">
+						<div class="n2-breakdown" id="n2Breakdown" style="display: none">
 							<div class="n2-breakdown-title">Score breakdown</div>
 							<div class="n2-breakdown-grid" id="n2BreakdownGrid"></div>
 						</div>
 					</div>
 				</div>
 
-				<p class="field-hint" style="margin-top: 12px; text-align: center">Based on Royal College of Physicians NEWS2 (2017). Always escalate per local clinical policy.</p>
+				<p class="field-hint" style="margin-top: 12px; text-align: center">
+					Based on
+					<a
+						href="https://www.mdcalc.com/calc/10083/national-early-warning-score-news-2"
+						>MDCalc NEWS2</a
+					>
+					calculator.
+				</p>
 			</main>
 		</div>
 
+		<!-- Drug search -->
 		<div id="drug-finder-tool" class="tool-page hidden">
 			<main style="padding: 16px; max-width: 640px; margin: 0 auto">
 				<div class="section-card" style="margin-bottom: 12px">
@@ -720,15 +990,19 @@
 								stroke-width="1.75"
 								stroke-linecap="round"
 								stroke-linejoin="round"
-								style="width: 20px; height: 20px; flex-shrink: 0; color: #2e7d32">
+								style="
+									width: 20px;
+									height: 20px;
+									flex-shrink: 0;
+									color: #2e7d32;
+								">
 								<path
 									d="M10.5 20.5L3.5 13.5a5 5 0 1 1 7-7l7 7a5 5 0 1 1-7 7z" />
 								<line x1="8.5" y1="8.5" x2="15.5" y2="15.5" />
 							</svg>
 							<div>
 								<strong style="font-size: 1rem">Drug Finder</strong>
-								<div
-									style="font-size: 0.78rem; color: #666; margin-top: 1px">
+								<div style="font-size: 0.78rem; color: #666; margin-top: 1px">
 									Search the NICE British National Formulary
 								</div>
 							</div>
@@ -752,27 +1026,20 @@
 							</button>
 						</form>
 
-						<p
-							class="field-hint"
-							style="margin-top: 10px; margin-bottom: 0">
+						<p class="field-hint" style="margin-top: 10px; margin-bottom: 0">
 							Opens the NICE BNF in a new tab. Always verify doses against
-							current JRCALC guidelines and local protocols.
+							current JRCALC guidelines.
 						</p>
 					</div>
 				</div>
 
-				<!-- Quick-access links -->
+				<!-- Quick links -->
 				<div class="section-card">
 					<div class="section-body">
 						<label class="field-label" style="margin-bottom: 8px"
 							>Quick links</label
 						>
-						<div
-							style="
-								display: flex;
-								flex-direction: column;
-								gap: 6px;
-							">
+						<div style="display: flex; flex-direction: column; gap: 6px">
 							<a
 								href="https://bnf.nice.org.uk/drugs/"
 								target="_blank"
@@ -794,51 +1061,51 @@
 								</svg>
 							</a>
 							<a
-								href="https://bnf.nice.org.uk/treatment-summaries/cardiac-emergencies/"
-								target="_blank"
-								rel="noopener noreferrer"
-								class="bnf-quick-link">
-								<span>Cardiac emergencies</span>
-								<svg
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									style="width: 14px; height: 14px">
-									<path
-										d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-									<polyline points="15 3 21 3 21 9" />
-									<line x1="10" y1="14" x2="21" y2="3" />
-								</svg>
-							</a>
-							<a
-								href="https://bnf.nice.org.uk/treatment-summaries/pain/"
-								target="_blank"
-								rel="noopener noreferrer"
-								class="bnf-quick-link">
-								<span>Pain management</span>
-								<svg
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									style="width: 14px; height: 14px">
-									<path
-										d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-									<polyline points="15 3 21 3 21 9" />
-									<line x1="10" y1="14" x2="21" y2="3" />
-								</svg>
-							</a>
-							<a
 								href="https://bnfc.nice.org.uk/drugs/"
 								target="_blank"
 								rel="noopener noreferrer"
 								class="bnf-quick-link">
-								<span>BNF<em>c</em> — Paediatric formulary</span>
+								<span>BNF<em>c</em> — Paediatric Drugs</span>
+								<svg
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									style="width: 14px; height: 14px">
+									<path
+										d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+									<polyline points="15 3 21 3 21 9" />
+									<line x1="10" y1="14" x2="21" y2="3" />
+								</svg>
+							</a>
+							<a
+								href="https://bnf.nice.org.uk/treatment-summaries/"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="bnf-quick-link">
+								<span>Treatment Summaries</span>
+								<svg
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									style="width: 14px; height: 14px">
+									<path
+										d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+									<polyline points="15 3 21 3 21 9" />
+									<line x1="10" y1="14" x2="21" y2="3" />
+								</svg>
+							</a>
+							<a
+								href="https://bnf.nice.org.uk/interactions/"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="bnf-quick-link">
+								<span>Interactions</span>
 								<svg
 									viewBox="0 0 24 24"
 									fill="none"
@@ -895,7 +1162,7 @@
 					<div id="rfCards" class="rf-cards"></div>
 					<p class="rf-disclaimer">
 						Clinical decision support prompts only — not a diagnosis. Always
-						apply clinical judgement and follow local protocols.
+						apply clinical judgement and follow local policies.
 					</p>
 				</div>
 			</div>
