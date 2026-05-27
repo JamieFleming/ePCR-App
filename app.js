@@ -939,8 +939,6 @@ const OPTIONS = {
 			["R cephalic", "R Cephalic"],
 			["L basilic", "L Basilic"],
 			["R basilic", "R Basilic"],
-			["L EJ", "L EJ"],
-			["R EJ", "R EJ"],
 			["L foot", "L Foot"],
 			["R foot", "R Foot"],
 		],
@@ -1844,6 +1842,7 @@ function showFeature(feature) {
 	} else if (feature === "obs-recorder") {
 		$("#obs-recorder")?.classList.remove("hidden");
 		$("#resetButton")?.classList.add("hidden");
+		initObsRecorder();
 	} else if (feature === "drug-finder") {
 		$("#drug-finder-tool")?.classList.remove("hidden");
 		$("#resetButton")?.classList.add("hidden");
@@ -1872,6 +1871,27 @@ function initDashboard() {
 		if (!query) return;
 		const url = `https://bnf.nice.org.uk/search/?q=${encodeURIComponent(query)}`;
 		window.open(url, "_blank", "noopener,noreferrer");
+	});
+}
+
+// ── Obs Recorder Tool ──────────────────────────────────────────────────────
+
+let _obsRecInited = false;
+
+function initObsRecorder() {
+	if (_obsRecInited) return;
+	_obsRecInited = true;
+
+	// Add first obs set automatically
+	const container = $("#obsRecContainer");
+	if (container && container.children.length === 0) {
+		container.append(createObsSet());
+		updateObsSetNumbers();
+	}
+
+	$("#addObsRecBtn")?.addEventListener("click", () => {
+		$("#obsRecContainer")?.append(createObsSet());
+		updateObsSetNumbers();
 	});
 }
 
@@ -1943,7 +1963,9 @@ function initNews2() {
 }
 
 function resetNews2() {
-	$$(".n2-chip", $("#news2-tool")).forEach((c) => c.classList.remove("selected"));
+	$$(".n2-chip", $("#news2-tool")).forEach((c) =>
+		c.classList.remove("selected"),
+	);
 	_news2Scale = 1;
 	$$("[data-n2-scale]", $("#news2-tool")).forEach((b) =>
 		b.classList.toggle("selected", b.dataset.n2Scale === "1"),
@@ -1985,7 +2007,9 @@ function updateNews2Score() {
 			resultCircle.className = "n2-result-circle";
 		}
 		if (resultRisk) resultRisk.textContent = "";
-		if (resultGuidance) resultGuidance.textContent = "Complete the parameters above to calculate your NEWS2 score";
+		if (resultGuidance)
+			resultGuidance.textContent =
+				"Complete the parameters above to calculate your NEWS2 score";
 		if (breakdown) breakdown.style.display = "none";
 		return;
 	}
@@ -1998,7 +2022,10 @@ function updateNews2Score() {
 	if (risk === "HIGH") {
 		guidance = NEWS2_GUIDANCE.HIGH;
 	} else if (risk === "MEDIUM") {
-		guidance = hasThree && total < 5 ? NEWS2_GUIDANCE.MEDIUM_3 : NEWS2_GUIDANCE.MEDIUM_56;
+		guidance =
+			hasThree && total < 5
+				? NEWS2_GUIDANCE.MEDIUM_3
+				: NEWS2_GUIDANCE.MEDIUM_56;
 	} else {
 		guidance = total === 0 ? NEWS2_GUIDANCE.LOW[0] : NEWS2_GUIDANCE.LOW[1];
 	}

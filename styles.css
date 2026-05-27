@@ -72,9 +72,7 @@ html {
 	scroll-behavior: smooth;
 }
 
-/* =============================================================================
-   BASE STYLES — Reset, typography, global element defaults
-   ============================================================================= */
+/* BASE STYLES — Reset, typography, global element defaults */
 
 body {
 	-webkit-font-smoothing: antialiased;
@@ -131,9 +129,7 @@ a:focus-visible {
 	box-shadow: var(--focus);
 }
 
-/* =============================================================================
-   LAYOUT — App shell, header bar, tab navigation
-   ============================================================================= */
+/* LAYOUT — App shell, header bar, tab navigation */
 
 /* Header */
 .app-header {
@@ -316,9 +312,7 @@ main {
 	box-shadow: none;
 }
 
-/* =============================================================================
-   COMPONENTS — Cards, accordions, form controls
-   ============================================================================= */
+/* COMPONENTS — Cards, accordions, form controls */
 
 /* Cards and accordions */
 .section-card {
@@ -536,9 +530,7 @@ select {
 	flex: 0 0 auto;
 }
 
-/* =============================================================================
-   CLINICAL CHIP GRIDS — Square multi-select and radio chip buttons
-   ============================================================================= */
+/* CLINICAL CHIP GRIDS — Square multi-select and radio chip buttons */
 
 /* Square clinical buttons */
 .square-grid {
@@ -779,7 +771,7 @@ select {
 	font-weight: 700;
 }
 
-/* ── Radio chip groups (single-select tap chips) ─────────── */
+/* Radio chip groups (single-select tap chips) */
 .radio-chip-group {
 	display: flex;
 	flex-wrap: wrap;
@@ -1207,7 +1199,7 @@ select {
 	background: var(--primary-soft-2);
 }
 
-/* ── GCS Calculator ─────────────────────────────────────────── */
+/* GCS Calculator */
 .gcs-panel {
 	display: grid;
 	gap: 10px;
@@ -1293,9 +1285,7 @@ select {
 	margin-top: 4px;
 }
 
-/* =============================================================================
-   OUTPUT & CLIPBOARD — Section output cards, copy buttons, toast
-   ============================================================================= */
+/* OUTPUT & CLIPBOARD — Section output cards, copy buttons, toast */
 
 /* Output */
 .output-panel-body {
@@ -1646,7 +1636,7 @@ select {
 	-webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 3L4 7v10l8 4 8-4V7L12 3Z'/%3E%3Cpath d='M4 7l8 4 8-4'/%3E%3Cpath d='M12 11v10'/%3E%3C/svg%3E");
 }
 
-/* ── Paediatric ABCDENT section icons ───────────────────── */
+/* Paediatric ABCDENT section icons */
 /* A — Airway: open airway tube */
 .section-card[data-section-icon="p-airway"] > summary::before {
 	background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='%230b2d4d' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 3v5'/%3E%3Cellipse cx='12' cy='10' rx='4' ry='2.5'/%3E%3Cpath d='M8 10c0 5 2 9 4 9s4-4 4-9'/%3E%3Cpath d='M9 14h6'/%3E%3C/svg%3E");
@@ -2181,7 +2171,7 @@ select {
 	display: none;
 }
 
-/* ── Smart conveyance suggestion ─────────────────────────── */
+/* Smart conveyance suggestion */
 .convey-suggest {
 	border-radius: 10px;
 	padding: 12px 14px;
@@ -2254,7 +2244,7 @@ select {
 	margin: 0;
 }
 
-/* ── Red flag bar ─────────────────────────────────────────── */
+/* Red flag bar */
 .rf-bar {
 	position: sticky;
 	top: 134px;
@@ -2373,7 +2363,7 @@ select {
 	}
 }
 
-/* ── Paeds treatment — dose hint ─────────────────────────── */
+/* Paeds treatment — dose hint */
 .dose-hint {
 	background: #f0f9ff;
 	border: 1px solid #bae6fd;
@@ -2446,7 +2436,7 @@ select {
 	margin-top: 1px;
 }
 
-/* IV gauge colour chips — actual cannula hub colour as background, always visible */
+/* IV colour chips */
 /* 20G Pink */
 .p-gauge-20 {
 	background: linear-gradient(180deg, #fdf2f8, #fce7f3);
@@ -2496,7 +2486,7 @@ select {
 	color: #581c87;
 }
 
-/* Adult IV gauge colour chips — actual cannula hub colour as background */
+/* IV colours */
 /* 14G Orange */
 .a-gauge-14 {
 	background: linear-gradient(180deg, #fff7ed, #ffedd5);
@@ -2570,7 +2560,7 @@ select {
 	color: #713f12;
 }
 
-/* ── Paediatric reference pills ──────────────────────────── */
+/* Paediatric reference pills */
 .paeds-ref-pill {
 	background: #e0f2fe;
 	color: #0369a1;
@@ -2615,7 +2605,7 @@ select {
 	font-size: 11px;
 }
 
-/* ── FLACC pain grid ─────────────────────────────────────── */
+/* FLACC pain grid */
 .flacc-grid {
 	display: flex;
 	flex-direction: column;
@@ -2665,7 +2655,7 @@ select {
 	border-color: #fca5a5;
 }
 
-/* ── WETFLAG results ─────────────────────────────────────── */
+/* WETFLAG results */
 .wetflag-results {
 	margin-top: 12px;
 	border-radius: 10px;
@@ -2721,8 +2711,8 @@ select {
 	border-top: 1px solid var(--line);
 }
 
-/* ── Paeds tool hidden state ─────────────────────────────── */
-/* ── 3 Minute Toolkit ────────────────────────────────────── */
+/* Paeds tool */
+/* 3 Minute Toolkit */
 .tmt-phase {
 	border: 1px solid var(--line);
 	border-radius: 10px;
@@ -2803,7 +2793,7 @@ select {
 	margin-left: 4px;
 }
 
-/* Toolkit completion chips — green (done) by default, red when tapped (not done) */
+/* Toolkit completion chips */
 .tmt-chip {
 	font-size: 12px;
 	background: #fef2f2 !important;
@@ -2816,7 +2806,7 @@ select {
 	color: #15803d !important;
 }
 
-/* DEFG section — subtle glucose reminder highlight */
+/* DEFG section — glucose reminder highlight */
 #paedsAbcdentContainer details:last-child > summary {
 	background: linear-gradient(90deg, #fef9c3 0%, transparent 60%);
 }
@@ -2848,13 +2838,13 @@ select {
 	}
 }
 
-/* =========================================================
+/* 
    Universal grid override — natural chip/grid flow
    Ensures all named chip grids use auto-fit columns and
    prevents odd final buttons from stretching or jumping.
    Applies to: ROS, Primary Survey, ABCDE, generated grids.
-   Keep !important — overrides responsive breakpoint rules above.
-   ========================================================= */
+   Keep !important — overrides responsive breakpoint rules above
+ */
 
 .square-grid,
 .pabc-grid,
@@ -2941,10 +2931,10 @@ select {
 	}
 }
 
-/* =========================================================
+/*
    Dark mode
    Uses <html data-theme="dark"> and a top-right header button
-   ========================================================= */
+*/
 
 .theme-toggle {
 	margin-left: auto;
@@ -3206,12 +3196,6 @@ html[data-theme="dark"] .footer-logo {
 	}
 }
 
-/* =========================================================
-   DARK MODE TOGGLE FIX
-   JS uses html[data-theme="dark"].
-   Keep the SVG icons only — no text/emoji required.
-   ========================================================= */
-
 .theme-toggle {
 	position: relative;
 }
@@ -3230,13 +3214,6 @@ html[data-theme="light"] .theme-icon-moon,
 html:not([data-theme]) .theme-icon-moon {
 	display: block;
 }
-
-/* =========================================================
-   DARK MODE DASHBOARD SVG FIX
-   Keeps dashboard card SVG icons visible in dark mode.
-   Your dashboard SVGs use stroke="currentColor", so the
-   icon colour must be set on .card-icon / .card-arrow.
-   ========================================================= */
 
 html[data-theme="dark"] .feature-card:not(.featured) {
 	background: var(--surface) !important;
@@ -3277,7 +3254,6 @@ html[data-theme="dark"] .feature-card.featured .card-arrow {
 	color: rgba(255, 255, 255, 0.9) !important;
 }
 
-/* Keep each dashboard icon type visible but still subtly coloured */
 html[data-theme="dark"] .card-icon.green {
 	background: #0f2f23 !important;
 	color: #bbf7d0 !important;
@@ -3318,7 +3294,7 @@ html[data-theme="dark"] .card-icon.blue {
 	color: #bae6fd !important;
 }
 
-/* ── Resp Counter Tool ─────────────────────────────────────── */
+/* Resp Counter Tool */
 
 .tool-page.hidden {
 	display: none !important;
@@ -3578,7 +3554,7 @@ html[data-theme="dark"] .resp-result-card--abnormal {
 	color: #fb7185;
 }
 
-/* ── Observations ──────────────────────────────────────── */
+/* Observations */
 .obs-set {
 	border: 1px solid var(--line);
 	border-radius: 10px;
@@ -3624,7 +3600,6 @@ html[data-theme="dark"] .resp-result-card--abnormal {
 	color: var(--danger);
 }
 
-/* Vital signs — compact 5-column grid */
 .obs-vitals-grid {
 	display: grid;
 	grid-template-columns: repeat(5, 1fr);
@@ -3632,7 +3607,6 @@ html[data-theme="dark"] .resp-result-card--abnormal {
 	margin-bottom: 12px;
 }
 
-/* Labelled row groups (O₂, HR, BP, AVPU, GCS) */
 .obs-row-group {
 	margin-bottom: 12px;
 }
@@ -3649,7 +3623,6 @@ html[data-theme="dark"] .resp-result-card--abnormal {
 	margin-top: 4px;
 }
 
-/* Shared field label */
 .obs-label {
 	font-size: 0.72rem;
 	font-weight: 700;
@@ -3763,7 +3736,7 @@ html[data-theme="dark"] .news2-high {
 	}
 }
 
-/* ── Drug Finder / BNF quick links ────────────────────────── */
+/* Drug Finder / BNF quick links */
 .bnf-quick-link {
 	display: flex;
 	align-items: center;
@@ -3789,9 +3762,9 @@ html[data-theme="dark"] .news2-high {
 	opacity: 0.5;
 }
 
-/* ── NEWS2 Tool ─────────────────────────────────────────────────────────── */
+/* NEWS2 Tool */
 
-/* Score banner — sticky strip below the app header */
+/* Score banner */
 .n2-banner {
 	position: sticky;
 	top: 0;
@@ -3843,7 +3816,6 @@ html[data-theme="dark"] .news2-high {
 	padding: 5px 12px;
 }
 
-/* Score points on chips */
 .n2-unit {
 	font-weight: 400;
 	color: var(--muted);
@@ -3868,7 +3840,6 @@ html[data-theme="dark"] .news2-high {
 	color: #dc2626;
 }
 
-/* When a chip is selected, ensure pts text inherits the selected colour */
 .radio-chip.selected .n2-pts {
 	color: inherit;
 	opacity: 0.85;
