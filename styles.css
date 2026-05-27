@@ -558,12 +558,14 @@ select {
 	grid-row: auto !important;
 }
 
-.abdo-region-name {
+.abdo-region-name,
+.ausc-region-name {
 	display: block;
 	font-size: 13px;
 	font-weight: 700;
 }
-.abdo-region-tags {
+.abdo-region-tags,
+.ausc-region-tags {
 	display: block;
 	font-size: 10px;
 	color: var(--primary);
@@ -571,7 +573,8 @@ select {
 	font-weight: 600;
 	min-height: 14px;
 }
-.abdo-region-btn.abdo-active {
+.abdo-region-btn.abdo-active,
+.ausc-region-btn.ausc-active {
 	border-color: var(--primary-2) !important;
 	border-width: 2px !important;
 }
@@ -582,13 +585,15 @@ select {
 	padding: 10px 12px;
 	margin-top: 8px;
 }
-.abdo-finding-label {
+.abdo-finding-label,
+.ausc-finding-label {
 	margin: 0 0 2px;
 	font-size: 12px;
 	color: #0f5878;
 	font-weight: 700;
 }
-.abdo-clear-btn {
+.abdo-clear-btn,
+.ausc-clear-btn {
 	margin-top: 8px;
 	font-size: 11.5px;
 	color: var(--danger);
@@ -609,23 +614,6 @@ select {
 .ausc-region-btn.ausc-full {
 	grid-column: 1 / -1;
 }
-.ausc-region-name {
-	display: block;
-	font-size: 13px;
-	font-weight: 700;
-}
-.ausc-region-tags {
-	display: block;
-	font-size: 10px;
-	color: var(--primary);
-	margin-top: 2px;
-	font-weight: 600;
-	min-height: 14px;
-}
-.ausc-region-btn.ausc-active {
-	border-color: var(--primary-2) !important;
-	border-width: 2px !important;
-}
 .ausc-finding-panel {
 	background: var(--primary-soft);
 	border: 1px solid #9ed2e8;
@@ -633,28 +621,6 @@ select {
 	padding: 10px 12px;
 	margin-top: 8px;
 }
-.ausc-finding-label {
-	margin: 0 0 2px;
-	font-size: 12px;
-	color: #0f5878;
-	font-weight: 700;
-}
-.ausc-clear-btn {
-	margin-top: 8px;
-	font-size: 11.5px;
-	color: var(--danger);
-	background: none;
-	border: none;
-	cursor: pointer;
-	padding: 2px 0;
-	font-weight: 600;
-	display: block;
-}
-.ausc-preview {
-	margin-top: 6px;
-	font-size: 12px;
-}
-
 /* ECG lead grid — column-first mirrors standard 12-lead layout (I/II/III, aVR/aVL/aVF, V1-3, V4-6) */
 #ecgLeadsGrid {
 	display: grid;
@@ -1610,28 +1576,33 @@ select {
 	-webkit-mask-size: contain;
 }
 
-/* Stroke-based icons matching section card style */
-.tab[data-tab="history"]::before {
+/* Stroke-based icons matching section card style — data-paeds-tab mirrors data-tab exactly */
+.tab[data-tab="history"]::before,
+.tab[data-paeds-tab="history"]::before {
 	mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 3h9l5 5v13H6V3Z'/%3E%3Cpath d='M15 3v6h5'/%3E%3Cpath d='M9 12h6M9 16h6M9 20h4'/%3E%3C/svg%3E");
 	-webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 3h9l5 5v13H6V3Z'/%3E%3Cpath d='M15 3v6h5'/%3E%3Cpath d='M9 12h6M9 16h6M9 20h4'/%3E%3C/svg%3E");
 }
 
-.tab[data-tab="primary"]::before {
+.tab[data-tab="primary"]::before,
+.tab[data-paeds-tab="primary"]::before {
 	mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 3L4 6.5V12c0 4.8 3.4 8.5 8 9.5 4.6-1 8-4.7 8-9.5V6.5L12 3Z'/%3E%3Cpath d='M11 9.5v5M8.5 12h7'/%3E%3C/svg%3E");
 	-webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 3L4 6.5V12c0 4.8 3.4 8.5 8 9.5 4.6-1 8-4.7 8-9.5V6.5L12 3Z'/%3E%3Cpath d='M11 9.5v5M8.5 12h7'/%3E%3C/svg%3E");
 }
 
-.tab[data-tab="assessment"]::before {
+.tab[data-tab="assessment"]::before,
+.tab[data-paeds-tab="assessment"]::before {
 	mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='6' y='4' width='12' height='16' rx='1.5'/%3E%3Cpath d='M9 4V3h6v1'/%3E%3Cpath d='M9 10h6M9 14h4'/%3E%3C/svg%3E");
 	-webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='6' y='4' width='12' height='16' rx='1.5'/%3E%3Cpath d='M9 4V3h6v1'/%3E%3Cpath d='M9 10h6M9 14h4'/%3E%3C/svg%3E");
 }
 
-.tab[data-tab="plan"]::before {
+.tab[data-tab="plan"]::before,
+.tab[data-paeds-tab="plan"]::before {
 	mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='6' y='4' width='12' height='16' rx='1.5'/%3E%3Cpath d='M9 4V3h6v1'/%3E%3Cpath d='M8.5 11l2 2 4-4M8.5 16l2 2 4-4'/%3E%3C/svg%3E");
 	-webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='6' y='4' width='12' height='16' rx='1.5'/%3E%3Cpath d='M9 4V3h6v1'/%3E%3Cpath d='M8.5 11l2 2 4-4M8.5 16l2 2 4-4'/%3E%3C/svg%3E");
 }
 
-.tab[data-tab="output"]::before {
+.tab[data-tab="output"]::before,
+.tab[data-paeds-tab="output"]::before {
 	mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 3L4 7v10l8 4 8-4V7L12 3Z'/%3E%3Cpath d='M4 7l8 4 8-4'/%3E%3Cpath d='M12 11v10'/%3E%3C/svg%3E");
 	-webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 3L4 7v10l8 4 8-4V7L12 3Z'/%3E%3Cpath d='M4 7l8 4 8-4'/%3E%3Cpath d='M12 11v10'/%3E%3C/svg%3E");
 }
@@ -1676,28 +1647,6 @@ select {
 }
 .section-card[data-section-icon="p-tmt"] > summary::before {
 	background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='%230b2d4d' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 3'/%3E%3C/svg%3E");
-}
-
-/* Paeds tabs — mirror the same icons as the main tabs */
-.tab[data-paeds-tab="history"]::before {
-	mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 3h9l5 5v13H6V3Z'/%3E%3Cpath d='M15 3v6h5'/%3E%3Cpath d='M9 12h6M9 16h6M9 20h4'/%3E%3C/svg%3E");
-	-webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 3h9l5 5v13H6V3Z'/%3E%3Cpath d='M15 3v6h5'/%3E%3Cpath d='M9 12h6M9 16h6M9 20h4'/%3E%3C/svg%3E");
-}
-.tab[data-paeds-tab="primary"]::before {
-	mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 3L4 6.5V12c0 4.8 3.4 8.5 8 9.5 4.6-1 8-4.7 8-9.5V6.5L12 3Z'/%3E%3Cpath d='M11 9.5v5M8.5 12h7'/%3E%3C/svg%3E");
-	-webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 3L4 6.5V12c0 4.8 3.4 8.5 8 9.5 4.6-1 8-4.7 8-9.5V6.5L12 3Z'/%3E%3Cpath d='M11 9.5v5M8.5 12h7'/%3E%3C/svg%3E");
-}
-.tab[data-paeds-tab="assessment"]::before {
-	mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='6' y='4' width='12' height='16' rx='1.5'/%3E%3Cpath d='M9 4V3h6v1'/%3E%3Cpath d='M9 10h6M9 14h4'/%3E%3C/svg%3E");
-	-webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='6' y='4' width='12' height='16' rx='1.5'/%3E%3Cpath d='M9 4V3h6v1'/%3E%3Cpath d='M9 10h6M9 14h4'/%3E%3C/svg%3E");
-}
-.tab[data-paeds-tab="plan"]::before {
-	mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='6' y='4' width='12' height='16' rx='1.5'/%3E%3Cpath d='M9 4V3h6v1'/%3E%3Cpath d='M8.5 11l2 2 4-4M8.5 16l2 2 4-4'/%3E%3C/svg%3E");
-	-webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='6' y='4' width='12' height='16' rx='1.5'/%3E%3Cpath d='M9 4V3h6v1'/%3E%3Cpath d='M8.5 11l2 2 4-4M8.5 16l2 2 4-4'/%3E%3C/svg%3E");
-}
-.tab[data-paeds-tab="output"]::before {
-	mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 3L4 7v10l8 4 8-4V7L12 3Z'/%3E%3Cpath d='M4 7l8 4 8-4'/%3E%3Cpath d='M12 11v10'/%3E%3C/svg%3E");
-	-webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 3L4 7v10l8 4 8-4V7L12 3Z'/%3E%3Cpath d='M4 7l8 4 8-4'/%3E%3Cpath d='M12 11v10'/%3E%3C/svg%3E");
 }
 
 @media (max-width: 720px) {
@@ -2210,15 +2159,16 @@ select {
 	gap: 4px 10px;
 	margin: 0 0 8px;
 }
-.cs-tick {
-	color: #15803d;
+.cs-tick,
+.cs-cross {
 	font-size: 12px;
 	font-weight: 500;
 }
+.cs-tick {
+	color: #15803d;
+}
 .cs-cross {
 	color: #b45309;
-	font-size: 12px;
-	font-weight: 500;
 }
 .cs-label {
 	font-weight: 600;
@@ -2437,37 +2387,43 @@ select {
 }
 
 /* IV colour chips */
-/* 20G Pink */
-.p-gauge-20 {
+/* 20G Pink — shared between paeds (.p-gauge-20) and adult (.a-gauge-20) */
+.p-gauge-20,
+.a-gauge-20 {
 	background: linear-gradient(180deg, #fdf2f8, #fce7f3);
 	border-color: #f472b6;
 	color: #9d174d;
 }
-.p-gauge-20.selected {
+.p-gauge-20.selected,
+.a-gauge-20.selected {
 	background: linear-gradient(180deg, #fce7f3, #fbcfe8);
 	border-color: #db2777;
 	border-width: 2.5px;
 	color: #831843;
 }
-/* 22G Blue */
-.p-gauge-22 {
+/* 22G Blue — shared */
+.p-gauge-22,
+.a-gauge-22 {
 	background: linear-gradient(180deg, #eff6ff, #dbeafe);
 	border-color: #60a5fa;
 	color: #1e40af;
 }
-.p-gauge-22.selected {
+.p-gauge-22.selected,
+.a-gauge-22.selected {
 	background: linear-gradient(180deg, #dbeafe, #bfdbfe);
 	border-color: #2563eb;
 	border-width: 2.5px;
 	color: #1e3a8a;
 }
-/* 24G Yellow */
-.p-gauge-24 {
+/* 24G Yellow — shared */
+.p-gauge-24,
+.a-gauge-24 {
 	background: linear-gradient(180deg, #fefce8, #fef9c3);
 	border-color: #facc15;
 	color: #854d0e;
 }
-.p-gauge-24.selected {
+.p-gauge-24.selected,
+.a-gauge-24.selected {
 	background: linear-gradient(180deg, #fef9c3, #fef08a);
 	border-color: #ca8a04;
 	border-width: 2.5px;
@@ -2523,42 +2479,7 @@ select {
 	border-width: 2.5px;
 	color: #14532d;
 }
-/* 20G Pink */
-.a-gauge-20 {
-	background: linear-gradient(180deg, #fdf2f8, #fce7f3);
-	border-color: #f472b6;
-	color: #9d174d;
-}
-.a-gauge-20.selected {
-	background: linear-gradient(180deg, #fce7f3, #fbcfe8);
-	border-color: #db2777;
-	border-width: 2.5px;
-	color: #831843;
-}
-/* 22G Blue */
-.a-gauge-22 {
-	background: linear-gradient(180deg, #eff6ff, #dbeafe);
-	border-color: #60a5fa;
-	color: #1e40af;
-}
-.a-gauge-22.selected {
-	background: linear-gradient(180deg, #dbeafe, #bfdbfe);
-	border-color: #2563eb;
-	border-width: 2.5px;
-	color: #1e3a8a;
-}
-/* 24G Yellow */
-.a-gauge-24 {
-	background: linear-gradient(180deg, #fefce8, #fef9c3);
-	border-color: #facc15;
-	color: #854d0e;
-}
-.a-gauge-24.selected {
-	background: linear-gradient(180deg, #fef9c3, #fef08a);
-	border-color: #ca8a04;
-	border-width: 2.5px;
-	color: #713f12;
-}
+/* 20G Pink, 22G Blue, 24G Yellow — see paeds gauge section above, definitions shared */
 
 /* Paediatric reference pills */
 .paeds-ref-pill {
@@ -2815,10 +2736,6 @@ select {
 	font-size: 13px;
 }
 
-#paeds-tool.hidden {
-	display: none;
-}
-
 @media (max-width: 480px) {
 	.flacc-row {
 		grid-template-columns: 80px 1fr;
@@ -2937,6 +2854,7 @@ select {
 */
 
 .theme-toggle {
+	position: relative;
 	margin-left: auto;
 	width: 42px;
 	height: 42px;
@@ -2949,6 +2867,11 @@ select {
 	justify-content: center;
 	cursor: pointer;
 	box-shadow: none;
+	flex: 0 0 auto;
+}
+
+.theme-toggle .theme-icon {
+	pointer-events: none;
 	flex: 0 0 auto;
 }
 
@@ -3194,15 +3117,6 @@ html[data-theme="dark"] .footer-logo {
 		width: 18px;
 		height: 18px;
 	}
-}
-
-.theme-toggle {
-	position: relative;
-}
-
-.theme-toggle .theme-icon {
-	pointer-events: none;
-	flex: 0 0 auto;
 }
 
 html[data-theme="light"] .theme-icon-sun,
