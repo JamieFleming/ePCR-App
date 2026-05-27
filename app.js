@@ -634,29 +634,8 @@ const OPTIONS = {
 			["3 or more episodes", "3+\u00d7"],
 		],
 		anticoagulated: ["Yes", "No", "Unknown"],
-		gcs: {
-			eyes: [
-				["1", "1 \u2014 None"],
-				["2", "2 \u2014 Pain"],
-				["3", "3 \u2014 Voice"],
-				["4", "4 \u2014 Spontaneous"],
-			],
-			verbal: [
-				["1", "1 \u2014 None"],
-				["2", "2 \u2014 Sounds"],
-				["3", "3 \u2014 Words"],
-				["4", "4 \u2014 Confused"],
-				["5", "5 \u2014 Oriented"],
-			],
-			motor: [
-				["1", "1 \u2014 None"],
-				["2", "2 \u2014 Extension"],
-				["3", "3 \u2014 Flex."],
-				["4", "4 \u2014 Withdrawal"],
-				["5", "5 \u2014 Localises"],
-				["6", "6 \u2014 Obeys"],
-			],
-		},
+		// GCS options removed \u2014 head injury now uses the shared GCS_EYE / GCS_VERBAL /
+		// GCS_MOTOR constants via buildGcsCalcHTML("headGcs").
 	},
 
 	// ── Referrals ───────────────────────────────────────────────────
@@ -1544,9 +1523,7 @@ function populateHeadInjuryChips() {
 	);
 	populateChipGroup("headAnterograde", OPTIONS.headInjury.amnesia);
 	populateChipGroup("headVomitingCount", OPTIONS.headInjury.vomiting);
-	populateChipGroup("headGcsE", OPTIONS.headInjury.gcs.eyes);
-	populateChipGroup("headGcsV", OPTIONS.headInjury.gcs.verbal);
-	populateChipGroup("headGcsM", OPTIONS.headInjury.gcs.motor);
+	// headGcsE/V/M removed — GCS now uses the shared buildGcsCalcHTML("headGcs") calculator
 	populateChipGroup("headAnticoag", OPTIONS.headInjury.anticoagulated);
 }
 
@@ -1752,7 +1729,7 @@ const ROS = {
 	integ: {
 		title: "Integumentary",
 		items: [
-			["fever", "No fever", "Pyrexia present"],
+			["fever", "No fever", "Fever reported"],
 			["rigors", "No rigors", "Rigors reported"],
 			["fatigue", "No fatigue", "Fatigue reported"],
 			["colour", "Normal colour", "Abnormal colour noted"],
@@ -2195,6 +2172,8 @@ function init() {
 	populateFallsLieTimeChips();
 	populateFallsAnticoagChips();
 	populateHeadInjuryChips();
+	const headGcsWrap = $("#headGcsCalcWrap");
+	if (headGcsWrap) headGcsWrap.innerHTML = buildGcsCalcHTML("headGcs");
 	buildPainScoreGrids();
 	buildAbcde();
 	buildRos();
@@ -2473,12 +2452,16 @@ function updateGcsTally(prefix) {
 	}
 	const total = e4 + v5 + m6;
 	if (tally) tally.textContent = `GCS: E${e4} V${v5} M${m6} = ${total}/15`;
-	// Only sync to the primary survey hidden gcsScore field for the main calculators
-	if (!prefix.startsWith("obsGcs")) {
+
+	// Sync total to the primary survey hidden input — but only for the ABCDE/neuro
+	// calculators, not for head injury or obs-set calculators.
+	const isPrimary = prefix === "gcsCalc" || prefix === "rosGcs";
+	if (isPrimary) {
 		const scoreEl = $("#gcsScore");
 		if (scoreEl) scoreEl.value = total;
 	}
-	// For obs GCS, trigger NEWS2 recalculation on the parent obs-set
+
+	// For obs-set GCS, trigger NEWS2 recalculation on the parent obs-set element.
 	if (prefix.startsWith("obsGcs")) {
 		const idx = prefix.replace("obsGcs", "");
 		const setEl = document.querySelector(`.obs-set[data-obs-idx="${idx}"]`);
@@ -3111,7 +3094,13 @@ function buildTreatmentSection() {
  * @param {object}   [stateObj=state] - State object that owns the entries array (defaults to adult state).
  * @returns {{ render: Function, remove: Function }}
  */
-function makeEntryManager(stateKey, containerId, formatFn, removeAttr, stateObj = state) {
+function makeEntryManager(
+	stateKey,
+	containerId,
+	formatFn,
+	removeAttr,
+	stateObj = state,
+) {
 	const render = () => {
 		const root = $(`#${containerId}`);
 		if (!root) return;
@@ -3264,19 +3253,32 @@ function addIvEntry(isPaeds = false) {
 		entry.flushed = val(`${p}Flushed`);
 		entry.fluids = val(`${p}Fluids`);
 	} else {
-		entry.fluids = [val(`${p}Flushed`), val(`${p}Fluids`)].filter(Boolean).join("; ");
+		entry.fluids = [val(`${p}Flushed`), val(`${p}Fluids`)]
+			.filter(Boolean)
+			.join("; ");
 	}
 	stateObj[stateKey].push(entry);
 
-	[`${p}Type`, `${p}Gauge`, `${p}Site`, `${p}Outcome`, `${p}Flushed`, `${p}Fluids`, `${p}Time`].forEach((id) => {
+	[
+		`${p}Type`,
+		`${p}Gauge`,
+		`${p}Site`,
+		`${p}Outcome`,
+		`${p}Flushed`,
+		`${p}Fluids`,
+		`${p}Time`,
+	].forEach((id) => {
 		const el = $(`#${id}`);
 		if (el) el.value = "";
 	});
-	[`${p}GaugeWrap`, `${p}IvSites`, `${p}IoSites`, `${p}FlushWrap`].forEach((id) => {
-		$(`#${id}`)?.classList.add("hidden");
-	});
-	$$(`[data-radio-group='${p}Type'] [data-value], [data-radio-group='${p}Gauge'] [data-value], [data-radio-group='${p}Site'] [data-value], [data-radio-group='${p}Outcome'] [data-value], [data-radio-group='${p}Flushed'] [data-value]`)
-		.forEach((c) => c.classList.remove("selected"));
+	[`${p}GaugeWrap`, `${p}IvSites`, `${p}IoSites`, `${p}FlushWrap`].forEach(
+		(id) => {
+			$(`#${id}`)?.classList.add("hidden");
+		},
+	);
+	$$(
+		`[data-radio-group='${p}Type'] [data-value], [data-radio-group='${p}Gauge'] [data-value], [data-radio-group='${p}Site'] [data-value], [data-radio-group='${p}Outcome'] [data-value], [data-radio-group='${p}Flushed'] [data-value]`,
+	).forEach((c) => c.classList.remove("selected"));
 
 	renderFn();
 }
@@ -3290,7 +3292,8 @@ function addIvEntry(isPaeds = false) {
 function addDrugEntry(isPaeds = false) {
 	const p = isPaeds ? "pDrug" : "drug";
 	const nameField = isPaeds ? `${p}Name` : "drugName";
-	const drug = val(nameField) === "Other" ? val(`${p}NameOther`) : val(nameField);
+	const drug =
+		val(nameField) === "Other" ? val(`${p}NameOther`) : val(nameField);
 	if (!drug) return;
 
 	const entry = {
@@ -3307,14 +3310,22 @@ function addDrugEntry(isPaeds = false) {
 		state.drugEntries.push(entry);
 	}
 
-	const clearIds = [`${p}Name`, `${p}NameOther`, `${p}Dose`, `${p}Route`, `${p}Time`];
+	const clearIds = [
+		`${p}Name`,
+		`${p}NameOther`,
+		`${p}Dose`,
+		`${p}Route`,
+		`${p}Time`,
+	];
 	if (isPaeds) clearIds.push("pDrugSingleResponse");
 	clearIds.forEach((id) => {
 		const el = $(`#${id}`);
 		if (el) el.value = "";
 	});
 	$(`#${p}NameOther`)?.classList.add("hidden");
-	$$(`[data-radio-group='${p}Route'] [data-value]`).forEach((c) => c.classList.remove("selected"));
+	$$(`[data-radio-group='${p}Route'] [data-value]`).forEach((c) =>
+		c.classList.remove("selected"),
+	);
 
 	renderDrugEntries(isPaeds);
 }
@@ -4819,27 +4830,8 @@ function bindEvents() {
 		const v = val("headRetrograde");
 		$("#headRetroDurationWrap")?.classList.toggle("hidden", v !== "Yes");
 	});
-	// GCS calculator — recalculate total whenever E, V, or M changes
-	["headGcsE", "headGcsV", "headGcsM"].forEach((id) => {
-		$("#" + id)?.addEventListener("change", () => {
-			const e = parseInt(val("headGcsE")) || 0;
-			const v = parseInt(val("headGcsV")) || 0;
-			const m = parseInt(val("headGcsM")) || 0;
-			const total = e + v + m;
-			const hasAll = e && v && m;
-			const display = $("#headGcsTotalDisplay");
-			const valueEl = $("#headGcsTotalValue");
-			if (hasAll && display && valueEl) {
-				valueEl.textContent = total;
-				valueEl.style.color = total < 15 ? "#c0392b" : "#1a7a3c";
-				display.classList.remove("hidden");
-			} else if (display) {
-				display.classList.add("hidden");
-			}
-			if ($("#headGcsTotal"))
-				$("#headGcsTotal").value = hasAll ? String(total) : "";
-		});
-	});
+	// Head injury GCS is now handled by the shared .gcs-btn click delegation above —
+	// no separate listeners needed; updateGcsTally("headGcs") is called automatically.
 	$("#handoverFormat").addEventListener("change", () => {
 		const fmt = $("#handoverFormat").value;
 		const isLah = fmt === "Leave at Home";
@@ -5205,7 +5197,9 @@ function buildConveyTransferChips(
 function toggleConveyChip(button) {
 	const isPaeds = button.classList.contains("p-convey-chip");
 	const changeWrapId = isPaeds ? "pConveyChangeWrap" : "conveyChangeWrap";
-	const escalateWrapId = isPaeds ? "pConveyEscalatedWrap" : "conveyEscalatedWrap";
+	const escalateWrapId = isPaeds
+		? "pConveyEscalatedWrap"
+		: "conveyEscalatedWrap";
 	const stableSelector = isPaeds
 		? '.p-convey-chip[data-normal="Remained stable throughout"]'
 		: '.convey-chip[data-normal="Remained stable throughout"]';
@@ -6031,7 +6025,11 @@ function buildLahSbarText() {
 
 function getNiceCTCriteria() {
 	const criteria = [];
-	const gcsTotal = parseInt(val("headGcsTotal")) || 0;
+	const gcsE = parseInt($("#headGcsEye")?.dataset.gcsSelected || "", 10) || 0;
+	const gcsV =
+		parseInt($("#headGcsVerbal")?.dataset.gcsSelected || "", 10) || 0;
+	const gcsM = parseInt($("#headGcsMotor")?.dataset.gcsSelected || "", 10) || 0;
+	const gcsTotal = gcsE && gcsV && gcsM ? gcsE + gcsV + gcsM : 0;
 	if (gcsTotal > 0 && gcsTotal < 15)
 		criteria.push("GCS <15 at assessment or 2 hours post-injury");
 	if (
@@ -6096,10 +6094,11 @@ function buildHeadInjuryText() {
 			: "";
 	const symptomsLine = `Symptoms: ${listSet(state.headSymptoms, "None reported")}${vomitSuffix}.`;
 
-	const gcsE = val("headGcsE"),
-		gcsV = val("headGcsV"),
-		gcsM = val("headGcsM");
-	const gcsTotal = parseInt(val("headGcsTotal")) || 0;
+	const gcsE = parseInt($("#headGcsEye")?.dataset.gcsSelected || "", 10) || 0;
+	const gcsV =
+		parseInt($("#headGcsVerbal")?.dataset.gcsSelected || "", 10) || 0;
+	const gcsM = parseInt($("#headGcsMotor")?.dataset.gcsSelected || "", 10) || 0;
+	const gcsTotal = gcsE && gcsV && gcsM ? gcsE + gcsV + gcsM : 0;
 	const gcsSuffix = gcsTotal
 		? ` GCS ${gcsTotal}/15 (E${gcsE} V${gcsV} M${gcsM}).`
 		: "";
@@ -7808,22 +7807,23 @@ const paedsState = {
 
 // Entry managers for paeds IV and drug lists — instantiated here so they close
 // over paedsState which is defined immediately above.
-const { render: renderPaedsIvEntries, remove: removePaedsIvEntry } = makeEntryManager(
-	"pIvEntries",
-	"pVaEntries",
-	(e) => {
-		const parts = [e.type];
-		if (e.gauge) parts.push(e.gauge);
-		if (e.site) parts.push(`— ${e.site}`);
-		if (e.outcome) parts.push(`(${e.outcome})`);
-		if (e.flushed) parts.push(`• ${e.flushed}`);
-		if (e.fluids) parts.push(`+ ${e.fluids}`);
-		const desc = parts.join(" ");
-		return e.time ? `[${e.time}] ${desc}` : desc;
-	},
-	"remove-pva",
-	paedsState,
-);
+const { render: renderPaedsIvEntries, remove: removePaedsIvEntry } =
+	makeEntryManager(
+		"pIvEntries",
+		"pVaEntries",
+		(e) => {
+			const parts = [e.type];
+			if (e.gauge) parts.push(e.gauge);
+			if (e.site) parts.push(`— ${e.site}`);
+			if (e.outcome) parts.push(`(${e.outcome})`);
+			if (e.flushed) parts.push(`• ${e.flushed}`);
+			if (e.fluids) parts.push(`+ ${e.fluids}`);
+			const desc = parts.join(" ");
+			return e.time ? `[${e.time}] ${desc}` : desc;
+		},
+		"remove-pva",
+		paedsState,
+	);
 
 /**
  * Initialises the paediatric ePRF tool on first use.
