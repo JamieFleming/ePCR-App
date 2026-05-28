@@ -1,37 +1,23 @@
 "use strict";
 
-// ══════════════════════════════════════════════════════════════════
-//  UTILITY HELPERS
-//  Shorthand DOM selectors and commonly-used field readers.
-// ══════════════════════════════════════════════════════════════════
 
-// Selects the first matching element within an optional root (defaults to document).
 const $ = (selector, root = document) => root.querySelector(selector);
 
-// Selects all matching elements, returned as a real Array, within an optional root.
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
-// Returns the trimmed value of an input/select/textarea by ID, or "" if absent.
 const val = (id) => ($(`#${id}`)?.value || "").trim();
 
-// Returns true if the checkbox or radio with the given ID is checked.
 const isChecked = (id) => Boolean($(`#${id}`)?.checked);
 
-// Returns the resolved onset time — uses the free-type value when "Other" is chosen.
 const onsetTime = () =>
 	val("onsetTime") === "Other" ? val("onsetTimeOther") : val("onsetTime");
 
-// Returns a formatted clock-time suffix string, e.g. " (at 14:30)", or "".
 const onsetClockSuffix = () => {
 	const t = val("onsetClockTime");
 	return t ? ` (at ${t})` : "";
 };
 
-/**
- * Returns the systolic blood pressure from the "bp" field (e.g. "120/80" → 120).
- * Returns null if the field is empty or cannot be parsed.
- * @returns {number|null}
- */
+
 function rfSystolic() {
 	const bpStr = val("bp");
 	if (!bpStr) return null;
@@ -39,20 +25,11 @@ function rfSystolic() {
 	return isNaN(systolic) ? null : systolic;
 }
 
-/**
- * Evaluates active clinical red flags from the current form state.
- * Returns an empty array — the red flags module is currently inactive.
- * @returns {string[]}
- */
+
 function evaluateRedFlags() {
 	return [];
 }
 
-// ══════════════════════════════════════════════════════════════════
-//  APPLICATION STATE
-//  Mutable state shared across all adult ePRF sections. Sets hold multi-select
-//  chip values; arrays hold structured entry records (drugs, IV, injuries, etc.).
-// ══════════════════════════════════════════════════════════════════
 
 const state = {
 	mapMode: "site",
@@ -122,23 +99,12 @@ const state = {
 	worseningAuto: true,
 	pReferrals: new Set(),
 };
-
-// Temporary state for the injury entry form — holds selections that are being
-// built before the user commits them with "Add Injury".
 let pendingInjuryTypes = new Set();
 let pendingInjuryInterventions = new Set();
-let pendingInjuryNv = {}; // key → "normal" | "abnormal"
+let pendingInjuryNv = {};
 
-// ══════════════════════════════════════════════════════════════════
-//  CONSTANTS & CONFIGURATION
-//  Static data used to build UI and drive clinical logic. Kept as
-//  plain arrays/objects so they can be read without running the app.
-// ══════════════════════════════════════════════════════════════════
-
-// Disability (D) chip pairs that should flip together when one is toggled abnormal.
 const ABC_DISABILITY_LINKS = [["GCS 15", "AOx4"]];
 
-// Transfer / handover checklist chips — shared by adult and paeds conveyance sections.
 const CONVEY_TRANSFER = [
 	["Consent to conveyance obtained", "Consent not obtained"],
 	["Continuous monitoring and reassessment", "Monitoring not maintained"],
@@ -389,9 +355,7 @@ const WORSENING_PC = {
 	},
 };
 
-// CLINICAL CONTENT — UI OPTION LISTS
-// All chip grids, select menus, and multi-group grids across the ePRF.
-// Access via OPTIONS.<domain>.<property>, e.g. OPTIONS.headInjury.gcs.eyes
+// Option lists
 
 const OPTIONS = {
 	// Pain assessment - SOCRATES
@@ -535,7 +499,6 @@ const OPTIONS = {
 			"Foot",
 			"No apparent injury found",
 		],
-		// Chip options
 		previousCount: [
 			["None — first fall", "First fall"],
 			["1 previous fall", "1 prev"],
@@ -634,11 +597,8 @@ const OPTIONS = {
 			["3 or more episodes", "3+\u00d7"],
 		],
 		anticoagulated: ["Yes", "No", "Unknown"],
-		// GCS options removed \u2014 head injury now uses the shared GCS_EYE / GCS_VERBAL /
-		// GCS_MOTOR constants via buildGcsCalcHTML("headGcs").
 	},
 
-	// ── Referrals ───────────────────────────────────────────────────
 	referrals: {
 		adult: [
 			"Self-care",
@@ -664,7 +624,6 @@ const OPTIONS = {
 		],
 	},
 
-	// Abdo Regions
 	abdominal: {
 		regions: [
 			"R Hypochondriac",
@@ -679,7 +638,6 @@ const OPTIONS = {
 		],
 	},
 
-	// ── Seizure ─────────────────────────────────────────────────────
 	seizure: {
 		count: [
 			["1", "1"],
@@ -711,7 +669,6 @@ const OPTIONS = {
 		],
 	},
 
-	// ── Stroke / BE-FAST PASTA ──────────────────────────────────────
 	stroke: {
 		yesNoUnknown: ["Yes", "No", "Unknown"],
 		side: ["Left", "Right", "Bilateral"],
@@ -1282,7 +1239,6 @@ const OPTIONS = {
 				items: ["Handover from another crew", "Other"],
 			},
 		],
-		// Chip group — {value, label} pairs for compact display labels
 		mobility: [
 			{ value: "Fully mobile", label: "Fully mobile" },
 			{ value: "Mobilised independently", label: "Independent" },
@@ -1351,18 +1307,7 @@ const ABDO_FINDING_SHORT = {
 	Rovsings: "Rv",
 };
 
-// ══════════════════════════════════════════════════════════════════
-//  UI POPULATION HELPERS
-//  Generic functions that fill <select> elements and chip-group
-//  containers from the OPTIONS config. All domain-specific populate
-//  calls delegate to these.
-// ══════════════════════════════════════════════════════════════════
 
-/**
- * Populates a <select> element with <optgroup> sections.
- * @param {string} selectId - The ID of the target <select>.
- * @param {Array<{group: string, items: string[]}>} groups
- */
 function populateGroupedSelect(selectId, groups) {
 	const select = $(`#${selectId}`);
 	if (!select) return;
@@ -1379,11 +1324,7 @@ function populateGroupedSelect(selectId, groups) {
 	});
 }
 
-/**
- * Populates a <select> with flat [value, label] options.
- * @param {string} selectId - The ID of the target <select>.
- * @param {Array<[string, string]>} options - Each entry is [value, displayLabel].
- */
+
 function populateFlatSelect(selectId, options) {
 	const select = $(`#${selectId}`);
 	if (!select) return;
@@ -1395,13 +1336,7 @@ function populateFlatSelect(selectId, options) {
 	});
 }
 
-/**
- * Populates a [data-radio-group] container with radio-chip buttons.
- * Each item may be a plain string (used as both value and label) or
- * a [value, label] pair.
- * @param {string} radioGroup - The data-radio-group attribute value.
- * @param {Array<string|[string,string]>} items
- */
+
 function populateChipGroup(radioGroup, items) {
 	const group = $(`[data-radio-group='${radioGroup}']`);
 	if (!group) return;
@@ -1416,13 +1351,7 @@ function populateChipGroup(radioGroup, items) {
 	});
 }
 
-/**
- * Populates a container element (by ID) with radio-chip buttons from a
- * [value, label] array.  Used for VA site grids that are addressed by ID
- * rather than data-radio-group.
- * @param {string} containerId - The ID of the target container element.
- * @param {Array<[string, string]>} items
- */
+
 function populateSiteChips(containerId, items) {
 	const container = $(`#${containerId}`);
 	if (!container) return;
@@ -1436,10 +1365,7 @@ function populateSiteChips(containerId, items) {
 	});
 }
 
-/**
- * Populates a gauge chip group with colour-coded gauge buttons from OPTIONS.gauges.
- * @param {string} groupId - The data-radio-group attribute value.
- */
+
 function populateGaugeChips(groupId) {
 	const group = $(`[data-radio-group='${groupId}']`);
 	if (!group) return;
@@ -1453,7 +1379,7 @@ function populateGaugeChips(groupId) {
 	});
 }
 
-// ── Domain-specific populate wrappers ──────────────────────────────
+
 
 function populatePcSelect() {
 	populateGroupedSelect("pcSelect", OPTIONS.presentingComplaint);
@@ -1467,7 +1393,7 @@ function populateOaFoundSelect() {
 	populateGroupedSelect("oaFound", OPTIONS.onArrival.found);
 }
 
-/** Populates the On Arrival mobility chip group. */
+
 function populateMobilityChips() {
 	const group = $("[data-radio-group='oaMobility']");
 	if (!group) return;
@@ -1523,7 +1449,6 @@ function populateHeadInjuryChips() {
 	);
 	populateChipGroup("headAnterograde", OPTIONS.headInjury.amnesia);
 	populateChipGroup("headVomitingCount", OPTIONS.headInjury.vomiting);
-	// headGcsE/V/M removed — GCS now uses the shared buildGcsCalcHTML("headGcs") calculator
 	populateChipGroup("headAnticoag", OPTIONS.headInjury.anticoagulated);
 }
 
@@ -1834,12 +1759,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	initRespCounter();
 });
 
-// ══════════════════════════════════════════════════════════════════
-//  APP NAVIGATION
-//  Dashboard / feature switching — shows and hides the relevant
-//  tool panel and triggers lazy initialisation on first visit.
-// ══════════════════════════════════════════════════════════════════
-
+//Dashboard
 function showDashboard() {
 	// Reset paeds mode
 	if (paedsMode) {
@@ -1861,12 +1781,7 @@ function showDashboard() {
 	$("#resetButton")?.classList.add("hidden");
 }
 
-/**
- * Shows the specified feature panel and hides the dashboard.
- * Triggers lazy initialisation of the feature on first visit.
- *
- * @param {string} feature - Feature identifier: "eprf" | "obsrec" | "news2" | "paeds".
- */
+
 function showFeature(feature) {
 	$("#dashboard")?.classList.add("hidden");
 	$("#backButton")?.classList.remove("hidden");
@@ -1909,7 +1824,7 @@ function initDashboard() {
 	});
 	$("#backButton")?.addEventListener("click", showDashboard);
 
-	// BNF search form — opens NICE BNF in a new tab
+	// BNF search form
 	$("#bnfSearchForm")?.addEventListener("submit", (e) => {
 		e.preventDefault();
 		const query = ($("#bnfSearchInput")?.value || "").trim();
@@ -1919,15 +1834,16 @@ function initDashboard() {
 	});
 }
 
-// ── Obs Recorder Tool ──────────────────────────────────────────────────────
+// Obs recorder
 
 let _obsRecInited = false;
+let _paedsInited = false;
+let paedsMode = false;
 
 function initObsRecorder() {
 	if (_obsRecInited) return;
 	_obsRecInited = true;
 
-	// Add first obs set automatically
 	const container = $("#obsRecContainer");
 	if (container && container.children.length === 0) {
 		container.append(createObsSet());
@@ -1940,7 +1856,7 @@ function initObsRecorder() {
 	});
 }
 
-// ── NEWS2 Tool ─────────────────────────────────────────────────────────────
+// NEWS score
 
 let _news2Inited = false;
 let _news2Scale = 1;
@@ -1970,17 +1886,14 @@ function initNews2() {
 	_news2Inited = true;
 	_news2Scale = 1;
 
-	// Scale toggle
 	$$("[data-n2-scale]", $("#news2-tool")).forEach((btn) => {
 		btn.addEventListener("click", () => {
 			_news2Scale = parseInt(btn.dataset.n2Scale);
 			$$("[data-n2-scale]", $("#news2-tool")).forEach((b) =>
 				b.classList.toggle("selected", b === btn),
 			);
-			// Switch visible SpO2 chip group
 			$("#n2Spo2S1Group")?.classList.toggle("hidden", _news2Scale !== 1);
 			$("#n2Spo2S2Group")?.classList.toggle("hidden", _news2Scale !== 2);
-			// Clear any SpO2 selection when scale changes
 			$$("[data-n2-param='spo2']", $("#news2-tool")).forEach((c) =>
 				c.classList.remove("selected"),
 			);
@@ -1988,7 +1901,6 @@ function initNews2() {
 		});
 	});
 
-	// Chip selection — tap to select, tap again to deselect
 	$$(".n2-chip", $("#news2-tool")).forEach((chip) => {
 		chip.addEventListener("click", () => {
 			const param = chip.dataset.n2Param;
@@ -2001,7 +1913,6 @@ function initNews2() {
 		});
 	});
 
-	// Reset button
 	$("#n2ResetBtn")?.addEventListener("click", resetNews2);
 
 	updateNews2Score();
@@ -2133,18 +2044,7 @@ function buildPainScoreGrids() {
 	});
 }
 
-// ══════════════════════════════════════════════════════════════════
-//  APPLICATION INITIALISATION
-//  init() is the single entry point for the adult ePRF.  It populates
-//  all selects and chip groups, builds the interactive DOM sections,
-//  and wires up event listeners.  Called once on DOMContentLoaded.
-// ══════════════════════════════════════════════════════════════════
-
-/**
- * Primary entry point for the adult ePRF.
- * Populates all selects, chip groups, and dynamic DOM sections, then
- * wires all event listeners.  Called exactly once on DOMContentLoaded.
- */
+// App Init
 function init() {
 	populatePcSelect();
 	populateCallerSelect();
@@ -2177,9 +2077,9 @@ function init() {
 	buildPainScoreGrids();
 	buildAbcde();
 	buildRos();
-	buildUrinaryChips(); // after buildRos so ROS DOM elements exist
-	buildOptionButtons(); // after buildRos so ROS containers exist
-	buildAbdoGrid(); // after buildOptionButtons so #abdoRegionsGrid exists
+	buildUrinaryChips();
+	buildOptionButtons();
+	buildAbdoGrid();
 	buildAuscGrid();
 	buildEcgSection();
 	buildInjurySection();
@@ -2187,15 +2087,6 @@ function init() {
 	buildSeizureSection();
 	buildMhSection();
 	buildStrokeCard();
-	// Handover format chips — default to SBAR
-	populateChipGroup("handoverFormat", OPTIONS.handoverFormat);
-	$("[data-radio-group='handoverFormat'] [data-value='SBAR']")?.classList.add(
-		"selected",
-	);
-
-	buildConveyTransferChips();
-
-	// Conveyance decision chips — default to "Conveyed" for both adult and paeds
 	populateChipGroup("conveyanceDecision", OPTIONS.conveyanceDecision);
 	$(
 		"[data-radio-group='conveyanceDecision'] [data-value='Conveyed']",
@@ -2204,8 +2095,6 @@ function init() {
 	$(
 		"[data-radio-group='pConveyDecision'] [data-value='Conveyed']",
 	)?.classList.add("selected");
-
-	// Risk checkboxes (non-conveyance section) — all pre-checked
 	const riskGrid = $("#riskChecksGrid");
 	if (riskGrid) {
 		OPTIONS.riskChecks.forEach(({ id, label }) => {
@@ -2221,7 +2110,6 @@ function init() {
 		});
 	}
 
-	// Legal / capacity consideration chips
 	const legalGrid = $("#legalConsiderationsChips");
 	if (legalGrid) {
 		OPTIONS.legalChips.forEach(({ key, label }) => {
@@ -2234,7 +2122,6 @@ function init() {
 		});
 	}
 
-	// Receiving hospital grouped select + trailing "Other hospital" flat option
 	populateGroupedSelect("conveyHospital", OPTIONS.conveyHospitals);
 	(() => {
 		const sel = $("#conveyHospital");
@@ -2244,10 +2131,8 @@ function init() {
 		sel.appendChild(opt);
 	})();
 
-	// Receiving department chips
 	populateChipGroup("conveyDepartment", OPTIONS.conveyDepartment);
 
-	// Mobilisation to vehicle chips
 	populateChipGroup("mobilisationToVehicle", OPTIONS.mobilisationToVehicle);
 
 	buildCapacitySection();
@@ -2268,13 +2153,7 @@ function init() {
 	bindRadioChipGroups();
 }
 
-// ══════════════════════════════════════════════════════════════════
-//  DOM BUILDERS — ADULT ePRF
-//  Functions that construct interactive UI components (chip grids,
-//  GCS calculators, body maps, ABCDE sections) and insert them into
-//  the page.  Called once during init(); not re-run on interaction.
-// ══════════════════════════════════════════════════════════════════
-
+// Builders
 function buildOptionButtons() {
 	// Maps data-state attribute keys to their OPTIONS paths.
 	const gridMap = {
@@ -2453,15 +2332,12 @@ function updateGcsTally(prefix) {
 	const total = e4 + v5 + m6;
 	if (tally) tally.textContent = `GCS: E${e4} V${v5} M${m6} = ${total}/15`;
 
-	// Sync total to the primary survey hidden input — but only for the ABCDE/neuro
-	// calculators, not for head injury or obs-set calculators.
 	const isPrimary = prefix === "gcsCalc" || prefix === "rosGcs";
 	if (isPrimary) {
 		const scoreEl = $("#gcsScore");
 		if (scoreEl) scoreEl.value = total;
 	}
 
-	// For obs-set GCS, trigger NEWS2 recalculation on the parent obs-set element.
 	if (prefix.startsWith("obsGcs")) {
 		const idx = prefix.replace("obsGcs", "");
 		const setEl = document.querySelector(`.obs-set[data-obs-idx="${idx}"]`);
@@ -2470,7 +2346,6 @@ function updateGcsTally(prefix) {
 }
 
 // ROS Findings
-
 const AUSC_REGIONS = ["R upper", "R lower", "L upper", "L lower"];
 const AUSC_FINDINGS = [
 	"Clear",
@@ -2761,9 +2636,7 @@ const MSE_PERCEPTION = [
 ];
 const MSE_INSIGHT = ["Full insight", "Partial insight", "No insight"];
 
-// DOM BUILDERS — SPECIALIST SECTIONS
-// Auscultation, ECG, injury, treatment (IV/drugs/airway/wound), seizure,
-// mental health, and ROS cards built from the constants above.
+// ROS Builders
 
 function buildAuscGrid() {
 	const grid = $("#auscRegionGrid");
@@ -2846,7 +2719,6 @@ function buildInjurySection() {
 	const typeGrid = $("#injuryTypeGrid");
 	const intGrid = $("#injuryInterventionGrid");
 	if (!typeGrid || !intGrid) return;
-	// Populate neurovascular status chips (ROS-style: default normal, tap for abnormal)
 	const nvGrid = $("#injuryNvGrid");
 	if (nvGrid) {
 		OPTIONS.injuryNv.forEach(({ key, normal, abnormal }) => {
@@ -2861,7 +2733,6 @@ function buildInjurySection() {
 			nvGrid.append(btn);
 		});
 	}
-	// Populate body region select
 	const regionSelect = $("#injuryRegion");
 	if (regionSelect) {
 		OPTIONS.injuryRegions.forEach(({ group, items }) => {
@@ -2898,7 +2769,6 @@ function addInjuryEntry() {
 	const region = val("injuryRegion");
 	if (!region) return;
 
-	// Substitute "Other" chips with the free-text value when provided
 	const typeOther = val("injuryTypeOther");
 	const intOther = val("injuryIntOther");
 	const types = [...pendingInjuryTypes].map((t) =>
@@ -2907,7 +2777,6 @@ function addInjuryEntry() {
 	const interventions = [...pendingInjuryInterventions].map((i) =>
 		i === "Other" && intOther ? intOther : i,
 	);
-	// Collect abnormal NV findings; if all normal, record as "NV intact"
 	const nvAbnormal = OPTIONS.injuryNv
 		.filter(({ key }) => pendingInjuryNv[key] === "abnormal")
 		.map(({ abnormal }) => abnormal);
@@ -3077,23 +2946,8 @@ function buildTreatmentSection() {
 	});
 }
 
-// ══════════════════════════════════════════════════════════════════
-//  TREATMENT & ENTRY MANAGEMENT
-//  Factory, render, add, and remove functions for IV access, drug
-//  administration, and clinical change entries.  Adult and paeds
-//  variants share the same parameterized functions.
-// ══════════════════════════════════════════════════════════════════
+// interventions
 
-/**
- * Factory that creates a matched render/remove pair for a list of form entries.
- *
- * @param {string}   stateKey    - Key on `stateObj` that holds the entries array.
- * @param {string}   containerId - ID of the DOM element that receives the rendered rows.
- * @param {Function} formatFn    - Maps an entry object → display string for the row label.
- * @param {string}   removeAttr  - data-attribute name (without "data-") used on the remove button.
- * @param {object}   [stateObj=state] - State object that owns the entries array (defaults to adult state).
- * @returns {{ render: Function, remove: Function }}
- */
 function makeEntryManager(
 	stateKey,
 	containerId,
@@ -3134,12 +2988,7 @@ const { render: renderIvEntries, remove: removeIvEntry } = makeEntryManager(
 	"remove-va",
 );
 
-/**
- * Renders the drug entry list for adult or paediatric treatment section.
- * Each row includes a repeat (↺) and remove (×) action button.
- *
- * @param {boolean} [isPaeds=false] - When true, renders from `paedsState.pDrugEntries`.
- */
+
 function renderDrugEntries(isPaeds = false) {
 	const entries = isPaeds ? paedsState.pDrugEntries : state.drugEntries;
 	const containerId = isPaeds ? "pDrugEntries" : "drugEntries";
@@ -3161,12 +3010,7 @@ function renderDrugEntries(isPaeds = false) {
 	});
 }
 
-/**
- * Removes a drug entry at the given index and re-renders the list.
- *
- * @param {number}  index        - Index of the entry to remove.
- * @param {boolean} [isPaeds=false] - When true, removes from `paedsState.pDrugEntries`.
- */
+
 function removeDrugEntry(index, isPaeds = false) {
 	if (isPaeds) {
 		paedsState.pDrugEntries.splice(index, 1);
@@ -3176,12 +3020,7 @@ function removeDrugEntry(index, isPaeds = false) {
 	renderDrugEntries(isPaeds);
 }
 
-/**
- * Pre-populates the adult drug form with the values from a previously-added entry,
- * setting the time to the current clock time for the repeat dose.
- *
- * @param {number} index - Index in `state.drugEntries` to repeat.
- */
+
 function repeatDrugEntry(index) {
 	const entry = state.drugEntries[index];
 	if (!entry) return;
@@ -3224,13 +3063,7 @@ const { render: renderChangeEntries, remove: removeChangeEntry } =
 		"remove-change",
 	);
 
-/**
- * Commits the current vascular access form to state and refreshes the entry list.
- * Shared by adult and paediatric forms; the `isPaeds` flag selects the correct
- * state object, field prefix, and render function.
- *
- * @param {boolean} [isPaeds=false]
- */
+
 function addIvEntry(isPaeds = false) {
 	const p = isPaeds ? "pVa" : "va";
 	const stateObj = isPaeds ? paedsState : state;
@@ -3249,7 +3082,6 @@ function addIvEntry(isPaeds = false) {
 		time: val(`${p}Time`),
 	};
 	if (isPaeds) {
-		// Paeds stores flushed and fluids separately for richer rendering.
 		entry.flushed = val(`${p}Flushed`);
 		entry.fluids = val(`${p}Fluids`);
 	} else {
@@ -3283,12 +3115,7 @@ function addIvEntry(isPaeds = false) {
 	renderFn();
 }
 
-/**
- * Commits the current drug form to state and refreshes the entry list.
- * Shared by adult and paediatric forms.
- *
- * @param {boolean} [isPaeds=false]
- */
+
 function addDrugEntry(isPaeds = false) {
 	const p = isPaeds ? "pDrug" : "drug";
 	const nameField = isPaeds ? `${p}Name` : "drugName";
@@ -3401,14 +3228,7 @@ function buildTreatmentText() {
 	return lines.length ? lines.join("\n") : "No interventions documented.";
 }
 
-// ══════════════════════════════════════════════════════════════════
-//  SPECIALIST CLINICAL SECTION BUILDERS
-//  DOM builders for condition-specific assessment sections: seizure,
-//  mental health, stroke (FAST-PASTA), gynaecology, safeguarding,
-//  capacity, ROS, and ABCDE primary survey.
-// ══════════════════════════════════════════════════════════════════
-
-// --- Seizure assessment ---
+// Seizure assessment
 
 function buildSeizureSection() {
 	buildButtonGrid(
@@ -3450,7 +3270,6 @@ function buildSeizureSection() {
 	populateChipGroup("seizureWitnessed", OPTIONS.seizure.witnessed);
 	populateChipGroup("seizurePostictal", OPTIONS.seizure.postictal);
 	populateChipGroup("seizureRecovery", OPTIONS.seizure.recovery);
-	// Postictal features multi-select grid
 	const postictalGrid = $("#seizurePostictalFeaturesGrid");
 	if (postictalGrid) {
 		OPTIONS.seizure.postictalFeatures.forEach((feature) => {
@@ -3541,7 +3360,7 @@ function buildSeizureText() {
 	return lines.length ? lines.join("\n") : "No seizure assessment documented.";
 }
 
-// --- Mental health assessment ---
+// MH assessment
 
 function buildMhSection() {
 	buildButtonGrid("mhIntentGrid", MH_INTENT, "mhGroup", "intent", "mhValue");
@@ -3619,7 +3438,7 @@ function buildMhSection() {
 	);
 }
 
-// ── FAST-PASTA stroke card builder ──────────────────────────────────────────
+// Stroke card
 
 function buildStrokeCard() {
 	const card = $("#strokeAssessmentCard");
@@ -3657,7 +3476,6 @@ function buildStrokeCard() {
 			});
 			wrap.appendChild(grid);
 		} else {
-			// Radio chip group — populate directly (element not yet in DOM)
 			const hidden = document.createElement("input");
 			hidden.type = "hidden";
 			hidden.id = radioGroup;
@@ -3711,7 +3529,7 @@ function buildStrokeCard() {
 	faceWrap.appendChild(faceDetails);
 	body.appendChild(faceWrap);
 
-	// A — Arms/Legs
+	// A — Arms
 	const armWrap = document.createElement("div");
 	armWrap.style.marginTop = "14px";
 	armWrap.innerHTML = `<label class="field-label" style="font-size:13px;font-weight:700;color:#003087">A — Arms / Legs</label>`;
@@ -3826,7 +3644,7 @@ function buildStrokeCard() {
 	timeWrap.appendChild(lastWellDiv);
 	body.appendChild(timeWrap);
 
-	// P — Past history / A — Anticoagulants (PASTA section)
+	// P — Past history & A — Anticoagulants
 	const pastaWrap = document.createElement("div");
 	pastaWrap.style.marginTop = "14px";
 	pastaWrap.innerHTML = `<label class="field-label" style="font-size:13px;font-weight:700;color:#003087">Stroke Risk Factors</label>`;
@@ -3861,7 +3679,6 @@ function buildStrokeCard() {
 		<textarea id="strokeNotes" rows="2" style="margin-top:4px"></textarea>`;
 	body.appendChild(notesWrap);
 
-	// Wire up show/hide for sub-sections
 	["strokeFace", "strokeArm", "strokeSpeech", "strokeEyes"].forEach((id) => {
 		const el = document.getElementById(id);
 		if (!el) return;
@@ -3870,7 +3687,6 @@ function buildStrokeCard() {
 			const wrapId =
 				id.replace("stroke", "stroke").replace(/([A-Z])/, (m) => m) +
 				"DetailsWrap";
-			// Construct wrap ID: strokeFace → strokeFaceDetailsWrap
 			const detailsId = id + "DetailsWrap";
 			document
 				.getElementById(detailsId)
@@ -3878,7 +3694,6 @@ function buildStrokeCard() {
 		});
 	});
 
-	// Last well unknown toggle
 	const lastWellUnknown = document.getElementById("strokeLastWellUnknownBtn");
 	const lastWellInput = document.getElementById("strokeLastWell");
 	lastWellUnknown?.addEventListener("click", () => {
@@ -3954,7 +3769,6 @@ function buildStrokeText() {
 	if (state.strokeRiskFactors.size)
 		lines.push(`Risk factors: ${[...state.strokeRiskFactors].join(", ")}.`);
 
-	// Clinical — pull from obs already captured
 	const bm = val("bm");
 	const bp = val("bp");
 	const hr = val("hr");
@@ -4024,7 +3838,7 @@ function buildMhAssessmentText() {
 		: "No MH assessment details documented.";
 }
 
-// --- Review of systems card builder ---
+// ROS builder
 
 function buildRos() {
 	const root = $("#rosContainer");
@@ -4051,7 +3865,6 @@ function buildRos() {
 			button.dataset.abnormal = abnormal;
 			grid.append(button);
 		});
-		// Inject ROS GCS calculator into neuro section
 		if (key === "neuro") {
 			const wrap = $(".ros-gcs-wrap", details);
 			if (wrap) wrap.innerHTML = buildGcsCalcHTML("rosGcs");
@@ -4060,15 +3873,14 @@ function buildRos() {
 	});
 }
 
+// Capacity
 function buildCapacitySection() {
-	// Capacity status chips (with "Has capacity" pre-selected)
 	populateChipGroup("capacityStatus", OPTIONS.capacityStatus);
 	const defaultChip = $(
 		"[data-radio-group='capacityStatus'] [data-value='Has capacity']",
 	);
 	if (defaultChip) defaultChip.classList.add("selected");
 
-	// MCA four-criteria chips — all selected by default (has capacity)
 	const checksWrap = $("#capacityChecks");
 	if (checksWrap) {
 		OPTIONS.mcaAbilities.forEach((label) => {
@@ -4081,7 +3893,6 @@ function buildCapacitySection() {
 		});
 	}
 
-	// "Lacks capacity" reason chips — none selected by default
 	const lacksWrap = $("#lacksCapGrid");
 	if (lacksWrap) {
 		OPTIONS.lacksCapReasons.forEach((label) => {
@@ -4095,11 +3906,10 @@ function buildCapacitySection() {
 	}
 }
 
+// gynae
 function buildGynaeSection() {
-	// Pregnancy status chips
 	populateChipGroup("pregnancyStatus", OPTIONS.gynae.pregnancyStatus);
 
-	// Gynaecological symptom multi-select buttons
 	const symptomGrid = $("#gynaeSymptomGrid");
 	if (symptomGrid) {
 		OPTIONS.gynae.symptoms.forEach(({ key, label }) => {
@@ -4112,10 +3922,8 @@ function buildGynaeSection() {
 		});
 	}
 
-	// PV bleed severity chips
 	populateChipGroup("pvBleedSeverity", OPTIONS.gynae.bleedSeverity);
 
-	// PV bleed character multi-select
 	const charGrid = $("#pvBleedCharGrid");
 	if (charGrid) {
 		OPTIONS.gynae.bleedChar.forEach(({ key, label }) => {
@@ -4128,7 +3936,6 @@ function buildGynaeSection() {
 		});
 	}
 
-	// Discharge colour multi-select
 	const colourGrid = $("#dischargeColourGrid");
 	if (colourGrid) {
 		OPTIONS.gynae.dischargeColour.forEach(({ key, label }) => {
@@ -4141,7 +3948,6 @@ function buildGynaeSection() {
 		});
 	}
 
-	// Discharge consistency multi-select
 	const consistencyGrid = $("#dischargeConsistencyGrid");
 	if (consistencyGrid) {
 		OPTIONS.gynae.dischargeConsistency.forEach(({ key, label }) => {
@@ -4154,7 +3960,6 @@ function buildGynaeSection() {
 		});
 	}
 
-	// Discharge odour multi-select
 	const odourGrid = $("#dischargeOdourGrid");
 	if (odourGrid) {
 		OPTIONS.gynae.dischargeOdour.forEach(({ key, label }) => {
@@ -4167,7 +3972,6 @@ function buildGynaeSection() {
 		});
 	}
 
-	// Discharge amount chips
 	populateChipGroup("dischargeAmount", OPTIONS.gynae.dischargeAmount);
 }
 
@@ -4254,9 +4058,6 @@ function renderConveyanceSuggestion() {
 <p class="cs-disclaimer">Prompt only — clinician must make the final decision based on full clinical assessment.</p>`;
 	}
 }
-
-// TEXT BUILDERS — GYNAECOLOGY & HANDOVER
-// Gynaecology summary output and the pre-hospital ED handover document.
 
 function buildSafeguardingText() {
 	const concerns = [...state.safeguardingConcerns].map((c) =>
@@ -4399,7 +4200,7 @@ function buildEdHandoverText() {
 		.join(" ");
 	const dest = buildConveyDestination("convey");
 
-	// ── Observations ────────────────────────────────────────
+	// Obs
 	const obs = [
 		val("hr") ? `HR ${val("hr")}bpm` : null,
 		val("bp") ? `BP ${val("bp")}mmHg` : null,
@@ -4412,7 +4213,7 @@ function buildEdHandoverText() {
 		.filter(Boolean)
 		.join(" | ");
 
-	// ── ABCDE — only report abnormals; single line if all clear ─
+	// ABCs
 	const abcdeAbnormals = [];
 	let abcdeAllClear = true;
 	ABCDE.forEach(({ key, notes: notesId }) => {
@@ -4432,7 +4233,6 @@ function buildEdHandoverText() {
 		? "Primary survey: No ABC concerns."
 		: abcdeAbnormals.join("\n");
 
-	// ── SOCRATES / symptom description ───────────────────────
 	const hasPain = !isChecked("noPain");
 	const site = getSelectedParts(state.siteParts);
 	const radiation = getSelectedParts(state.radiationParts);
@@ -4476,7 +4276,7 @@ function buildEdHandoverText() {
 		if (severityStr) socratesLines.push(`Severity: ${severityStr}`);
 	}
 
-	// ── Interventions ────────────────────────────────────────
+	// Interventions
 	const drugs = state.drugEntries.map((e) => {
 		const parts = [e.drug];
 		if (e.dose) parts.push(e.dose);
@@ -4520,7 +4320,6 @@ function buildEdHandoverText() {
 		msk: "Musculoskeletal",
 		psych: "Mental health",
 	};
-	// Free-text notes fields per section — only count as extras if actually filled
 	const ROS_NOTES_FIELDS = {
 		resp: ["respNotes", "sputumDesc"],
 		cvs: ["cvsNotes"],
@@ -4594,19 +4393,7 @@ function buildEdHandoverText() {
 	return lines.join("\n");
 }
 
-// EVENT BINDING — ADULT ePRF
-// ══════════════════════════════════════════════════════════════════
-//  EVENT BINDING
-//  All DOM event listeners for the adult form wired here.
-//  Delegated listeners sit on document to handle dynamically-created
-//  elements (obs sets, entry rows).
-// ══════════════════════════════════════════════════════════════════
-
-/**
- * Wires all DOM event listeners for the adult ePRF form.
- * Uses event delegation on the document for dynamically-created elements
- * (obs sets, entry rows).  Called once from init().
- */
+//Binders
 function bindEvents() {
 	$("#safeguardingReferral")?.addEventListener("change", () => {
 		$("#safeguardingReferralFields")?.classList.toggle(
@@ -4705,7 +4492,7 @@ function bindEvents() {
 		else updateWorseningScript();
 	});
 
-	// ── Demographics → conditional sections ──────────────────
+	// Demographics
 	$("#ptSex")?.addEventListener("change", updateDemographicVisibility);
 	$("#ptAge")?.addEventListener("input", updateDemographicVisibility);
 	$("#pregnancyStatus")?.addEventListener("change", () => {
@@ -4757,7 +4544,6 @@ function bindEvents() {
 		if (e.target.id === "stomaPresent")
 			$("#stomaDetails")?.classList.toggle("hidden", !e.target.checked);
 	});
-	// GCS toggle buttons (both primary survey and neuro ROS use same delegation)
 	document.addEventListener("click", (e) => {
 		const toggle = e.target.closest(".gcs-toggle");
 		if (toggle) {
@@ -4820,24 +4606,19 @@ function bindEvents() {
 			$("#oaPatientFoundHow").value = "";
 		}
 	});
-	// Show duration wrap when LOC chip is anything other than "No LOC"
 	$("#headLOC")?.addEventListener("change", () => {
 		const v = val("headLOC");
 		$("#headLOCDurationWrap")?.classList.toggle("hidden", !v || v === "No LOC");
 	});
-	// Show retro duration wrap when retrograde amnesia is "Yes"
 	$("#headRetrograde")?.addEventListener("change", () => {
 		const v = val("headRetrograde");
 		$("#headRetroDurationWrap")?.classList.toggle("hidden", v !== "Yes");
 	});
-	// Head injury GCS is now handled by the shared .gcs-btn click delegation above —
-	// no separate listeners needed; updateGcsTally("headGcs") is called automatically.
 	$("#handoverFormat").addEventListener("change", () => {
 		const fmt = $("#handoverFormat").value;
 		const isLah = fmt === "Leave at Home";
 		$("#handoverEtaWrap")?.classList.toggle("hidden", fmt !== "ASHICE");
 		$("#incidentTimeWrap")?.classList.toggle("hidden", fmt !== "ATMIST");
-		// For Leave at Home, the output section itself IS the document — no extra inputs needed
 	});
 	$("#generateOeButton").addEventListener("click", generateOe);
 	$("#clearOeButton").addEventListener(
@@ -4847,14 +4628,13 @@ function bindEvents() {
 	$("#refreshButton").addEventListener("click", generateOutput);
 	$("#copyButton").addEventListener("click", copyOutput);
 
-	// Observations
+	// Obs
 	$("#addObsBtn")?.addEventListener("click", () => {
 		const set = createObsSet();
 		$("#obsContainer")?.append(set);
 		updateObsSetNumbers();
 	});
 
-	// Legal/capacity chips (treated & left)
 	document.addEventListener("click", (e) => {
 		const chip = e.target.closest(".legal-chip");
 		if (chip) chip.classList.toggle("selected");
@@ -4864,13 +4644,11 @@ function bindEvents() {
 		const gcsBtn = event.target.closest(".gcs-btn");
 		if (gcsBtn) {
 			const { gcsPrefix, gcsField, gcsScore } = gcsBtn.dataset;
-			// Deselect siblings, select this
 			gcsBtn
 				.closest(".gcs-btn-row")
 				?.querySelectorAll(".gcs-btn")
 				.forEach((b) => b.classList.remove("selected"));
 			gcsBtn.classList.add("selected");
-			// Store selection on a sentinel element keyed by field id
 			let sentinel = $("#" + gcsField);
 			if (!sentinel) {
 				sentinel = document.createElement("span");
@@ -5113,9 +4891,7 @@ function bindEvents() {
 	});
 }
 
-// UI INTERACTION HANDLERS
-// Business logic for toggling chips, switching tabs, body-map interaction,
-// conveyance decisions, and other stateful UI updates.
+// User actuions
 
 function switchTab(tabName) {
 	$$(".tab").forEach((tab) =>
@@ -5156,14 +4932,7 @@ function setOtherFactorVisible(stateKey, visible) {
 	if (wrapId) $(`#${wrapId}`)?.classList.toggle("hidden", !visible);
 }
 
-/**
- * Builds the conveyance transfer checklist chip grid.
- * Shared by both adult and paediatric forms — the container ID and chip CSS
- * class differ between the two.
- *
- * @param {string} [containerId="conveyTransferGrid"] - ID of the target container.
- * @param {string} [chipClass="convey-chip"] - Extra CSS class applied to each chip.
- */
+
 function buildConveyTransferChips(
 	containerId = "conveyTransferGrid",
 	chipClass = "convey-chip",
@@ -5186,14 +4955,7 @@ function buildConveyTransferChips(
 	});
 }
 
-/**
- * Toggles a conveyance transfer chip between its normal and abnormal states,
- * then shows or hides the associated detail panels.  Works for both adult
- * (.convey-chip) and paediatric (.p-convey-chip) chips — the correct wrap IDs
- * are resolved from the chip's CSS class.
- *
- * @param {HTMLElement} button - The chip button that was clicked.
- */
+
 function toggleConveyChip(button) {
 	const isPaeds = button.classList.contains("p-convey-chip");
 	const changeWrapId = isPaeds ? "pConveyChangeWrap" : "conveyChangeWrap";
@@ -5218,18 +4980,13 @@ function toggleConveyChip(button) {
 	if (button.dataset.escalated) {
 		$(`#${escalateWrapId}`)?.classList.toggle("hidden", next !== "abnormal");
 	}
-	// Auto-flip "Remained stable throughout" when a clinical change chip is activated
 	if (button.dataset.clinicalChange && next === "abnormal") {
 		const stable = $(stableSelector);
 		if (stable?.dataset.conveyState === "normal") toggleConveyChip(stable);
 	}
 }
 
-/**
- * Returns the text content of all conveyance transfer chips joined with "; ".
- * @param {boolean} [isPaeds=false] - Use paediatric chip selector when true.
- * @returns {string}
- */
+
 function getConveyTransferText(isPaeds = false) {
 	return $$(isPaeds ? ".p-convey-chip" : ".convey-chip")
 		.map((chip) => chip.textContent)
@@ -5242,13 +4999,11 @@ function toggleAbc(button) {
 	setAbcChipState(button, next);
 	if (next === "abnormal") {
 		syncDisabilityLinks(button);
-		// Uncheck "No immediate ABC concerns" and "Normal presentation" on arrival
 		const noAbc = $("#oaNoABC");
 		if (noAbc) noAbc.checked = false;
 		const normPres = $("#oaNormalPresentation");
 		if (normPres) normPres.checked = false;
 	} else {
-		// Re-check if all chips are back to normal
 		const allNormal = !$$("[data-abc]").some(
 			(b) => b.dataset.abcState === "abnormal",
 		);
@@ -5259,7 +5014,6 @@ function toggleAbc(button) {
 			if (normPres) normPres.checked = true;
 		}
 	}
-	// Show/hide pale-or-flushed picker when colour chip toggled
 	if (button.dataset.normal === "Good colour") {
 		const wrap = $("#colourDetailWrap");
 		if (wrap) {
@@ -5273,7 +5027,6 @@ function toggleAbc(button) {
 			}
 		}
 	}
-	// Show/hide tachycardic/bradycardic picker when rate chip toggled
 	if (button.dataset.normal === "Normal Rate") {
 		const wrap = $("#hrRateDetailWrap");
 		if (wrap) {
@@ -5324,13 +5077,11 @@ function toggleRos(button) {
 		: button.dataset.abnormal;
 	updateRosBadge(button.dataset.section);
 
-	// Show/hide FAST-PASTA stroke card when FAST chip toggled
 	if (button.dataset.stateId === "neuro_fast") {
 		const card = $("#strokeAssessmentCard");
 		if (card) card.classList.toggle("hidden", next === "normal");
 	}
 
-	// Show/hide breathing rate detail picker (tachypnoea / bradypnoea / apnoea)
 	if (button.dataset.stateId === "resp_breathingRate") {
 		const wrap = $("#rrDetailWrap");
 		if (wrap) {
@@ -5345,7 +5096,6 @@ function toggleRos(button) {
 		}
 	}
 
-	// Show/hide urinary volume feature chips when volume chip toggled
 	if (button.dataset.stateId === "urine_volume") {
 		const wrap = $("#urinaryVolumeWrap");
 		if (wrap) {
@@ -5359,7 +5109,6 @@ function toggleRos(button) {
 		}
 	}
 
-	// Show/hide urinary colour feature chips when colour chip toggled
 	if (button.dataset.stateId === "urine_colour") {
 		const wrap = $("#urinaryColourWrap");
 		if (wrap) {
@@ -5461,7 +5210,6 @@ function rosLine(section) {
 		ROS[section].items
 			.map(([id, normal, abnormal]) => {
 				if (state.ros[`${section}_${id}`] !== "abnormal") return normal;
-				// Substitute specific detail values when a sub-selection has been made
 				if (section === "resp" && id === "breathingRate") {
 					const detail = val("rrDetail");
 					if (detail) return detail;
@@ -5472,14 +5220,7 @@ function rosLine(section) {
 	);
 }
 
-// ══════════════════════════════════════════════════════════════════
-//  ABCDE / ABCDENT TEXT HELPERS
-//  Convert chip and input states into plain-text narrative strings
-//  for inclusion in the handover and output documents.
-// ══════════════════════════════════════════════════════════════════
-
 function abcChipText(button) {
-	// Substitute colour detail if "Pale / flushed" and a sub-selection has been made
 	if (
 		button.dataset.normal === "Good colour" &&
 		button.dataset.abcState === "abnormal"
@@ -5487,7 +5228,6 @@ function abcChipText(button) {
 		const detail = val("colourDetail");
 		if (detail) return detail;
 	}
-	// Substitute rate detail if "Tachycardic / Bradycardic" and a sub-selection has been made
 	if (
 		button.dataset.normal === "Normal Rate" &&
 		button.dataset.abcState === "abnormal"
@@ -5522,21 +5262,15 @@ function abcHandoverSummary() {
 	return lines.length ? lines.join("\n") : "No ABCDE concerns identified.";
 }
 
-// TEXT BUILDERS — CLINICAL OUTPUT (ADULT)
-// Functions that read current state and produce plain-text strings for each
-// output section.  All builders return "" when their section has no data.
-
 function toggleEcgFinding(btn) {
 	const finding = btn.dataset.finding;
 	if (finding === "Not performed") {
-		// Selecting "Not performed" clears everything else
 		state.ecgFindings.clear();
 		state.ecgFindings.add("Not performed");
 		$$(".ecg-finding").forEach((b) =>
 			b.classList.toggle("selected", b.dataset.finding === "Not performed"),
 		);
 	} else {
-		// Deselect "Not performed" if switching to a real finding
 		if (state.ecgFindings.has("Not performed")) {
 			state.ecgFindings.delete("Not performed");
 			$(".ecg-finding[data-finding='Not performed']")?.classList.remove(
@@ -5700,18 +5434,7 @@ function rosBlock(section) {
 	return `${rosLine(section)} ${extras[section]?.() || val(`${section}Notes`) || ""}`.trim();
 }
 
-// ══════════════════════════════════════════════════════════════════
-//  CLINICAL TEXT BUILDERS
-//  Each function reads form state and returns a plain-text block
-//  suitable for copying into a clinical record or handover tool.
-// ══════════════════════════════════════════════════════════════════
 
-/**
- * Builds a structured handover document string in the chosen format
- * (ASHICE, SBAR, ATMIST, or Leave-at-Home / SBAR).
- *
- * @returns {string} Formatted handover text ready for clipboard copy.
- */
 function buildHandoverText() {
 	const format = val("handoverFormat") || "ASHICE";
 	const age = val("ptAge");
@@ -5803,7 +5526,7 @@ function buildHandoverText() {
 	return "";
 }
 
-// --- Leave at Home SBAR document ---
+// Leave at home form builder
 
 function buildLahSbarText() {
 	const age = val("ptAge");
@@ -5811,7 +5534,6 @@ function buildLahSbarText() {
 	const pc = getPc();
 	const decision = val("conveyanceDecision");
 
-	// ── S — SITUATION ──────────────────────────────────────
 	const ptStr = [
 		age ? `${age}yr` : null,
 		sex && sex !== "Not specified" ? sex : null,
@@ -5833,7 +5555,6 @@ function buildLahSbarText() {
 		callStr || null,
 	].filter(Boolean);
 
-	// ── B — BACKGROUND ─────────────────────────────────────
 	const pmh = isChecked("noPmh") ? "Nil significant" : val("pmh") || "—";
 	const meds = isChecked("noMeds") ? "None" : val("medications") || "—";
 	const allergies = isChecked("nkda") ? "NKDA" : val("allergies") || "—";
@@ -5846,14 +5567,11 @@ function buildLahSbarText() {
 		val("prevDetails") ? `Prev: ${val("prevDetails")}` : null,
 	].filter(Boolean);
 
-	// ── A — ASSESSMENT ─────────────────────────────────────
 	const assessParts = [];
 
-	// Obs — inline
 	const obsText = buildObsText();
 	if (obsText) assessParts.push(`Obs: ${obsText.split("\n").join(", ")}`);
 
-	// ABCDE
 	syncAuscultationOutput();
 	const abcSummary = abcHandoverSummary();
 	if (abcSummary && abcSummary !== "No ABCDE concerns identified.") {
@@ -5862,16 +5580,13 @@ function buildLahSbarText() {
 		assessParts.push("ABCDE: No concerns");
 	}
 
-	// ECG — only if performed
 	const ecgText = buildEcgText();
 	if (ecgText && !ecgText.includes("Not performed"))
 		assessParts.push(`ECG: ${ecgText.split("\n").join("; ")}`);
 
-	// Auscultation — only if documented
 	const aus = val("respAus");
 	if (aus && aus !== "Not auscultated") assessParts.push(`Ausc: ${aus}`);
 
-	// SOCRATES — compact inline
 	if (!isChecked("noPain")) {
 		const site = getSelectedParts(state.siteParts);
 		const sev = val("severity")
@@ -5893,7 +5608,6 @@ function buildLahSbarText() {
 		if (painParts) assessParts.push(`Pain: ${painParts}`);
 	}
 
-	// PC-specific tools — first line only to keep it brief
 	const pcSel = val("pcSelect");
 	if (pcSel === "Fall") {
 		const ft = buildFallsText();
@@ -5909,7 +5623,6 @@ function buildLahSbarText() {
 		if (mht) assessParts.push(`MH: ${mht.split("\n")[0]}`);
 	}
 
-	// ROS — only include sections with genuine abnormal findings
 	const rosAbbr = {
 		resp: "Resp",
 		cvs: "CVS",
@@ -5922,14 +5635,12 @@ function buildLahSbarText() {
 	};
 	const isNormalFinding = (f) => {
 		const l = f.toLowerCase();
-		// Starts with a negative/normal prefix
 		if (
 			l.match(
 				/^(no |not |nil |none|normal|regular |well |warm |peripheral|crt |gcs 15|pearl|alert|fast neg|speech clear|full range|able to|gait |mood |oriented|insight|bowel habits unchanged|abdomen soft|non-tender|normotensive|ecg: not|auscultation: not)/,
 			)
 		)
 			return true;
-		// Contains a word indicating normality anywhere
 		if (
 			l.match(
 				/\bnormal\b|\bunchanged\b|\bappropriate|\bcoherent\b|\bnegative\b|\bintact\b|\bpresent\b|\bpalpable\b|\bnormotensive\b|\bengaged\b/,
@@ -5952,10 +5663,8 @@ function buildLahSbarText() {
 		},
 	);
 
-	// OE
 	if (val("oeText")) assessParts.push(`OE: ${val("oeText")}`);
 
-	// Treatment
 	const hasTx =
 		state.airwayInterventions.size ||
 		state.ivEntries.length ||
@@ -5967,13 +5676,11 @@ function buildLahSbarText() {
 	if (hasTx)
 		assessParts.push(`Tx: ${buildTreatmentText().split("\n").join("; ")}`);
 
-	// Capacity — brief summary only
 	const capacityStatus = val("capacityStatus");
 	if (capacityStatus && capacityStatus !== "Not applicable") {
 		assessParts.push(`Capacity: ${capacityStatus}`);
 	}
 
-	// ── R — RECOMMENDATION ─────────────────────────────────
 	const referrals = listSet(state.referrals, "none");
 	const followUp = val("followUp");
 	const checks = [
@@ -6020,8 +5727,6 @@ function buildLahSbarText() {
 		`R — RECOMMENDATION\n${recParts.join("\n")}`,
 	].join("\n\n");
 }
-
-// --- Specialist assessment text builders ---
 
 function getNiceCTCriteria() {
 	const criteria = [];
@@ -6170,18 +5875,7 @@ function buildFallsText() {
 	].join("\n");
 }
 
-// ══════════════════════════════════════════════════════════════════
-//  OUTPUT SECTION ASSEMBLY
-//  Assembles all section text builders into an ordered list, renders
-//  them as copyable cards, and manages clipboard helpers.
-// ══════════════════════════════════════════════════════════════════
 
-/**
- * Assembles the ordered list of output section objects for the adult ePRF.
- * Each object has `{ title, body }` and is rendered as a copyable card.
- *
- * @returns {Array<{title: string, body: string}>} Array of section objects.
- */
 function buildOutputSections() {
 	const pc = getPc();
 	const site = getSelectedParts(state.siteParts) || "Not localised";
@@ -6449,30 +6143,9 @@ function buildOutputSections() {
 	];
 }
 
-// OBSERVATIONS
-
-// ══════════════════════════════════════════════════════════════════
-//  NEWS2 SCORING ENGINE & OBS SET MANAGEMENT
-//  Pure scoring function plus obs-set DOM create/read/render helpers.
-//  The NEWS2 score is recalculated on every input change; obs sets
-//  are rendered in their own sub-section of the output.
-// ══════════════════════════════════════════════════════════════════
-
-// Monotonically increasing counter ensures each obs set gets a unique prefix.
 let obsCounter = 0;
 
-/**
- * Calculates the NEWS2 (National Early Warning Score 2) for a set of observations.
- *
- * @param {number}  rr      - Respiratory rate (breaths/min).
- * @param {number}  spo2    - Oxygen saturation (%).
- * @param {boolean} o2On    - True if the patient is on supplemental oxygen.
- * @param {number}  sbp     - Systolic blood pressure (mmHg).
- * @param {number}  hr      - Heart rate (bpm).
- * @param {number}  temp    - Temperature (°C).
- * @param {string}  avpu    - Consciousness level: "A", "V", "P", or "U" (or "C" for confusion).
- * @returns {{ score: number, level: string, colour: string, hasThree: boolean }}
- */
+
 function newsScore(rr, spo2, o2On, sbp, hr, temp, avpu) {
 	let score = 0;
 	let hasThree = false;
@@ -6573,7 +6246,6 @@ function createObsSet() {
 	const now = new Date();
 	const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
-	// Build radio chip row using app's standard radio-chip class
 	const chips = (key, options) =>
 		`<div class="radio-chip-group" style="flex-wrap:wrap;gap:6px;margin-top:4px">` +
 		options
@@ -6683,13 +6355,11 @@ function createObsSet() {
 			<span class="news2-risk"></span>
 		</div>`;
 
-	// Remove button
 	div.querySelector(".obs-remove").addEventListener("click", () => {
 		div.remove();
 		updateObsSetNumbers();
 	});
 
-	// Obs radio chips — delegate on this set's container (tap again to deselect)
 	div.addEventListener("click", (e) => {
 		const chip = e.target.closest("[data-obs-key]");
 		if (!chip) return;
@@ -6699,7 +6369,6 @@ function createObsSet() {
 			.querySelectorAll(`[data-obs-key="${key}"]`)
 			.forEach((c) => c.classList.remove("selected"));
 		if (!wasSelected) chip.classList.add("selected");
-		// Hide O2 flow input whenever Supplemental is not the active selection
 		if (key === "o2") {
 			const supplementalActive =
 				!wasSelected && chip.dataset.obsVal === "Supplemental";
@@ -6710,7 +6379,6 @@ function createObsSet() {
 		updateNews2(div);
 	});
 
-	// Number/time inputs
 	div.querySelectorAll("input").forEach((el) => {
 		el.addEventListener("input", () => updateNews2(div));
 	});
@@ -6733,8 +6401,6 @@ function readObsSetData(setEl) {
 	const chip = (key) =>
 		setEl.querySelector(`[data-obs-key="${key}"].selected`)?.dataset.obsVal ||
 		null;
-	// GCS values come from the calculator sentinels (data-gcs-selected on hidden spans)
-	const gcsPfx = `obsGcs${setEl.dataset.obsIdx}`;
 	const gcsE = $("#" + gcsPfx + "Eye")?.dataset.gcsSelected || null;
 	const gcsV = $("#" + gcsPfx + "Verbal")?.dataset.gcsSelected || null;
 	const gcsM = $("#" + gcsPfx + "Motor")?.dataset.gcsSelected || null;
@@ -6768,7 +6434,6 @@ function buildObsText() {
 			const d = readObsSetData(setEl);
 			const lines = [];
 
-			// Vitals line
 			const vitals = [];
 			if (d.rr) vitals.push(`RR: ${d.rr}`);
 			if (d.spo2) {
@@ -6793,7 +6458,6 @@ function buildObsText() {
 			if (d.ketones) vitals.push(`Ketones: ${d.ketones} mmol/L`);
 			if (vitals.length) lines.push(vitals.join(", "));
 
-			// Neuro line
 			const neuro = [];
 			if (d.avpu) neuro.push(`AVPU: ${d.avpu}`);
 			if (d.gcsE && d.gcsV && d.gcsM) {
@@ -6802,7 +6466,6 @@ function buildObsText() {
 			}
 			if (neuro.length) lines.push(neuro.join(", "));
 
-			// NEWS2
 			const rr = parseFloat(d.rr),
 				spo2 = parseFloat(d.spo2),
 				sbp = parseFloat(d.sbp),
@@ -6829,14 +6492,9 @@ function buildObsText() {
 		.join("\n\n");
 }
 
-// CLIPBOARD & COPY UTILITIES
-// Sections store their plain-text content in Maps rather than reading from the
-// DOM on copy — this avoids URL-encoding artefacts from innerHTML round-trips.
-
-// Adult section plain-text bodies keyed by section ID.
+// Copy function
 const outputSectionTexts = new Map();
 
-// Paediatric section plain-text bodies keyed by section ID.
 const paedsOutputSectionTexts = new Map();
 
 function renderOutputSections(sections) {
@@ -6857,17 +6515,8 @@ function renderOutputSections(sections) {
 	});
 }
 
-// ══════════════════════════════════════════════════════════════════
-//  OUTPUT GENERATION & WORSENING ADVICE
-//  Triggers a full rebuild of the output panel; also manages
-//  patient-facing safety-netting and worsening scripts.
-// ══════════════════════════════════════════════════════════════════
+// Outut page
 
-/**
- * Triggers a full rebuild of the output panel.
- * Syncs auscultation state, assembles output sections via the appropriate
- * builder (adult or paeds), then renders copyable section cards.
- */
 function generateOutput() {
 	syncAuscultationOutput();
 	const sections = paedsMode
@@ -6980,7 +6629,6 @@ function handleConveyanceDisplay() {
 	$("#worseningSection")?.classList.toggle("hidden", conveyed);
 	updateWorseningScript();
 
-	// Auto-select handover format based on conveyance decision
 	const currentFmt = val("handoverFormat");
 	const lahFormats = ["Leave at Home"];
 	const conveyFormats = ["SBAR", "ASHICE", "ATMIST"];
@@ -7027,19 +6675,8 @@ function handleConveyanceDisplay() {
 	);
 }
 
-// ══════════════════════════════════════════════════════════════════
-//  CONVEYANCE TEXT BUILDERS
-//  Shared helpers for destination parsing, transfer chip text, and
-//  final conveyance narrative — used by both adult and paeds forms.
-// ══════════════════════════════════════════════════════════════════
+//Conveyance
 
-/**
- * Builds the conveyance destination string from hospital and department fields.
- * Shared between adult and paediatric forms — the field name prefix differs.
- *
- * @param {string} [prefix="convey"] - Field name prefix, e.g. "convey" or "pConvey".
- * @returns {string} Formatted destination string, e.g. "RJAH; Emergency Department".
- */
 function buildConveyDestination(prefix = "convey") {
 	const hospital =
 		val(`${prefix}Hospital`) === "Other hospital"
@@ -7128,11 +6765,7 @@ function buildConveyanceText() {
 		.join(" ");
 }
 
-// ══════════════════════════════════════════════════════════════════
-//  BODY MAP & PAIN ASSESSMENT HELPERS
-//  Body-map clearing, pain assessment reset, and auscultation
-//  preview sync helpers.
-// ══════════════════════════════════════════════════════════════════
+// Pain assessment
 
 function clearBodyMap() {
 	state.siteParts.clear();
@@ -7186,7 +6819,6 @@ function syncAuscultationOutput() {
 	if (!entries.length) {
 		text = "Not auscultated";
 	} else {
-		// Check if all regions have only "Clear"
 		const allClear = entries.every(([, f]) => f.size === 1 && f.has("Clear"));
 		if (allClear && entries.length >= 4) {
 			text = "Equal and clear air entry throughout";
@@ -7202,9 +6834,7 @@ function syncAuscultationOutput() {
 	if (preview) preview.textContent = text;
 }
 
-// PAEDIATRIC PRF — constants, helpers, init
-
-// ── Paeds treatment constants ─────────────────────────────
+// Paeds treatment constants
 const PAEDS_TX_AIRWAY = [
 	"Jaw thrust",
 	"Head tilt / chin lift",
@@ -7382,7 +7012,7 @@ const PAEDS_ABCDENT = [
 	},
 ];
 
-// ── Paediatric worsening advice ──────────────────────────
+//  Paeds worsening advice
 const PAEDS_WORSENING_GENERIC = [
 	"breathing becomes very fast, noisy, or your child is working hard to breathe",
 	"your child's lips, tongue or fingernails turn blue",
@@ -7393,7 +7023,6 @@ const PAEDS_WORSENING_GENERIC = [
 	"you are worried at any point — trust your instincts as a parent or carer",
 ];
 
-// Per-PC advice — { call999: [], call111: [], guidance: "" }
 const PAEDS_WORSENING_PC = {
 	"Fever / pyrexia": {
 		call999: [
@@ -7779,23 +7408,6 @@ const PAEDS_SAFEGUARDING = [
 	"Parent / carer unavailable",
 ];
 
-// PAEDIATRIC ePRF — STATE & INITIALISATION
-// ══════════════════════════════════════════════════════════════════
-//  PAEDIATRIC MODE
-//  Separate state, lazy-init guard, and all paeds-specific builders,
-//  event handlers, text builders, and output assemblers.
-//  initPaeds() is called exactly once when the user first enters
-//  the Paediatric PRF tool — subsequent calls are no-ops.
-// ══════════════════════════════════════════════════════════════════
-
-// Guards against initialising the paeds tool more than once.
-let _paedsInited = false;
-
-// True when the user has launched Paediatric PRF — causes the adult ePRF to
-// show paeds-specific cards and output builders.
-let paedsMode = false;
-
-// Mutable state for the paediatric ePRF (mirrors the adult state object).
 const paedsState = {
 	sgConcerns: new Set(),
 	pIvEntries: [],
@@ -7805,8 +7417,6 @@ const paedsState = {
 	pPositioningInterventions: new Set(),
 };
 
-// Entry managers for paeds IV and drug lists — instantiated here so they close
-// over paedsState which is defined immediately above.
 const { render: renderPaedsIvEntries, remove: removePaedsIvEntry } =
 	makeEntryManager(
 		"pIvEntries",
@@ -7825,26 +7435,17 @@ const { render: renderPaedsIvEntries, remove: removePaedsIvEntry } =
 		paedsState,
 	);
 
-/**
- * Initialises the paediatric ePRF tool on first use.
- * Shows the paeds-specific UI sections, hides the adult ABCDE section
- * (replaced by PAT/ABCDENT), builds all paeds DOM content, and wires
- * paeds event handlers.  Subsequent calls are no-ops.
- */
 function initPaeds() {
 	if (_paedsInited) return;
 	_paedsInited = true;
 
-	// Show paeds-specific cards within the adult ePRF
 	$("#paedsBanner")?.classList.remove("hidden");
 	$("#paedsInfoCard")?.removeAttribute("hidden");
 	$("#paedsInfoCard")?.classList.remove("hidden");
 	$("#paedsAssessmentCard")?.classList.remove("hidden");
 
-	// Hide adult ABCDE (replaced by PAT/ABCDENT)
 	$("#abcdeContainer")?.classList.add("hidden");
 
-	// Build paeds-specific content
 	buildPaedsAbcdent();
 	buildPaedsSafeguardingGrid();
 	buildConveyTransferChips("pConveyTransferGrid", "p-convey-chip");
@@ -7854,7 +7455,6 @@ function initPaeds() {
 	updateFlaccTotal();
 }
 
-// ── Build ABCDENT sections ───────────────────────────────
 function buildPaedsAbcdent() {
 	const root = $("#paedsAbcdentContainer");
 	if (!root) return;
@@ -7895,7 +7495,6 @@ function buildPaedsAbcdent() {
 	});
 }
 
-// ── Build paeds safeguarding chip grid ────────────────────
 function buildPaedsSafeguardingGrid() {
 	const grid = $("#pSgGrid");
 	if (!grid) return;
@@ -7910,7 +7509,6 @@ function buildPaedsSafeguardingGrid() {
 	});
 }
 
-// ── APLS weight & vital sign reference ────────────────────
 function aplsWeight(ageYears, ageMonths) {
 	const totalMonths = (ageYears || 0) * 12 + (ageMonths || 0);
 	const yrs = ageYears || 0;
@@ -7932,8 +7530,8 @@ function detectAgeGroup(ageYears, ageMonths) {
 }
 
 function updatePaedsAgeRef() {
-	const years = parseInt(val("ptAge")) || 0; // adult age field
-	const months = parseInt(val("pAgeMonths")) || 0; // paeds info card (months for infants)
+	const years = parseInt(val("ptAge")) || 0;
+	const months = parseInt(val("pAgeMonths")) || 0;
 	const manualGroup = val("pAgeGroup");
 
 	// APLS weight estimate
@@ -7951,7 +7549,6 @@ function updatePaedsAgeRef() {
 		(years === 0 && months === 0 ? "" : detectAgeGroup(years, months));
 	const ref = PAEDS_VITALS_REF[group];
 
-	// Render into #paedsAgeRefPanel (in #paedsInfoCard)
 	const panel = $("#paedsAgeRefPanel");
 	if (!panel) return;
 
@@ -7973,17 +7570,16 @@ function updatePaedsAgeRef() {
 			<div style="margin-top:3px;font-style:italic;color:#666">Reference only — assess in clinical context</div>
 		</div>`;
 
-	// Also auto-select age group chip if not manually set
 	if (!manualGroup && group) {
 		setRadioChip("pAgeGroup", group);
 	}
 }
 
-// ── WETFLAG calculator ────────────────────────────────────
+//  WETFLAG calculator - Currently hidden - need to check alllowed
 function calcWetflag(weight) {
 	if (!weight || weight <= 0) return null;
 	const w = parseFloat(weight);
-	const ageApprox = w < 10 ? Math.round(w / 2) : Math.round(w / 3); // rough age in years
+	const ageApprox = w < 10 ? Math.round(w / 2) : Math.round(w / 3);
 	const tubeSizeUncuffed = (ageApprox / 4 + 4).toFixed(1);
 	const tubeSizeCuffed = (ageApprox / 4 + 3.5).toFixed(1);
 	return {
@@ -7997,7 +7593,6 @@ function calcWetflag(weight) {
 	};
 }
 
-// ── FLACC total ───────────────────────────────────────────
 function updateFlaccTotal() {
 	const ids = [
 		"flaccFace",
@@ -8027,11 +7622,6 @@ function updateFlaccTotal() {
 	el.textContent = `FLACC total: ${total} / 10 — ${label}`;
 }
 
-// ── Radio chip group helpers ──────────────────────────────
-
-// Programmatically select a chip in a radio group and update its hidden input.
-// Used by auto-detection (e.g. age group).
-
 function setRadioChip(fieldId, value) {
 	const group = $(`[data-radio-group="${fieldId}"]`);
 	const inp = $(`#${fieldId}`);
@@ -8042,28 +7632,17 @@ function setRadioChip(fieldId, value) {
 	inp.value = value;
 }
 
-//
-// Wire up all .radio-chip-group elements so that tapping a chip:
-// 1. Adds .selected to the tapped chip, removes it from siblings
-// 2. Updates the matching hidden <input id="...">
-// 3. Dispatches a synthetic "change" event on the hidden input
-//    so any existing listeners (pain tool toggle, convey decision, etc.) still fire.
-
 function bindRadioChipGroups() {
-	// Standard radio chip groups (class="radio-chip") and faces chip groups
 	$$("[data-radio-group]").forEach((group) => {
 		group.addEventListener("click", (e) => {
 			const chip = e.target.closest("[data-value]");
 			if (!chip || !group.contains(chip)) return;
 			const fieldId = group.dataset.radioGroup;
 			const wasSelected = chip.classList.contains("selected");
-			// Deselect all chips in this group
 			group
 				.querySelectorAll("[data-value]")
 				.forEach((c) => c.classList.remove("selected"));
-			// Toggle: re-select only if it wasn't already selected
 			if (!wasSelected) chip.classList.add("selected");
-			// Update hidden input (empty string if deselected)
 			const inp = $(`#${fieldId}`);
 			if (inp) {
 				inp.value = wasSelected ? "" : chip.dataset.value;
@@ -8073,17 +7652,9 @@ function bindRadioChipGroups() {
 	});
 }
 
-// EVENT BINDING — PAEDIATRIC ePRF
-// All DOM event listeners for the paeds form, including WETFLAG, FLACC, PAT,
-// drug/IV entry, and the paeds output/copy buttons.
-
 function bindPaedsEvents() {
-	// ── Radio chip groups (single-select) ──────────────────
 	bindRadioChipGroups();
 
-	// Tab switching is handled by the adult ePRF tab system.
-
-	// ── ABCDENT chip toggle ────────────────────────────────
 	$("#paedsAbcdentContainer")?.addEventListener("click", (e) => {
 		const chip = e.target.closest("[data-p-abc]");
 		if (!chip) return;
@@ -8094,7 +7665,6 @@ function bindPaedsEvents() {
 		chip.classList.toggle("abnormal", isNormal);
 	});
 
-	// ── PAT chip toggle ────────────────────────────────────
 	["patAppearanceGrid", "patWobGrid", "patCircGrid"].forEach((gridId) => {
 		$(`#${gridId}`)?.addEventListener("click", (e) => {
 			const chip = e.target.closest("[data-pat]");
@@ -8109,14 +7679,11 @@ function bindPaedsEvents() {
 		});
 	});
 
-	// ── Age inputs → reference update ─────────────────────
-	// ptAge = adult age field; pAgeMonths = paeds info card months for infants
 	["ptAge", "pAgeMonths", "pAgeGroup"].forEach((id) => {
 		$(`#${id}`)?.addEventListener("change", updatePaedsAgeRef);
 		$(`#${id}`)?.addEventListener("input", updatePaedsAgeRef);
 	});
 
-	// ── FLACC chip rows ────────────────────────────────────
 	$$("[data-flacc-field]").forEach((row) => {
 		row.addEventListener("click", (e) => {
 			const chip = e.target.closest(".flacc-chip");
@@ -8143,7 +7710,6 @@ function bindPaedsEvents() {
 		$(`#${id}`)?.addEventListener("change", updateFlaccTotal);
 	});
 
-	// ── Pain tool toggle ───────────────────────────────────
 	$("#pPainTool")?.addEventListener("change", () => {
 		const tool = val("pPainTool");
 		$("#flaccWrap")?.classList.toggle("hidden", tool !== "flacc");
@@ -8151,7 +7717,6 @@ function bindPaedsEvents() {
 		$("#pFacesWrap")?.classList.toggle("hidden", tool !== "faces");
 	});
 
-	// ── NRS pain score grids (paeds) ───────────────────────
 	[
 		{ gridId: "pPainScoreGrid", inputId: "pSeverity" },
 		{ gridId: "pPainScoreWorstGrid", inputId: "pSeverityWorst" },
@@ -8175,7 +7740,6 @@ function bindPaedsEvents() {
 		});
 	});
 
-	// ── Safeguarding chips ─────────────────────────────────
 	$("#pSgGrid")?.addEventListener("click", (e) => {
 		const chip = e.target.closest("[data-p-sg-group]");
 		if (!chip) return;
@@ -8201,20 +7765,16 @@ function bindPaedsEvents() {
 		$("#pSgDetailWrap")?.classList.toggle("hidden", !hasConcerns);
 	});
 
-	// ── Convey decision → wrap visibility + worsening ────
 	$("#pConveyDecision")?.addEventListener("change", handlePConveyanceDisplay);
 	$("#pConveyHospital")?.addEventListener("change", handlePConveyanceDisplay);
 	$("#pConveyDepartment")?.addEventListener("change", handlePConveyanceDisplay);
-	// Sync display to default value
 	handlePConveyanceDisplay();
 
-	// ── Paeds transfer chip clicks ────────────────────────
 	$("#pConveyTransferGrid")?.addEventListener("click", (e) => {
 		const chip = e.target.closest(".p-convey-chip");
 		if (chip) toggleConveyChip(chip);
 	});
 
-	// ── pPc "Other" free-text ─────────────────────────────
 	$("#pPc")?.addEventListener("change", () => {
 		const isOther = val("pPc") === "Other";
 		$("#pPcOtherWrap")?.classList.toggle("hidden", !isOther);
@@ -8224,14 +7784,12 @@ function bindPaedsEvents() {
 	$(`#pWorseningCustom`)?.addEventListener("input", updatePaedsWorseningScript);
 	updatePaedsWorseningScript();
 
-	// ── 3 Minute Toolkit chips (Phase 3 only) ────────────
 	$(`#tmtPhase3Grid`)?.addEventListener("click", (e) => {
 		const chip = e.target.closest(".tmt-chip");
 		if (!chip) return;
 		chip.classList.toggle("selected");
 	});
 
-	// ── Generate buttons ───────────────────────────────────
 	$("#pCopyButton")?.addEventListener("click", async () => {
 		buildPaedsOutputSections();
 		const all = [...paedsOutputSectionTexts.values()]
@@ -8245,18 +7803,12 @@ function bindPaedsEvents() {
 	});
 }
 
-// OUTPUT GENERATION — PAEDIATRIC ePRF
-// Assembles all paeds section text builders and renders them as copyable cards.
-
-// Builds paeds output using the adult ePRF form fields + paeds-specific
-// assessment sections (PAT, ABCDENT, WETFLAG). Called when paedsMode = true.
+// Output
 function buildPaedsOutputFromAdultForm() {
 	const adultSections = buildOutputSections();
 
-	// Replace the PRIMARY SURVEY section with PAT + ABCDENT
 	const withoutPrimary = adultSections.filter((s) => s.id !== "primary");
 
-	// Paeds-specific sections (assessment tools)
 	const paedsSections = [
 		{
 			id: "p-patient-info",
@@ -8280,17 +7832,14 @@ function buildPaedsOutputFromAdultForm() {
 		},
 	];
 
-	// Insert paeds sections after BACKGROUND (or at the start if not found)
 	const bgIdx = withoutPrimary.findIndex((s) => s.id === "background");
 	const insertAt = bgIdx >= 0 ? bgIdx + 1 : 0;
 
-	// Build pain section using paeds tools if FLACC / Faces selected
 	const paedsPainBody = buildPaedsPainText();
 	const paedsPainSection = paedsPainBody
 		? [{ id: "p-pain", title: "PAIN ASSESSMENT", body: paedsPainBody }]
 		: [];
 
-	// Remove adult pain (SOCRATES) since we use paeds pain
 	const withoutPain = withoutPrimary.filter(
 		(s) => s.id !== "pain" && !s.id.startsWith("ros-"),
 	);
@@ -8302,7 +7851,6 @@ function buildPaedsOutputFromAdultForm() {
 		...withoutPain.slice(insertAt),
 	];
 
-	// WETFLAG reference at end
 	const wf = buildPaedsWetflagText();
 	if (wf)
 		result.push({ id: "p-wetflag", title: "WETFLAG REFERENCE", body: wf });
@@ -8385,23 +7933,17 @@ function buildPaedsOutputSections() {
 	});
 }
 
-// TEXT BUILDERS — PAEDIATRIC ePRF
-// One function per output section.  All return "" when their section has no data.
-
 function buildTmtText() {
 	const lines = ["3 Minute Toolkit (Spotting the Sick Child)"];
 
-	// Phase 1 — PAT (documented in full via buildPaedsPATText)
 	const patImpression = val("patImpression");
 	lines.push(`\nLOOK (PAT across the room)`);
 	if (patImpression) lines.push(`Initial impression: ${patImpression}`);
 	else lines.push(`Initial impression: Not recorded`);
 
-	// Phase 2 — ABCDE + ENT + T + DEFG (documented via buildPaedsAbcdentText)
 	lines.push(`\nLISTEN & FEEL (hands-on primary survey)`);
 	lines.push(`See primary survey (ABCDE + ENT + T + DEFG) below`);
 
-	// Phase 3 — DECIDE
 	const all3 = $$(`#tmtPhase3Grid .tmt-chip`);
 	const done3 = all3
 		.filter((c) => c.classList.contains("selected"))
@@ -8421,7 +7963,6 @@ function buildTmtText() {
 }
 
 function buildPaedsPatientText() {
-	// Read from adult ePRF fields (ptAge, ptSex) + paeds info card (pAgeMonths, pWeight)
 	const yrs = val("ptAge");
 	const mo = val("pAgeMonths");
 	const ageStr =
@@ -8579,9 +8120,8 @@ function buildPaedsSgText() {
 	return lines.join("\n") || "Safeguarding: None identified on scene";
 }
 
-// ── Build paeds treatment section ────────────────────────
+//Peads treatment
 function buildPaedsTreatmentSection() {
-	// Build chip grids
 	const buildPaedsTxGrid = (gridId, items, stateKey) => {
 		const grid = $(`#${gridId}`);
 		if (!grid) return;
@@ -8619,7 +8159,6 @@ function buildPaedsTreatmentSection() {
 		"pPositioningInterventions",
 	);
 
-	// VA type → show/hide gauge + site grids
 	$("#pVaType")?.addEventListener("change", () => {
 		const type = val("pVaType");
 		const isIv = type === "IV Cannula";
@@ -8627,7 +8166,6 @@ function buildPaedsTreatmentSection() {
 		$("#pVaGaugeWrap")?.classList.toggle("hidden", !isIv);
 		$("#pVaIvSites")?.classList.toggle("hidden", !isIv);
 		$("#pVaIoSites")?.classList.toggle("hidden", !isIo);
-		// Clear site + gauge selection when type changes
 		[
 			...$$("[data-radio-group='pVaSite'] [data-value]"),
 			...$$("[data-radio-group='pVaGauge'] [data-value]"),
@@ -8638,7 +8176,6 @@ function buildPaedsTreatmentSection() {
 		if (gaugeInp) gaugeInp.value = "";
 	});
 
-	// Outcome → show flush confirmation when Successful, auto-populate flush chip
 	$("#pVaOutcome")?.addEventListener("change", () => {
 		const successful = val("pVaOutcome") === "Successful";
 		$("#pVaFlushWrap")?.classList.toggle("hidden", !successful);
@@ -8653,13 +8190,10 @@ function buildPaedsTreatmentSection() {
 		}
 	});
 
-	// Add VA entry
 	$("#pAddVaButton")?.addEventListener("click", () => addIvEntry(true));
 
-	// Add drug entry
 	$("#pAddDrugButton")?.addEventListener("click", () => addDrugEntry(true));
 
-	// Drug name select → show/hide Other input
 	$("#pDrugName")?.addEventListener("change", () => {
 		const isOther = val("pDrugName") === "Other";
 		$("#pDrugNameOther")?.classList.toggle("hidden", !isOther);
@@ -8669,7 +8203,6 @@ function buildPaedsTreatmentSection() {
 		}
 	});
 
-	// Remove / repeat delegation — shared functions handle both adult and paeds variants.
 	$("#pVaEntries")?.addEventListener("click", (e) => {
 		const idx = e.target.dataset.removePva;
 		if (idx !== undefined) removePaedsIvEntry(parseInt(idx));
@@ -8682,13 +8215,7 @@ function buildPaedsTreatmentSection() {
 	});
 }
 
-/**
- * Pre-populates the paediatric drug form with the values from a previously-added entry,
- * setting the time to the current clock time for the repeat dose.
- * Note: route is re-selected via `setRadioChip` (chip-based UI), not a select element.
- *
- * @param {number} index - Index in `paedsState.pDrugEntries` to repeat.
- */
+
 function repeatPaedsDrugEntry(index) {
 	const e = paedsState.pDrugEntries[index];
 	if (!e) return;
@@ -8783,14 +8310,7 @@ function buildPaedsWetflagText() {
 	].join("\n");
 }
 
-// PAEDIATRIC CONVEYANCE
-// Conveyance transfer checklist chips, destination/department, and conveyance
-// summary text builder for the paeds ePRF.
-
-// buildPConveyTransferChips and togglePConveyChip have been consolidated into
-// the shared buildConveyTransferChips() and toggleConveyChip() functions above.
-// Call buildConveyTransferChips("pConveyTransferGrid", "p-convey-chip") for paeds.
-
+// Paeds conveyance
 function handlePConveyanceDisplay() {
 	const decision = val("pConveyDecision");
 	const conveyed = decision === "Conveyed";
@@ -8812,10 +8332,6 @@ function handlePConveyanceDisplay() {
 		dept !== "Other department",
 	);
 }
-
-// buildPConveyDestination and getPConveyTransferText have been consolidated into
-// the shared buildConveyDestination() and getConveyTransferText() functions.
-// Call buildConveyDestination("pConvey") and getConveyTransferText(true) for paeds.
 
 function buildPaedsConsentText() {
 	const consent = val("pConsentType");
@@ -8973,10 +8489,6 @@ async function copySectionById(sectionId) {
 	if (text) await copyText(text);
 }
 
-// SECTION CARD ENHANCEMENTS
-// Adds context-sensitive hint text and copy-section shortcut buttons to
-// each collapsible section card after all content is built.
-
 function enhanceSectionCards() {
 	const descriptions = {
 		"Presenting Complaint": [
@@ -9027,9 +8539,7 @@ function enhanceSectionCards() {
 	});
 }
 
-// DARK MODE TOGGLE
-// Persists the user's theme preference to localStorage.
-
+// Dark mode
 (function () {
 	const STORAGE_KEY = "crewmate-theme";
 	const toggle = document.getElementById("themeToggle");
@@ -9075,9 +8585,7 @@ function enhanceSectionCards() {
 	}
 })();
 
-// RESPIRATORY RATE COUNTER
-// Standalone timed tapping tool for counting respiratory rate.
-
+// RR counter
 const respCounter = {
 	duration: 30,
 	running: false,
