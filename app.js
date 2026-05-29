@@ -2133,6 +2133,8 @@ function init() {
 
 	populateChipGroup("conveyDepartment", OPTIONS.conveyDepartment);
 
+	buildConveyTransferChips();
+
 	populateChipGroup("mobilisationToVehicle", OPTIONS.mobilisationToVehicle);
 
 	buildCapacitySection();
