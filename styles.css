@@ -3525,13 +3525,13 @@ html[data-theme="dark"] .resp-result-card {
 	color: #bbf7d0;
 }
 
-.resp-result-card--abnormal {
+.resp-result-card-abnormal {
 	background: var(--danger-soft);
 	border-color: #f9a8b4;
 	color: var(--danger);
 }
 
-html[data-theme="dark"] .resp-result-card--abnormal {
+html[data-theme="dark"] .resp-result-card-abnormal {
 	background: #371923;
 	border-color: #7f1d38;
 	color: #fb7185;
