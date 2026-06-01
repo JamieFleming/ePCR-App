@@ -1743,13 +1743,10 @@ const ROS = {
 
 document.addEventListener("DOMContentLoaded", () => {
 	init();
-	initDashboard();
 	// initRespCounter();
 });
 
-//Dashboard
-function showDashboard() {
-	// Reset paeds mode
+document.addEventListener("crewmate:leave-paeds", () => {
 	if (paedsMode) {
 		paedsMode = false;
 		_paedsInited = false;
@@ -1758,58 +1755,21 @@ function showDashboard() {
 		$("#paedsAssessmentCard")?.classList.add("hidden");
 		$("#abcdeContainer")?.classList.remove("hidden");
 	}
+});
 
-	$("#dashboard")?.classList.remove("hidden");
-	$("#prf-tool")?.classList.add("hidden");
-	$("#resp-tool")?.classList.add("hidden");
-	$("#obs-recorder")?.classList.add("hidden");
-	$("#drug-finder-tool")?.classList.add("hidden");
-	$("#news-tool")?.classList.add("hidden");
-	$("#backButton")?.classList.add("hidden");
-	$("#resetButton")?.classList.add("hidden");
-}
+document.addEventListener("crewmate:show-eprf", () => {
+	switchTab("history");
+});
 
-function showFeature(feature) {
-	$("#dashboard")?.classList.add("hidden");
-	$("#backButton")?.classList.remove("hidden");
-	if (feature === "eprf") {
-		$("#prf-tool")?.classList.remove("hidden");
-		$("#resetButton")?.classList.remove("hidden");
-		switchTab("history");
-	} else if (feature === "paeds-prf") {
-		paedsMode = true;
-		$("#prf-tool")?.classList.remove("hidden");
-		$("#resetButton")?.classList.remove("hidden");
-		initPaeds();
-		switchTab("history");
-	} else if (feature === "resp-timer") {
-		$("#resp-tool")?.classList.remove("hidden");
-		$("#resetButton")?.classList.add("hidden");
-		document.dispatchEvent(new CustomEvent("crewmate:show-resp-counter"));
-	} else if (feature === "obs-recorder") {
-		$("#obs-recorder")?.classList.remove("hidden");
-		$("#resetButton")?.classList.add("hidden");
-		initObsRecorder();
-	} else if (feature === "drug-finder") {
-		$("#drug-finder-tool")?.classList.remove("hidden");
-		$("#resetButton")?.classList.add("hidden");
-		// Focus the search input
-		setTimeout(() => $("#bnfSearchInput")?.focus(), 50);
-	} else if (feature === "newsScore") {
-		$("#news-tool")?.classList.remove("hidden");
-		$("#resetButton")?.classList.add("hidden");
-	}
-}
+document.addEventListener("crewmate:show-paeds", () => {
+	paedsMode = true;
+	initPaeds();
+	switchTab("history");
+});
 
-function initDashboard() {
-	$$(".feature-card:not(.coming-soon)").forEach((card) => {
-		card.addEventListener("click", () => showFeature(card.dataset.feature));
-		card.addEventListener("keydown", (e) => {
-			if (e.key === "Enter" || e.key === " ") showFeature(card.dataset.feature);
-		});
-	});
-	$("#backButton")?.addEventListener("click", showDashboard);
-}
+document.addEventListener("crewmate:show-obs-recorder", () => {
+	initObsRecorder();
+});
 
 // Obs recorder
 
@@ -1832,175 +1792,6 @@ function initObsRecorder() {
 		updateObsSetNumbers();
 	});
 }
-
-// NEWS score - Modulised into news2.js
-
-// let _news2Inited = false;
-// let _news2Scale = 1;
-
-// const NEWS2_GUIDANCE = {
-// 	LOW: [
-// 		"Score 0 — Routine monitoring",
-// 		"Score 1–4 — Minimum 12-hourly monitoring",
-// 	],
-// 	MEDIUM_3: "Score 3 in single parameter — Minimum 1-hourly monitoring",
-// 	MEDIUM_56: "Score 5–6 — Urgent review by clinician with core competencies",
-// 	HIGH: "Score ≥7 — Emergency assessment by clinical team",
-// };
-
-// const NEWS2_PARAM_LABELS = {
-// 	rr: "Resp Rate",
-// 	spo2: "SpO₂",
-// 	o2: "O₂",
-// 	sbp: "Systolic BP",
-// 	hr: "Pulse",
-// 	cons: "Consciousness",
-// 	temp: "Temp",
-// };
-
-//Refactored into news2.js
-// function initNews2() {
-// 	if (_news2Inited) return;
-// 	_news2Inited = true;
-// 	_news2Scale = 1;
-
-// 	$$("[data-n2-scale]", $("#news2-tool")).forEach((btn) => {
-// 		btn.addEventListener("click", () => {
-// 			_news2Scale = parseInt(btn.dataset.n2Scale);
-// 			$$("[data-n2-scale]", $("#news2-tool")).forEach((b) =>
-// 				b.classList.toggle("selected", b === btn),
-// 			);
-// 			$("#n2Spo2S1Group")?.classList.toggle("hidden", _news2Scale !== 1);
-// 			$("#n2Spo2S2Group")?.classList.toggle("hidden", _news2Scale !== 2);
-// 			$$("[data-n2-param='spo2']", $("#news2-tool")).forEach((c) =>
-// 				c.classList.remove("selected"),
-// 			);
-// 			updateNews2Score();
-// 		});
-// 	});
-
-// 	$$(".n2-chip", $("#news2-tool")).forEach((chip) => {
-// 		chip.addEventListener("click", () => {
-// 			const param = chip.dataset.n2Param;
-// 			const wasSelected = chip.classList.contains("selected");
-// 			$$(`[data-n2-param="${param}"]`, $("#news2-tool")).forEach((c) =>
-// 				c.classList.remove("selected"),
-// 			);
-// 			if (!wasSelected) chip.classList.add("selected");
-// 			updateNews2Score();
-// 		});
-// 	});
-
-// 	$("#n2ResetBtn")?.addEventListener("click", resetNews2);
-
-// 	updateNews2Score();
-// }
-
-// function resetNews2() {
-// 	$$(".n2-chip", $("#news2-tool")).forEach((c) =>
-// 		c.classList.remove("selected"),
-// 	);
-// 	_news2Scale = 1;
-// 	$$("[data-n2-scale]", $("#news2-tool")).forEach((b) =>
-// 		b.classList.toggle("selected", b.dataset.n2Scale === "1"),
-// 	);
-// 	$("#n2Spo2S1Group")?.classList.remove("hidden");
-// 	$("#n2Spo2S2Group")?.classList.add("hidden");
-// 	updateNews2Score();
-// }
-
-// function updateNews2Score() {
-// 	const tool = $("#news2-tool");
-// 	if (!tool) return;
-
-// 	const getParamScore = (param) => {
-// 		const sel = tool.querySelector(`[data-n2-param="${param}"].selected`);
-// 		return sel ? parseInt(sel.dataset.n2Score) : null;
-// 	};
-
-// 	const params = ["rr", "spo2", "o2", "sbp", "hr", "cons", "temp"];
-// 	const scores = params.map((p) => ({ param: p, score: getParamScore(p) }));
-// 	const selected = scores.filter((s) => s.score !== null);
-
-// 	const totalEl = $("#n2Total");
-// 	const riskBannerEl = $("#n2Risk");
-// 	const resultCircle = $("#n2ResultCircle");
-// 	const resultRisk = $("#n2ResultRisk");
-// 	const resultGuidance = $("#n2ResultGuidance");
-// 	const breakdown = $("#n2Breakdown");
-// 	const breakdownGrid = $("#n2BreakdownGrid");
-
-// 	if (selected.length === 0) {
-// 		if (totalEl) totalEl.textContent = "–";
-// 		if (riskBannerEl) {
-// 			riskBannerEl.textContent = "Select parameters below";
-// 			riskBannerEl.className = "n2-banner-risk";
-// 		}
-// 		if (resultCircle) {
-// 			resultCircle.textContent = "–";
-// 			resultCircle.className = "n2-result-circle";
-// 		}
-// 		if (resultRisk) resultRisk.textContent = "";
-// 		if (resultGuidance)
-// 			resultGuidance.textContent =
-// 				"Complete the parameters above to calculate your NEWS2 score";
-// 		if (breakdown) breakdown.style.display = "none";
-// 		return;
-// 	}
-
-// 	const total = selected.reduce((sum, s) => sum + s.score, 0);
-// 	const hasThree = selected.some((s) => s.score === 3);
-// 	const risk = total >= 7 ? "HIGH" : total >= 5 || hasThree ? "MEDIUM" : "LOW";
-
-// 	let guidance;
-// 	if (risk === "HIGH") {
-// 		guidance = NEWS2_GUIDANCE.HIGH;
-// 	} else if (risk === "MEDIUM") {
-// 		guidance =
-// 			hasThree && total < 5
-// 				? NEWS2_GUIDANCE.MEDIUM_3
-// 				: NEWS2_GUIDANCE.MEDIUM_56;
-// 	} else {
-// 		guidance = total === 0 ? NEWS2_GUIDANCE.LOW[0] : NEWS2_GUIDANCE.LOW[1];
-// 	}
-
-// 	const riskLower = risk.toLowerCase();
-
-// 	if (totalEl) totalEl.textContent = total;
-// 	if (riskBannerEl) {
-// 		riskBannerEl.textContent = `${risk} — ${guidance}`;
-// 		riskBannerEl.className = `n2-banner-risk news2-${riskLower}`;
-// 	}
-// 	if (resultCircle) {
-// 		resultCircle.textContent = total;
-// 		resultCircle.className = `n2-result-circle n2-circle--${riskLower}`;
-// 	}
-// 	if (resultRisk) {
-// 		resultRisk.textContent = risk;
-// 		resultRisk.className = `n2-result-risk-label n2-risk--${riskLower}`;
-// 	}
-// 	if (resultGuidance) resultGuidance.textContent = guidance;
-
-// 	// Breakdown
-// 	if (breakdown && breakdownGrid) {
-// 		breakdownGrid.innerHTML = selected
-// 			.map(
-// 				(s) =>
-// 					`<div class="n2-bd-item">
-// 						<span class="n2-bd-param">${NEWS2_PARAM_LABELS[s.param] || s.param}</span>
-// 						<span class="n2-bd-score n2-pts--${s.score}">+${s.score}</span>
-// 					</div>`,
-// 			)
-// 			.join("");
-// 		if (selected.length > 1) {
-// 			breakdownGrid.innerHTML += `<div class="n2-bd-item n2-bd-total">
-// 				<span class="n2-bd-param">Total</span>
-// 				<span class="n2-bd-score n2-pts--${Math.min(total, 3)}">= ${total}</span>
-// 			</div>`;
-// 		}
-// 		breakdown.style.display = "";
-// 	}
-// }
 
 function buildPainScoreGrids() {
 	[
@@ -8506,177 +8297,3 @@ function enhanceSectionCards() {
 		summary.dataset.enhanced = "true";
 	});
 }
-
-// Dark mode - Refactored into theme.js
-// (function () {
-// 	const STORAGE_KEY = "crewmate-theme";
-// 	const toggle = document.getElementById("themeToggle");
-// 	const themeMeta = document.querySelector('meta[name="theme-color"]');
-
-// 	function applyTheme(theme) {
-// 		const root = document.documentElement;
-// 		const isDark = theme === "dark";
-
-// 		root.setAttribute("data-theme", theme);
-
-// 		if (toggle) {
-// 			toggle.setAttribute(
-// 				"aria-label",
-// 				isDark ? "Switch to light mode" : "Switch to dark mode",
-// 			);
-
-// 			toggle.setAttribute("aria-pressed", String(isDark));
-// 		}
-
-// 		if (themeMeta) {
-// 			themeMeta.setAttribute("content", isDark ? "#0f1720" : "#075985");
-// 		}
-// 	}
-
-// 	const savedTheme = localStorage.getItem(STORAGE_KEY);
-
-// 	const initialTheme = savedTheme || "light";
-
-// 	applyTheme(initialTheme);
-
-// 	if (toggle) {
-// 		toggle.addEventListener("click", function () {
-// 			const currentTheme =
-// 				document.documentElement.getAttribute("data-theme") || "light";
-
-// 			const nextTheme = currentTheme === "dark" ? "light" : "dark";
-
-// 			localStorage.setItem(STORAGE_KEY, nextTheme);
-
-// 			applyTheme(nextTheme);
-// 		});
-// 	}
-// })();
-
-// RR counter - refactored into respCounter.js
-// const respCounter = {
-// 	duration: 30,
-// 	running: false,
-// 	startTime: null,
-// 	endTime: null,
-// 	count: 0,
-// 	timerId: null,
-// };
-
-// function initRespCounter() {
-// 	const durationSelect = $("#respDuration");
-// 	const startButton = $("#respStartButton");
-// 	const resetButton = $("#respResetButton");
-// 	const tapButton = $("#respTapButton");
-
-// 	durationSelect?.addEventListener("change", () => {
-// 		if (!respCounter.running) {
-// 			respCounter.duration = Number(durationSelect.value || 30);
-// 			resetRespCounter(false);
-// 		}
-// 	});
-
-// 	startButton?.addEventListener("click", startRespCounter);
-// 	resetButton?.addEventListener("click", () => resetRespCounter());
-// 	tapButton?.addEventListener("click", () => {
-// 		recordRespTap();
-// 	});
-// }
-
-// function startRespCounter() {
-// 	const durationSelect = $("#respDuration");
-// 	respCounter.duration = Number(durationSelect?.value || 30);
-// 	respCounter.running = true;
-// 	respCounter.count = 0;
-// 	respCounter.startTime = Date.now();
-// 	respCounter.endTime = respCounter.startTime + respCounter.duration * 1000;
-
-// 	$("#respResultCard")?.classList.add("hidden");
-// 	$("#respDuration")?.setAttribute("disabled", "true");
-// 	if ($("#respStartButton")) $("#respStartButton").textContent = "Counting...";
-// 	if ($("#respTapLabel")) $("#respTapLabel").textContent = "Tap breath";
-
-// 	clearInterval(respCounter.timerId);
-// 	respCounter.timerId = setInterval(updateRespCounterDisplay, 200);
-// 	updateRespCounterDisplay();
-// }
-
-// function recordRespTap() {
-// 	if (!respCounter.running) return;
-// 	respCounter.count += 1;
-// 	updateRespCounterDisplay();
-
-// 	const btn = $("#respTapButton");
-// 	btn?.classList.remove("pulse");
-// 	void btn?.offsetWidth;
-// 	btn?.classList.add("pulse");
-// }
-
-// function updateRespCounterDisplay() {
-// 	const now = Date.now();
-// 	const elapsedSeconds = respCounter.startTime
-// 		? Math.max((now - respCounter.startTime) / 1000, 0.1)
-// 		: 0.1;
-// 	const remaining = respCounter.endTime
-// 		? Math.max(Math.ceil((respCounter.endTime - now) / 1000), 0)
-// 		: respCounter.duration;
-
-// 	const liveRate = Math.round((respCounter.count / elapsedSeconds) * 60);
-
-// 	if ($("#respLiveRate"))
-// 		$("#respLiveRate").textContent = String(liveRate || 0);
-// 	if ($("#respTimeLeft")) $("#respTimeLeft").textContent = String(remaining);
-// 	if ($("#respTapCount"))
-// 		$("#respTapCount").textContent = String(respCounter.count);
-
-// 	if (respCounter.running && now >= respCounter.endTime) finishRespCounter();
-// }
-
-// function finishRespCounter() {
-// 	respCounter.running = false;
-// 	clearInterval(respCounter.timerId);
-
-// 	const rate = Math.round((respCounter.count / respCounter.duration) * 60);
-
-// 	if ($("#respLiveRate")) $("#respLiveRate").textContent = String(rate);
-// 	if ($("#respTimeLeft")) $("#respTimeLeft").textContent = "0";
-// 	if ($("#respResultTotal"))
-// 		$("#respResultTotal").textContent = String(respCounter.count);
-// 	if ($("#respResultDuration"))
-// 		$("#respResultDuration").textContent = String(respCounter.duration);
-// 	if ($("#respResultRate"))
-// 		$("#respResultRate").textContent = `${rate} resp/min`;
-
-// 	const isAbnormal = rate < 12 || rate > 20;
-// 	const resultCard = $("#respResultCard");
-// 	resultCard?.classList.remove("hidden");
-// 	resultCard?.classList.toggle("resp-result-card--abnormal", isAbnormal);
-// 	$("#respDuration")?.removeAttribute("disabled");
-// 	if ($("#respStartButton")) $("#respStartButton").textContent = "Start again";
-// 	if ($("#respTapLabel")) $("#respTapLabel").textContent = "Count complete";
-// }
-
-// function resetRespCounter(clearResult = true) {
-// 	clearInterval(respCounter.timerId);
-// 	respCounter.duration = Number($("#respDuration")?.value || 30);
-// 	respCounter.running = false;
-// 	respCounter.startTime = null;
-// 	respCounter.endTime = null;
-// 	respCounter.count = 0;
-// 	respCounter.timerId = null;
-
-// 	if ($("#respLiveRate")) $("#respLiveRate").textContent = "0";
-// 	if ($("#respTimeLeft"))
-// 		$("#respTimeLeft").textContent = String(respCounter.duration);
-// 	if ($("#respTapCount")) $("#respTapCount").textContent = "0";
-// 	if ($("#respStartButton")) $("#respStartButton").textContent = "Start count";
-// 	if ($("#respTapLabel"))
-// 		$("#respTapLabel").textContent = "Start & tap breaths";
-
-// 	$("#respDuration")?.removeAttribute("disabled");
-// 	if (clearResult) {
-// 		const rc = $("#respResultCard");
-// 		rc?.classList.add("hidden");
-// 		rc?.classList.remove("resp-result-card--abnormal");
-// 	}
-// }
