@@ -1,6 +1,5 @@
 "use strict";
 
-
 const $ = (selector, root = document) => root.querySelector(selector);
 
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -17,7 +16,6 @@ const onsetClockSuffix = () => {
 	return t ? ` (at ${t})` : "";
 };
 
-
 function rfSystolic() {
 	const bpStr = val("bp");
 	if (!bpStr) return null;
@@ -25,11 +23,9 @@ function rfSystolic() {
 	return isNaN(systolic) ? null : systolic;
 }
 
-
 function evaluateRedFlags() {
 	return [];
 }
-
 
 const state = {
 	mapMode: "site",
@@ -1307,7 +1303,6 @@ const ABDO_FINDING_SHORT = {
 	Rovsings: "Rv",
 };
 
-
 function populateGroupedSelect(selectId, groups) {
 	const select = $(`#${selectId}`);
 	if (!select) return;
@@ -1324,7 +1319,6 @@ function populateGroupedSelect(selectId, groups) {
 	});
 }
 
-
 function populateFlatSelect(selectId, options) {
 	const select = $(`#${selectId}`);
 	if (!select) return;
@@ -1335,7 +1329,6 @@ function populateFlatSelect(selectId, options) {
 		select.appendChild(opt);
 	});
 }
-
 
 function populateChipGroup(radioGroup, items) {
 	const group = $(`[data-radio-group='${radioGroup}']`);
@@ -1351,7 +1344,6 @@ function populateChipGroup(radioGroup, items) {
 	});
 }
 
-
 function populateSiteChips(containerId, items) {
 	const container = $(`#${containerId}`);
 	if (!container) return;
@@ -1364,7 +1356,6 @@ function populateSiteChips(containerId, items) {
 		container.appendChild(btn);
 	});
 }
-
 
 function populateGaugeChips(groupId) {
 	const group = $(`[data-radio-group='${groupId}']`);
@@ -1379,8 +1370,6 @@ function populateGaugeChips(groupId) {
 	});
 }
 
-
-
 function populatePcSelect() {
 	populateGroupedSelect("pcSelect", OPTIONS.presentingComplaint);
 }
@@ -1392,7 +1381,6 @@ function populateCallerSelect() {
 function populateOaFoundSelect() {
 	populateGroupedSelect("oaFound", OPTIONS.onArrival.found);
 }
-
 
 function populateMobilityChips() {
 	const group = $("[data-radio-group='oaMobility']");
@@ -1780,7 +1768,6 @@ function showDashboard() {
 	$("#backButton")?.classList.add("hidden");
 	$("#resetButton")?.classList.add("hidden");
 }
-
 
 function showFeature(feature) {
 	$("#dashboard")?.classList.add("hidden");
@@ -2990,7 +2977,6 @@ const { render: renderIvEntries, remove: removeIvEntry } = makeEntryManager(
 	"remove-va",
 );
 
-
 function renderDrugEntries(isPaeds = false) {
 	const entries = isPaeds ? paedsState.pDrugEntries : state.drugEntries;
 	const containerId = isPaeds ? "pDrugEntries" : "drugEntries";
@@ -3012,7 +2998,6 @@ function renderDrugEntries(isPaeds = false) {
 	});
 }
 
-
 function removeDrugEntry(index, isPaeds = false) {
 	if (isPaeds) {
 		paedsState.pDrugEntries.splice(index, 1);
@@ -3021,7 +3006,6 @@ function removeDrugEntry(index, isPaeds = false) {
 	}
 	renderDrugEntries(isPaeds);
 }
-
 
 function repeatDrugEntry(index) {
 	const entry = state.drugEntries[index];
@@ -3064,7 +3048,6 @@ const { render: renderChangeEntries, remove: removeChangeEntry } =
 		(e) => (e.time ? `[${e.time}] ${e.desc}` : e.desc),
 		"remove-change",
 	);
-
 
 function addIvEntry(isPaeds = false) {
 	const p = isPaeds ? "pVa" : "va";
@@ -3116,7 +3099,6 @@ function addIvEntry(isPaeds = false) {
 
 	renderFn();
 }
-
 
 function addDrugEntry(isPaeds = false) {
 	const p = isPaeds ? "pDrug" : "drug";
@@ -4934,7 +4916,6 @@ function setOtherFactorVisible(stateKey, visible) {
 	if (wrapId) $(`#${wrapId}`)?.classList.toggle("hidden", !visible);
 }
 
-
 function buildConveyTransferChips(
 	containerId = "conveyTransferGrid",
 	chipClass = "convey-chip",
@@ -4956,7 +4937,6 @@ function buildConveyTransferChips(
 		root.append(button);
 	});
 }
-
 
 function toggleConveyChip(button) {
 	const isPaeds = button.classList.contains("p-convey-chip");
@@ -4987,7 +4967,6 @@ function toggleConveyChip(button) {
 		if (stable?.dataset.conveyState === "normal") toggleConveyChip(stable);
 	}
 }
-
 
 function getConveyTransferText(isPaeds = false) {
 	return $$(isPaeds ? ".p-convey-chip" : ".convey-chip")
@@ -5436,7 +5415,6 @@ function rosBlock(section) {
 	return `${rosLine(section)} ${extras[section]?.() || val(`${section}Notes`) || ""}`.trim();
 }
 
-
 function buildHandoverText() {
 	const format = val("handoverFormat") || "ASHICE";
 	const age = val("ptAge");
@@ -5877,7 +5855,6 @@ function buildFallsText() {
 	].join("\n");
 }
 
-
 function buildOutputSections() {
 	const pc = getPc();
 	const site = getSelectedParts(state.siteParts) || "Not localised";
@@ -6146,7 +6123,6 @@ function buildOutputSections() {
 }
 
 let obsCounter = 0;
-
 
 function newsScore(rr, spo2, o2On, sbp, hr, temp, avpu) {
 	let score = 0;
@@ -8217,7 +8193,6 @@ function buildPaedsTreatmentSection() {
 	});
 }
 
-
 function repeatPaedsDrugEntry(index) {
 	const e = paedsState.pDrugEntries[index];
 	if (!e) return;
@@ -8541,51 +8516,51 @@ function enhanceSectionCards() {
 	});
 }
 
-// Dark mode
-(function () {
-	const STORAGE_KEY = "crewmate-theme";
-	const toggle = document.getElementById("themeToggle");
-	const themeMeta = document.querySelector('meta[name="theme-color"]');
+// Dark mode - Refactored into theme.js
+// (function () {
+// 	const STORAGE_KEY = "crewmate-theme";
+// 	const toggle = document.getElementById("themeToggle");
+// 	const themeMeta = document.querySelector('meta[name="theme-color"]');
 
-	function applyTheme(theme) {
-		const root = document.documentElement;
-		const isDark = theme === "dark";
+// 	function applyTheme(theme) {
+// 		const root = document.documentElement;
+// 		const isDark = theme === "dark";
 
-		root.setAttribute("data-theme", theme);
+// 		root.setAttribute("data-theme", theme);
 
-		if (toggle) {
-			toggle.setAttribute(
-				"aria-label",
-				isDark ? "Switch to light mode" : "Switch to dark mode",
-			);
+// 		if (toggle) {
+// 			toggle.setAttribute(
+// 				"aria-label",
+// 				isDark ? "Switch to light mode" : "Switch to dark mode",
+// 			);
 
-			toggle.setAttribute("aria-pressed", String(isDark));
-		}
+// 			toggle.setAttribute("aria-pressed", String(isDark));
+// 		}
 
-		if (themeMeta) {
-			themeMeta.setAttribute("content", isDark ? "#0f1720" : "#075985");
-		}
-	}
+// 		if (themeMeta) {
+// 			themeMeta.setAttribute("content", isDark ? "#0f1720" : "#075985");
+// 		}
+// 	}
 
-	const savedTheme = localStorage.getItem(STORAGE_KEY);
+// 	const savedTheme = localStorage.getItem(STORAGE_KEY);
 
-	const initialTheme = savedTheme || "light";
+// 	const initialTheme = savedTheme || "light";
 
-	applyTheme(initialTheme);
+// 	applyTheme(initialTheme);
 
-	if (toggle) {
-		toggle.addEventListener("click", function () {
-			const currentTheme =
-				document.documentElement.getAttribute("data-theme") || "light";
+// 	if (toggle) {
+// 		toggle.addEventListener("click", function () {
+// 			const currentTheme =
+// 				document.documentElement.getAttribute("data-theme") || "light";
 
-			const nextTheme = currentTheme === "dark" ? "light" : "dark";
+// 			const nextTheme = currentTheme === "dark" ? "light" : "dark";
 
-			localStorage.setItem(STORAGE_KEY, nextTheme);
+// 			localStorage.setItem(STORAGE_KEY, nextTheme);
 
-			applyTheme(nextTheme);
-		});
-	}
-})();
+// 			applyTheme(nextTheme);
+// 		});
+// 	}
+// })();
 
 // RR counter
 const respCounter = {
