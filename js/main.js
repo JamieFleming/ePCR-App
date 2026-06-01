@@ -1,7 +1,7 @@
 import { initTheme } from "./features/theme.js";
 import { initDashboard } from "./features/dashboard.js";
 import { initRespCounter } from "./features/respCounter.js";
-import { initNewsScore } from "./features/news2.js";
+import { initNewsScore } from "./features/newsScore.js";
 import { initDrugFinder } from "./features/drugFinder.js";
 import { initObsRecorder } from "./features/obsRecorder.js";
 

@@ -1,23 +1,12 @@
 import { $, $$ } from "../utils/dom.js";
+import {
+	NEWS_PARAM_LABELS,
+	getNewsGuidance,
+	getNewsRisk,
+} from "../clinical/newsScoring.js";
 
 let _newsScoreInited = false;
 let _newsScale = 1;
-
-const NEWS2_GUIDANCE = {
-	LOW: ["Score 0 — Very Low Risk", "Score 1–4 — Low Risk"],
-	MEDIUM: ["Score 3 in single parameter", "Score 5–6 — Medium Risk"],
-	HIGH: "Score ≥7 — High Risk",
-};
-
-const NEWS2_PARAM_LABELS = {
-	rr: "Resp Rate",
-	spo2: "SpO₂",
-	o2: "O₂",
-	sbp: "Systolic BP",
-	hr: "Pulse",
-	cons: "Consciousness",
-	temp: "Temp",
-};
 
 export function initNewsScore() {
 	if (_newsScoreInited) return;
@@ -110,19 +99,8 @@ function updateNewsScore() {
 
 	const total = selected.reduce((sum, s) => sum + s.score, 0);
 	const hasThree = selected.some((s) => s.score === 3);
-	const risk = total >= 7 ? "HIGH" : total >= 5 || hasThree ? "MEDIUM" : "LOW";
-
-	let guidance;
-	if (risk === "HIGH") {
-		guidance = NEWS2_GUIDANCE.HIGH;
-	} else if (risk === "MEDIUM") {
-		guidance =
-			hasThree && total < 5
-				? NEWS2_GUIDANCE.MEDIUM[0]
-				: NEWS2_GUIDANCE.MEDIUM[1];
-	} else {
-		guidance = total === 0 ? NEWS2_GUIDANCE.LOW[0] : NEWS2_GUIDANCE.LOW[1];
-	}
+	const risk = getNewsRisk(total, hasThree);
+	const guidance = getNewsGuidance(total, risk, hasThree);
 
 	const riskLower = risk.toLowerCase();
 
@@ -141,13 +119,12 @@ function updateNewsScore() {
 	}
 	if (resultGuidance) resultGuidance.textContent = guidance;
 
-	// Breakdown
 	if (breakdown && breakdownGrid) {
 		breakdownGrid.innerHTML = selected
 			.map(
 				(s) =>
 					`<div class="n2-bd-item">
-						<span class="n2-bd-param">${NEWS2_PARAM_LABELS[s.param] || s.param}</span>
+						<span class="n2-bd-param">${NEWS_PARAM_LABELS[s.param] || s.param}</span>
 						<span class="n2-bd-score n2-pts--${s.score}">+${s.score}</span>
 					</div>`,
 			)

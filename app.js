@@ -5907,49 +5907,15 @@ function buildOutputSections() {
 let obsCounter = 0;
 
 function newsScore(rr, spo2, o2On, sbp, hr, temp, avpu) {
-	let score = 0;
-	let hasThree = false;
-	const add = (s) => {
-		score += s;
-		if (s === 3) hasThree = true;
-	};
-
-	if (!isNaN(rr))
-		add(rr <= 8 ? 3 : rr <= 11 ? 1 : rr <= 20 ? 0 : rr <= 24 ? 2 : 3);
-	if (!isNaN(spo2)) add(spo2 <= 91 ? 3 : spo2 <= 93 ? 2 : spo2 <= 95 ? 1 : 0);
-	if (o2On) add(2);
-	if (!isNaN(sbp))
-		add(sbp <= 90 ? 3 : sbp <= 100 ? 2 : sbp <= 110 ? 1 : sbp <= 219 ? 0 : 3);
-	if (!isNaN(hr))
-		add(
-			hr <= 40
-				? 3
-				: hr <= 50
-					? 1
-					: hr <= 90
-						? 0
-						: hr <= 110
-							? 1
-							: hr <= 130
-								? 2
-								: 3,
-		);
-	if (!isNaN(temp))
-		add(
-			temp <= 35.0
-				? 3
-				: temp <= 36.0
-					? 1
-					: temp <= 38.0
-						? 0
-						: temp <= 39.0
-							? 1
-							: 2,
-		);
-	if (avpu && avpu !== "A") add(3);
-
-	const risk = score >= 7 ? "HIGH" : score >= 5 || hasThree ? "MEDIUM" : "LOW";
-	return { score, risk, hasThree };
+	return window.CrewMateNewsScore.calculateNewsScoreFromValues({
+		rr,
+		spo2,
+		o2On,
+		sbp,
+		hr,
+		temp,
+		avpu,
+	});
 }
 
 function updateNews2(setEl) {
