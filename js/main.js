@@ -1,8 +1,9 @@
 import { initTheme } from "./features/theme.js";
+import { initDashboard } from "./features/dashboard.js";
 import { initRespCounter } from "./features/respCounter.js";
 import { initNewsScore } from "./features/news2.js";
 import { initDrugFinder } from "./features/drugFinder.js";
-import { initDashboard } from "./features/dashboard.js";
+import { initObsRecorder } from "./features/obsRecorder.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 	initTheme();
@@ -10,4 +11,5 @@ document.addEventListener("DOMContentLoaded", () => {
 	initRespCounter();
 	initNewsScore();
 	initDrugFinder();
+	initObsRecorder();
 });

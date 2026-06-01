@@ -1767,8 +1767,8 @@ document.addEventListener("crewmate:show-paeds", () => {
 	switchTab("history");
 });
 
-document.addEventListener("crewmate:show-obs-recorder", () => {
-	initObsRecorder();
+document.addEventListener("crewmate:init-legacy-obs-recorder", () => {
+	initLegacyObsRecorder();
 });
 
 // Obs recorder
@@ -1777,7 +1777,7 @@ let _obsRecInited = false;
 let _paedsInited = false;
 let paedsMode = false;
 
-function initObsRecorder() {
+function initLegacyObsRecorder() {
 	if (_obsRecInited) return;
 	_obsRecInited = true;
 
