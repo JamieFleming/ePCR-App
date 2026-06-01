@@ -203,7 +203,7 @@
 				<!-- NEWS2 Score -->
 				<div
 					class="feature-card"
-					data-feature="news2"
+					data-feature="newsScore"
 					role="button"
 					tabindex="0">
 					<div class="card-icon purple">
@@ -536,19 +536,21 @@
 		</div>
 
 		<!-- NEWS Score -->
-		<div id="news2-tool" class="tool-page hidden">
+		<div id="news-tool" class="tool-page hidden">
 			<!-- Banner -->
 			<div class="n2-banner" id="n2Banner">
 				<div class="n2-banner-inner">
 					<div class="n2-banner-label-group">
 						<span class="n2-banner-label">NEWS2</span>
-						<span class="n2-banner-total" id="n2Total">–</span>
+						<span class="n2-banner-total" id="newsTotal">–</span>
 					</div>
-					<div class="n2-banner-risk" id="n2Risk">Select parameters below</div>
+					<div class="n2-banner-risk" id="newsRiskBanner">
+						Select parameters below
+					</div>
 					<button
 						type="button"
 						class="ghost-button n2-reset-btn"
-						id="n2ResetBtn">
+						id="newsReset">
 						Reset
 					</button>
 				</div>
@@ -594,35 +596,35 @@
 						<div class="radio-chip-group wrap-grid" id="n2RrGroup">
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="rr"
 								data-n2-score="3">
 								≤8<small class="n2-pts n2-pts--3">+3</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="rr"
 								data-n2-score="1">
 								9–11<small class="n2-pts n2-pts--1">+1</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="rr"
 								data-n2-score="0">
 								12–20<small class="n2-pts n2-pts--0">+0</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="rr"
 								data-n2-score="2">
 								21–24<small class="n2-pts n2-pts--2">+2</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="rr"
 								data-n2-score="3">
 								≥25<small class="n2-pts n2-pts--3">+3</small>
@@ -639,31 +641,31 @@
 						>
 
 						<!-- Scale 1 -->
-						<div class="radio-chip-group wrap-grid" id="n2Spo2S1Group">
+						<div class="radio-chip-group wrap-grid" id="satsScale1">
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="3">
 								≤91%<small class="n2-pts n2-pts--3">+3</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="2">
 								92–93%<small class="n2-pts n2-pts--2">+2</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="1">
 								94–95%<small class="n2-pts n2-pts--1">+1</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="0">
 								≥96%<small class="n2-pts n2-pts--0">+0</small>
@@ -671,52 +673,52 @@
 						</div>
 
 						<!-- Scale 2 -->
-						<div class="radio-chip-group wrap-grid hidden" id="n2Spo2S2Group">
+						<div class="radio-chip-group wrap-grid hidden" id="satsScale2">
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="3">
 								≤83%<small class="n2-pts n2-pts--3">+3</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="2">
 								84–85%<small class="n2-pts n2-pts--2">+2</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="1">
 								86–87%<small class="n2-pts n2-pts--1">+1</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="0">
 								88–92%<small class="n2-pts n2-pts--0">+0</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="1">
 								93–94%<small class="n2-pts n2-pts--1">+1 (On O2)</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="2">
 								95–96%<small class="n2-pts n2-pts--2">+2 (On O2)</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="3">
 								≥97%<small class="n2-pts n2-pts--3">+3 (On O2)</small>
@@ -732,7 +734,7 @@
 						<div class="radio-chip-group" id="n2O2Group">
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="o2"
 								data-n2-score="0">
 								Room air
@@ -740,7 +742,7 @@
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="o2"
 								data-n2-score="2">
 								Supplemental O₂
@@ -759,35 +761,35 @@
 						<div class="radio-chip-group wrap-grid" id="n2SbpGroup">
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="sbp"
 								data-n2-score="3">
 								≤90<small class="n2-pts n2-pts--3">+3</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="sbp"
 								data-n2-score="2">
 								91–100<small class="n2-pts n2-pts--2">+2</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="sbp"
 								data-n2-score="1">
 								101–110<small class="n2-pts n2-pts--1">+1</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="sbp"
 								data-n2-score="0">
 								111–219<small class="n2-pts n2-pts--0">+0</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="sbp"
 								data-n2-score="3">
 								≥220<small class="n2-pts n2-pts--3">+3</small>
@@ -805,42 +807,42 @@
 						<div class="radio-chip-group wrap-grid" id="n2HrGroup">
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="hr"
 								data-n2-score="3">
 								≤40<small class="n2-pts n2-pts--3">+3</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="hr"
 								data-n2-score="1">
 								41–50<small class="n2-pts n2-pts--1">+1</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="hr"
 								data-n2-score="0">
 								51–90<small class="n2-pts n2-pts--0">+0</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="hr"
 								data-n2-score="1">
 								91–110<small class="n2-pts n2-pts--1">+1</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="hr"
 								data-n2-score="2">
 								111–130<small class="n2-pts n2-pts--2">+2</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="hr"
 								data-n2-score="3">
 								≥131<small class="n2-pts n2-pts--3">+3</small>
@@ -858,35 +860,35 @@
 						<div class="radio-chip-group wrap-grid" id="n2ConsGroup">
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="cons"
 								data-n2-score="0">
 								Alert<small class="n2-pts n2-pts--0">+0</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="cons"
 								data-n2-score="3">
 								Confusion<small class="n2-pts n2-pts--3">+3</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="cons"
 								data-n2-score="3">
 								Voice<small class="n2-pts n2-pts--3">+3</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="cons"
 								data-n2-score="3">
 								Pain<small class="n2-pts n2-pts--3">+3</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="cons"
 								data-n2-score="3">
 								Unresponsive<small class="n2-pts n2-pts--3">+3</small>
@@ -904,35 +906,35 @@
 						<div class="radio-chip-group wrap-grid" id="n2TempGroup">
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="temp"
 								data-n2-score="3">
 								≤35.0°<small class="n2-pts n2-pts--3">+3</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="temp"
 								data-n2-score="1">
 								35.1–36.0°<small class="n2-pts n2-pts--1">+1</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="temp"
 								data-n2-score="0">
 								36.1–38.0°<small class="n2-pts n2-pts--0">+0</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="temp"
 								data-n2-score="1">
 								38.1–39.0°<small class="n2-pts n2-pts--1">+1</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="temp"
 								data-n2-score="2">
 								≥39.1°<small class="n2-pts n2-pts--2">+2</small>
@@ -945,17 +947,17 @@
 				<div class="section-card n2-result-card" id="n2ResultCard">
 					<div class="section-body">
 						<div class="n2-result-row">
-							<div class="n2-result-circle" id="n2ResultCircle">–</div>
+							<div class="n2-result-circle" id="newsResultCircle">–</div>
 							<div class="n2-result-detail">
-								<div class="n2-result-risk-label" id="n2ResultRisk"></div>
-								<div class="n2-result-guidance" id="n2ResultGuidance">
+								<div class="n2-result-risk-label" id="newsResultRisk"></div>
+								<div class="n2-result-guidance" id="newsResultGuidance">
 									Complete the parameters above to calculate your NEWS2 score
 								</div>
 							</div>
 						</div>
-						<div class="n2-breakdown" id="n2Breakdown" style="display: none">
+						<div class="n2-breakdown" id="newsBreakdown" style="display: none">
 							<div class="n2-breakdown-title">Score breakdown</div>
-							<div class="n2-breakdown-grid" id="n2BreakdownGrid"></div>
+							<div class="n2-breakdown-grid" id="newsBreakdownGrid"></div>
 						</div>
 					</div>
 				</div>

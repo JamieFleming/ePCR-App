@@ -1764,7 +1764,7 @@ function showDashboard() {
 	$("#resp-tool")?.classList.add("hidden");
 	$("#obs-recorder")?.classList.add("hidden");
 	$("#drug-finder-tool")?.classList.add("hidden");
-	$("#news2-tool")?.classList.add("hidden");
+	$("#news-tool")?.classList.add("hidden");
 	$("#backButton")?.classList.add("hidden");
 	$("#resetButton")?.classList.add("hidden");
 }
@@ -1795,10 +1795,9 @@ function showFeature(feature) {
 		$("#resetButton")?.classList.add("hidden");
 		// Focus the search input
 		setTimeout(() => $("#bnfSearchInput")?.focus(), 50);
-	} else if (feature === "news2") {
-		$("#news2-tool")?.classList.remove("hidden");
+	} else if (feature === "newsScore") {
+		$("#news-tool")?.classList.remove("hidden");
 		$("#resetButton")?.classList.add("hidden");
-		initNews2();
 	}
 }
 
@@ -1843,173 +1842,174 @@ function initObsRecorder() {
 	});
 }
 
-// NEWS score
+// NEWS score - Modulised into news2.js
 
-let _news2Inited = false;
-let _news2Scale = 1;
+// let _news2Inited = false;
+// let _news2Scale = 1;
 
-const NEWS2_GUIDANCE = {
-	LOW: [
-		"Score 0 — Routine monitoring",
-		"Score 1–4 — Minimum 12-hourly monitoring",
-	],
-	MEDIUM_3: "Score 3 in single parameter — Minimum 1-hourly monitoring",
-	MEDIUM_56: "Score 5–6 — Urgent review by clinician with core competencies",
-	HIGH: "Score ≥7 — Emergency assessment by clinical team",
-};
+// const NEWS2_GUIDANCE = {
+// 	LOW: [
+// 		"Score 0 — Routine monitoring",
+// 		"Score 1–4 — Minimum 12-hourly monitoring",
+// 	],
+// 	MEDIUM_3: "Score 3 in single parameter — Minimum 1-hourly monitoring",
+// 	MEDIUM_56: "Score 5–6 — Urgent review by clinician with core competencies",
+// 	HIGH: "Score ≥7 — Emergency assessment by clinical team",
+// };
 
-const NEWS2_PARAM_LABELS = {
-	rr: "Resp Rate",
-	spo2: "SpO₂",
-	o2: "O₂",
-	sbp: "Systolic BP",
-	hr: "Pulse",
-	cons: "Consciousness",
-	temp: "Temp",
-};
+// const NEWS2_PARAM_LABELS = {
+// 	rr: "Resp Rate",
+// 	spo2: "SpO₂",
+// 	o2: "O₂",
+// 	sbp: "Systolic BP",
+// 	hr: "Pulse",
+// 	cons: "Consciousness",
+// 	temp: "Temp",
+// };
 
-function initNews2() {
-	if (_news2Inited) return;
-	_news2Inited = true;
-	_news2Scale = 1;
+//Refactored into news2.js
+// function initNews2() {
+// 	if (_news2Inited) return;
+// 	_news2Inited = true;
+// 	_news2Scale = 1;
 
-	$$("[data-n2-scale]", $("#news2-tool")).forEach((btn) => {
-		btn.addEventListener("click", () => {
-			_news2Scale = parseInt(btn.dataset.n2Scale);
-			$$("[data-n2-scale]", $("#news2-tool")).forEach((b) =>
-				b.classList.toggle("selected", b === btn),
-			);
-			$("#n2Spo2S1Group")?.classList.toggle("hidden", _news2Scale !== 1);
-			$("#n2Spo2S2Group")?.classList.toggle("hidden", _news2Scale !== 2);
-			$$("[data-n2-param='spo2']", $("#news2-tool")).forEach((c) =>
-				c.classList.remove("selected"),
-			);
-			updateNews2Score();
-		});
-	});
+// 	$$("[data-n2-scale]", $("#news2-tool")).forEach((btn) => {
+// 		btn.addEventListener("click", () => {
+// 			_news2Scale = parseInt(btn.dataset.n2Scale);
+// 			$$("[data-n2-scale]", $("#news2-tool")).forEach((b) =>
+// 				b.classList.toggle("selected", b === btn),
+// 			);
+// 			$("#n2Spo2S1Group")?.classList.toggle("hidden", _news2Scale !== 1);
+// 			$("#n2Spo2S2Group")?.classList.toggle("hidden", _news2Scale !== 2);
+// 			$$("[data-n2-param='spo2']", $("#news2-tool")).forEach((c) =>
+// 				c.classList.remove("selected"),
+// 			);
+// 			updateNews2Score();
+// 		});
+// 	});
 
-	$$(".n2-chip", $("#news2-tool")).forEach((chip) => {
-		chip.addEventListener("click", () => {
-			const param = chip.dataset.n2Param;
-			const wasSelected = chip.classList.contains("selected");
-			$$(`[data-n2-param="${param}"]`, $("#news2-tool")).forEach((c) =>
-				c.classList.remove("selected"),
-			);
-			if (!wasSelected) chip.classList.add("selected");
-			updateNews2Score();
-		});
-	});
+// 	$$(".n2-chip", $("#news2-tool")).forEach((chip) => {
+// 		chip.addEventListener("click", () => {
+// 			const param = chip.dataset.n2Param;
+// 			const wasSelected = chip.classList.contains("selected");
+// 			$$(`[data-n2-param="${param}"]`, $("#news2-tool")).forEach((c) =>
+// 				c.classList.remove("selected"),
+// 			);
+// 			if (!wasSelected) chip.classList.add("selected");
+// 			updateNews2Score();
+// 		});
+// 	});
 
-	$("#n2ResetBtn")?.addEventListener("click", resetNews2);
+// 	$("#n2ResetBtn")?.addEventListener("click", resetNews2);
 
-	updateNews2Score();
-}
+// 	updateNews2Score();
+// }
 
-function resetNews2() {
-	$$(".n2-chip", $("#news2-tool")).forEach((c) =>
-		c.classList.remove("selected"),
-	);
-	_news2Scale = 1;
-	$$("[data-n2-scale]", $("#news2-tool")).forEach((b) =>
-		b.classList.toggle("selected", b.dataset.n2Scale === "1"),
-	);
-	$("#n2Spo2S1Group")?.classList.remove("hidden");
-	$("#n2Spo2S2Group")?.classList.add("hidden");
-	updateNews2Score();
-}
+// function resetNews2() {
+// 	$$(".n2-chip", $("#news2-tool")).forEach((c) =>
+// 		c.classList.remove("selected"),
+// 	);
+// 	_news2Scale = 1;
+// 	$$("[data-n2-scale]", $("#news2-tool")).forEach((b) =>
+// 		b.classList.toggle("selected", b.dataset.n2Scale === "1"),
+// 	);
+// 	$("#n2Spo2S1Group")?.classList.remove("hidden");
+// 	$("#n2Spo2S2Group")?.classList.add("hidden");
+// 	updateNews2Score();
+// }
 
-function updateNews2Score() {
-	const tool = $("#news2-tool");
-	if (!tool) return;
+// function updateNews2Score() {
+// 	const tool = $("#news2-tool");
+// 	if (!tool) return;
 
-	const getParamScore = (param) => {
-		const sel = tool.querySelector(`[data-n2-param="${param}"].selected`);
-		return sel ? parseInt(sel.dataset.n2Score) : null;
-	};
+// 	const getParamScore = (param) => {
+// 		const sel = tool.querySelector(`[data-n2-param="${param}"].selected`);
+// 		return sel ? parseInt(sel.dataset.n2Score) : null;
+// 	};
 
-	const params = ["rr", "spo2", "o2", "sbp", "hr", "cons", "temp"];
-	const scores = params.map((p) => ({ param: p, score: getParamScore(p) }));
-	const selected = scores.filter((s) => s.score !== null);
+// 	const params = ["rr", "spo2", "o2", "sbp", "hr", "cons", "temp"];
+// 	const scores = params.map((p) => ({ param: p, score: getParamScore(p) }));
+// 	const selected = scores.filter((s) => s.score !== null);
 
-	const totalEl = $("#n2Total");
-	const riskBannerEl = $("#n2Risk");
-	const resultCircle = $("#n2ResultCircle");
-	const resultRisk = $("#n2ResultRisk");
-	const resultGuidance = $("#n2ResultGuidance");
-	const breakdown = $("#n2Breakdown");
-	const breakdownGrid = $("#n2BreakdownGrid");
+// 	const totalEl = $("#n2Total");
+// 	const riskBannerEl = $("#n2Risk");
+// 	const resultCircle = $("#n2ResultCircle");
+// 	const resultRisk = $("#n2ResultRisk");
+// 	const resultGuidance = $("#n2ResultGuidance");
+// 	const breakdown = $("#n2Breakdown");
+// 	const breakdownGrid = $("#n2BreakdownGrid");
 
-	if (selected.length === 0) {
-		if (totalEl) totalEl.textContent = "–";
-		if (riskBannerEl) {
-			riskBannerEl.textContent = "Select parameters below";
-			riskBannerEl.className = "n2-banner-risk";
-		}
-		if (resultCircle) {
-			resultCircle.textContent = "–";
-			resultCircle.className = "n2-result-circle";
-		}
-		if (resultRisk) resultRisk.textContent = "";
-		if (resultGuidance)
-			resultGuidance.textContent =
-				"Complete the parameters above to calculate your NEWS2 score";
-		if (breakdown) breakdown.style.display = "none";
-		return;
-	}
+// 	if (selected.length === 0) {
+// 		if (totalEl) totalEl.textContent = "–";
+// 		if (riskBannerEl) {
+// 			riskBannerEl.textContent = "Select parameters below";
+// 			riskBannerEl.className = "n2-banner-risk";
+// 		}
+// 		if (resultCircle) {
+// 			resultCircle.textContent = "–";
+// 			resultCircle.className = "n2-result-circle";
+// 		}
+// 		if (resultRisk) resultRisk.textContent = "";
+// 		if (resultGuidance)
+// 			resultGuidance.textContent =
+// 				"Complete the parameters above to calculate your NEWS2 score";
+// 		if (breakdown) breakdown.style.display = "none";
+// 		return;
+// 	}
 
-	const total = selected.reduce((sum, s) => sum + s.score, 0);
-	const hasThree = selected.some((s) => s.score === 3);
-	const risk = total >= 7 ? "HIGH" : total >= 5 || hasThree ? "MEDIUM" : "LOW";
+// 	const total = selected.reduce((sum, s) => sum + s.score, 0);
+// 	const hasThree = selected.some((s) => s.score === 3);
+// 	const risk = total >= 7 ? "HIGH" : total >= 5 || hasThree ? "MEDIUM" : "LOW";
 
-	let guidance;
-	if (risk === "HIGH") {
-		guidance = NEWS2_GUIDANCE.HIGH;
-	} else if (risk === "MEDIUM") {
-		guidance =
-			hasThree && total < 5
-				? NEWS2_GUIDANCE.MEDIUM_3
-				: NEWS2_GUIDANCE.MEDIUM_56;
-	} else {
-		guidance = total === 0 ? NEWS2_GUIDANCE.LOW[0] : NEWS2_GUIDANCE.LOW[1];
-	}
+// 	let guidance;
+// 	if (risk === "HIGH") {
+// 		guidance = NEWS2_GUIDANCE.HIGH;
+// 	} else if (risk === "MEDIUM") {
+// 		guidance =
+// 			hasThree && total < 5
+// 				? NEWS2_GUIDANCE.MEDIUM_3
+// 				: NEWS2_GUIDANCE.MEDIUM_56;
+// 	} else {
+// 		guidance = total === 0 ? NEWS2_GUIDANCE.LOW[0] : NEWS2_GUIDANCE.LOW[1];
+// 	}
 
-	const riskLower = risk.toLowerCase();
+// 	const riskLower = risk.toLowerCase();
 
-	if (totalEl) totalEl.textContent = total;
-	if (riskBannerEl) {
-		riskBannerEl.textContent = `${risk} — ${guidance}`;
-		riskBannerEl.className = `n2-banner-risk news2-${riskLower}`;
-	}
-	if (resultCircle) {
-		resultCircle.textContent = total;
-		resultCircle.className = `n2-result-circle n2-circle--${riskLower}`;
-	}
-	if (resultRisk) {
-		resultRisk.textContent = risk;
-		resultRisk.className = `n2-result-risk-label n2-risk--${riskLower}`;
-	}
-	if (resultGuidance) resultGuidance.textContent = guidance;
+// 	if (totalEl) totalEl.textContent = total;
+// 	if (riskBannerEl) {
+// 		riskBannerEl.textContent = `${risk} — ${guidance}`;
+// 		riskBannerEl.className = `n2-banner-risk news2-${riskLower}`;
+// 	}
+// 	if (resultCircle) {
+// 		resultCircle.textContent = total;
+// 		resultCircle.className = `n2-result-circle n2-circle--${riskLower}`;
+// 	}
+// 	if (resultRisk) {
+// 		resultRisk.textContent = risk;
+// 		resultRisk.className = `n2-result-risk-label n2-risk--${riskLower}`;
+// 	}
+// 	if (resultGuidance) resultGuidance.textContent = guidance;
 
-	// Breakdown
-	if (breakdown && breakdownGrid) {
-		breakdownGrid.innerHTML = selected
-			.map(
-				(s) =>
-					`<div class="n2-bd-item">
-						<span class="n2-bd-param">${NEWS2_PARAM_LABELS[s.param] || s.param}</span>
-						<span class="n2-bd-score n2-pts--${s.score}">+${s.score}</span>
-					</div>`,
-			)
-			.join("");
-		if (selected.length > 1) {
-			breakdownGrid.innerHTML += `<div class="n2-bd-item n2-bd-total">
-				<span class="n2-bd-param">Total</span>
-				<span class="n2-bd-score n2-pts--${Math.min(total, 3)}">= ${total}</span>
-			</div>`;
-		}
-		breakdown.style.display = "";
-	}
-}
+// 	// Breakdown
+// 	if (breakdown && breakdownGrid) {
+// 		breakdownGrid.innerHTML = selected
+// 			.map(
+// 				(s) =>
+// 					`<div class="n2-bd-item">
+// 						<span class="n2-bd-param">${NEWS2_PARAM_LABELS[s.param] || s.param}</span>
+// 						<span class="n2-bd-score n2-pts--${s.score}">+${s.score}</span>
+// 					</div>`,
+// 			)
+// 			.join("");
+// 		if (selected.length > 1) {
+// 			breakdownGrid.innerHTML += `<div class="n2-bd-item n2-bd-total">
+// 				<span class="n2-bd-param">Total</span>
+// 				<span class="n2-bd-score n2-pts--${Math.min(total, 3)}">= ${total}</span>
+// 			</div>`;
+// 		}
+// 		breakdown.style.display = "";
+// 	}
+// }
 
 function buildPainScoreGrids() {
 	[
