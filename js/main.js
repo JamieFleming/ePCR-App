@@ -1,3 +1,4 @@
+import "./utils/gcs.js";
 import { initTheme } from "./features/theme.js";
 import { initDashboard } from "./features/dashboard.js";
 import { initRespCounter } from "./features/respCounter.js";

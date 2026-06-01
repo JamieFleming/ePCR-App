@@ -1842,7 +1842,8 @@ function init() {
 	populateFallsAnticoagChips();
 	populateHeadInjuryChips();
 	const headGcsWrap = $("#headGcsCalcWrap");
-	if (headGcsWrap) headGcsWrap.innerHTML = buildGcsCalcHTML("headGcs");
+	if (headGcsWrap)
+		headGcsWrap.innerHTML = window.CrewMateGcs.buildGcsCalcHTML("headGcs");
 	buildPainScoreGrids();
 	buildAbcde();
 	buildRos();
@@ -2036,84 +2037,11 @@ function buildAbcde() {
 			const sectionBody = $(".section-body", details);
 			const calc = document.createElement("div");
 			calc.style.cssText = "margin-top:10px";
-			calc.innerHTML = buildGcsCalcHTML("gcsCalc");
+			calc.innerHTML = window.CrewMateGcs.buildGcsCalcHTML("gcsCalc");
 			sectionBody.append(calc);
 		}
 		root.append(details);
 	});
-}
-
-const GCS_EYE = [
-	[4, "Spontaneous"],
-	[3, "To voice"],
-	[2, "To pain"],
-	[1, "None"],
-];
-const GCS_VERBAL = [
-	[5, "Orientated"],
-	[4, "Confused"],
-	[3, "Inappropriate"],
-	[2, "Sounds only"],
-	[1, "None"],
-];
-const GCS_MOTOR = [
-	[6, "Obeys"],
-	[5, "Localises"],
-	[4, "Withdraws"],
-	[3, "Flexion"],
-	[2, "Extension"],
-	[1, "None"],
-];
-
-function buildGcsCalcHTML(prefix) {
-	const row = (field, label, items) =>
-		`<div class="gcs-row"><p class="gcs-row-label">${label}</p>` +
-		`<div class="gcs-btn-row">` +
-		items
-			.map(
-				([n, l]) =>
-					`<button type="button" class="gcs-btn" data-gcs-prefix="${prefix}" data-gcs-field="${field}" data-gcs-score="${n}">` +
-					`<span class="gcs-score">${n}</span><span class="gcs-label">${l}</span></button>`,
-			)
-			.join("") +
-		`</div></div>`;
-	return (
-		`<button type="button" class="gcs-toggle secondary-action" data-gcs-toggle="${prefix}" style="width:100%;text-align:left">▸ GCS Calculator</button>` +
-		`<div class="gcs-panel hidden" id="${prefix}Panel" style="margin-top:8px">` +
-		row(`${prefix}Eye`, "E — Eye opening", GCS_EYE) +
-		row(`${prefix}Verbal`, "V — Verbal", GCS_VERBAL) +
-		row(`${prefix}Motor`, "M — Motor", GCS_MOTOR) +
-		`<p class="gcs-tally" id="${prefix}Tally"></p>` +
-		`</div>`
-	);
-}
-
-function updateGcsTally(prefix) {
-	const e4 = parseInt($("#" + prefix + "Eye")?.dataset.gcsSelected || "", 10);
-	const v5 = parseInt(
-		$("#" + prefix + "Verbal")?.dataset.gcsSelected || "",
-		10,
-	);
-	const m6 = parseInt($("#" + prefix + "Motor")?.dataset.gcsSelected || "", 10);
-	const tally = $("#" + prefix + "Tally");
-	if (!e4 || !v5 || !m6) {
-		if (tally) tally.textContent = "";
-		return;
-	}
-	const total = e4 + v5 + m6;
-	if (tally) tally.textContent = `GCS: E${e4} V${v5} M${m6} = ${total}/15`;
-
-	const isPrimary = prefix === "gcsCalc" || prefix === "rosGcs";
-	if (isPrimary) {
-		const scoreEl = $("#gcsScore");
-		if (scoreEl) scoreEl.value = total;
-	}
-
-	if (prefix.startsWith("obsGcs")) {
-		const idx = prefix.replace("obsGcs", "");
-		const setEl = document.querySelector(`.obs-set[data-obs-idx="${idx}"]`);
-		if (setEl) updateNews2(setEl);
-	}
 }
 
 // ROS Findings
@@ -3633,7 +3561,7 @@ function buildRos() {
 		});
 		if (key === "neuro") {
 			const wrap = $(".ros-gcs-wrap", details);
-			if (wrap) wrap.innerHTML = buildGcsCalcHTML("rosGcs");
+			if (wrap) wrap.innerHTML = window.CrewMateGcs.buildGcsCalcHTML("rosGcs");
 		}
 		root.append(details);
 	});
@@ -4423,7 +4351,7 @@ function bindEvents() {
 				document.body.append(sentinel);
 			}
 			sentinel.dataset.gcsSelected = gcsScore;
-			updateGcsTally(gcsPrefix);
+			window.CrewMateGcs.updateGcsTally(gcsPrefix);
 			return;
 		}
 
@@ -5918,7 +5846,7 @@ function newsScore(rr, spo2, o2On, sbp, hr, temp, avpu) {
 	});
 }
 
-function updateNews2(setEl) {
+function updateObsNewsScore(setEl) {
 	const n = (field) => {
 		const v = parseFloat(
 			setEl.querySelector(`[data-obs-field="${field}"]`)?.value,
@@ -6072,7 +6000,7 @@ function createObsSet() {
 		</div>
 
 		<div class="obs-row-group">
-			${buildGcsCalcHTML(gcsPfx)}
+			${window.CrewMateGcs.buildGcsCalcHTML(gcsPfx)}
 		</div>
 
 		<div class="obs-news2">
@@ -6102,11 +6030,11 @@ function createObsSet() {
 				.querySelector(".obs-o2-flow")
 				?.classList.toggle("hidden", !supplementalActive);
 		}
-		updateNews2(div);
+		updateObsNewsScore(div);
 	});
 
 	div.querySelectorAll("input").forEach((el) => {
-		el.addEventListener("input", () => updateNews2(div));
+		el.addEventListener("input", () => updateObsNewsScore(div));
 	});
 
 	return div;
