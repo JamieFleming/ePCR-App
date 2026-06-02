@@ -67,7 +67,7 @@ export function updateGcsTally(prefix) {
 	if (prefix.startsWith("obsGcs")) {
 		const idx = prefix.replace("obsGcs", "");
 		const setEl = document.querySelector(`.obs-set[data-obs-idx="${idx}"]`);
-		if (setEl) updateObsNewsScore(setEl);
+		if (setEl) window.CrewMateObsRecorder?.updateObsNewsScore(setEl);
 	}
 }
 
