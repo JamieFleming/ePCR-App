@@ -1,10 +1,10 @@
 export const WORSENING_GENERIC = [
 	"chest pain",
 	"sudden difficulty breathing or SOB",
+	"heavy uncontrolled bleeding",
 	"FAST symptoms — face drooping, arm weakness, or speech difficulty",
 	"LOC or collapse",
 	"seizures",
-	"heavy uncontrolled bleeding",
 ];
 
 export const WORSENING_PC = {
@@ -145,7 +145,7 @@ export const WORSENING_PC = {
 	},
 	Fall: {
 		items: [
-			"any furthe falls",
+			"any further falls",
 			"inability to bear weight or mobilise",
 			"new or worsening weakness or numbness in the legs",
 			"loss of bladder or bowel control",
@@ -154,6 +154,16 @@ export const WORSENING_PC = {
 		],
 		redFlags:
 			"Cauda equina red flags: loss of bladder or bowel control, saddle numbness (numbness of inner thighs, genitals, or back passage), bilateral leg weakness or numbness",
+	},
+	"Reduced mobility/Off legs": {
+		items: [
+			"any falls",
+			"inability to bear weight or mobilise",
+			"new or worsening weakness or numbness in the legs",
+			"loss of bladder or bowel control",
+			"numbness or tingling in the saddle area (inner thighs, groin, or back passage)",
+			"severe worsening pain",
+		],
 	},
 	"Back pain": {
 		items: [
@@ -231,3 +241,5 @@ export const WORSENING_PC = {
 		],
 	},
 };
+
+window.CrewMateWorsening = { WORSENING_GENERIC, WORSENING_PC };

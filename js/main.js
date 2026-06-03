@@ -1,4 +1,5 @@
 import "./utils/gcs.js";
+import "./data/worseningAdvice.js";
 import { initTheme } from "./features/theme.js";
 import { initDashboard } from "./features/dashboard.js";
 import { initRespCounter } from "./features/respCounter.js";
