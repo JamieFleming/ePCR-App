@@ -6,15 +6,7 @@ let obsCounter = 0;
 let _obsRecInited = false;
 
 function newsScore(rr, spo2, o2On, sbp, hr, temp, avpu) {
-	return window.CrewMateNewsScore.calculateNewsScoreFromValues({
-		rr,
-		spo2,
-		o2On,
-		sbp,
-		hr,
-		temp,
-		avpu,
-	});
+	return calculateNewsScoreFromValues({ rr, spo2, o2On, sbp, hr, temp, avpu });
 }
 
 function updateObsNewsScore(setEl) {
@@ -171,7 +163,7 @@ function createObsSet() {
 		</div>
 
 		<div class="obs-row-group">
-			${window.CrewMateGcs.buildGcsCalcHTML(gcsPfx)}
+			${buildGcsCalcHTML(gcsPfx)}
 		</div>
 
 		<div class="obs-news2">
@@ -234,6 +226,110 @@ function initLegacyObsRecorder() {
 	});
 }
 
+function readObsSetData(setEl) {
+	const n = (field) => {
+		const v = setEl.querySelector(`[data-obs-field="${field}"]`)?.value?.trim();
+		return v || null;
+	};
+	const chip = (key) =>
+		setEl.querySelector(`[data-obs-key="${key}"].selected`)?.dataset.obsVal ||
+		null;
+	const gcsPfx = `obsGcs${setEl.dataset.obsIdx}`;
+	const gcsE =
+		setEl.querySelector(`#${gcsPfx}Eye`)?.dataset.gcsSelected || null;
+	const gcsV =
+		setEl.querySelector(`#${gcsPfx}Verbal`)?.dataset.gcsSelected || null;
+	const gcsM =
+		setEl.querySelector(`#${gcsPfx}Motor`)?.dataset.gcsSelected || null;
+
+	return {
+		time: n("time"),
+		rr: n("rr"),
+		spo2: n("spo2"),
+		o2: chip("o2"),
+		o2Flow: n("o2Flow"),
+		hr: n("hr"),
+		hrRhythm: chip("hrRhythm"),
+		sbp: n("sbp"),
+		dbp: n("dbp"),
+		bpPos: chip("bpPos"),
+		bpArm: chip("bpArm"),
+		temp: n("temp"),
+		bm: n("bm"),
+		ketones: n("ketones"),
+		avpu: chip("avpu"),
+		gcsE,
+		gcsV,
+		gcsM,
+	};
+}
+
+function buildObsText() {
+	const sets = $$(".obs-set");
+	if (!sets.length) return null;
+	return sets
+		.map((setEl, i) => {
+			const d = readObsSetData(setEl);
+			const lines = [];
+
+			const vitals = [];
+			if (d.rr) vitals.push(`RR: ${d.rr}`);
+			if (d.spo2) {
+				const o2Str =
+					d.o2 === "Supplemental"
+						? `supplemental O₂${d.o2Flow ? ` ${d.o2Flow}L/min` : ""}`
+						: "air";
+				vitals.push(`SpO₂: ${d.spo2}% (${o2Str})`);
+			}
+			if (d.hr) {
+				const rhythm = d.hrRhythm ? ` (${d.hrRhythm.toLowerCase()})` : "";
+				vitals.push(`HR: ${d.hr}${rhythm}`);
+			}
+			if (d.sbp || d.dbp) {
+				const bp = [d.sbp, d.dbp].filter(Boolean).join("/");
+				const pos = d.bpPos ? ` ${d.bpPos.toLowerCase()}` : "";
+				const arm = d.bpArm ? ` ${d.bpArm}` : "";
+				vitals.push(`BP: ${bp}mmHg${pos}${arm}`);
+			}
+			if (d.temp) vitals.push(`Temp: ${d.temp}°C`);
+			if (d.bm) vitals.push(`BM: ${d.bm} mmol/L`);
+			if (d.ketones) vitals.push(`Ketones: ${d.ketones} mmol/L`);
+			if (vitals.length) lines.push(vitals.join(", "));
+
+			const neuro = [];
+			if (d.avpu) neuro.push(`AVPU: ${d.avpu}`);
+			if (d.gcsE && d.gcsV && d.gcsM) {
+				const total = parseInt(d.gcsE) + parseInt(d.gcsV) + parseInt(d.gcsM);
+				neuro.push(`GCS: ${total} (E${d.gcsE} V${d.gcsV} M${d.gcsM})`);
+			}
+			if (neuro.length) lines.push(neuro.join(", "));
+
+			const rr = parseFloat(d.rr),
+				spo2 = parseFloat(d.spo2),
+				sbp = parseFloat(d.sbp),
+				hr = parseFloat(d.hr),
+				temp = parseFloat(d.temp);
+			const anyVitals =
+				[rr, spo2, sbp, hr, temp].some((v) => !isNaN(v)) || d.avpu;
+			if (anyVitals) {
+				const { score, risk } = newsScore(
+					rr,
+					spo2,
+					d.o2 === "Supplemental",
+					sbp,
+					hr,
+					temp,
+					d.avpu,
+				);
+				lines.push(`NEWS2: ${score} — ${risk}`);
+			}
+
+			const header = `Set ${i + 1}${d.time ? ` — ${d.time}` : ""}`;
+			return `${header}\n${lines.map((l) => `  ${l}`).join("\n")}`;
+		})
+		.join("\n\n");
+}
+
 export function initObsRecorder() {
 	document.addEventListener("crewmate:show-obs-recorder", () => {
 		initLegacyObsRecorder();
@@ -244,4 +340,5 @@ window.CrewMateObsRecorder = {
 	createObsSet,
 	updateObsSetNumbers,
 	updateObsNewsScore,
+	buildObsText,
 };
