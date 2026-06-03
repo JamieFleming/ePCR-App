@@ -73,7 +73,7 @@ export const OPTIONS = {
 			],
 		},
 		{
-			group: "Medical / Other",
+			group: "Other",
 			items: [
 				"General weakness",
 				"Allergic reaction",

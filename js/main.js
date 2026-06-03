@@ -11,6 +11,7 @@ import { initObsRecorder } from "./features/obsRecorder.js";
 import { initStrokeCard } from "./features/strokeCard.js";
 import { initFalls } from "./features/falls.js";
 import { initSeizure } from "./features/seizure.js";
+import { initOdAssessment } from "./features/odAssessment.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 	initTheme();
@@ -22,4 +23,5 @@ document.addEventListener("DOMContentLoaded", () => {
 	initStrokeCard();
 	initFalls();
 	initSeizure();
+	initOdAssessment();
 });

@@ -367,8 +367,6 @@ function init() {
 	buildEcgSection();
 	buildInjurySection();
 	buildTreatmentSection();
-
-	buildOdAssessmentSection();
 	buildMhSection();
 	populateChipGroup(
 		"conveyanceDecision",
@@ -1252,67 +1250,6 @@ function buildUrinaryChips() {
 		"urinaryColourGrid",
 		window.CrewMateOptions.OPTIONS.urinary.colourFeatures,
 	);
-}
-
-// OD / Poisoning assessment
-
-function buildOdAssessmentSection() {
-	const opts = window.CrewMateOptions.OPTIONS.mentalHealth;
-
-	populateChipGroup("odAssessIntentionality", opts.odAssessment.intentionality);
-
-	const circumSelect = $("#odAssessCircumstance");
-	if (circumSelect) {
-		opts.odAssessment.circumstance.forEach((c) => {
-			const opt = document.createElement("option");
-			opt.value = c;
-			opt.textContent = c;
-			circumSelect.appendChild(opt);
-		});
-	}
-
-	buildButtonGrid(
-		"odAssessSourceGrid",
-		opts.overdose,
-		"mhGroup",
-		"odAssessSource",
-		"mhValue",
-	);
-
-	$("#odAssessIntentionality")?.addEventListener("change", () => {
-		const intent = val("odAssessIntentionality");
-		$("#odAssessCircumstanceWrap")?.classList.toggle(
-			"hidden",
-			intent !== "Accidental / unintentional",
-		);
-	});
-}
-
-function buildOdAssessmentText() {
-	const lines = [];
-	const intent = val("odAssessIntentionality");
-	if (intent) lines.push(`Intentionality: ${intent}.`);
-	if (intent === "Accidental / unintentional" && val("odAssessCircumstance"))
-		lines.push(`Circumstance: ${val("odAssessCircumstance")}.`);
-	if (val("odAssessSubstance"))
-		lines.push(`Substance(s): ${val("odAssessSubstance")}.`);
-	if (val("odAssessAmount")) lines.push(`Amount: ${val("odAssessAmount")}.`);
-	const timeParts = [
-		val("odAssessAtTime") ? `at ${val("odAssessAtTime")}` : "",
-		val("odAssessAgoTime") || "",
-	]
-		.filter(Boolean)
-		.join(", ");
-	if (timeParts) lines.push(`Time of ingestion: ${timeParts}.`);
-	if (val("odAssessRoute")) lines.push(`Route: ${val("odAssessRoute")}.`);
-	if (isChecked("odAssessAlcohol"))
-		lines.push("Alcohol co-ingestion reported.");
-	if (state.odAssessSource.size)
-		lines.push(`Medication source: ${[...state.odAssessSource].join(", ")}.`);
-	if (val("odAssessSymptoms"))
-		lines.push(`Symptoms: ${val("odAssessSymptoms")}.`);
-	if (val("odAssessNotes")) lines.push(val("odAssessNotes"));
-	return lines.length ? lines.join("\n") : null;
 }
 
 // MH assessment
@@ -3736,7 +3673,7 @@ function buildOutputSections() {
 			? [
 					...(val("pcSelect") === "Overdose / poisoning"
 						? (() => {
-								const t = buildOdAssessmentText();
+								const t = window.CrewMateOd.buildOdAssessmentText();
 								return t
 									? [
 											{
