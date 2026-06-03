@@ -96,8 +96,8 @@ function buildMhSection() {
 
 	const actTypeEl = $("#mhActType");
 	if (actTypeEl) {
-		const shMethods = OPTIONS.mentalHealth.selfharm.method;
-		shMethods.forEach((method) => {
+		const selfHarmMethods = OPTIONS.mentalHealth.selfharm.method;
+		selfHarmMethods.forEach((method) => {
 			const opt = document.createElement("option");
 			opt.value = `Self-harm — ${method}`;
 			opt.textContent = `Self-harm — ${method}`;
@@ -125,11 +125,11 @@ function buildMhSection() {
 
 	$("#mhActType")?.addEventListener("change", () => {
 		const type = val("mhActType");
-		const isOd = type === "Overdose";
-		const isSh = type.startsWith("Self-harm");
+		const isOverdose = type === "Overdose";
+		const isSelfHarm = type.startsWith("Self-harm");
 		const showOther = type.endsWith("Other");
-		$("#odDetailsWrap")?.classList.toggle("hidden", !isOd);
-		$("#shDetailsWrap")?.classList.toggle("hidden", !isSh);
+		$("#odDetailsWrap")?.classList.toggle("hidden", !isOverdose);
+		$("#shDetailsWrap")?.classList.toggle("hidden", !isSelfHarm);
 		$("#mhActOtherWrap")?.classList.toggle("hidden", !showOther);
 	});
 
@@ -255,20 +255,21 @@ function buildMhAssessmentText() {
 	} else if (actsAdmit === "Denies") {
 		lines.push("Patient denies any self-harm, overdose, or harmful acts.");
 	}
-	const msePairs = [
+	// MSE = Mental State Examination
+	const mentalStateExamPairs = [
 		[state.mseAppearance, "Appearance"],
 		[state.mseBehaviour, "Behaviour"],
 		[state.mseSpeech, "Communication"],
 		[state.mseThoughtContent, "Delusions"],
 		[state.mseAffect, "Emotion/affect"],
-		[state.mseThoughtForm, "Form of thoguht"],
+		[state.mseThoughtForm, "Form of thought"],
 		[state.msePerception, "Hallucination/Perception"],
 		[state.mseInsight, "Insight"],
 	];
-	const mseLines = msePairs
-		.filter(([s]) => s.size)
-		.map(([s, label]) => `${label}: ${[...s].join(", ")}`);
-	if (mseLines.length) lines.push("MSE — " + mseLines.join(" "));
+	const mentalStateExamLines = mentalStateExamPairs
+		.filter(([set]) => set.size)
+		.map(([set, label]) => `${label}: ${[...set].join(", ")}`);
+	if (mentalStateExamLines.length) lines.push("MSE — " + mentalStateExamLines.join(" "));
 	if (val("mhCurrentServices"))
 		lines.push(`Current MH services: ${val("mhCurrentServices")}`);
 	if (val("mhS136")) lines.push(`S136 / MHA: ${val("mhS136")}`);

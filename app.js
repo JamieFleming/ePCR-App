@@ -91,9 +91,7 @@ const state = {
 	worseningAuto: true,
 	pReferrals: new Set(),
 };
-let pendingInjuryTypes = new Set();
-let pendingInjuryInterventions = new Set();
-let pendingInjuryNv = {};
+
 let pendingManualItems = new Set();
 
 // Option lists
@@ -365,7 +363,6 @@ function init() {
 	buildAbdoGrid();
 	buildAuscGrid();
 	buildEcgSection();
-	buildInjurySection();
 	buildTreatmentSection();
 	populateChipGroup(
 		"conveyanceDecision",
@@ -671,167 +668,6 @@ function buildEcgSection() {
 		btn.dataset.lead = lead;
 		leadsGrid.append(btn);
 	});
-}
-
-function buildInjurySection() {
-	const typeGrid = $("#injuryTypeGrid");
-	const intGrid = $("#injuryInterventionGrid");
-	if (!typeGrid || !intGrid) return;
-	const nvGrid = $("#injuryNvGrid");
-	if (nvGrid) {
-		window.CrewMateOptions.OPTIONS.injury.neurovascular.forEach(
-			({ key, normal, abnormal }) => {
-				pendingInjuryNv[key] = "normal";
-				const btn = document.createElement("button");
-				btn.type = "button";
-				btn.className = "square-btn selected";
-				btn.textContent = normal;
-				btn.dataset.injuryNv = key;
-				btn.dataset.normal = normal;
-				btn.dataset.abnormal = abnormal;
-				nvGrid.append(btn);
-			},
-		);
-	}
-	const regionSelect = $("#injuryRegion");
-	if (regionSelect) {
-		window.CrewMateOptions.OPTIONS.injury.regions.forEach(
-			({ group, items }) => {
-				const og = document.createElement("optgroup");
-				og.label = group;
-				items.forEach((item) => {
-					const opt = document.createElement("option");
-					opt.textContent = item;
-					og.append(opt);
-				});
-				regionSelect.append(og);
-			},
-		);
-	}
-	window.CrewMateOptions.OPTIONS.injury.type.forEach((type) => {
-		const btn = document.createElement("button");
-		btn.type = "button";
-		btn.className = "square-btn";
-		btn.textContent = type;
-		btn.dataset.injuryType = type;
-		typeGrid.append(btn);
-	});
-	window.CrewMateOptions.OPTIONS.injury.interventions.forEach((item) => {
-		const btn = document.createElement("button");
-		btn.type = "button";
-		btn.className = "square-btn";
-		btn.textContent = item;
-		btn.dataset.injuryIntervention = item;
-		intGrid.append(btn);
-	});
-	$("#addInjuryButton")?.addEventListener("click", addInjuryEntry);
-}
-
-function addInjuryEntry() {
-	const region = val("injuryRegion");
-	if (!region) return;
-
-	const typeOther = val("injuryTypeOther");
-	const intOther = val("injuryIntOther");
-	const types = [...pendingInjuryTypes].map((t) =>
-		t === "Other" && typeOther ? typeOther : t,
-	);
-	const interventions = [...pendingInjuryInterventions].map((i) =>
-		i === "Other" && intOther ? intOther : i,
-	);
-	const nvAbnormal = window.CrewMateOptions.OPTIONS.injury.neurovascular
-		.filter(({ key }) => pendingInjuryNv[key] === "abnormal")
-		.map(({ abnormal }) => abnormal);
-	const nvNotes = val("injuryNvNotes");
-	const nv = nvAbnormal.length
-		? [...nvAbnormal, ...(nvNotes ? [nvNotes] : [])]
-		: nvNotes
-			? [nvNotes]
-			: [];
-
-	state.injuryEntries.push({
-		region,
-		types,
-		nv,
-		interventions,
-	});
-
-	pendingInjuryTypes.clear();
-	pendingInjuryInterventions.clear();
-	window.CrewMateOptions.OPTIONS.injury.neurovascular.forEach(
-		({ key, normal }) => {
-			pendingInjuryNv[key] = "normal";
-			const btn = $(`[data-injury-nv="${key}"]`);
-			if (btn) {
-				btn.classList.add("selected");
-				btn.classList.remove("abnormal");
-				btn.textContent = normal;
-			}
-		},
-	);
-	$("#injuryRegion").value = "";
-	const nvNotesEl = $("#injuryNvNotes");
-	if (nvNotesEl) nvNotesEl.value = "";
-	const typeOtherEl = $("#injuryTypeOther");
-	const intOtherEl = $("#injuryIntOther");
-	if (typeOtherEl) typeOtherEl.value = "";
-	if (intOtherEl) intOtherEl.value = "";
-	$("#injuryTypeOtherWrap")?.classList.add("hidden");
-	$("#injuryIntOtherWrap")?.classList.add("hidden");
-	$$("[data-injury-type], [data-injury-intervention]").forEach((b) =>
-		b.classList.remove("selected"),
-	);
-	renderInjuryEntries();
-}
-
-function removeInjuryEntry(index) {
-	state.injuryEntries.splice(index, 1);
-	renderInjuryEntries();
-}
-
-function renderInjuryEntries() {
-	const root = $("#injuryEntries");
-	if (!root) return;
-	root.innerHTML = "";
-	state.injuryEntries.forEach((entry, index) => {
-		const row = document.createElement("div");
-		row.className = "ausc-entry";
-		const nvText = entry.nv?.length
-			? `NV: ${entry.nv.join(", ")}`
-			: "NV intact";
-		const detail = [
-			entry.types.join(", "),
-			nvText,
-			entry.interventions.length
-				? `Interventions: ${entry.interventions.join(", ")}`
-				: "",
-		]
-			.filter(Boolean)
-			.join(". ");
-		row.innerHTML = `<span><strong>${entry.region}</strong>${detail ? ": " + detail : ""}</span><button type="button" data-remove-injury="${index}" aria-label="Remove">×</button>`;
-		root.append(row);
-	});
-}
-
-function buildInjuryText() {
-	if (!state.injuryEntries.length) return "No injuries documented.";
-	return state.injuryEntries
-		.map((entry) => {
-			const nvText = entry.nv?.length
-				? `NV: ${entry.nv.join(", ")}`
-				: "NV intact";
-			const parts = [
-				entry.types.join(", "),
-				nvText,
-				entry.interventions.length
-					? `Interventions: ${entry.interventions.join(", ")}`
-					: "",
-			]
-				.filter(Boolean)
-				.join(". ");
-			return `${entry.region}: ${parts || "documented"}.`;
-		})
-		.join("\n");
 }
 
 function buildButtonGrid(containerId, items, groupAttr, groupKey, valueAttr) {
@@ -2157,39 +1993,45 @@ function bindEvents() {
 		const injuryTypeBtn = event.target.closest("[data-injury-type]");
 		if (injuryTypeBtn) {
 			const v = injuryTypeBtn.dataset.injuryType;
-			pendingInjuryTypes.has(v)
-				? pendingInjuryTypes.delete(v)
-				: pendingInjuryTypes.add(v);
-			injuryTypeBtn.classList.toggle("selected", pendingInjuryTypes.has(v));
+			window.CrewMateInjury.pendingInjuryTypes.has(v)
+				? window.CrewMateInjury.pendingInjuryTypes.delete(v)
+				: window.CrewMateInjury.pendingInjuryTypes.add(v);
+			injuryTypeBtn.classList.toggle(
+				"selected",
+				window.CrewMateInjury.pendingInjuryTypes.has(v),
+			);
 			if (v === "Other")
 				$("#injuryTypeOtherWrap")?.classList.toggle(
 					"hidden",
-					!pendingInjuryTypes.has("Other"),
+					!window.CrewMateInjury.pendingInjuryTypes.has("Other"),
 				);
 			return;
 		}
 		const injuryIntBtn = event.target.closest("[data-injury-intervention]");
 		if (injuryIntBtn) {
 			const v = injuryIntBtn.dataset.injuryIntervention;
-			pendingInjuryInterventions.has(v)
-				? pendingInjuryInterventions.delete(v)
-				: pendingInjuryInterventions.add(v);
+			window.CrewMateInjury.pendingInjuryInterventions.has(v)
+				? window.CrewMateInjury.pendingInjuryInterventions.delete(v)
+				: window.CrewMateInjury.pendingInjuryInterventions.add(v);
 			injuryIntBtn.classList.toggle(
 				"selected",
-				pendingInjuryInterventions.has(v),
+				window.CrewMateInjury.pendingInjuryInterventions.has(v),
 			);
 			if (v === "Other")
 				$("#injuryIntOtherWrap")?.classList.toggle(
 					"hidden",
-					!pendingInjuryInterventions.has("Other"),
+					!window.CrewMateInjury.pendingInjuryInterventions.has("Other"),
 				);
 			return;
 		}
 		const injuryNvBtn = event.target.closest("[data-injury-nv]");
 		if (injuryNvBtn) {
 			const key = injuryNvBtn.dataset.injuryNv;
-			const isAbnormal = pendingInjuryNv[key] === "abnormal";
-			pendingInjuryNv[key] = isAbnormal ? "normal" : "abnormal";
+			const isAbnormal =
+				window.CrewMateInjury.pendingInjuryNv[key] === "abnormal";
+			window.CrewMateInjury.pendingInjuryNv[key] = isAbnormal
+				? "normal"
+				: "abnormal";
 			injuryNvBtn.classList.toggle("selected", isAbnormal);
 			injuryNvBtn.classList.toggle("abnormal", !isAbnormal);
 			injuryNvBtn.textContent = isAbnormal
@@ -2199,7 +2041,9 @@ function bindEvents() {
 		}
 		const removeInjury = event.target.closest("[data-remove-injury]");
 		if (removeInjury)
-			return removeInjuryEntry(Number(removeInjury.dataset.removeInjury));
+			return window.CrewMateInjury.removeInjuryEntry(
+				Number(removeInjury.dataset.removeInjury),
+			);
 		const szChip = event.target.closest("[data-sz-group]");
 		if (szChip) {
 			const map = {
@@ -3430,10 +3274,14 @@ function buildOutputSections() {
 					{
 						id: "injuries",
 						title: "INJURY ASSESSMENT",
-						body: buildInjuryText(),
+						body: window.CrewMateInjury.buildInjuryText(),
 					},
 				]
 			: []),
+		...(() => {
+			const spinal = window.CrewMateInjury.buildSpinalText();
+			return spinal ? [{ id: "spinal", title: "SPINAL ASSESSMENT", body: spinal }] : [];
+		})(),
 		...Object.entries(window.CrewMateOptions.ROS.output_title).map(
 			([section, title]) => ({
 				id: `ros-${section}`,
@@ -4298,7 +4146,7 @@ function restoreFormState() {
 	renderIvEntries();
 	renderManualEntries();
 	window.CrewMateMh.renderMhActEntries();
-	renderInjuryEntries();
+	window.CrewMateInjury.renderInjuryEntries();
 
 	// 3. Restore field values (inputs, selects, textareas)
 	Object.entries(data.fields || {}).forEach(([id, value]) => {

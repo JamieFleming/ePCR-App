@@ -904,6 +904,24 @@ export const OPTIONS = {
 		],
 	},
 
+	spinal: {
+		clearance: [
+			"Cleared clinically",
+			"Not cleared — immobilised",
+			"Not cleared — under assessment",
+		],
+		tenderness: [
+			"None",
+			"Cervical",
+			"Thoracic",
+			"Lumbar",
+			"Cervical and thoracic",
+			"Thoracic and lumbar",
+			"Throughout",
+		],
+		neuro: ["None", "Present"],
+	},
+
 	// Mental Health
 	mentalHealth: {
 		presentingComplaint: [
