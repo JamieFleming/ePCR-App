@@ -10,6 +10,7 @@ import { initDrugFinder } from "./features/drugFinder.js";
 import { initObsRecorder } from "./features/obsRecorder.js";
 import { initStrokeCard } from "./features/strokeCard.js";
 import { initFalls } from "./features/falls.js";
+import { initSeizure } from "./features/seizure.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 	initTheme();
@@ -20,4 +21,5 @@ document.addEventListener("DOMContentLoaded", () => {
 	initObsRecorder();
 	initStrokeCard();
 	initFalls();
+	initSeizure();
 });

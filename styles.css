@@ -3284,13 +3284,13 @@ html[data-theme="dark"] .card-icon.blue {
 	max-width: 760px;
 }
 
-.resp-hero {
+.tool-hero {
 	margin-bottom: 0 !important;
 	border-radius: 8px 8px 0 0 !important;
 	border-bottom: none !important;
 }
 
-.resp-hero-content {
+.tool-hero-content {
 	display: flex;
 	align-items: center;
 	gap: 14px;
@@ -3299,20 +3299,20 @@ html[data-theme="dark"] .card-icon.blue {
 	color: #ffffff;
 }
 
-.resp-hero h2 {
+.tool-hero h2 {
 	margin: 0 0 4px;
 	font-size: 22px;
 	letter-spacing: 0;
 }
 
-.resp-hero p {
+.tool-hero p {
 	margin: 0;
 	font-size: 13px;
 	line-height: 1.5;
 	color: rgba(255, 255, 255, 0.82);
 }
 
-.resp-icon {
+.tool-icon {
 	width: 52px;
 	height: 52px;
 	border-radius: 8px;
@@ -3323,7 +3323,7 @@ html[data-theme="dark"] .card-icon.blue {
 	flex: 0 0 auto;
 }
 
-.resp-icon svg {
+.tool-icon svg {
 	width: 28px;
 	height: 28px;
 }
@@ -3493,7 +3493,7 @@ html[data-theme="dark"] .card-icon.blue {
 	white-space: nowrap;
 }
 
-html[data-theme="dark"] .resp-hero-content {
+html[data-theme="dark"] .tool-hero-content {
 	background: linear-gradient(135deg, #0f3b55 0%, #075985 100%);
 }
 
@@ -3695,7 +3695,7 @@ html[data-theme="dark"] .news2-high {
 }
 
 @media (max-width: 560px) {
-	.resp-hero-content {
+	.tool-hero-content {
 		align-items: flex-start;
 		padding: 16px;
 	}

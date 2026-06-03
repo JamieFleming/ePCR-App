@@ -1,54 +1,57 @@
 import { $, val, isChecked } from "../utils/dom.js";
-
-// ─── ePRF falls assessment populate functions ────────────────────────────────
+import { OPTIONS } from "../data/options.js";
 
 function populateFallsPrevCountChips() {
-	populateChipGroup(
-		"fallsPreviousCount",
-		window.CrewMateOptions.OPTIONS.falls.previousCount,
-	);
+	populateChipGroup("fallsPreviousCount", OPTIONS.falls.previousCount);
 }
 
 function populateFallsLocChips() {
-	populateChipGroup("fallsLOC", window.CrewMateOptions.OPTIONS.falls.loc);
+	populateChipGroup("fallsLOC", OPTIONS.falls.loc);
 }
 
 function populateFallsWitnessedChips() {
-	populateChipGroup(
-		"fallsWitnessed",
-		window.CrewMateOptions.OPTIONS.falls.witnessed,
-	);
+	populateChipGroup("fallsWitnessed", OPTIONS.falls.witnessed);
 }
 
 function populateFallsLieTimeChips() {
-	populateChipGroup(
-		"fallsLieTime",
-		window.CrewMateOptions.OPTIONS.falls.lieTime,
-	);
+	populateChipGroup("fallsLieTime", OPTIONS.falls.lieTime);
 }
 
 function populateFallsAnticoagChips() {
-	populateChipGroup(
-		"fallsAnticoag",
-		window.CrewMateOptions.OPTIONS.falls.anticoagulated,
-	);
+	populateChipGroup("fallsAnticoag", OPTIONS.falls.anticoagulated);
 }
 
-// ─── ePRF falls text output ───────────────────────────────────────────────────
-
 function buildFallsText() {
-	const s = window.CrewMateApp.getFallsState();
-	const symptoms = listFactors(s.fallsSymptoms, "fallsSymptomsOther", "Not Documented");
-	const loc = listFactors(s.fallsLocation, "fallsLocationOther", "Not documented");
+	const state = window.CrewMateApp.getState();
+	const symptoms = listFactors(
+		state.fallsSymptoms,
+		"fallsSymptomsOther",
+		"Not Documented",
+	);
+	const loc = listFactors(
+		state.fallsLocation,
+		"fallsLocationOther",
+		"Not documented",
+	);
 	const surface = val("fallsSurface");
-	const activity = listFactors(s.fallsActivity, "fallsActivityOther", "Not documented");
+	const activity = listFactors(
+		state.fallsActivity,
+		"fallsActivityOther",
+		"Not documented",
+	);
 	const timeUnknown = $("#fallsTimeUnknownBtn")?.classList.contains("selected");
-	const time = timeUnknown ? "Unknown time" : val("fallsTime") || "Not documented";
+	const time = timeUnknown
+		? "Unknown time"
+		: val("fallsTime") || "Not documented";
 	const lieTime = val("fallsLieTime") || "Unknown";
-	const injuries = listSet(s.fallsInjuries, "No injury documented");
+	const injuries = listSet(state.fallsInjuries, "No injury documented");
 	const prevCount = val("fallsPreviousCount") || "Not asked";
-	const locLine = [loc, surface ? `(${surface})` : ""].filter(Boolean).join(" ");
-	const longLie = ["1–2 hours", "2–4 hours", "4–8 hours", "> 8 hours"].includes(lieTime);
+	const locLine = [loc, surface ? `(${surface})` : ""]
+		.filter(Boolean)
+		.join(" ");
+	const longLie = ["1–2 hours", "2–4 hours", "4–8 hours", "> 8 hours"].includes(
+		lieTime,
+	);
 	return [
 		(() => {
 			const locRaw = val("fallsLOC");
@@ -65,48 +68,71 @@ function buildFallsText() {
 	].join("\n");
 }
 
-// ─── Falls Guide — Clinical Frailty Scale data ───────────────────────────────
-
 const CFS_LEVELS = [
 	{
-		score: 1, label: "Very Fit", colour: "#1b5e20",
-		description: "Robust, active, energetic and motivated. Exercise regularly. Among the fittest for their age.",
+		score: 1,
+		label: "Very Fit",
+		colour: "#1b5e20",
+		description:
+			"Robust, active, energetic and motivated. Exercise regularly. Among the fittest for their age.",
 	},
 	{
-		score: 2, label: "Well", colour: "#2e7d32",
-		description: "No active disease symptoms but less fit than level 1. Exercises or is very active occasionally.",
+		score: 2,
+		label: "Well",
+		colour: "#2e7d32",
+		description:
+			"No active disease symptoms but less fit than level 1. Exercises or is very active occasionally.",
 	},
 	{
-		score: 3, label: "Managing Well", colour: "#558b2f",
-		description: "Medical problems well controlled. Not regularly active beyond routine walking.",
+		score: 3,
+		label: "Managing Well",
+		colour: "#558b2f",
+		description:
+			"Medical problems well controlled. Not regularly active beyond routine walking.",
 	},
 	{
-		score: 4, label: "Very Mild Frailty", colour: "#f57f17",
-		description: "Not dependent on others. Symptoms often limit activity. Slowed up and may tire more easily.",
+		score: 4,
+		label: "Very Mild Frailty",
+		colour: "#f57f17",
+		description:
+			"Not dependent on others. Symptoms often limit activity. Slowed up and may tire more easily.",
 	},
 	{
-		score: 5, label: "Mild Frailty", colour: "#ef6c00",
-		description: "More evident slowing. Need help with high-order IADLs — finances, transport, heavy housework, medications.",
+		score: 5,
+		label: "Mild Frailty",
+		colour: "#ef6c00",
+		description:
+			"More evident slowing. Need help with high-order IADLs — finances, transport, heavy housework, medications.",
 	},
 	{
-		score: 6, label: "Moderate Frailty", colour: "#e65100",
-		description: "Need help with all outside activities and keeping house. Trouble with stairs. May need help with bathing/dressing.",
+		score: 6,
+		label: "Moderate Frailty",
+		colour: "#e65100",
+		description:
+			"Need help with all outside activities and keeping house. Trouble with stairs. May need help with bathing/dressing.",
 	},
 	{
-		score: 7, label: "Severe Frailty", colour: "#c62828",
-		description: "Completely dependent for personal care. Stable — not at high risk of dying within 6 months.",
+		score: 7,
+		label: "Severe Frailty",
+		colour: "#c62828",
+		description:
+			"Completely dependent for personal care. Stable — not at high risk of dying within 6 months.",
 	},
 	{
-		score: 8, label: "Very Severe Frailty", colour: "#b71c1c",
-		description: "Completely dependent, approaching end of life. Cannot recover even from a minor illness.",
+		score: 8,
+		label: "Very Severe Frailty",
+		colour: "#b71c1c",
+		description:
+			"Completely dependent, approaching end of life. Cannot recover even from a minor illness.",
 	},
 	{
-		score: 9, label: "Terminally Ill", colour: "#4a148c",
-		description: "Life expectancy less than 6 months. Not otherwise evidently frail. This category applies even if the person otherwise seems well.",
+		score: 9,
+		label: "Terminally Ill",
+		colour: "#4a148c",
+		description:
+			"Life expectancy less than 6 months. Not otherwise evidently frail. This category applies even if the person otherwise seems well.",
 	},
 ];
-
-// ─── Falls Guide — Risk factors (ISTUMBLE-based) ─────────────────────────────
 
 const FALLS_RISK_FACTORS = [
 	{
@@ -121,9 +147,15 @@ const FALLS_RISK_FACTORS = [
 		category: "Medications",
 		items: [
 			{ id: "rf_poly", label: "Polypharmacy (4 or more medications)" },
-			{ id: "rf_psycho", label: "Psychotropics — sedatives, antidepressants, antipsychotics" },
+			{
+				id: "rf_psycho",
+				label: "Psychotropics — sedatives, antidepressants, antipsychotics",
+			},
 			{ id: "rf_antihyp", label: "Antihypertensives or diuretics" },
-			{ id: "rf_anticoag", label: "Anticoagulants (increased bleed risk if falls)" },
+			{
+				id: "rf_anticoag",
+				label: "Anticoagulants (increased bleed risk if falls)",
+			},
 		],
 	},
 	{
@@ -132,7 +164,10 @@ const FALLS_RISK_FACTORS = [
 			{ id: "rf_gait", label: "Impaired gait or unsteady balance" },
 			{ id: "rf_aid", label: "Requires mobility aid" },
 			{ id: "rf_legs", label: "Lower limb weakness or pain" },
-			{ id: "rf_postural", label: "Postural hypotension — dizziness on standing" },
+			{
+				id: "rf_postural",
+				label: "Postural hypotension — dizziness on standing",
+			},
 		],
 	},
 	{
@@ -146,19 +181,19 @@ const FALLS_RISK_FACTORS = [
 	{
 		category: "Environment",
 		items: [
-			{ id: "rf_hazards", label: "Environmental hazards — loose rugs, poor lighting, clutter" },
+			{
+				id: "rf_hazards",
+				label: "Environmental hazards — loose rugs, poor lighting, clutter",
+			},
 			{ id: "rf_footwear", label: "Inappropriate or unsafe footwear" },
 		],
 	},
 ];
 
-// ─── Falls Guide — build UI ───────────────────────────────────────────────────
-
 function buildFallsGuide() {
 	const container = $("#fallsGuideContainer");
 	if (!container || container.children.length > 0) return;
 
-	// ── Clinical Frailty Scale ───────────────────────────────────────────────
 	const cfsSection = document.createElement("section");
 	cfsSection.className = "section-card";
 	cfsSection.style.margin = "16px";
@@ -191,7 +226,9 @@ function buildFallsGuide() {
 			<span style="display:block;font-size:18px;font-weight:700;color:${colour}">${score}</span>
 			<span style="display:block;font-size:11px;font-weight:600;color:${colour};line-height:1.2">${label}</span>`;
 		card.addEventListener("click", () => {
-			cfsGrid.querySelectorAll("button").forEach((b) => (b.style.background = "#fff"));
+			cfsGrid
+				.querySelectorAll("button")
+				.forEach((b) => (b.style.background = "#fff"));
 			if (selectedCfs === score) {
 				selectedCfs = null;
 				cfsResult.classList.add("hidden");
@@ -209,7 +246,6 @@ function buildFallsGuide() {
 		cfsGrid.appendChild(card);
 	});
 
-	// ── ISTUMBLE Falls Risk Assessment ───────────────────────────────────────
 	const riskSection = document.createElement("section");
 	riskSection.className = "section-card";
 	riskSection.style.margin = "0 16px 16px";
@@ -244,7 +280,9 @@ function buildFallsGuide() {
 			btn.dataset.rfId = id;
 			btn.addEventListener("click", () => {
 				btn.classList.toggle("selected");
-				btn.classList.contains("selected") ? checked.add(id) : checked.delete(id);
+				btn.classList.contains("selected")
+					? checked.add(id)
+					: checked.delete(id);
 				updateRiskResult();
 			});
 			grid.appendChild(btn);
@@ -257,18 +295,25 @@ function buildFallsGuide() {
 		const count = checked.size;
 		let level, colour, advice;
 		if (count === 0) {
-			riskResult.style.cssText = "margin:0 16px 16px;padding:10px 14px;border-radius:8px;background:#f5f5f5;font-size:13px";
+			riskResult.style.cssText =
+				"margin:0 16px 16px;padding:10px 14px;border-radius:8px;background:#f5f5f5;font-size:13px";
 			riskResult.innerHTML = "No risk factors selected.";
 			return;
 		} else if (count <= 2) {
-			level = "Low risk"; colour = "#2e7d32";
-			advice = "Provide falls prevention advice. Consider referral to falls prevention service.";
+			level = "Low risk";
+			colour = "#2e7d32";
+			advice =
+				"Provide falls prevention advice. Consider referral to falls prevention service.";
 		} else if (count <= 5) {
-			level = "Medium risk"; colour = "#ef6c00";
-			advice = "Multifactorial falls risk assessment recommended. Review medications. Referral to falls prevention service.";
+			level = "Medium risk";
+			colour = "#ef6c00";
+			advice =
+				"Multifactorial falls risk assessment recommended. Review medications. Referral to falls prevention service.";
 		} else {
-			level = "High risk"; colour = "#c62828";
-			advice = "High falls risk. Multifactorial assessment and urgent review of modifiable risk factors. Consider same-day referral.";
+			level = "High risk";
+			colour = "#c62828";
+			advice =
+				"High falls risk. Multifactorial assessment and urgent review of modifiable risk factors. Consider same-day referral.";
 		}
 		riskResult.style.cssText = `margin:0 16px 16px;padding:10px 14px;border-radius:8px;
 			border-left:4px solid ${colour};background:${colour}10;font-size:13px`;
@@ -277,7 +322,6 @@ function buildFallsGuide() {
 			<p style="margin:4px 0 0">${advice}</p>`;
 	}
 
-	// ── Resources ────────────────────────────────────────────────────────────
 	const resourceSection = document.createElement("section");
 	resourceSection.className = "section-card";
 	resourceSection.style.margin = "0 16px 16px";
@@ -335,17 +379,12 @@ function buildFallsGuide() {
 	container.appendChild(resourceSection);
 }
 
-// ─── Init ────────────────────────────────────────────────────────────────────
-
 export function initFalls() {
-	// Populate ePRF assessment chips
 	populateFallsPrevCountChips();
 	populateFallsLocChips();
 	populateFallsWitnessedChips();
 	populateFallsLieTimeChips();
 	populateFallsAnticoagChips();
-
-	// Build the standalone falls guide tool
 	buildFallsGuide();
 }
 
