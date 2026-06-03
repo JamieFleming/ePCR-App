@@ -102,22 +102,6 @@ let pendingInjuryInterventions = new Set();
 let pendingInjuryNv = {};
 let pendingManualItems = new Set();
 
-const ABC_DISABILITY_LINKS = [["GCS 15", "AOx4"]];
-
-// const CONVEY_TRANSFER = [
-// 	["Consent to conveyance obtained", "Consent not obtained"],
-// 	["Continuous monitoring and reassessment", "Monitoring not maintained"],
-// 	["Remained stable throughout", "Unstable / deteriorated during transfer"],
-// 	[
-// 		"Communicated appropriately throughout",
-// 		"Communication concerns during transfer",
-// 	],
-// 	["Handover completed with receiving team", "Handover incomplete / delayed"],
-// 	["Pre-alert not required", "Pre-alert given"],
-// 	["No escalation en route", "Care escalated en route"],
-// 	["No clinical change", "Clinical change during conveyance"],
-// ];
-
 // Option lists
 
 function populateGroupedSelect(selectId, groups) {
@@ -305,78 +289,6 @@ function populateDrugSelect() {
 }
 
 // Primary Survey - ABCs
-
-const ABCDE = [
-	{
-		key: "A",
-		title: "Airway",
-		chips: [
-			["Patent", "Obstructed"],
-			["Self-maintained", "Airway support required"],
-			["No abnormal sounds", "Abnormal airway sounds"],
-		],
-		notes: "airwayNotes",
-	},
-	{
-		key: "B",
-		title: "Breathing",
-		chips: [
-			["Regular", "Laboured / irregular"],
-			["No cyanosis", "Cyanosis present"],
-			["Full sentences", "Unable to complete full sentences"],
-			["No wheeze", "Wheeze present"],
-			["No accessory muscle use", "Accessory muscle use"],
-		],
-		notes: "breathingNotes",
-	},
-	{
-		key: "C",
-		title: "Circulation",
-		chips: [
-			["Good colour", "Pale / flushed"],
-			["Normal Rate", "Tachycardic / Bradycardic"],
-			["Warm to touch", "Cold / clammy"],
-			["Radial pulse palpable", "Radial pulse weak / absent"],
-			["Regular pulse rhythm", "Irregular pulses"],
-			["CRT <2s", "CRT ≥2s"],
-			["Well perfused", "Poor perfusion"],
-			["No catastrophic haemorrhage", "Catastrophic haemorrhage"],
-		],
-		notes: "circulationNotes",
-		extras:
-			'<div id="colourDetailWrap" class="hidden" style="margin-top:6px"><input type="hidden" id="colourDetail"><div class="radio-chip-group" data-radio-group="colourDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Pale">Pale</button><button type="button" class="radio-chip" data-value="Flushed">Flushed</button></div></div>' +
-			'<div id="hrRateDetailWrap" class="hidden" style="margin-top:6px"><input type="hidden" id="hrRateDetail"><div class="radio-chip-group" data-radio-group="hrRateDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Tachycardic">Tachycardic</button><button type="button" class="radio-chip" data-value="Bradycardic">Bradycardic</button></div></div>',
-	},
-	{
-		key: "D",
-		title: "Disability",
-		chips: [
-			["GCS 15", "GCS reduced"],
-			["AOx4", "Not orientated x4"],
-			["PEARL", "Pupils unequal / unreactive"],
-			["Speech clear", "Speech impaired"],
-			["Normal mobility", "Reduced mobility"],
-			["No seizure activity", "Seizure activity"],
-		],
-		notes: "disabilityNotes",
-	},
-	{
-		key: "E",
-		title: "Exposure",
-		chips: [
-			["Apyrexial", "Pyrexia"],
-			["No rigors", "Rigors present"],
-			["Normal skin colour", "Abnormal skin colour"],
-			["Warm to touch", "Cool to touch"],
-			["Not clammy", "Clammy"],
-			["Not diaphoretic", "Diaphoretic"],
-			["No injuries", "Injury found"],
-			["No rash", "Rash present"],
-			["No immediate safeguarding concerns", "Safeguarding concerns"],
-		],
-		notes: "exposureNotes",
-	},
-];
 
 document.addEventListener("DOMContentLoaded", () => {
 	init();
@@ -682,7 +594,7 @@ function renderAbdoGrid() {
 
 function buildAbcde() {
 	const root = $("#abcdeContainer");
-	ABCDE.forEach((section, index) => {
+	window.CrewMateOptions.ABCDE.sections.forEach((section, index) => {
 		const details = document.createElement("details");
 		details.className = "section-card";
 
@@ -2612,7 +2524,7 @@ function buildEdHandoverText() {
 	// ABCs
 	const abcdeAbnormals = [];
 	let abcdeAllClear = true;
-	ABCDE.forEach(({ key, notes: notesId }) => {
+	window.CrewMateOptions.ABCDE.sections.forEach(({ key, notes: notesId }) => {
 		const chips = $$(`[data-abc="${key}"]`);
 		const abnormals = chips
 			.filter((b) => b.dataset.abcState === "abnormal")
@@ -3337,7 +3249,7 @@ function buildConveyTransferChips(
 ) {
 	const root = $(`#${containerId}`);
 	if (!root) return;
-	window.CrewMateOptions.conveyance.transferDetails.forEach(
+	window.CrewMateOptions.OPTIONS.conveyance.transferDetails.forEach(
 		([normal, abnormal]) => {
 			const button = document.createElement("button");
 			button.type = "button";
@@ -3454,7 +3366,7 @@ function setAbcChipState(button, state) {
 function syncDisabilityLinks(button) {
 	if (button.dataset.abc !== "D") return;
 	const normalLabel = button.dataset.normal;
-	ABC_DISABILITY_LINKS.forEach(([left, right]) => {
+	window.CrewMateOptions.ABCDE.dLinks.forEach(([left, right]) => {
 		const linkedNormal =
 			left === normalLabel ? right : right === normalLabel ? left : null;
 		if (!linkedNormal) return;
@@ -3656,7 +3568,9 @@ function abcCompactLine(section) {
 }
 
 function abcHandoverSummary() {
-	const lines = ABCDE.map(abcCompactLine).filter(Boolean);
+	const lines = window.CrewMateOptions.ABCDE.sections
+		.map(abcCompactLine)
+		.filter(Boolean);
 	return lines.length ? lines.join("\n") : "No ABCDE concerns identified.";
 }
 
@@ -3730,7 +3644,7 @@ function generateOe() {
 	const oe = [
 		"OE:",
 		"",
-		ABCDE.map(abcLine).join("\n"),
+		window.CrewMateOptions.ABCDE.sections.map(abcLine).join("\n"),
 		"",
 		`${L.resp}: ${rosLine("resp")} ${val("respAus") ? `Auscultation: ${val("respAus")}.` : ""}`,
 		`${L.cvs}: ${rosLine("cvs")} ${buildEcgText()}`,
@@ -3877,7 +3791,7 @@ function buildHandoverText() {
 		? vitalParts.join(", ")
 		: "Not documented";
 
-	const treatmentParts = ABCDE.flatMap((s) => {
+	const treatmentParts = window.CrewMateOptions.ABCDE.sections.flatMap((s) => {
 		const n = val(s.notes);
 		return n ? [n] : [];
 	});
@@ -4333,7 +4247,7 @@ function buildOutputSections() {
 			title: "PRIMARY SURVEY",
 			body:
 				`OA: ${val("oaFound")}${val("oaLocation") ? ` at ${val("oaLocation")}` : ""}; ${val("oaMobility").toLowerCase()}. ${val("oaFound") !== "Greeted by patient" && val("oaPatientFoundHow") ? `On reaching patient: ${val("oaPatientFoundHow")}. ` : ""}${isChecked("oaConsent") ? "Consented to assessment. " : ""}${isChecked("oaNoABC") ? "No immediate ABC concerns. " : ""}${isChecked("oaNormalPresentation") ? "Normal presentation on arrival. " : ""}${val("oaNotes")}`.trimEnd() +
-				`\n${ABCDE.map(abcLine).join("\n")}`,
+				`\n${window.CrewMateOptions.ABCDE.sections.map(abcLine).join("\n")}`,
 		},
 		{
 			id: "pain",

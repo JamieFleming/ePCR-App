@@ -1235,7 +1235,6 @@ export const OPTIONS = {
 	handoverFormat: ["SBAR", "ATMIST", "ASHICE", "Leave at Home"],
 
 	// Conveyance/Non-conveyance
-
 	conveyance: {
 		conveyanceDecision: [
 			["Conveyed", "Conveyed"],
@@ -1350,6 +1349,80 @@ export const OPTIONS = {
 };
 
 // ABCs
+export const ABCDE = {
+	dLinks: ["GCS 15", "AOx4"],
+	sections: [
+		{
+			key: "A",
+			title: "Airway",
+			chips: [
+				["Patent", "Obstructed"],
+				["Self-maintained", "Airway support required"],
+				["No abnormal sounds", "Abnormal airway sounds"],
+			],
+			notes: "airwayNotes",
+		},
+		{
+			key: "B",
+			title: "Breathing",
+			chips: [
+				["Regular", "Laboured / irregular"],
+				["No cyanosis", "Cyanosis present"],
+				["Full sentences", "Unable to complete full sentences"],
+				["No wheeze", "Wheeze present"],
+				["No accessory muscle use", "Accessory muscle use"],
+			],
+			notes: "breathingNotes",
+		},
+		{
+			key: "C",
+			title: "Circulation",
+			chips: [
+				["Good colour", "Pale / flushed"],
+				["Normal Rate", "Tachycardic / Bradycardic"],
+				["Warm to touch", "Cold / clammy"],
+				["Radial pulse palpable", "Radial pulse weak / absent"],
+				["Regular pulse rhythm", "Irregular pulses"],
+				["CRT <2s", "CRT ≥2s"],
+				["Well perfused", "Poor perfusion"],
+				["No catastrophic haemorrhage", "Catastrophic haemorrhage"],
+			],
+			notes: "circulationNotes",
+			extras:
+				'<div id="colourDetailWrap" class="hidden" style="margin-top:6px"><input type="hidden" id="colourDetail"><div class="radio-chip-group" data-radio-group="colourDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Pale">Pale</button><button type="button" class="radio-chip" data-value="Flushed">Flushed</button></div></div>' +
+				'<div id="hrRateDetailWrap" class="hidden" style="margin-top:6px"><input type="hidden" id="hrRateDetail"><div class="radio-chip-group" data-radio-group="hrRateDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Tachycardic">Tachycardic</button><button type="button" class="radio-chip" data-value="Bradycardic">Bradycardic</button></div></div>',
+		},
+		{
+			key: "D",
+			title: "Disability",
+			chips: [
+				["GCS 15", "GCS reduced"],
+				["AOx4", "Not orientated x4"],
+				["PEARL", "Pupils unequal / unreactive"],
+				["Speech clear", "Speech impaired"],
+				["Normal mobility", "Reduced mobility"],
+				["No seizure activity", "Seizure activity"],
+			],
+			notes: "disabilityNotes",
+		},
+		{
+			key: "E",
+			title: "Exposure",
+			chips: [
+				["Apyrexial", "Pyrexia"],
+				["No rigors", "Rigors present"],
+				["Normal skin colour", "Abnormal skin colour"],
+				["Warm to touch", "Cool to touch"],
+				["Not clammy", "Clammy"],
+				["Not diaphoretic", "Diaphoretic"],
+				["No injuries", "Injury found"],
+				["No rash", "Rash present"],
+				["No immediate safeguarding concerns", "Safeguarding concerns"],
+			],
+			notes: "exposureNotes",
+		},
+	],
+};
 
 // ROS
 export const ROS = {
@@ -1619,4 +1692,4 @@ export const ROS = {
 	},
 };
 
-window.CrewMateOptions = { OPTIONS, ROS };
+window.CrewMateOptions = { OPTIONS, ROS, ABCDE };
