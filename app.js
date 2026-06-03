@@ -53,12 +53,6 @@ const state = {
 	seizureFindings: new Set(),
 	seizurePrecipitants: new Set(),
 	seizurePostictalFeatures: new Set(),
-	strokeFaceFindings: new Set(),
-	strokeArmFindings: new Set(),
-	strokeSpeechFindings: new Set(),
-	strokeEyeFindings: new Set(),
-	strokeAssociated: new Set(),
-	strokeRiskFactors: new Set(),
 	urinaryVolumeFeatures: new Set(),
 	urinaryColourFeatures: new Set(),
 	aedCompliance: new Set(),
@@ -413,7 +407,6 @@ function init() {
 	buildSeizureSection();
 	buildOdAssessmentSection();
 	buildMhSection();
-	buildStrokeCard();
 	populateChipGroup(
 		"conveyanceDecision",
 		window.CrewMateOptions.OPTIONS.conveyance.conveyanceDecision,
@@ -981,7 +974,10 @@ function makeEntryManager(
 	return { render, remove };
 }
 
-window.CrewMateApp = { makeEntryManager, getPReferrals: () => state.pReferrals };
+window.CrewMateApp = {
+	makeEntryManager,
+	getPReferrals: () => state.pReferrals,
+};
 
 const { render: renderIvEntries, remove: removeIvEntry } = makeEntryManager(
 	"ivEntries",
@@ -1618,374 +1614,6 @@ function buildMhSection() {
 	});
 
 	$("#addMhActButton")?.addEventListener("click", addMhActEntry);
-}
-
-// Stroke card
-
-function buildStrokeCard() {
-	const card = $("#strokeAssessmentCard");
-	if (!card) return;
-
-	// Helper: create a chip-group row with label
-	function row(label, radioGroup, items, stateKey) {
-		const wrap = document.createElement("div");
-		wrap.style.marginTop = "10px";
-		const lbl = document.createElement("label");
-		lbl.className = "field-label";
-		lbl.textContent = label;
-		wrap.appendChild(lbl);
-		if (stateKey) {
-			// Multi-select grid
-			const grid = document.createElement("div");
-			grid.className = "square-grid";
-			grid.id = `${radioGroup}Grid`;
-			grid.style.marginTop = "4px";
-			items.forEach((item) => {
-				const btn = document.createElement("button");
-				btn.type = "button";
-				btn.className = "square-btn";
-				btn.textContent = item;
-				btn.dataset.value = item;
-				grid.appendChild(btn);
-			});
-			document.addEventListener("click", (e) => {
-				const b = e.target.closest(`#${radioGroup}Grid .square-btn`);
-				if (!b) return;
-				b.classList.toggle("selected");
-				if (b.classList.contains("selected"))
-					state[stateKey].add(b.dataset.value);
-				else state[stateKey].delete(b.dataset.value);
-			});
-			wrap.appendChild(grid);
-		} else {
-			const hidden = document.createElement("input");
-			hidden.type = "hidden";
-			hidden.id = radioGroup;
-			wrap.appendChild(hidden);
-			const group = document.createElement("div");
-			group.className = "radio-chip-group";
-			group.dataset.radioGroup = radioGroup;
-			group.style.marginTop = "4px";
-			items.forEach((item) => {
-				const [value, chipLabel] = Array.isArray(item) ? item : [item, item];
-				const btn = document.createElement("button");
-				btn.type = "button";
-				btn.className = "radio-chip";
-				btn.dataset.value = value;
-				btn.textContent = chipLabel;
-				group.appendChild(btn);
-			});
-			wrap.appendChild(group);
-		}
-		return wrap;
-	}
-
-	const body = card.querySelector(".section-body");
-	if (!body) return;
-
-	// F — Face
-	const faceWrap = document.createElement("div");
-	faceWrap.innerHTML = `<label class="field-label" style="font-size:13px;font-weight:700;color:#003087">F — Face</label>`;
-	faceWrap.appendChild(
-		row(
-			"Facial symptoms present?",
-			"strokeFace",
-			window.CrewMateOptions.OPTIONS.stroke.yesNoUnknown,
-		),
-	);
-	const faceDetails = document.createElement("div");
-	faceDetails.id = "strokeFaceDetailsWrap";
-	faceDetails.className = "hidden";
-	faceDetails.style.marginTop = "8px";
-	faceDetails.style.paddingLeft = "12px";
-	faceDetails.style.borderLeft = "3px solid #dbeeff";
-	const faceFindingsWrap = row(
-		"Findings",
-		"strokeFaceFindings",
-		window.CrewMateOptions.OPTIONS.stroke.faceFindings,
-		"strokeFaceFindings",
-	);
-	const faceSideWrap = row(
-		"Side affected",
-		"strokeFaceSide",
-		window.CrewMateOptions.OPTIONS.stroke.side,
-	);
-	faceDetails.appendChild(faceFindingsWrap);
-	faceDetails.appendChild(faceSideWrap);
-	faceWrap.appendChild(faceDetails);
-	body.appendChild(faceWrap);
-
-	// A — Arms
-	const armWrap = document.createElement("div");
-	armWrap.style.marginTop = "14px";
-	armWrap.innerHTML = `<label class="field-label" style="font-size:13px;font-weight:700;color:#003087">A — Arms / Legs</label>`;
-	armWrap.appendChild(
-		row(
-			"Motor deficit present?",
-			"strokeArm",
-			window.CrewMateOptions.OPTIONS.stroke.yesNoUnknown,
-		),
-	);
-	const armDetails = document.createElement("div");
-	armDetails.id = "strokeArmDetailsWrap";
-	armDetails.className = "hidden";
-	armDetails.style.marginTop = "8px";
-	armDetails.style.paddingLeft = "12px";
-	armDetails.style.borderLeft = "3px solid #dbeeff";
-	armDetails.appendChild(
-		row(
-			"Findings",
-			"strokeArmFindings",
-			window.CrewMateOptions.OPTIONS.stroke.armFindings,
-			"strokeArmFindings",
-		),
-	);
-	armDetails.appendChild(
-		row(
-			"Side affected",
-			"strokeArmSide",
-			window.CrewMateOptions.OPTIONS.stroke.side,
-		),
-	);
-	armWrap.appendChild(armDetails);
-	body.appendChild(armWrap);
-
-	// S — Speech
-	const speechWrap = document.createElement("div");
-	speechWrap.style.marginTop = "14px";
-	speechWrap.innerHTML = `<label class="field-label" style="font-size:13px;font-weight:700;color:#003087">S — Speech</label>`;
-	speechWrap.appendChild(
-		row(
-			"Speech difficulty present?",
-			"strokeSpeech",
-			window.CrewMateOptions.OPTIONS.stroke.yesNoUnknown,
-		),
-	);
-	const speechDetails = document.createElement("div");
-	speechDetails.id = "strokeSpeechDetailsWrap";
-	speechDetails.className = "hidden";
-	speechDetails.style.marginTop = "8px";
-	speechDetails.style.paddingLeft = "12px";
-	speechDetails.style.borderLeft = "3px solid #dbeeff";
-	speechDetails.appendChild(
-		row(
-			"Type",
-			"strokeSpeechFindings",
-			window.CrewMateOptions.OPTIONS.stroke.speechFindings,
-			"strokeSpeechFindings",
-		),
-	);
-	speechWrap.appendChild(speechDetails);
-	body.appendChild(speechWrap);
-
-	// E — Eyes
-	const eyeWrap = document.createElement("div");
-	eyeWrap.style.marginTop = "14px";
-	eyeWrap.innerHTML = `<label class="field-label" style="font-size:13px;font-weight:700;color:#003087">E — Eyes</label>`;
-	eyeWrap.appendChild(
-		row(
-			"Visual symptoms present?",
-			"strokeEyes",
-			window.CrewMateOptions.OPTIONS.stroke.yesNoUnknown,
-		),
-	);
-	const eyeDetails = document.createElement("div");
-	eyeDetails.id = "strokeEyesDetailsWrap";
-	eyeDetails.className = "hidden";
-	eyeDetails.style.marginTop = "8px";
-	eyeDetails.style.paddingLeft = "12px";
-	eyeDetails.style.borderLeft = "3px solid #dbeeff";
-	eyeDetails.appendChild(
-		row(
-			"Findings",
-			"strokeEyeFindings",
-			window.CrewMateOptions.OPTIONS.stroke.eyeFindings,
-			"strokeEyeFindings",
-		),
-	);
-	eyeDetails.appendChild(
-		row(
-			"Side affected",
-			"strokeEyeSide",
-			window.CrewMateOptions.OPTIONS.stroke.side,
-		),
-	);
-	eyeWrap.appendChild(eyeDetails);
-	body.appendChild(eyeWrap);
-
-	// T — Time
-	const timeWrap = document.createElement("div");
-	timeWrap.style.marginTop = "14px";
-	timeWrap.innerHTML = `<label class="field-label" style="font-size:13px;font-weight:700;color:#003087">T — Time</label>
-		<label class="field-label" style="margin-top:6px">Onset type</label>`;
-	const hiddenOnset = document.createElement("input");
-	hiddenOnset.type = "hidden";
-	hiddenOnset.id = "strokeOnsetType";
-	const onsetGroup = document.createElement("div");
-	onsetGroup.className = "radio-chip-group";
-	onsetGroup.dataset.radioGroup = "strokeOnsetType";
-	onsetGroup.style.marginTop = "4px";
-	window.CrewMateOptions.OPTIONS.stroke.onsetType.forEach((item) => {
-		const [value, chipLabel] = Array.isArray(item) ? item : [item, item];
-		const btn = document.createElement("button");
-		btn.type = "button";
-		btn.className = "radio-chip";
-		btn.dataset.value = value;
-		btn.textContent = chipLabel;
-		onsetGroup.appendChild(btn);
-	});
-	timeWrap.appendChild(hiddenOnset);
-	timeWrap.appendChild(onsetGroup);
-	const lastWellDiv = document.createElement("div");
-	lastWellDiv.style.marginTop = "8px";
-	lastWellDiv.innerHTML = `<label class="field-label">Last known well (time)</label>
-		<div style="display:flex;align-items:center;gap:8px;margin-top:4px">
-			<input type="time" id="strokeLastWell" style="flex:1" />
-			<button type="button" class="radio-chip" id="strokeLastWellUnknownBtn">Unknown</button>
-		</div>`;
-	timeWrap.appendChild(lastWellDiv);
-	body.appendChild(timeWrap);
-
-	// P — Past history & A — Anticoagulants
-	const pastaWrap = document.createElement("div");
-	pastaWrap.style.marginTop = "14px";
-	pastaWrap.innerHTML = `<label class="field-label" style="font-size:13px;font-weight:700;color:#003087">Stroke Risk Factors</label>`;
-	pastaWrap.appendChild(
-		row(
-			"Risk factors",
-			"strokeRiskFactors",
-			window.CrewMateOptions.OPTIONS.stroke.riskFactors,
-			"strokeRiskFactors",
-		),
-	);
-	body.appendChild(pastaWrap);
-
-	// Associated symptoms
-	const assocWrap = document.createElement("div");
-	assocWrap.style.marginTop = "14px";
-	assocWrap.innerHTML = `<label class="field-label" style="font-size:13px;font-weight:700;color:#003087">Associated Symptoms</label>`;
-	assocWrap.appendChild(
-		row(
-			"Symptoms",
-			"strokeAssociated",
-			window.CrewMateOptions.OPTIONS.stroke.associatedSymptoms,
-			"strokeAssociated",
-		),
-	);
-	body.appendChild(assocWrap);
-
-	// Notes
-	const notesWrap = document.createElement("div");
-	notesWrap.style.marginTop = "12px";
-	notesWrap.innerHTML = `<label class="field-label" for="strokeNotes">Additional notes</label>
-		<textarea id="strokeNotes" rows="2" style="margin-top:4px"></textarea>`;
-	body.appendChild(notesWrap);
-
-	["strokeFace", "strokeArm", "strokeSpeech", "strokeEyes"].forEach((id) => {
-		const el = document.getElementById(id);
-		if (!el) return;
-		el.addEventListener("change", () => {
-			const v = el.value;
-			const wrapId =
-				id.replace("stroke", "stroke").replace(/([A-Z])/, (m) => m) +
-				"DetailsWrap";
-			const detailsId = id + "DetailsWrap";
-			document
-				.getElementById(detailsId)
-				?.classList.toggle("hidden", v !== "Yes");
-		});
-	});
-
-	const lastWellUnknown = document.getElementById("strokeLastWellUnknownBtn");
-	const lastWellInput = document.getElementById("strokeLastWell");
-	lastWellUnknown?.addEventListener("click", () => {
-		const isUnknown = lastWellUnknown.classList.toggle("selected");
-		if (lastWellInput) {
-			lastWellInput.disabled = isUnknown;
-			lastWellInput.style.opacity = isUnknown ? "0.4" : "";
-			if (isUnknown) lastWellInput.value = "";
-		}
-	});
-}
-
-function buildStrokeText() {
-	const lines = ["FAST-PASTA STROKE ASSESSMENT"];
-
-	// F
-	const face = val("strokeFace");
-	if (face) {
-		const findings = state.strokeFaceFindings.size
-			? ` — ${[...state.strokeFaceFindings].join(", ")}`
-			: "";
-		const side = val("strokeFaceSide") ? ` (${val("strokeFaceSide")})` : "";
-		lines.push(`F — Face: ${face}${face === "Yes" ? findings + side : ""}.`);
-	}
-
-	// A
-	const arm = val("strokeArm");
-	if (arm) {
-		const findings = state.strokeArmFindings.size
-			? ` — ${[...state.strokeArmFindings].join(", ")}`
-			: "";
-		const side = val("strokeArmSide") ? ` (${val("strokeArmSide")})` : "";
-		lines.push(`A — Arms/Legs: ${arm}${arm === "Yes" ? findings + side : ""}.`);
-	}
-
-	// S
-	const speech = val("strokeSpeech");
-	if (speech) {
-		const findings = state.strokeSpeechFindings.size
-			? ` — ${[...state.strokeSpeechFindings].join(", ")}`
-			: "";
-		lines.push(`S — Speech: ${speech}${speech === "Yes" ? findings : ""}.`);
-	}
-
-	// E
-	const eyes = val("strokeEyes");
-	if (eyes) {
-		const findings = state.strokeEyeFindings.size
-			? ` — ${[...state.strokeEyeFindings].join(", ")}`
-			: "";
-		const side = val("strokeEyeSide") ? ` (${val("strokeEyeSide")})` : "";
-		lines.push(`E — Eyes: ${eyes}${eyes === "Yes" ? findings + side : ""}.`);
-	}
-
-	// T
-	const lastWellUnknown = document
-		.getElementById("strokeLastWellUnknownBtn")
-		?.classList.contains("selected");
-	const lastWell = lastWellUnknown ? "Unknown" : val("strokeLastWell");
-	const onsetType = val("strokeOnsetType");
-	if (onsetType || lastWell) {
-		const parts = [];
-		if (onsetType) parts.push(`Onset: ${onsetType}`);
-		if (lastWell) parts.push(`Last known well: ${lastWell}`);
-		lines.push(`T — Time: ${parts.join(" | ")}.`);
-	}
-
-	if (state.strokeAssociated.size)
-		lines.push(
-			`Associated symptoms: ${[...state.strokeAssociated].join(", ")}.`,
-		);
-
-	if (state.strokeRiskFactors.size)
-		lines.push(`Risk factors: ${[...state.strokeRiskFactors].join(", ")}.`);
-
-	const bm = val("bm");
-	const bp = val("bp");
-	const hr = val("hr");
-	const obs = [
-		bm ? `BM ${bm} mmol/L` : null,
-		bp ? `BP ${bp} mmHg` : null,
-		hr ? `HR ${hr}bpm` : null,
-	]
-		.filter(Boolean)
-		.join(" | ");
-	if (obs) lines.push(`Observations: ${obs}.`);
-
-	if (val("strokeNotes")) lines.push(val("strokeNotes"));
-
-	return lines.join("\n");
 }
 
 function addMhActEntry() {
@@ -2773,6 +2401,7 @@ function bindEvents() {
 		$("#fallsAssessmentCard").classList.toggle("hidden", pc !== "Fall");
 		$("#headInjuryCard").classList.toggle("hidden", pc !== "Head injury");
 		$("#seizureAssessmentCard").classList.toggle("hidden", pc !== "Seizure");
+		$("#strokeAssessmentCard")?.classList.toggle("hidden", pc !== "Stroke");
 		const isMhPc =
 			window.CrewMateOptions.OPTIONS.mentalHealth.presentingComplaint.includes(
 				pc,
@@ -3974,19 +3603,17 @@ function buildLahSbarText() {
 			return true;
 		return false;
 	};
-	["resp", "cvs", "neuro", "gi", "urine", "integ", "msk", "mh"].forEach(
-		(s) => {
-			const block = rosBlock(s);
-			if (!block || !block.trim()) return;
-			const findings = block
-				.split(/\.\s+/)
-				.map((f) => f.replace(/\.$/, "").trim())
-				.filter(Boolean);
-			const abnormals = findings.filter((f) => !isNormalFinding(f));
-			if (abnormals.length)
-				assessParts.push(`${rosAbbr[s]}: ${abnormals.join(". ")}`);
-		},
-	);
+	["resp", "cvs", "neuro", "gi", "urine", "integ", "msk", "mh"].forEach((s) => {
+		const block = rosBlock(s);
+		if (!block || !block.trim()) return;
+		const findings = block
+			.split(/\.\s+/)
+			.map((f) => f.replace(/\.$/, "").trim())
+			.filter(Boolean);
+		const abnormals = findings.filter((f) => !isNormalFinding(f));
+		if (abnormals.length)
+			assessParts.push(`${rosAbbr[s]}: ${abnormals.join(". ")}`);
+	});
 
 	if (val("oeText")) assessParts.push(`OE: ${val("oeText")}`);
 
@@ -4334,12 +3961,12 @@ function buildOutputSections() {
 					},
 				]
 			: []),
-		...(state.ros["neuro_fast"] === "abnormal"
+		...(!$("#strokeAssessmentCard")?.classList.contains("hidden")
 			? [
 					{
 						id: "stroke",
 						title: "FAST-PASTA STROKE ASSESSMENT",
-						body: buildStrokeText(),
+						body: window.CrewMateStroke.buildStrokeText(),
 					},
 				]
 			: []),
@@ -4456,7 +4083,6 @@ function buildOutputSections() {
 
 // Copy function
 const outputSectionTexts = new Map();
-
 
 function renderOutputSections(sections) {
 	outputSectionTexts.clear();

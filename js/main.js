@@ -8,6 +8,7 @@ import { initRespCounter } from "./features/respCounter.js";
 import { initNewsScore } from "./features/newsScore.js";
 import { initDrugFinder } from "./features/drugFinder.js";
 import { initObsRecorder } from "./features/obsRecorder.js";
+import { initStrokeCard } from "./features/strokeCard.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 	initTheme();
@@ -16,4 +17,5 @@ document.addEventListener("DOMContentLoaded", () => {
 	initNewsScore();
 	initDrugFinder();
 	initObsRecorder();
+	initStrokeCard();
 });
