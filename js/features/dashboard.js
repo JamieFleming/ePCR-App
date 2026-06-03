@@ -8,6 +8,7 @@ function showDashboard() {
 	$("#resp-tool")?.classList.add("hidden");
 	$("#obs-recorder")?.classList.add("hidden");
 	$("#drug-finder-tool")?.classList.add("hidden");
+	$("#falls-tool")?.classList.add("hidden");
 	$("#news-tool")?.classList.add("hidden");
 	$("#backButton")?.classList.add("hidden");
 	$("#resetButton")?.classList.add("hidden");
@@ -39,6 +40,9 @@ function showFeature(feature) {
 		setTimeout(() => $("#bnfSearchInput")?.focus(), 50);
 	} else if (feature === "newsScore") {
 		$("#news-tool")?.classList.remove("hidden");
+		$("#resetButton")?.classList.add("hidden");
+	} else if (feature === "falls-guide") {
+		$("#falls-tool")?.classList.remove("hidden");
 		$("#resetButton")?.classList.add("hidden");
 	}
 }

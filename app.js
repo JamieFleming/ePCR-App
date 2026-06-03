@@ -215,38 +215,6 @@ function populateTimingChips() {
 	);
 }
 
-function populateFallsPrevCountChips() {
-	populateChipGroup(
-		"fallsPreviousCount",
-		window.CrewMateOptions.OPTIONS.falls.previousCount,
-	);
-}
-
-function populateFallsLocChips() {
-	populateChipGroup("fallsLOC", window.CrewMateOptions.OPTIONS.falls.loc);
-}
-
-function populateFallsWitnessedChips() {
-	populateChipGroup(
-		"fallsWitnessed",
-		window.CrewMateOptions.OPTIONS.falls.witnessed,
-	);
-}
-
-function populateFallsLieTimeChips() {
-	populateChipGroup(
-		"fallsLieTime",
-		window.CrewMateOptions.OPTIONS.falls.lieTime,
-	);
-}
-
-function populateFallsAnticoagChips() {
-	populateChipGroup(
-		"fallsAnticoag",
-		window.CrewMateOptions.OPTIONS.falls.anticoagulated,
-	);
-}
-
 function populateHeadInjuryChips() {
 	populateChipGroup("headLOC", window.CrewMateOptions.OPTIONS.headInjury.loc);
 	populateChipGroup(
@@ -385,11 +353,6 @@ function init() {
 	populateOnsetTimeSelect();
 	populateOnsetTypeChips();
 	populateTimingChips();
-	populateFallsPrevCountChips();
-	populateFallsLocChips();
-	populateFallsWitnessedChips();
-	populateFallsLieTimeChips();
-	populateFallsAnticoagChips();
 	populateHeadInjuryChips();
 	const headGcsWrap = $("#headGcsCalcWrap");
 	if (headGcsWrap)
@@ -977,6 +940,7 @@ function makeEntryManager(
 window.CrewMateApp = {
 	makeEntryManager,
 	getPReferrals: () => state.pReferrals,
+	getFallsState: () => state,
 };
 
 const { render: renderIvEntries, remove: removeIvEntry } = makeEntryManager(
@@ -3560,7 +3524,7 @@ function buildLahSbarText() {
 
 	const pcSel = val("pcSelect");
 	if (pcSel === "Fall") {
-		const ft = buildFallsText();
+		const ft = window.CrewMateFalls.buildFallsText();
 		if (ft) assessParts.push(`Falls: ${ft.split("\n")[0]}`);
 	} else if (pcSel === "Head injury") {
 		const ht = buildHeadInjuryText();
@@ -3779,54 +3743,6 @@ function buildHeadInjuryText() {
 	].join("\n");
 }
 
-function buildFallsText() {
-	const symptoms = listFactors(
-		state.fallsSymptoms,
-		"fallsSymptomsOther",
-		"Not Documented",
-	);
-	const loc = listFactors(
-		state.fallsLocation,
-		"fallsLocationOther",
-		"Not documented",
-	);
-	const surface = val("fallsSurface");
-	const activity = listFactors(
-		state.fallsActivity,
-		"fallsActivityOther",
-		"Not documented",
-	);
-	const timeUnknown = $("#fallsTimeUnknownBtn")?.classList.contains("selected");
-	const time = timeUnknown
-		? "Unknown time"
-		: val("fallsTime")
-			? val("fallsTime")
-			: "Not documented";
-	const lieTime = val("fallsLieTime") || "Unknown";
-	const injuries = listSet(state.fallsInjuries, "No injury documented");
-	const prevCount = val("fallsPreviousCount") || "Not asked";
-	const locLine = [loc, surface ? `(${surface})` : ""]
-		.filter(Boolean)
-		.join(" ");
-	const longLie = ["1–2 hours", "2–4 hours", "4–8 hours", "> 8 hours"].includes(
-		lieTime,
-	);
-	return [
-		(() => {
-			const locRaw = val("fallsLOC");
-			const locText = locRaw === "Unknown" ? "Unknown LOC" : locRaw;
-			const witnessed = val("fallsWitnessed");
-			return `S — Symptoms: ${symptoms}. ${locText ? `${locText}.` : ""} ${witnessed ? `${witnessed}.` : ""}`.trim();
-		})(),
-		`P — Previous falls: ${prevCount}.${isChecked("fallsPreviousInjury") ? " Previous fall-related injury." : ""}`,
-		`L — Location: ${locLine}.`,
-		`A — Activity: ${activity}.`,
-		`T — Time: ${time}. On floor: ${lieTime}.${longLie ? " Long lie." : ""}`,
-		`T — Trauma: ${injuries}.${val("fallsAnticoag") ? ` ${val("fallsAnticoag")}.` : ""}`,
-		...(val("fallsNotes") ? [`Notes: ${val("fallsNotes")}`] : []),
-	].join("\n");
-}
-
 function buildOutputSections() {
 	const pc = getPc();
 	const site = getSelectedParts(state.siteParts) || "Not localised";
@@ -3914,7 +3830,7 @@ function buildOutputSections() {
 					{
 						id: "falls",
 						title: "FALLS ASSESSMENT — SPLATT",
-						body: buildFallsText(),
+						body: window.CrewMateFalls.buildFallsText(),
 					},
 				]
 			: []),

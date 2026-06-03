@@ -9,6 +9,7 @@ import { initNewsScore } from "./features/newsScore.js";
 import { initDrugFinder } from "./features/drugFinder.js";
 import { initObsRecorder } from "./features/obsRecorder.js";
 import { initStrokeCard } from "./features/strokeCard.js";
+import { initFalls } from "./features/falls.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 	initTheme();
@@ -18,4 +19,5 @@ document.addEventListener("DOMContentLoaded", () => {
 	initDrugFinder();
 	initObsRecorder();
 	initStrokeCard();
+	initFalls();
 });
