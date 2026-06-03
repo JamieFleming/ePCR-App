@@ -3230,6 +3230,78 @@
 						</div>
 					</details>
 
+					<!-- Overdose / Poisoning assessment -->
+					<details class="section-card hidden" id="odAssessmentCard">
+						<summary>
+							<span>Overdose / Poisoning Assessment</span><small>OD / Poisoning</small>
+						</summary>
+						<div class="section-body">
+
+							<label class="field-label">Intentionality</label>
+							<input type="hidden" id="odAssessIntentionality" />
+							<div class="radio-chip-group" data-radio-group="odAssessIntentionality" style="margin-top:4px" id="odAssessIntentionalityChips"></div>
+
+							<div id="odAssessCircumstanceWrap" class="hidden" style="margin-top:10px">
+								<label class="field-label" for="odAssessCircumstance">Circumstance</label>
+								<select id="odAssessCircumstance" style="margin-top:4px"></select>
+							</div>
+
+							<label class="field-label" style="margin-top:12px" for="odAssessSubstance">Substance(s) taken</label>
+							<input id="odAssessSubstance" placeholder="e.g. Paracetamol, ibuprofen, alcohol" />
+
+							<label class="field-label" style="margin-top:8px" for="odAssessAmount">Amount / estimated dose</label>
+							<input id="odAssessAmount" placeholder="e.g. Up to 16 tablets, 500ml" />
+
+							<div class="grid-2" style="margin-top:8px">
+								<div>
+									<label class="field-label" for="odAssessAtTime">Time of ingestion</label>
+									<input type="time" id="odAssessAtTime" style="margin-top:4px" />
+								</div>
+								<div>
+									<label class="field-label" for="odAssessAgoTime">How long ago</label>
+									<select id="odAssessAgoTime" style="margin-top:4px">
+										<option value="">Select...</option>
+										<option>Just now</option>
+										<option>&lt; 1 hour ago</option>
+										<option>1 hour ago</option>
+										<option>2 hours ago</option>
+										<option>3 hours ago</option>
+										<option>4 hours ago</option>
+										<option>6 hours ago</option>
+										<option>8 hours ago</option>
+										<option>12 hours ago</option>
+										<option>Earlier today</option>
+										<option>Yesterday</option>
+										<option>Unknown</option>
+									</select>
+								</div>
+							</div>
+
+							<label class="field-label" style="margin-top:10px">Route</label>
+							<input type="hidden" id="odAssessRoute" />
+							<div class="radio-chip-group" data-radio-group="odAssessRoute" style="margin-top:4px">
+								<button type="button" class="radio-chip" data-value="Oral (ingested)">Oral / ingested</button>
+								<button type="button" class="radio-chip" data-value="IV / injected">IV / injected</button>
+								<button type="button" class="radio-chip" data-value="Inhalation">Inhalation</button>
+								<button type="button" class="radio-chip" data-value="Topical / transdermal">Topical</button>
+								<button type="button" class="radio-chip" data-value="Other / unknown">Other / unknown</button>
+							</div>
+
+							<label class="check-row" style="margin-top:10px">
+								<input type="checkbox" id="odAssessAlcohol" /> Alcohol co-ingestion
+							</label>
+
+							<label class="field-label" style="margin-top:10px">Medication source</label>
+							<div class="square-grid" id="odAssessSourceGrid"></div>
+
+							<label class="field-label" style="margin-top:10px" for="odAssessSymptoms">Current symptoms / presentation</label>
+							<input id="odAssessSymptoms" placeholder="e.g. Drowsy, nausea, vomiting, abdominal pain" />
+
+							<label class="field-label" style="margin-top:8px" for="odAssessNotes">Additional notes</label>
+							<textarea id="odAssessNotes" rows="2" placeholder="e.g. Empty packet found, patient's own prescription, TOXBASE consulted"></textarea>
+						</div>
+					</details>
+
 					<!-- Mental health assessment -->
 					<details class="section-card hidden" id="mhAssessmentCard">
 						<summary>
@@ -3262,104 +3334,90 @@
 								rows="2"
 								placeholder="Details of previous episodes..."></textarea>
 
-							<!-- Overdose-specific -->
-							<div id="odDetailsWrap" class="hidden" style="margin-top: 14px">
-								<p
-									class="field-label"
-									style="font-weight: 600; margin-bottom: 8px">
-									Overdose details
-								</p>
-								<label class="field-label" for="odSubstance"
-									>Substance(s) taken</label
-								>
-								<input
-									id="odSubstance"
-									placeholder="e.g. Paracetamol, alcohol, ibuprofen" />
-								<div class="grid-2" style="margin-top: 8px">
-									<div>
-										<label class="field-label" for="odAmount"
-											>Amount / estimated dose</label
-										>
-										<input id="odAmount" placeholder="e.g. Up to 16 tablets" />
-									</div>
-									<div>
-										<label class="field-label" for="odTime">Time taken</label>
-										<input
-											id="odTime"
-											placeholder="e.g. 22:00, approx 2 hours ago" />
-									</div>
+							<!-- Harmful acts -->
+							<div style="margin-top: 14px">
+								<p class="field-label" style="font-weight:600;margin-bottom:8px">Self-harm / harmful acts</p>
+								<input type="hidden" id="mhActsAdmit" value="Denies" />
+								<div class="radio-chip-group" data-radio-group="mhActsAdmit" style="margin-top:4px">
+									<button type="button" class="radio-chip selected" data-value="Denies">Denies</button>
+									<button type="button" class="radio-chip" data-value="Admits">Admits</button>
 								</div>
-								<div class="grid-2" style="margin-top: 8px">
-									<div>
-										<label class="field-label">Route</label>
-										<input type="hidden" id="odRoute" />
-										<div
-											class="radio-chip-group"
-											data-radio-group="odRoute"
-											style="margin-top: 4px">
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Oral (ingested)">
-												Oral / ingested
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="IV / injected">
-												IV / injected
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Inhalation">
-												Inhalation
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Topical / transdermal">
-												Topical
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Other / unknown">
-												Other / unknown
-											</button>
+
+								<div id="mhActsPanel" class="hidden" style="margin-top:12px">
+									<label class="field-label" for="mhActType">Type of act</label>
+									<select id="mhActType" style="margin-top:4px">
+										<option value="">Select type...</option>
+										<option>Overdose</option>
+										<!-- Self-harm and suicide attempt options added by JS -->
+									</select>
+
+									<div class="grid-2" style="margin-top:8px">
+										<div>
+											<label class="field-label" for="mhActAtTime">Time of act</label>
+											<input type="time" id="mhActAtTime" style="margin-top:4px" />
+										</div>
+										<div>
+											<label class="field-label" for="mhActAgoTime">How long ago</label>
+											<select id="mhActAgoTime" style="margin-top:4px">
+												<option value="">Select...</option>
+												<option>Just now</option>
+												<option>&lt; 1 hour ago</option>
+												<option>1 hour ago</option>
+												<option>2 hours ago</option>
+												<option>3 hours ago</option>
+												<option>4 hours ago</option>
+												<option>6 hours ago</option>
+												<option>8 hours ago</option>
+												<option>12 hours ago</option>
+												<option>Earlier today</option>
+												<option>Yesterday</option>
+												<option>Unknown</option>
+											</select>
 										</div>
 									</div>
-									<div
-										style="
-											display: flex;
-											align-items: center;
-											padding-top: 20px;
-										">
-										<label class="check-row">
-											<input type="checkbox" id="odAlcohol" /> Alcohol
-											co-ingestion
-										</label>
-									</div>
-								</div>
-								<label class="field-label" style="margin-top: 8px"
-									>Medication source</label
-								>
-								<div class="square-grid" id="odPrescribedGrid"></div>
-							</div>
 
-							<!-- Self-harm specific -->
-							<div id="shDetailsWrap" class="hidden" style="margin-top: 14px">
-								<p
-									class="field-label"
-									style="font-weight: 600; margin-bottom: 8px">
-									Self-harm details
-								</p>
-								<label class="field-label">Method</label>
-								<div class="square-grid" id="shMethodGrid"></div>
-								<label class="field-label" style="margin-top: 10px"
-									>Wound depth</label
-								>
-								<div class="square-grid" id="shDepthGrid"></div>
+									<div id="odDetailsWrap" class="hidden" style="margin-top:10px">
+										<label class="field-label" for="odSubstance">Substance(s) taken</label>
+										<input id="odSubstance" placeholder="e.g. Paracetamol, alcohol, ibuprofen" />
+										<div style="margin-top:8px">
+											<label class="field-label" for="odAmount">Amount / estimated dose</label>
+											<input id="odAmount" placeholder="e.g. Up to 16 tablets" />
+										</div>
+										<div class="grid-2" style="margin-top:8px">
+											<div>
+												<label class="field-label">Route</label>
+												<input type="hidden" id="odRoute" />
+												<div class="radio-chip-group" data-radio-group="odRoute" style="margin-top:4px">
+													<button type="button" class="radio-chip" data-value="Oral (ingested)">Oral / ingested</button>
+													<button type="button" class="radio-chip" data-value="IV / injected">IV / injected</button>
+													<button type="button" class="radio-chip" data-value="Inhalation">Inhalation</button>
+													<button type="button" class="radio-chip" data-value="Topical / transdermal">Topical</button>
+													<button type="button" class="radio-chip" data-value="Other / unknown">Other / unknown</button>
+												</div>
+											</div>
+											<div style="display:flex;align-items:center;padding-top:20px">
+												<label class="check-row">
+													<input type="checkbox" id="odAlcohol" /> Alcohol co-ingestion
+												</label>
+											</div>
+										</div>
+										<label class="field-label" style="margin-top:8px">Medication source</label>
+										<div class="square-grid" id="odPrescribedGrid"></div>
+									</div>
+
+									<div id="shDetailsWrap" class="hidden" style="margin-top:10px">
+										<label class="field-label">Wound depth</label>
+										<div class="square-grid" id="shDepthGrid"></div>
+									</div>
+
+									<div id="mhActOtherWrap" class="hidden" style="margin-top:10px">
+										<label class="field-label" for="mhActNotes">Details</label>
+										<input id="mhActNotes" placeholder="Describe the act..." />
+									</div>
+
+									<button type="button" id="addMhActButton" class="secondary-action" style="margin-top:12px;width:100%">Add</button>
+								</div>
+								<div id="mhActEntries" style="margin-top:8px"></div>
 							</div>
 
 							<!-- Mental State Examination -->
@@ -3815,6 +3873,11 @@
 									placeholder="Describe handling method"
 									style="margin-top: 8px" />
 							</div>
+							<div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+								<input type="time" id="manualTime" />
+								<button type="button" id="addManualButton" class="secondary-action">Add</button>
+							</div>
+							<div id="manualEntries"></div>
 
 							<!-- Other interventions -->
 							<label
