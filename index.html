@@ -1241,6 +1241,28 @@
 						<div class="section-body">
 							<div class="grid-2">
 								<div>
+									<label class="field-label" for="pAgeYears">Age (years)</label>
+									<input
+										id="pAgeYears"
+										type="number"
+										min="0"
+										max="16"
+										placeholder="e.g. 5"
+										style="margin-top: 4px" />
+								</div>
+								<div>
+									<label class="field-label">Sex / gender</label>
+									<div
+										id="pSexChips"
+										style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">
+										<button type="button" class="radio-chip" data-psex="Male">Male</button>
+										<button type="button" class="radio-chip" data-psex="Female">Female</button>
+										<button type="button" class="radio-chip" data-psex="Other">Other</button>
+									</div>
+								</div>
+							</div>
+							<div class="grid-2" style="margin-top: 8px">
+								<div>
 									<label class="field-label" for="pAgeMonths"
 										>Additional months
 										<small>(infants &lt; 2 yrs)</small></label

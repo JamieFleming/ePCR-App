@@ -92,7 +92,7 @@ export const OPTIONS = {
 		},
 	],
 
-	// Caller infomration
+	// Caller information
 	caller: [
 		{
 			group: "Emergency",
@@ -1165,7 +1165,7 @@ export const OPTIONS = {
 					"Paracetamol 250mg/ml",
 					"Paracetamol 120mg Sachet",
 					"Ibuprofen 100mg/5ml",
-					"Ibuprogen 200mg",
+					"Ibuprofen 200mg",
 					"Oral Morphine 10mg/5ml",
 				],
 			},
@@ -1194,7 +1194,7 @@ export const OPTIONS = {
 					"Glucose 40% Gel",
 					"Benzylpenicillin 600mg",
 					"Ondansetron 4mg/2ml",
-					"Diazapam 5mg Rectal",
+					"Diazepam 5mg Rectal",
 					"Naloxone 400mcg",
 				],
 			},
@@ -1211,7 +1211,7 @@ export const OPTIONS = {
 				items: ["Morphine Sulfate 10mg/ml", "Diazapam 10mg/2ml"],
 			},
 			{
-				group: "Gasses",
+				group: "Gases",
 				items: ["Oxygen", "Entonox"],
 			},
 		],
@@ -1329,28 +1329,268 @@ export const OPTIONS = {
 	},
 
 	// Mental Capacity
-	capacityStatus: [
-		["Has capacity", "Has capacity"],
-		["Lacks capacity", "Lacks capacity"],
-		["Not applicable", "N/A"],
-	],
-	mcaAbilities: [
-		"Understands",
-		"Retains",
-		"Weighs information",
-		"Communicates decision",
-	],
-	lacksCapReasons: [
-		"Understand information",
-		"Retain information",
-		"Weigh / use information",
-		"Communicate decision",
-	],
+	mentalCapacity: {
+		capacityStatus: [
+			["Has capacity", "Has capacity"],
+			["Lacks capacity", "Lacks capacity"],
+			["Not applicable", "N/A"],
+		],
+		mcaAbilities: [
+			"Understands",
+			"Retains",
+			"Weighs information",
+			"Communicates decision",
+		],
+		lacksCapReasons: [
+			"Understand information",
+			"Retain information",
+			"Weigh / use information",
+			"Communicate decision",
+		],
+	},
 };
 
-// ABCs
+// Paediatric assessment
+export const PAEDS = {
+	// Page for age
+	vitalsRef: {
+		neonate: {
+			label: "Neonate (0–28 days)",
+			hr: "100–160",
+			rr: "30–50",
+			sbp: "50–90",
+			spo2: "≥95",
+			apls: (mo) => Math.round((mo + 9) / 2),
+		},
+		infant: {
+			label: "Infant (1–12 months)",
+			hr: "100–160",
+			rr: "25–50",
+			sbp: "70–90",
+			spo2: "≥95",
+			apls: (mo) => Math.round((mo + 9) / 2),
+		},
+		toddler: {
+			label: "Toddler (1–2 years)",
+			hr: "90–150",
+			rr: "20–40",
+			sbp: "80–95",
+			spo2: "≥95",
+			apls: (yrs) => 2 * (yrs + 4),
+		},
+		preschool: {
+			label: "Pre-school (2–5 years)",
+			hr: "80–130",
+			rr: "20–30",
+			sbp: "80–100",
+			spo2: "≥95",
+			apls: (yrs) => 2 * (yrs + 4),
+		},
+		school: {
+			label: "School age (5–12 years)",
+			hr: "70–120",
+			rr: "15–25",
+			sbp: "90–110",
+			spo2: "≥95",
+			apls: (yrs) => 3 * yrs,
+		},
+		adolescent: {
+			label: "Adolescent (12–16 years)",
+			hr: "60–100",
+			rr: "12–20",
+			sbp: "100–120",
+			spo2: "≥95",
+			apls: () => null,
+		},
+	},
+
+	// Child Safeguarding
+	safeguarding: [
+		"None identified on scene",
+		"Child at risk",
+		"Non-accidental injury concern",
+		"Unexplained bruising / marks",
+		"Neglect indicators",
+		"Poor living conditions",
+		"Domestic abuse in household",
+		"Carer interaction concerns",
+		"Inappropriate response from carer",
+		"FGM concern",
+		"CSE / trafficking indicators",
+		"Parent / carer unavailable",
+	],
+
+	// ABCDENT
+	abcdent: [
+		{
+			key: "A",
+			title: "Airway",
+			icon: "p-airway",
+			chips: [
+				["Patent", "Obstructed / at risk"],
+				["Self-maintained", "Airway support required"],
+				["No abnormal sounds", "Airway sounds present (stridor / gurgling)"],
+				["Mouth opening normal", "Restricted mouth opening"],
+			],
+			vitals: [],
+			notes: "pAbcNotes_A",
+		},
+		{
+			key: "B",
+			title: "Breathing",
+			icon: "p-breathing",
+			chips: [
+				["Adequate rate", "Tachypnoea / bradypnoea"],
+				["No WOB", "Increased work of breathing"],
+				["Equal chest expansion", "Asymmetric chest expansion"],
+				["No cyanosis", "Cyanosis present"],
+				["No retractions", "Intercostal / subcostal retractions"],
+				["No nasal flaring", "Nasal flaring"],
+				["No grunting", "Expiratory grunting"],
+			],
+			vitals: [
+				["pRr", "RR /min", "Age-appropriate"],
+				["pSpo2", "SpO2 %", "≥95"],
+				["pO2Flow", "O2 L/min", ""],
+			],
+			notes: "pAbcNotes_B",
+		},
+		{
+			key: "C",
+			title: "Circulation",
+			icon: "p-circulation",
+			chips: [
+				["Good colour", "Pallor / mottling"],
+				["Warm peripheries", "Cold peripheries"],
+				["CRT <2s", "CRT ≥2s"],
+				["Strong peripheral pulse", "Weak / absent peripheral pulse"],
+				["Regular rhythm", "Irregular rhythm"],
+				["No haemorrhage", "Active haemorrhage"],
+			],
+			vitals: [
+				["pHr", "HR bpm", "Age-appropriate"],
+				["pBp", "BP mmHg", ""],
+				["pBm", "BM mmol/L", ""],
+			],
+			notes: "pAbcNotes_C",
+		},
+		{
+			key: "D",
+			title: "Disability (Neurology)",
+			icon: "p-disability",
+			chips: [
+				["Alert (AVPU)", "Voice / Pain / Unresponsive"],
+				["Fontanelle normal", "Bulging fontanelle"],
+				["PEARL", "Pupils unequal / unreactive"],
+				["Normal tone", "Hypotonic / hypertonic"],
+				["Age-appropriate behaviour", "Abnormal behaviour / irritable"],
+				["No seizure activity", "Seizure activity"],
+			],
+			vitals: [
+				["pGcs", "PGCS / AVPU", "15 / A"],
+				["pPupils", "Pupils", "Equal & reactive"],
+			],
+			notes: "pAbcNotes_D",
+		},
+		{
+			key: "E",
+			title: "Exposure",
+			icon: "p-exposure",
+			chips: [
+				["Apyrexial", "Pyrexia / hypothermia"],
+				["No rash", "Rash present"],
+				["No non-blanching rash", "Non-blanching rash — urgent"],
+				["No injury found", "Injury found"],
+				["No bruising", "Bruising / marks noted"],
+				["Skin colour normal", "Pallor / mottling / jaundice"],
+			],
+			vitals: [["pTemp", "Temp °C", "36.5–37.5"]],
+			notes: "pAbcNotes_E",
+		},
+		{
+			key: "ENT",
+			title: "Ears, Nose & Throat",
+			icon: "p-ent",
+			chips: [
+				["No ear pain / discharge", "Ear pain / discharge present"],
+				["No ear tugging", "Ear tugging (infant)"],
+				["No nasal discharge", "Nasal discharge present"],
+				["No nasal obstruction", "Nasal obstruction"],
+				["Throat — no erythema", "Throat erythema / exudate"],
+				["No tonsillar swelling", "Tonsillar enlargement"],
+				["No stridor", "Stridor present"],
+				["No drooling", "Drooling / dysphagia"],
+			],
+			vitals: [],
+			notes: "pAbcNotes_ENT",
+		},
+		{
+			key: "T",
+			title: "Tummy (Abdomen)",
+			icon: "p-tummy",
+			chips: [
+				["No abdominal pain", "Abdominal pain present"],
+				["Abdomen soft", "Abdomen rigid / guarded"],
+				["No distension", "Abdominal distension"],
+				["Not tender on palpation", "Tenderness on palpation"],
+				["No rebound tenderness", "Rebound tenderness"],
+				["No vomiting", "Vomiting present"],
+				["No diarrhoea", "Diarrhoea present"],
+				["No blood in stool", "Blood in stool"],
+			],
+			vitals: [],
+			notes: "pAbcNotes_T",
+		},
+		{
+			key: "DEFG",
+			title: "Don't Ever Forget Glucose",
+			icon: "p-defg",
+			chips: [
+				["BM checked", "BM not checked"],
+				["BM within normal range", "BM abnormal"],
+				["No signs of hypoglycaemia", "Signs of hypoglycaemia"],
+				["No signs of hyperglycaemia", "Signs of hyperglycaemia"],
+				["Alert and responsive", "Altered consciousness / drowsy"],
+			],
+			vitals: [
+				["pDefgBm", "BM mmol/L", "4.0–7.0"],
+				["pDefgGcs", "AVPU / PGCS", "A / 15"],
+			],
+			notes: "pAbcNotes_DEFG",
+		},
+	],
+
+	// Treatment grids (wound uses OPTIONS.treatments.wound)
+	treatments: {
+		airway: [
+			"Jaw thrust",
+			"Head tilt / chin lift",
+			"Airway positioning",
+			"OPA inserted",
+			"NPA inserted",
+			"i-gel (supraglottic)",
+			"Endotracheal intubation",
+			"Suction",
+			"BVM ventilation",
+			"Oxygen therapy",
+			"High-flow nasal cannula",
+			"Nebulisation",
+			"CPAP",
+		],
+		positioning: [
+			"Recovery position",
+			"Upright / seated",
+			"Supine / flat",
+			"Sniffing position",
+			"Spinal precautions",
+			"Limb elevation",
+		],
+	},
+};
+
+// Primary survey (adult)
 export const ABCDE = {
-	dLinks: ["GCS 15", "AOx4"],
+	dLinks: [["GCS 15", "AOx4"]],
 	sections: [
 		{
 			key: "A",
@@ -1379,7 +1619,7 @@ export const ABCDE = {
 			title: "Circulation",
 			chips: [
 				["Good colour", "Pale / flushed"],
-				["Normal Rate", "Tachycardic / Bradycardic"],
+				["Normal rate", "Tachycardic / Bradycardic"],
 				["Warm to touch", "Cold / clammy"],
 				["Radial pulse palpable", "Radial pulse weak / absent"],
 				["Regular pulse rhythm", "Irregular pulses"],
@@ -1434,7 +1674,7 @@ export const ROS = {
 		urine: "Urinary",
 		integ: "Integumentary",
 		msk: "Musculoskeletal",
-		psych: "Mental health",
+		mh: "Mental health",
 	},
 	oe_label: {
 		resp: "Resp",
@@ -1444,7 +1684,7 @@ export const ROS = {
 		urine: "Urinary",
 		integ: "Skin",
 		msk: "MSK",
-		psych: "Mental health",
+		mh: "Mental health",
 	},
 	output_title: {
 		resp: "ASSESSMENT — RESPIRATORY",
@@ -1454,7 +1694,7 @@ export const ROS = {
 		urine: "ASSESSMENT — URINARY",
 		integ: "ASSESSMENT — INTEGUMENTARY",
 		msk: "ASSESSMENT — MUSCULOSKELETAL",
-		psych: "ASSESSMENT — MENTAL HEALTH (MSE)",
+		mh: "ASSESSMENT — MENTAL HEALTH (MSE)",
 	},
 	notes_field: {
 		resp: ["respNotes", "sputumDesc"],
@@ -1464,7 +1704,7 @@ export const ROS = {
 		urine: ["urineNotes"],
 		integ: ["integNotes"],
 		msk: ["mskNotes"],
-		psych: [
+		mh: [
 			"psychNotes",
 			"psychBehaviour",
 			"psychSpeech",
@@ -1613,7 +1853,37 @@ export const ROS = {
 		extras:
 			'<label class="field-label" for="integNotes">Additional notes</label><textarea id="integNotes" rows="2"></textarea>',
 	},
-	psych: {
+	msk: {
+		title: "Musculoskeletal",
+		items: [
+			["jointPain", "No joint pain", "Joint pain present"],
+			["tenderness", "No tenderness", "Tenderness present"],
+			["stiffness", "No stiffness", "Stiffness reported"],
+			["swelling", "No swelling", "Swelling noted"],
+			["erythema", "No erythema", "Erythema noted"],
+			["deformity", "No deformity", "Deformity noted"],
+			["injury", "No obvious signs of injury", "Signs of injury present"],
+			[
+				"rom",
+				"Full range of movement of all limbs",
+				"Reduced range of movement noted",
+			],
+			[
+				"powerTone",
+				"Normal power and tone throughout",
+				"Reduced power / altered tone",
+			],
+			[
+				"weightBearing",
+				"Able to weight bear",
+				"Unable/reduced ability to weight bear",
+			],
+			["gait", "Gait normal", "Gait disturbance noted"],
+		],
+		extras:
+			'<label class="field-label" for="mskNotes">Additional notes</label><textarea id="mskNotes" rows="2"></textarea>',
+	},
+	mh: {
 		title: "Mental Health",
 		items: [
 			["moodAppropriate", "Mood appropriate", "Mood low or elevated"],
@@ -1660,36 +1930,6 @@ export const ROS = {
 		extras:
 			'<label class="field-label" for="psychBehaviour">Appearance and behaviour</label><input id="psychBehaviour" type="text" placeholder="e.g. Appropriately dressed, cooperative"><label class="field-label" for="psychSpeech">Speech</label><input id="psychSpeech" type="text" placeholder="e.g. Normal rate and volume"><label class="field-label" for="psychRisk">Risk level</label><select id="psychRisk"><option value="">Not assessed</option><option>Low</option><option>Medium</option><option>High</option><option>Very high</option></select><label class="field-label" for="psychProtective">Protective factors</label><input id="psychProtective" type="text" placeholder="e.g. Family support, future plans, engagement with services"><label class="field-label" for="psychNotes">Notes</label><textarea id="psychNotes" rows="2"></textarea>',
 	},
-	msk: {
-		title: "Musculoskeletal",
-		items: [
-			["jointPain", "No joint pain", "Joint pain present"],
-			["tenderness", "No tenderness", "Tenderness present"],
-			["stiffness", "No stiffness", "Stiffness reported"],
-			["swelling", "No swelling", "Swelling noted"],
-			["erythema", "No erythema", "Erythema noted"],
-			["deformity", "No deformity", "Deformity noted"],
-			["injury", "No obvious signs of injury", "Signs of injury present"],
-			[
-				"rom",
-				"Full range of movement of all limbs",
-				"Reduced range of movement noted",
-			],
-			[
-				"powerTone",
-				"Normal power and tone throughout",
-				"Reduced power / altered tone",
-			],
-			[
-				"weightBearing",
-				"Able to weight bear",
-				"Unable/reduced ability to weight bear",
-			],
-			["gait", "Gait normal", "Gait disturbance noted"],
-		],
-		extras:
-			'<label class="field-label" for="mskNotes">Additional notes</label><textarea id="mskNotes" rows="2"></textarea>',
-	},
 };
 
-window.CrewMateOptions = { OPTIONS, ROS, ABCDE };
+window.CrewMateOptions = { OPTIONS, ROS, ABCDE, PAEDS };
