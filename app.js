@@ -426,7 +426,6 @@ function init() {
 		window.CrewMateOptions.OPTIONS.conveyance.mobilisationToVehicle,
 	);
 
-	buildCapacitySection();
 	buildGynaeSection();
 	buildSafeguardingSection();
 	bindEvents();
@@ -592,44 +591,6 @@ function buildRos() {
 }
 
 // Capacity
-function buildCapacitySection() {
-	populateChipGroup(
-		"capacityStatus",
-		window.CrewMateOptions.OPTIONS.mentalCapacity.capacityStatus,
-	);
-	const defaultChip = $(
-		"[data-radio-group='capacityStatus'] [data-value='Has capacity']",
-	);
-	if (defaultChip) defaultChip.classList.add("selected");
-
-	const checksWrap = $("#capacityChecks");
-	if (checksWrap) {
-		window.CrewMateOptions.OPTIONS.mentalCapacity.mcaAbilities.forEach(
-			(label) => {
-				const btn = document.createElement("button");
-				btn.type = "button";
-				btn.className = "square-btn selected";
-				btn.textContent = label;
-				btn.dataset.mcaAbility = label;
-				checksWrap.append(btn);
-			},
-		);
-	}
-
-	const lacksWrap = $("#lacksCapGrid");
-	if (lacksWrap) {
-		window.CrewMateOptions.OPTIONS.mentalCapacity.lacksCapReasons.forEach(
-			(label) => {
-				const btn = document.createElement("button");
-				btn.type = "button";
-				btn.className = "square-btn";
-				btn.textContent = label;
-				btn.dataset.lacksCapReason = label;
-				lacksWrap.append(btn);
-			},
-		);
-	}
-}
 
 // gynae
 function buildGynaeSection() {
@@ -1244,7 +1205,10 @@ function bindEvents() {
 		}
 	});
 
-	$("#capacityStatus").addEventListener("change", handleCapacityDisplay);
+	$("#capacityStatus").addEventListener(
+		"change",
+		window.CrewMateCapacity.handleCapacityDisplay,
+	);
 	$("#onsetTime").addEventListener("change", () => {
 		$("#onsetTimeOther")?.classList.toggle(
 			"hidden",
@@ -1954,17 +1918,6 @@ function renderPartTags(containerId, set, type, emptyText) {
 	});
 }
 
-function handleCapacityDisplay() {
-	const status = val("capacityStatus");
-	$("#capacityChecks").classList.toggle(
-		"hidden",
-		status === "Lacks capacity" || status === "Not applicable",
-	);
-	const lacksCapacity = status === "Lacks capacity";
-	$("#lacksCapReasons")?.classList.toggle("hidden", !lacksCapacity);
-	$("#bestInterests").classList.toggle("hidden", !lacksCapacity);
-}
-
 function getSelectedParts(set) {
 	return [...set]
 		.map((id) => $(`#${CSS.escape(id)}`)?.dataset.label || id)
@@ -2103,8 +2056,11 @@ function generateOe() {
 		window.CrewMateOptions.ABCDE.sections.map(abcLine).join("\n"),
 		"",
 		`${L.resp}: ${rosLine("resp")} ${val("respAus") ? `Auscultation: ${val("respAus")}.` : ""}`,
+		`\n`,
 		`${L.cvs}: ${rosLine("cvs")} ${buildEcgText()}`,
+		`\n`,
 		`${L.neuro}: ${rosLine("neuro")}`,
+		`\n`,
 		`${L.gi}: ${rosLine("gi")} ${[
 			Object.entries(state.abdoFindings).filter(([, f]) => f.size > 0).length
 				? `Palpation: ${Object.entries(state.abdoFindings)
@@ -2118,10 +2074,15 @@ function generateOe() {
 		]
 			.filter(Boolean)
 			.join(" ")}`.trimEnd(),
+		`\n`,
 		`${L.urine}: ${rosLine("urine")}`,
+		`\n`,
 		`${L.integ}: ${rosLine("integ")}`,
+		`\n`,
 		`${L.msk}: ${rosLine("msk")}`,
+		`\n`,
 		`${L.mh}: ${rosLine("mh")}`,
+		`\n`,
 	].join("\n");
 	$("#oeText").value = oe;
 }
@@ -2813,7 +2774,7 @@ function buildOutputSections() {
 		{
 			id: "capacity",
 			title: "ASSESSMENT — MENTAL CAPACITY / CONSENT",
-			body: buildCapacityText(),
+			body: window.CrewMateCapacity.buildCapacityText(),
 		},
 		...(val("conveyanceDecision") !== "Conveyed"
 			? [
@@ -2969,29 +2930,6 @@ function buildWorseningText() {
 	if (mode === "Custom") return custom || "Custom worsening advice given.";
 
 	return `${adviceLine}${redFlagLine}${extraLine}${customLine}${confirmedLine}`;
-}
-
-function buildCapacityText() {
-	const status = val("capacityStatus");
-	if (status === "Not applicable") return "Not applicable.";
-	if (status === "Lacks capacity") {
-		const unable = [...state.lacksCapAbilities].join(", ");
-		const reason = val("lacksCausation");
-		const bi = val("bestInterests");
-		return [
-			"Patient assessed as lacking capacity for the relevant decision at this time.",
-			unable ? `Unable to: ${unable}.` : "",
-			reason ? `Reason for incapacity: ${reason}.` : "",
-			bi ? `Best interests decision: ${bi}` : "",
-		]
-			.filter(Boolean)
-			.join(" ");
-	}
-	const abilities = [...state.mcaAbilities];
-	const ableText = abilities.length
-		? `MCA elements documented: able to ${abilities.join(", ")}.`
-		: "";
-	return `Patient assessed as having capacity for the relevant decision.${ableText ? " " + ableText : ""}`;
 }
 
 function handleConveyanceDisplay() {
