@@ -19,6 +19,7 @@ import { initAbcde } from "./features/abcde.js";
 import { initCapacity } from "./features/capacity.js";
 import { initGynae } from "./features/gynae.js";
 import { initSafeguarding } from "./features/safeguarding.js";
+import { initOutput } from "./features/output.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 	initTheme();
@@ -38,4 +39,5 @@ document.addEventListener("DOMContentLoaded", () => {
 	initCapacity();
 	initGynae();
 	initSafeguarding();
+	initOutput();
 });

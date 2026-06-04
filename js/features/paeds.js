@@ -364,10 +364,19 @@ function bindPaedsEvents() {
 		$("#pSgDetailWrap")?.classList.toggle("hidden", !hasConcerns);
 	});
 
-	$("#pConveyDecision")?.addEventListener("change", handlePConveyanceDisplay);
-	$("#pConveyHospital")?.addEventListener("change", handlePConveyanceDisplay);
-	$("#pConveyDepartment")?.addEventListener("change", handlePConveyanceDisplay);
-	handlePConveyanceDisplay();
+	$("#pConveyDecision")?.addEventListener(
+		"change",
+		window.CrewMateOutput.handlePConveyanceDisplay,
+	);
+	$("#pConveyHospital")?.addEventListener(
+		"change",
+		window.CrewMateOutput.handlePConveyanceDisplay,
+	);
+	$("#pConveyDepartment")?.addEventListener(
+		"change",
+		window.CrewMateOutput.handlePConveyanceDisplay,
+	);
+	window.CrewMateOutput.handlePConveyanceDisplay();
 
 	$("#pConveyTransferGrid")?.addEventListener("click", (e) => {
 		const chip = e.target.closest(".p-convey-chip");
