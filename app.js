@@ -426,7 +426,6 @@ function init() {
 		window.CrewMateOptions.OPTIONS.conveyance.mobilisationToVehicle,
 	);
 
-	buildSafeguardingSection();
 	bindEvents();
 	updateMapTags();
 	applyWorseningDefault();
@@ -589,16 +588,6 @@ function buildRos() {
 	);
 }
 
-function buildSafeguardingSection() {
-	buildButtonGrid(
-		"safeguardingGrid",
-		window.CrewMateOptions.OPTIONS.safeguarding.concerns,
-		"sgGroup",
-		"safeguarding",
-		"sgValue",
-	);
-}
-
 function renderConveyanceSuggestion() {
 	const box = $("#conveyanceSuggestion");
 	if (!box) return;
@@ -671,25 +660,6 @@ function renderConveyanceSuggestion() {
 <p class="cs-criteria">${criteria.map((c) => `<span class="${c.met ? "cs-tick" : "cs-cross"}">${c.met ? "✓" : "✗"} ${c.label}</span>`).join("")}</p>
 <p class="cs-disclaimer">Prompt only — clinician must make the final decision based on full clinical assessment.</p>`;
 	}
-}
-
-function buildSafeguardingText() {
-	const concerns = [...state.safeguardingConcerns].map((c) =>
-		c === "Other" ? val("safeguardingOtherText") || "Other" : c,
-	);
-	if (!concerns.length && !val("safeguardingDetail")) return "";
-	const lines = [];
-	if (concerns.length)
-		lines.push(`Safeguarding concerns: ${concerns.join(", ")}.`);
-	if (val("safeguardingDetail"))
-		lines.push(`Detail: ${val("safeguardingDetail")}`);
-	if (isChecked("safeguardingReferral")) {
-		const uly = val("ulyssesNumber");
-		const ulyStr = uly ? ` Ulysses ref: ULY${uly}.` : "";
-		const ref = val("safeguardingReferralDetail");
-		lines.push(`Safeguarding referral made.${ulyStr}${ref ? ` ${ref}` : ""}`);
-	}
-	return lines.join("\n");
 }
 
 function updateDemographicVisibility() {
@@ -821,7 +791,7 @@ function buildEdHandoverText() {
 		...(val("otherInterventionsFree") ? [val("otherInterventionsFree")] : []),
 	];
 	const ecgLine = buildEcgText();
-	const sgText = buildSafeguardingText();
+	const sgText = window.CrewMateSafeguarding.buildSafeguardingText();
 	const clinChanges = state.clinicalChanges.map(
 		(e) => `${e.time ? `[${e.time}] ` : ""}${e.text}`,
 	);
@@ -2253,7 +2223,7 @@ function buildLahSbarText() {
 	);
 	const legalDetail = val("legalConsiderationsDetail");
 	const worsening = buildWorseningText();
-	const sg = buildSafeguardingText();
+	const sg = window.CrewMateSafeguarding.buildSafeguardingText();
 	const recParts = [
 		`Decision: ${decision}`,
 		referrals !== "none" ? `Referred: ${referrals}` : null,
@@ -2607,7 +2577,7 @@ function buildOutputSections() {
 			body: buildConveyanceText(),
 		},
 		...(() => {
-			const sg = buildSafeguardingText();
+			const sg = window.CrewMateSafeguarding.buildSafeguardingText();
 			return sg
 				? [{ id: "safeguarding", title: "SCENE & SAFEGUARDING", body: sg }]
 				: [];
