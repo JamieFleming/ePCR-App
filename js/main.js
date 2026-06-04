@@ -15,6 +15,7 @@ import { initOdAssessment } from "./features/odAssessment.js";
 import { initMhAssessment } from "./features/mhAssessment.js";
 import { initInjuryAssessment } from "./features/injuryAssessment.js";
 import { initTreatment } from "./features/treatment.js";
+import { initAbcde } from "./features/abcde.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 	initTheme();
@@ -30,4 +31,5 @@ document.addEventListener("DOMContentLoaded", () => {
 	initMhAssessment();
 	initInjuryAssessment();
 	initTreatment();
+	initAbcde();
 });

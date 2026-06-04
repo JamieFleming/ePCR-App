@@ -7,14 +7,14 @@ const { render: renderIvEntries, remove: removeIvEntry } =
 	window.CrewMateApp.makeEntryManager(
 		"ivEntries",
 		"vaEntries",
-		(e) => {
-			const parts = [e.type];
-			if (e.gauge) parts.push(e.gauge);
-			if (e.site) parts.push(`— ${e.site}`);
-			if (e.outcome) parts.push(`(${e.outcome})`);
-			if (e.fluids) parts.push(`• ${e.fluids}`);
-			const desc = parts.join(" ");
-			return e.time ? `[${e.time}] ${desc}` : desc;
+		(entry) => {
+			const parts = [entry.type];
+			if (entry.gauge) parts.push(entry.gauge);
+			if (entry.site) parts.push(`— ${entry.site}`);
+			if (entry.outcome) parts.push(`(${entry.outcome})`);
+			if (entry.fluids) parts.push(`• ${entry.fluids}`);
+			const description = parts.join(" ");
+			return entry.time ? `[${entry.time}] ${description}` : description;
 		},
 		"remove-va",
 	);
@@ -23,7 +23,7 @@ const { render: renderChangeEntries, remove: removeChangeEntry } =
 	window.CrewMateApp.makeEntryManager(
 		"clinicalChanges",
 		"changeEntries",
-		(e) => (e.time ? `[${e.time}] ${e.desc}` : e.desc),
+		(entry) => (entry.time ? `[${entry.time}] ${entry.desc}` : entry.desc),
 		"remove-change",
 	);
 
@@ -61,11 +61,11 @@ function buildTreatmentSection() {
 		if (successful) {
 			setRadioChip("vaFlushed", "Flushed — 5ml NaCl 0.9%");
 		} else {
-			$$("[data-radio-group='vaFlushed'] [data-value]").forEach((c) =>
-				c.classList.remove("selected"),
+			$$("[data-radio-group='vaFlushed'] [data-value]").forEach((chip) =>
+				chip.classList.remove("selected"),
 			);
-			const fi = $("#vaFlushed");
-			if (fi) fi.value = "";
+			const flushedInput = $("#vaFlushed");
+			if (flushedInput) flushedInput.value = "";
 		}
 	});
 
@@ -76,16 +76,16 @@ function buildTreatmentSection() {
 		$("#vaGaugeWrap")?.classList.toggle("hidden", !isIv);
 		$("#vaIvSites")?.classList.toggle("hidden", !isIv);
 		$("#vaIoSites")?.classList.toggle("hidden", !isIo);
-		$$("[data-radio-group='vaSite'] [data-value]").forEach((c) =>
-			c.classList.remove("selected"),
+		$$("[data-radio-group='vaSite'] [data-value]").forEach((chip) =>
+			chip.classList.remove("selected"),
 		);
-		$$("[data-radio-group='vaGauge'] [data-value]").forEach((c) =>
-			c.classList.remove("selected"),
+		$$("[data-radio-group='vaGauge'] [data-value]").forEach((chip) =>
+			chip.classList.remove("selected"),
 		);
-		const siteInp = $("#vaSite");
-		if (siteInp) siteInp.value = "";
-		const gaugeInp = $("#vaGauge");
-		if (gaugeInp) gaugeInp.value = "";
+		const siteInput = $("#vaSite");
+		if (siteInput) siteInput.value = "";
+		const gaugeInput = $("#vaGauge");
+		if (gaugeInput) gaugeInput.value = "";
 	});
 }
 
@@ -98,29 +98,29 @@ function buildTreatmentText() {
 		);
 	if (state.ivEntries.length) {
 		lines.push("Vascular access:");
-		state.ivEntries.forEach((e) => {
-			const parts = [e.type];
-			if (e.gauge) parts.push(e.gauge);
-			if (e.site) parts.push(`— ${e.site}`);
-			if (e.outcome) parts.push(`— ${e.outcome}`);
-			if (e.fluids) parts.push(`(${e.fluids})`);
-			const desc = parts.join(" ");
-			lines.push(`  ${e.time ? `[${e.time}] ` : ""}${desc}`);
+		state.ivEntries.forEach((entry) => {
+			const parts = [entry.type];
+			if (entry.gauge) parts.push(entry.gauge);
+			if (entry.site) parts.push(`— ${entry.site}`);
+			if (entry.outcome) parts.push(`— ${entry.outcome}`);
+			if (entry.fluids) parts.push(`(${entry.fluids})`);
+			const description = parts.join(" ");
+			lines.push(`  ${entry.time ? `[${entry.time}] ` : ""}${description}`);
 		});
 	}
 	if (state.drugEntries.length) {
 		lines.push("Medications given:");
-		state.drugEntries.forEach((e) => {
-			const parts = [e.drug];
-			if (e.dose) parts.push(e.dose);
-			if (e.route) parts.push(`via ${e.route}`);
-			const desc = parts.join(" ");
-			lines.push(`  ${e.time ? `[${e.time}] ` : ""}${desc}`);
+		state.drugEntries.forEach((entry) => {
+			const parts = [entry.drug];
+			if (entry.dose) parts.push(entry.dose);
+			if (entry.route) parts.push(`via ${entry.route}`);
+			const description = parts.join(" ");
+			lines.push(`  ${entry.time ? `[${entry.time}] ` : ""}${description}`);
 		});
 	}
 	if (state.woundInterventions.size) {
-		const items = [...state.woundInterventions].map((v) =>
-			v === "Other" && val("woundOther") ? val("woundOther") : v,
+		const items = [...state.woundInterventions].map((value) =>
+			value === "Other" && val("woundOther") ? val("woundOther") : value,
 		);
 		lines.push(`Wound management: ${items.join(", ")}`);
 	}
@@ -144,8 +144,8 @@ function buildChangesText() {
 	const lines = [];
 	if (state.clinicalChanges.length) {
 		lines.push("Clinical changes noted during assessment:");
-		state.clinicalChanges.forEach((e) => {
-			lines.push(`  • ${e.time ? `[${e.time}] ` : ""}${e.desc}`);
+		state.clinicalChanges.forEach((entry) => {
+			lines.push(`  • ${entry.time ? `[${entry.time}] ` : ""}${entry.desc}`);
 		});
 	}
 	const additional = val("additionalInfo");
@@ -155,71 +155,71 @@ function buildChangesText() {
 
 function addIvEntry(isPaeds = false) {
 	const state = window.CrewMateApp.getState();
-	const p = isPaeds ? "pVa" : "va";
+	const fieldPrefix = isPaeds ? "pVa" : "va";
 	const stateObj = isPaeds ? window.CrewMatePaeds.paedsState : state;
 	const stateKey = isPaeds ? "pIvEntries" : "ivEntries";
 	const renderFn = isPaeds
 		? window.CrewMatePaeds.renderPaedsIvEntries
 		: renderIvEntries;
 
-	const type = val(`${p}Type`);
-	const site = val(`${p}Site`);
+	const type = val(`${fieldPrefix}Type`);
+	const site = val(`${fieldPrefix}Site`);
 	if (!type || !site) return;
 
 	const entry = {
 		type,
-		gauge: val(`${p}Gauge`),
+		gauge: val(`${fieldPrefix}Gauge`),
 		site,
-		outcome: val(`${p}Outcome`),
-		time: val(`${p}Time`),
+		outcome: val(`${fieldPrefix}Outcome`),
+		time: val(`${fieldPrefix}Time`),
 	};
 	if (isPaeds) {
-		entry.flushed = val(`${p}Flushed`);
-		entry.fluids = val(`${p}Fluids`);
+		entry.flushed = val(`${fieldPrefix}Flushed`);
+		entry.fluids = val(`${fieldPrefix}Fluids`);
 	} else {
-		entry.fluids = [val(`${p}Flushed`), val(`${p}Fluids`)]
+		entry.fluids = [val(`${fieldPrefix}Flushed`), val(`${fieldPrefix}Fluids`)]
 			.filter(Boolean)
 			.join("; ");
 	}
 	stateObj[stateKey].push(entry);
 
 	[
-		`${p}Type`,
-		`${p}Gauge`,
-		`${p}Site`,
-		`${p}Outcome`,
-		`${p}Flushed`,
-		`${p}Fluids`,
-		`${p}Time`,
+		`${fieldPrefix}Type`,
+		`${fieldPrefix}Gauge`,
+		`${fieldPrefix}Site`,
+		`${fieldPrefix}Outcome`,
+		`${fieldPrefix}Flushed`,
+		`${fieldPrefix}Fluids`,
+		`${fieldPrefix}Time`,
 	].forEach((id) => {
 		const el = $(`#${id}`);
 		if (el) el.value = "";
 	});
-	[`${p}GaugeWrap`, `${p}IvSites`, `${p}IoSites`, `${p}FlushWrap`].forEach(
+	[`${fieldPrefix}GaugeWrap`, `${fieldPrefix}IvSites`, `${fieldPrefix}IoSites`, `${fieldPrefix}FlushWrap`].forEach(
 		(id) => {
 			$(`#${id}`)?.classList.add("hidden");
 		},
 	);
 	$$(
-		`[data-radio-group='${p}Type'] [data-value], [data-radio-group='${p}Gauge'] [data-value], [data-radio-group='${p}Site'] [data-value], [data-radio-group='${p}Outcome'] [data-value], [data-radio-group='${p}Flushed'] [data-value]`,
-	).forEach((c) => c.classList.remove("selected"));
+		`[data-radio-group='${fieldPrefix}Type'] [data-value], [data-radio-group='${fieldPrefix}Gauge'] [data-value], [data-radio-group='${fieldPrefix}Site'] [data-value], [data-radio-group='${fieldPrefix}Outcome'] [data-value], [data-radio-group='${fieldPrefix}Flushed'] [data-value]`,
+	).forEach((chip) => chip.classList.remove("selected"));
 
 	renderFn();
 }
 
 function addDrugEntry(isPaeds = false) {
 	const state = window.CrewMateApp.getState();
-	const p = isPaeds ? "pDrug" : "drug";
-	const nameField = isPaeds ? `${p}Name` : "drugName";
+	const fieldPrefix = isPaeds ? "pDrug" : "drug";
+	const nameField = isPaeds ? `${fieldPrefix}Name` : "drugName";
 	const drug =
-		val(nameField) === "Other" ? val(`${p}NameOther`) : val(nameField);
+		val(nameField) === "Other" ? val(`${fieldPrefix}NameOther`) : val(nameField);
 	if (!drug) return;
 
 	const entry = {
 		drug,
-		dose: val(`${p}Dose`),
-		route: val(`${p}Route`),
-		time: val(`${p}Time`),
+		dose: val(`${fieldPrefix}Dose`),
+		route: val(`${fieldPrefix}Route`),
+		time: val(`${fieldPrefix}Time`),
 	};
 	if (isPaeds) entry.response = val("pDrugSingleResponse");
 
@@ -230,20 +230,20 @@ function addDrugEntry(isPaeds = false) {
 	}
 
 	const clearIds = [
-		`${p}Name`,
-		`${p}NameOther`,
-		`${p}Dose`,
-		`${p}Route`,
-		`${p}Time`,
+		`${fieldPrefix}Name`,
+		`${fieldPrefix}NameOther`,
+		`${fieldPrefix}Dose`,
+		`${fieldPrefix}Route`,
+		`${fieldPrefix}Time`,
 	];
 	if (isPaeds) clearIds.push("pDrugSingleResponse");
 	clearIds.forEach((id) => {
 		const el = $(`#${id}`);
 		if (el) el.value = "";
 	});
-	$(`#${p}NameOther`)?.classList.add("hidden");
-	$$(`[data-radio-group='${p}Route'] [data-value]`).forEach((c) =>
-		c.classList.remove("selected"),
+	$(`#${fieldPrefix}NameOther`)?.classList.add("hidden");
+	$$(`[data-radio-group='${fieldPrefix}Route'] [data-value]`).forEach((chip) =>
+		chip.classList.remove("selected"),
 	);
 
 	renderDrugEntries(isPaeds);
@@ -264,14 +264,14 @@ function repeatDrugEntry(index) {
 	const entry = state.drugEntries[index];
 	if (!entry) return;
 	const now = new Date();
-	const hh = String(now.getHours()).padStart(2, "0");
-	const mm = String(now.getMinutes()).padStart(2, "0");
+	const hours = String(now.getHours()).padStart(2, "0");
+	const minutes = String(now.getMinutes()).padStart(2, "0");
 	const nameEl = $("#drugName");
 	const otherEl = $("#drugNameOther");
 	if (nameEl) {
 		// Check if the drug is a known option in the select
 		const isKnown = [...nameEl.options].some(
-			(o) => o.value === entry.drug || o.text === entry.drug,
+			(option) => option.value === entry.drug || option.text === entry.drug,
 		);
 		if (isKnown) {
 			nameEl.value = entry.drug;
@@ -289,7 +289,7 @@ function repeatDrugEntry(index) {
 	const routeEl = $("#drugRoute");
 	if (routeEl) routeEl.value = entry.route || "";
 	const timeEl = $("#drugTime");
-	if (timeEl) timeEl.value = `${hh}:${mm}`;
+	if (timeEl) timeEl.value = `${hours}:${minutes}`;
 	nameEl?.scrollIntoView({ behavior: "smooth", block: "center" });
 	nameEl?.focus();
 }
@@ -298,8 +298,8 @@ function addManualEntry() {
 	const state = window.CrewMateApp.getState();
 	if (!pendingManualItems.size) return;
 	const other = val("manualOther");
-	const items = [...pendingManualItems].map((v) =>
-		v === "Other" && other ? other : v,
+	const items = [...pendingManualItems].map((value) =>
+		value === "Other" && other ? other : value,
 	);
 	state.manualHandling.push({ time: val("manualTime"), items });
 	pendingManualItems.clear();
@@ -308,7 +308,7 @@ function addManualEntry() {
 	const otherEl = $("#manualOther");
 	if (otherEl) otherEl.value = "";
 	$("#manualOtherWrap")?.classList.add("hidden");
-	$$("[data-tx-group='manual']").forEach((b) => b.classList.remove("selected"));
+	$$("[data-tx-group='manual']").forEach((btn) => btn.classList.remove("selected"));
 	renderManualEntries();
 }
 
