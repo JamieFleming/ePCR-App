@@ -150,6 +150,30 @@ function renderAuscGrid() {
 	syncAuscultationOutput();
 }
 
+function syncAuscultationOutput() {
+	const state = window.CrewMateApp.getState();
+	const entries = Object.entries(state.auscFindings).filter(
+		([, f]) => f.size > 0,
+	);
+	let text;
+	if (!entries.length) {
+		text = "Not auscultated";
+	} else {
+		const allClear = entries.every(([, f]) => f.size === 1 && f.has("Clear"));
+		if (allClear && entries.length >= 4) {
+			text = "Equal and clear air entry throughout";
+		} else {
+			text = entries
+				.map(([region, findings]) => `${region}: ${[...findings].join(", ")}`)
+				.join("; ");
+		}
+	}
+	const hidden = $("#respAus");
+	if (hidden) hidden.value = text;
+	const preview = $("#auscPreview");
+	if (preview) preview.textContent = text;
+}
+
 function buildEcgSection() {
 	const state = window.CrewMateApp.getState();
 	const findingsGrid = $("#ecgFindingsGrid");
@@ -177,6 +201,26 @@ function buildEcgSection() {
 	});
 }
 
+function buildEcgText() {
+	const state = window.CrewMateApp.getState();
+	if (!state.ecgFindings.size) return "";
+	const ecgLeadFindings = OPTIONS.cardiac.ecgLeadFindings;
+	const leadFindings = [...state.ecgFindings].filter((f) =>
+		ecgLeadFindings.includes(f),
+	);
+	const otherFindings = [...state.ecgFindings].filter(
+		(f) => !ecgLeadFindings.includes(f),
+	);
+	const parts = [...otherFindings];
+	if (leadFindings.length && state.ecgLeads.size) {
+		const leads = [...state.ecgLeads].join(", ");
+		parts.push(...leadFindings.map((f) => `${f} (leads: ${leads})`));
+	} else if (leadFindings.length) {
+		parts.push(...leadFindings);
+	}
+	return `ECG: ${parts.join("; ")}.`;
+}
+
 export function initAbcde() {
 	buildAbcde();
 	buildAbdoGrid();
@@ -184,4 +228,9 @@ export function initAbcde() {
 	buildEcgSection();
 }
 
-window.CrewMateAbcde = { renderAbdoGrid, renderAuscGrid };
+window.CrewMateAbcde = {
+	renderAbdoGrid,
+	renderAuscGrid,
+	buildEcgText,
+	syncAuscultationOutput,
+};

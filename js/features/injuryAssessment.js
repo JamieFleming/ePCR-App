@@ -190,6 +190,67 @@ function buildInjuryText() {
 		.join("\n");
 }
 
+function buildHeadInjuryText() {
+	const state = window.CrewMateApp.getState();
+	const mechanism = listSet(state.headMechanism, "Not documented");
+	const detail = val("headMechanismDetail");
+	const mechanismLine = `Mechanism: ${[mechanism, detail].filter(Boolean).join(" — ")}.`;
+
+	const locVal = val("headLOC");
+	const locLine =
+		locVal && locVal !== "No LOC"
+			? `LOC: ${locVal}. Duration: ${val("headLOCDuration") || "unknown"}.`
+			: "LOC: Not reported.";
+
+	const amnesiaLines = [
+		val("headRetrograde") === "Yes"
+			? `Retrograde amnesia: Yes. Duration: ${val("headRetroDuration") || "unknown"}.`
+			: val("headRetrograde")
+				? `Retrograde amnesia: ${val("headRetrograde")}.`
+				: "Retrograde amnesia: Not assessed.",
+		val("headAnterograde") === "Yes"
+			? "Anterograde amnesia: Yes."
+			: val("headAnterograde")
+				? `Anterograde amnesia: ${val("headAnterograde")}.`
+				: "",
+	]
+		.filter(Boolean)
+		.join(" ");
+
+	const vomitSuffix =
+		state.headSymptoms.has("Vomiting") && val("headVomitingCount")
+			? ` (${val("headVomitingCount")})`
+			: "";
+	const symptomsLine = `Symptoms: ${listSet(state.headSymptoms, "None reported")}${vomitSuffix}.`;
+
+	const gcsE = parseInt($("#headGcsEye")?.dataset.gcsSelected || "", 10) || 0;
+	const gcsV =
+		parseInt($("#headGcsVerbal")?.dataset.gcsSelected || "", 10) || 0;
+	const gcsM = parseInt($("#headGcsMotor")?.dataset.gcsSelected || "", 10) || 0;
+	const gcsTotal = gcsE && gcsV && gcsM ? gcsE + gcsV + gcsM : 0;
+	const gcsSuffix = gcsTotal
+		? ` GCS ${gcsTotal}/15 (E${gcsE} V${gcsV} M${gcsM}).`
+		: "";
+	const anticoagSuffix =
+		val("headAnticoag") === "Yes" ? " On anticoagulants." : "";
+	const signsLine = `Clinical findings: ${listSet(state.headSigns, "None identified")}.${gcsSuffix}${anticoagSuffix}`;
+
+	const criteria = getNiceCTCriteria();
+	const niceLine = criteria.length
+		? `NICE CG176 — CT head indicated: ${criteria.join("; ")}.`
+		: "NICE CG176 — No CT criteria identified at time of assessment.";
+
+	return [
+		mechanismLine,
+		locLine,
+		amnesiaLines,
+		symptomsLine,
+		signsLine,
+		niceLine,
+		...(val("headInjuryNotes") ? [`Notes: ${val("headInjuryNotes")}`] : []),
+	].join("\n");
+}
+
 function buildSpinalText() {
 	const clearance = val("spinalClearance");
 	if (!clearance) return null;
@@ -224,4 +285,5 @@ window.CrewMateInjury = {
 	pendingInjuryInterventions,
 	pendingInjuryTypes,
 	pendingInjuryNv,
+	buildHeadInjuryText,
 };

@@ -430,7 +430,6 @@ function init() {
 	updateMapTags();
 	applyWorseningDefault();
 	updateWorseningScript();
-	syncAuscultationOutput();
 	handleConveyanceDisplay();
 	enhanceSectionCards();
 	renderConveyanceSuggestion();
@@ -790,7 +789,7 @@ function buildEdHandoverText() {
 		...drugs,
 		...(val("otherInterventionsFree") ? [val("otherInterventionsFree")] : []),
 	];
-	const ecgLine = buildEcgText();
+	const ecgLine = window.CrewMateAbcde.buildEcgText();
 	const sgText = window.CrewMateSafeguarding.buildSafeguardingText();
 	const clinChanges = state.clinicalChanges.map(
 		(e) => `${e.time ? `[${e.time}] ` : ""}${e.text}`,
@@ -1813,28 +1812,8 @@ function toggleEcgLead(btn) {
 	}
 }
 
-function buildEcgText() {
-	if (!state.ecgFindings.size) return "";
-	const ecgLeadFindings =
-		window.CrewMateOptions.OPTIONS.cardiac.ecgLeadFindings;
-	const leadFindings = [...state.ecgFindings].filter((f) =>
-		ecgLeadFindings.includes(f),
-	);
-	const otherFindings = [...state.ecgFindings].filter(
-		(f) => !ecgLeadFindings.includes(f),
-	);
-	const parts = [...otherFindings];
-	if (leadFindings.length && state.ecgLeads.size) {
-		const leads = [...state.ecgLeads].join(", ");
-		parts.push(...leadFindings.map((f) => `${f} (leads: ${leads})`));
-	} else if (leadFindings.length) {
-		parts.push(...leadFindings);
-	}
-	return `ECG: ${parts.join("; ")}.`;
-}
-
 function generateOe() {
-	syncAuscultationOutput();
+	window.CrewMateAbcde.syncAuscultationOutput();
 	const L = window.CrewMateOptions.ROS.oe_label;
 	const oe = [
 		"OE:",
@@ -1843,7 +1822,7 @@ function generateOe() {
 		"",
 		`${L.resp}: ${rosLine("resp")} ${val("respAus") ? `Auscultation: ${val("respAus")}.` : ""}`,
 		`\n`,
-		`${L.cvs}: ${rosLine("cvs")} ${buildEcgText()}`,
+		`${L.cvs}: ${rosLine("cvs")} ${window.CrewMateAbcde.buildEcgText()}`,
 		`\n`,
 		`${L.neuro}: ${rosLine("neuro")}`,
 		`\n`,
@@ -1891,7 +1870,7 @@ function rosBlock(section) {
 		resp: () =>
 			`${val("coughType")}${val("sputumDesc") ? ` — sputum: ${val("sputumDesc")}` : ""}. ${val("respAus") ? `Auscultation: ${val("respAus")}.` : ""} ${val("respNotes")}`.trim(),
 		cvs: () =>
-			`${val("bpStatus")}. ${buildEcgText()} ${val("cvsNotes")}`.trim(),
+			`${val("bpStatus")}. ${window.CrewMateAbcde.buildEcgText()} ${val("cvsNotes")}`.trim(),
 		gi: () => {
 			const parts = [];
 			const abdoEntries = Object.entries(state.abdoFindings).filter(
@@ -2089,7 +2068,7 @@ function buildLahSbarText() {
 	const obsText = window.CrewMateObsRecorder.buildObsText();
 	if (obsText) assessParts.push(`Obs: ${obsText.split("\n").join(", ")}`);
 
-	syncAuscultationOutput();
+	window.CrewMateAbcde.syncAuscultationOutput();
 	const abcSummary = abcHandoverSummary();
 	if (abcSummary && abcSummary !== "No ABCDE concerns identified.") {
 		assessParts.push(`ABCDE: ${abcSummary.split("\n").join("; ")}`);
@@ -2097,7 +2076,7 @@ function buildLahSbarText() {
 		assessParts.push("ABCDE: No concerns");
 	}
 
-	const ecgText = buildEcgText();
+	const ecgText = window.CrewMateAbcde.buildEcgText();
 	if (ecgText && !ecgText.includes("Not performed"))
 		assessParts.push(`ECG: ${ecgText.split("\n").join("; ")}`);
 
@@ -2130,7 +2109,7 @@ function buildLahSbarText() {
 		const ft = window.CrewMateFalls.buildFallsText();
 		if (ft) assessParts.push(`Falls: ${ft.split("\n")[0]}`);
 	} else if (pcSel === "Head injury") {
-		const ht = buildHeadInjuryText();
+		const ht = window.CrewMateInjury.buildHeadInjuryText();
 		if (ht) assessParts.push(`Head injury: ${ht.split("\n")[0]}`);
 	} else if (pcSel === "Seizure") {
 		const st = window.CrewMateSeizure.buildSeizureText();
@@ -2288,66 +2267,6 @@ function getNiceCTCriteria() {
 	return criteria;
 }
 
-function buildHeadInjuryText() {
-	const mechanism = listSet(state.headMechanism, "Not documented");
-	const detail = val("headMechanismDetail");
-	const mechanismLine = `Mechanism: ${[mechanism, detail].filter(Boolean).join(" — ")}.`;
-
-	const locVal = val("headLOC");
-	const locLine =
-		locVal && locVal !== "No LOC"
-			? `LOC: ${locVal}. Duration: ${val("headLOCDuration") || "unknown"}.`
-			: "LOC: Not reported.";
-
-	const amnesiaLines = [
-		val("headRetrograde") === "Yes"
-			? `Retrograde amnesia: Yes. Duration: ${val("headRetroDuration") || "unknown"}.`
-			: val("headRetrograde")
-				? `Retrograde amnesia: ${val("headRetrograde")}.`
-				: "Retrograde amnesia: Not assessed.",
-		val("headAnterograde") === "Yes"
-			? "Anterograde amnesia: Yes."
-			: val("headAnterograde")
-				? `Anterograde amnesia: ${val("headAnterograde")}.`
-				: "",
-	]
-		.filter(Boolean)
-		.join(" ");
-
-	const vomitSuffix =
-		state.headSymptoms.has("Vomiting") && val("headVomitingCount")
-			? ` (${val("headVomitingCount")})`
-			: "";
-	const symptomsLine = `Symptoms: ${listSet(state.headSymptoms, "None reported")}${vomitSuffix}.`;
-
-	const gcsE = parseInt($("#headGcsEye")?.dataset.gcsSelected || "", 10) || 0;
-	const gcsV =
-		parseInt($("#headGcsVerbal")?.dataset.gcsSelected || "", 10) || 0;
-	const gcsM = parseInt($("#headGcsMotor")?.dataset.gcsSelected || "", 10) || 0;
-	const gcsTotal = gcsE && gcsV && gcsM ? gcsE + gcsV + gcsM : 0;
-	const gcsSuffix = gcsTotal
-		? ` GCS ${gcsTotal}/15 (E${gcsE} V${gcsV} M${gcsM}).`
-		: "";
-	const anticoagSuffix =
-		val("headAnticoag") === "Yes" ? " On anticoagulants." : "";
-	const signsLine = `Clinical findings: ${listSet(state.headSigns, "None identified")}.${gcsSuffix}${anticoagSuffix}`;
-
-	const criteria = getNiceCTCriteria();
-	const niceLine = criteria.length
-		? `NICE CG176 — CT head indicated: ${criteria.join("; ")}.`
-		: "NICE CG176 — No CT criteria identified at time of assessment.";
-
-	return [
-		mechanismLine,
-		locLine,
-		amnesiaLines,
-		symptomsLine,
-		signsLine,
-		niceLine,
-		...(val("headInjuryNotes") ? [`Notes: ${val("headInjuryNotes")}`] : []),
-	].join("\n");
-}
-
 function buildOutputSections() {
 	const pc = getPc();
 	const site = getSelectedParts(state.siteParts) || "Not localised";
@@ -2444,7 +2363,7 @@ function buildOutputSections() {
 					{
 						id: "headinjury",
 						title: "HEAD INJURY ASSESSMENT — NICE CG176",
-						body: buildHeadInjuryText(),
+						body: window.CrewMateInjury.buildHeadInjuryText(),
 					},
 				]
 			: []),
@@ -2632,7 +2551,7 @@ function renderOutputSections(sections) {
 // Outut page
 
 function generateOutput() {
-	syncAuscultationOutput();
+	window.CrewMateAbcde.syncAuscultationOutput();
 	const sections = paedsMode
 		? window.CrewMatePaeds.buildPaedsOutputFromAdultForm()
 		: buildOutputSections();
@@ -2904,29 +2823,6 @@ function clearPainAssessment() {
 	setOtherFactorVisible("exacerbating", false);
 	setOtherFactorVisible("relieving", false);
 	updateMapTags();
-}
-
-function syncAuscultationOutput() {
-	const entries = Object.entries(state.auscFindings).filter(
-		([, f]) => f.size > 0,
-	);
-	let text;
-	if (!entries.length) {
-		text = "Not auscultated";
-	} else {
-		const allClear = entries.every(([, f]) => f.size === 1 && f.has("Clear"));
-		if (allClear && entries.length >= 4) {
-			text = "Equal and clear air entry throughout";
-		} else {
-			text = entries
-				.map(([region, findings]) => `${region}: ${[...findings].join(", ")}`)
-				.join("; ");
-		}
-	}
-	const hidden = $("#respAus");
-	if (hidden) hidden.value = text;
-	const preview = $("#auscPreview");
-	if (preview) preview.textContent = text;
 }
 
 function aplsWeight(ageYears, ageMonths) {
@@ -3413,7 +3309,7 @@ function restoreFormState() {
 
 	// 9. Run key visibility updates
 	updateMapTags();
-	syncAuscultationOutput();
+	window.CrewMateAbcde.syncAuscultationOutput();
 	handleConveyanceDisplay();
 	updateDemographicVisibility();
 	const pcSelect = document.getElementById("pcSelect");
