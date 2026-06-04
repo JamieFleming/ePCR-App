@@ -14,6 +14,7 @@ import { initSeizure } from "./features/seizure.js";
 import { initOdAssessment } from "./features/odAssessment.js";
 import { initMhAssessment } from "./features/mhAssessment.js";
 import { initInjuryAssessment } from "./features/injuryAssessment.js";
+import { initTreatment } from "./features/treatment.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 	initTheme();
@@ -28,4 +29,5 @@ document.addEventListener("DOMContentLoaded", () => {
 	initOdAssessment();
 	initMhAssessment();
 	initInjuryAssessment();
+	initTreatment();
 });

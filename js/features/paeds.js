@@ -103,7 +103,11 @@ function buildPaedsTreatmentSection() {
 
 	buildPaedsTxGrid("pAirwayGrid", treatments.airway, "pAirwayInterventions");
 	buildPaedsTxGrid("pWoundGrid", wound, "pWoundInterventions");
-	buildPaedsTxGrid("pPositioningGrid", treatments.positioning, "pPositioningInterventions");
+	buildPaedsTxGrid(
+		"pPositioningGrid",
+		treatments.positioning,
+		"pPositioningInterventions",
+	);
 
 	$("#pVaType")?.addEventListener("change", () => {
 		const type = val("pVaType");
@@ -172,9 +176,8 @@ function updatePaedsAgeRef() {
 	// Update the weight field placeholder to show the APLS estimate
 	const weightEl = $("#pWeight");
 	if (weightEl && !weightEl.value) {
-		weightEl.placeholder = wt !== null
-			? `APLS estimate: ≈ ${wt} kg`
-			: "Enter measured weight";
+		weightEl.placeholder =
+			wt !== null ? `APLS estimate: ≈ ${wt} kg` : "Enter measured weight";
 	}
 
 	const aplsStr =
@@ -185,7 +188,8 @@ function updatePaedsAgeRef() {
 				: "Child ≥ 13 yrs — use actual weight";
 
 	const group =
-		manualGroup || (years === 0 && months === 0 ? "" : detectAgeGroup(years, months));
+		manualGroup ||
+		(years === 0 && months === 0 ? "" : detectAgeGroup(years, months));
 	const ref = vitalsRef[group];
 	const panel = $("#paedsAgeRefPanel");
 	if (!panel) return;
@@ -195,11 +199,12 @@ function updatePaedsAgeRef() {
 		return;
 	}
 
-	const estimateWarning = wt !== null
-		? `<div style="margin-top:5px;padding:4px 6px;background:#fff3e0;border:1px solid #ffb74d;border-radius:4px;color:#e65100;font-size:11px">
+	const estimateWarning =
+		wt !== null
+			? `<div style="margin-top:5px;padding:4px 6px;background:#fff3e0;border:1px solid #ffb74d;border-radius:4px;color:#e65100;font-size:11px">
 				⚠ Estimated weight (APLS formula) — use measured weight where possible. Always apply clinical judgement before drug administration.
 			</div>`
-		: "";
+			: "";
 
 	panel.innerHTML = `
 		<div class="pvr-ref-card" style="background:#f0faf0;border:1px solid #a7d7a7;border-radius:6px;padding:8px 10px;font-size:12px">
@@ -249,7 +254,9 @@ function bindPaedsEvents() {
 			if (!chip) return;
 			const isNormal = chip.dataset.patState === "normal";
 			chip.dataset.patState = isNormal ? "abnormal" : "normal";
-			chip.textContent = isNormal ? chip.dataset.patAbnormal : chip.dataset.patNormal;
+			chip.textContent = isNormal
+				? chip.dataset.patAbnormal
+				: chip.dataset.patNormal;
 			chip.classList.toggle("selected", !isNormal);
 			chip.classList.toggle("abnormal", isNormal);
 		});
@@ -294,9 +301,13 @@ function bindPaedsEvents() {
 		});
 	});
 
-	["flaccFace", "flaccLegs", "flaccActivity", "flaccCry", "flaccConsolability"].forEach(
-		(id) => $(`#${id}`)?.addEventListener("change", updateFlaccTotal),
-	);
+	[
+		"flaccFace",
+		"flaccLegs",
+		"flaccActivity",
+		"flaccCry",
+		"flaccConsolability",
+	].forEach((id) => $(`#${id}`)?.addEventListener("change", updateFlaccTotal));
 
 	$("#pPainTool")?.addEventListener("change", () => {
 		const tool = val("pPainTool");
@@ -314,7 +325,9 @@ function bindPaedsEvents() {
 			if (!btn) return;
 			const score = btn.dataset.score;
 			const already = btn.classList.contains("selected");
-			$$(`#${gridId} .pain-score-btn`).forEach((b) => b.classList.remove("selected"));
+			$$(`#${gridId} .pain-score-btn`).forEach((b) =>
+				b.classList.remove("selected"),
+			);
 			if (!already) {
 				btn.classList.add("selected");
 				const inp = $(`#${inputId}`);
@@ -340,7 +353,10 @@ function bindPaedsEvents() {
 				: paedsState.sgConcerns.add(v);
 		}
 		$$("#pSgGrid [data-p-sg-group]").forEach((b) => {
-			b.classList.toggle("selected", paedsState.sgConcerns.has(b.dataset.pSgValue));
+			b.classList.toggle(
+				"selected",
+				paedsState.sgConcerns.has(b.dataset.pSgValue),
+			);
 		});
 		const hasConcerns =
 			paedsState.sgConcerns.size > 0 &&
@@ -375,11 +391,15 @@ function bindPaedsEvents() {
 
 	$("#pCopyButton")?.addEventListener("click", async () => {
 		buildPaedsOutputSections();
-		const all = [...paedsOutputSectionTexts.values()].filter(Boolean).join("\n\n");
+		const all = [...paedsOutputSectionTexts.values()]
+			.filter(Boolean)
+			.join("\n\n");
 		if (all) await copyText(all);
 	});
 
-	$("#pRefreshButton")?.addEventListener("click", () => buildPaedsOutputSections());
+	$("#pRefreshButton")?.addEventListener("click", () =>
+		buildPaedsOutputSections(),
+	);
 }
 
 function initPaeds() {
@@ -476,8 +496,11 @@ function buildPaedsPatientText() {
 			? `≈${aplsWeight(parseInt(yrs) || 0, parseInt(mo) || 0)} kg (APLS estimate)`
 			: "Not recorded");
 	const group =
-		val("pAgeGroup") || detectAgeGroup(parseInt(yrs) || 0, parseInt(mo) || 0) || "";
-	const groupLabel = window.CrewMateOptions.PAEDS.vitalsRef[group]?.label || group;
+		val("pAgeGroup") ||
+		detectAgeGroup(parseInt(yrs) || 0, parseInt(mo) || 0) ||
+		"";
+	const groupLabel =
+		window.CrewMateOptions.PAEDS.vitalsRef[group]?.label || group;
 	return [
 		`Patient: ${ageStr}, ${sex}`,
 		`Weight: ${wt}`,
@@ -510,9 +533,11 @@ function buildPaedsBackgroundText() {
 	if (isChecked("pNoPmh")) lines.push("PMH: None significant");
 	else if (val("pPmh")) lines.push(`PMH: ${val("pPmh")}`);
 	if (val("pGestation")) lines.push(`Gestation: ${val("pGestation")}`);
-	if (val("pBirthHistory")) lines.push(`Birth history: ${val("pBirthHistory")}`);
+	if (val("pBirthHistory"))
+		lines.push(`Birth history: ${val("pBirthHistory")}`);
 	const imms = val("pImms");
-	if (imms && imms !== "Unknown / not checked") lines.push(`Immunisations: ${imms}`);
+	if (imms && imms !== "Unknown / not checked")
+		lines.push(`Immunisations: ${imms}`);
 	if (val("pSocial")) lines.push(`Social: ${val("pSocial")}`);
 	return lines.join("\n");
 }
@@ -524,8 +549,16 @@ function buildPaedsPATText() {
 		const abnormal = chips
 			.filter((c) => c.dataset.patState === "abnormal")
 			.map((c) => c.textContent);
-		const label = { appearance: "Appearance (TICLS)", wob: "Work of Breathing", circ: "Circulation to skin" }[component];
-		lines.push(abnormal.length ? `${label}: ABNORMAL — ${abnormal.join(", ")}` : `${label}: Normal`);
+		const label = {
+			appearance: "Appearance (TICLS)",
+			wob: "Work of Breathing",
+			circ: "Circulation to skin",
+		}[component];
+		lines.push(
+			abnormal.length
+				? `${label}: ABNORMAL — ${abnormal.join(", ")}`
+				: `${label}: Normal`,
+		);
 	});
 	const impression = val("patImpression");
 	if (impression) lines.push(`\nOverall PAT impression: ${impression}`);
@@ -548,7 +581,9 @@ function buildPaedsAbcdentText() {
 			.filter(Boolean)
 			.join(", ");
 		const notes = val(section.notes);
-		const status = abnormal.length ? `ABNORMAL — ${abnormal.join(", ")}` : "Within normal limits";
+		const status = abnormal.length
+			? `ABNORMAL — ${abnormal.join(", ")}`
+			: "Within normal limits";
 		const parts = [`${section.key} — ${section.title}: ${status}`];
 		if (vitalsText) parts.push(`  Obs: ${vitalsText}`);
 		if (notes) parts.push(`  Notes: ${notes}`);
@@ -569,7 +604,13 @@ function buildPaedsPainText() {
 			"flaccConsolability",
 		].reduce((sum, id) => sum + (parseInt(val(id)) || 0), 0);
 		const label =
-			total <= 0 ? "No pain" : total <= 3 ? "Mild pain" : total <= 6 ? "Moderate pain" : "Severe pain";
+			total <= 0
+				? "No pain"
+				: total <= 3
+					? "Mild pain"
+					: total <= 6
+						? "Moderate pain"
+						: "Severe pain";
 		lines.push(`Pain assessment tool: FLACC`);
 		lines.push(`FLACC score: ${total}/10 — ${label}`);
 	} else if (tool === "nrs") {
@@ -603,7 +644,9 @@ function buildPaedsSgText() {
 function buildPaedsTxText() {
 	const lines = [];
 	if (paedsState.pAirwayInterventions.size)
-		lines.push(`Airway / breathing: ${[...paedsState.pAirwayInterventions].join(", ")}`);
+		lines.push(
+			`Airway / breathing: ${[...paedsState.pAirwayInterventions].join(", ")}`,
+		);
 	if (paedsState.pIvEntries.length) {
 		lines.push("Vascular access:");
 		paedsState.pIvEntries.forEach((e) => {
@@ -628,11 +671,16 @@ function buildPaedsTxText() {
 		});
 	}
 	if (paedsState.pWoundInterventions.size)
-		lines.push(`Wound management: ${[...paedsState.pWoundInterventions].join(", ")}`);
+		lines.push(
+			`Wound management: ${[...paedsState.pWoundInterventions].join(", ")}`,
+		);
 	if (paedsState.pPositioningInterventions.size)
-		lines.push(`Positioning: ${[...paedsState.pPositioningInterventions].join(", ")}`);
+		lines.push(
+			`Positioning: ${[...paedsState.pPositioningInterventions].join(", ")}`,
+		);
 	if (val("pOtherTx")) lines.push(`Other: ${val("pOtherTx")}`);
-	if (val("pTxResponse")) lines.push(`Treatment response: ${val("pTxResponse")}`);
+	if (val("pTxResponse"))
+		lines.push(`Treatment response: ${val("pTxResponse")}`);
 	return lines.join("\n");
 }
 
@@ -666,7 +714,9 @@ function buildPaedsConveyText() {
 			.join(" ");
 		return [
 			"Conveyance decision: Patient conveyed to hospital for further assessment and/or treatment.",
-			destination ? `Destination: ${destination}.` : "Destination: Not specified.",
+			destination
+				? `Destination: ${destination}.`
+				: "Destination: Not specified.",
 			transferText
 				? `Transfer and handover: ${transferText}.${extraDetail ? ` ${extraDetail}` : ""}`
 				: null,
@@ -728,7 +778,8 @@ function buildPaedsWorseningScript() {
 		script += `\n\nCall 111 or see your GP urgently if:\n`;
 		script += pcData.call111.map((i) => `• ${i}`).join("\n");
 	}
-	if (pcData?.guidance) script += `\n\nAdditional guidance:\n${pcData.guidance}`;
+	if (pcData?.guidance)
+		script += `\n\nAdditional guidance:\n${pcData.guidance}`;
 	if (custom) script += `\n\n${custom}`;
 	if (conveyed) {
 		script += `\n\nYour child has been taken to hospital today for further assessment and treatment.`;
@@ -745,10 +796,19 @@ function buildPaedsWorseningText() {
 	const script = buildPaedsWorseningScript();
 	const lines = [script];
 	const checks = [
-		[isChecked("pAdviceUnderstood"), "Advice given and confirmed understood by parent / carer"],
-		[isChecked("pFeverAdviceGiven"), "Fever / temperature management advice given"],
+		[
+			isChecked("pAdviceUnderstood"),
+			"Advice given and confirmed understood by parent / carer",
+		],
+		[
+			isChecked("pFeverAdviceGiven"),
+			"Fever / temperature management advice given",
+		],
 		[isChecked("pFluidAdviceGiven"), "Hydration / feeding advice given"],
-		[isChecked("pRecontactAdvice"), "Parent / carer advised to call 999 / 111 if concerned"],
+		[
+			isChecked("pRecontactAdvice"),
+			"Parent / carer advised to call 999 / 111 if concerned",
+		],
 	];
 	const confirmed = checks.filter(([c]) => c).map(([, l]) => l);
 	if (confirmed.length) lines.push(`\nConfirmed: ${confirmed.join("; ")}`);
@@ -759,10 +819,22 @@ function buildPaedsOutputFromAdultForm() {
 	const adultSections = buildOutputSections();
 	const withoutPrimary = adultSections.filter((s) => s.id !== "primary");
 	const paedsSections = [
-		{ id: "p-patient-info", title: "PAEDIATRIC — AGE & WEIGHT", body: buildPaedsPatientText() },
+		{
+			id: "p-patient-info",
+			title: "PAEDIATRIC — AGE & WEIGHT",
+			body: buildPaedsPatientText(),
+		},
 		{ id: "p-tmt", title: "3 MINUTE TOOLKIT", body: buildTmtText() },
-		{ id: "p-pat", title: "PAT — ACROSS-THE-ROOM ASSESSMENT", body: buildPaedsPATText() },
-		{ id: "p-primary", title: "PRIMARY SURVEY (ABCDE + ENT + T + DEFG)", body: buildPaedsAbcdentText() },
+		{
+			id: "p-pat",
+			title: "PAT — ACROSS-THE-ROOM ASSESSMENT",
+			body: buildPaedsPATText(),
+		},
+		{
+			id: "p-primary",
+			title: "PRIMARY SURVEY (ABCDE + ENT + T + DEFG)",
+			body: buildPaedsAbcdentText(),
+		},
 	];
 	const bgIdx = withoutPrimary.findIndex((s) => s.id === "background");
 	const insertAt = bgIdx >= 0 ? bgIdx + 1 : 0;
@@ -780,7 +852,8 @@ function buildPaedsOutputFromAdultForm() {
 		...withoutPain.slice(insertAt),
 	];
 	const wf = buildPaedsWetflagText();
-	if (wf) result.push({ id: "p-wetflag", title: "WETFLAG REFERENCE", body: wf });
+	if (wf)
+		result.push({ id: "p-wetflag", title: "WETFLAG REFERENCE", body: wf });
 	return result;
 }
 
@@ -791,22 +864,50 @@ function buildPaedsOutputSections() {
 	const sections = [
 		{ id: "p-patient", title: "PATIENT", body: buildPaedsPatientText() },
 		{ id: "p-pc", title: "PRESENTING COMPLAINT", body: buildPaedsPcText() },
-		{ id: "p-background", title: "BACKGROUND", body: buildPaedsBackgroundText() },
+		{
+			id: "p-background",
+			title: "BACKGROUND",
+			body: buildPaedsBackgroundText(),
+		},
 		{ id: "p-tmt", title: "3 MINUTE TOOLKIT", body: buildTmtText() },
 		{ id: "p-pat", title: "PAT — ACROSS-THE-ROOM", body: buildPaedsPATText() },
-		{ id: "p-primary", title: "PRIMARY SURVEY (ABCDE + ENT + T + DEFG)", body: buildPaedsAbcdentText() },
+		{
+			id: "p-primary",
+			title: "PRIMARY SURVEY (ABCDE + ENT + T + DEFG)",
+			body: buildPaedsAbcdentText(),
+		},
 		{ id: "p-pain", title: "PAIN ASSESSMENT", body: buildPaedsPainText() },
 		{ id: "p-sg", title: "SAFEGUARDING", body: buildPaedsSgText() },
-		{ id: "p-tx", title: "TREATMENTS & INTERVENTIONS", body: buildPaedsTxText() },
-		{ id: "p-changes", title: "CLINICAL CHANGES", body: buildPaedsClinChangesText() },
-		{ id: "p-consent", title: "CONSENT & CAPACITY", body: buildPaedsConsentText() },
+		{
+			id: "p-tx",
+			title: "TREATMENTS & INTERVENTIONS",
+			body: buildPaedsTxText(),
+		},
+		{
+			id: "p-changes",
+			title: "CLINICAL CHANGES",
+			body: buildPaedsClinChangesText(),
+		},
+		{
+			id: "p-consent",
+			title: "CONSENT & CAPACITY",
+			body: buildPaedsConsentText(),
+		},
 		{ id: "p-convey", title: "CONVEYANCE", body: buildPaedsConveyText() },
 		...(val("pConveyDecision") !== "Conveyed"
-			? [{ id: "p-worsening", title: "WORSENING ADVICE", body: buildPaedsWorseningText() }]
+			? [
+					{
+						id: "p-worsening",
+						title: "WORSENING ADVICE",
+						body: buildPaedsWorseningText(),
+					},
+				]
 			: []),
 		...(() => {
 			const wf = buildPaedsWetflagText();
-			return wf ? [{ id: "p-wetflag", title: "WETFLAG REFERENCE", body: wf }] : [];
+			return wf
+				? [{ id: "p-wetflag", title: "WETFLAG REFERENCE", body: wf }]
+				: [];
 		})(),
 	];
 	paedsOutputSectionTexts.clear();
@@ -834,4 +935,10 @@ window.CrewMatePaeds = {
 	buildPaedsOutputFromAdultForm,
 	buildPaedsOutputSections,
 	updatePaedsWorseningScript,
+	get removePaedsIvEntry() {
+		return removePaedsIvEntry;
+	},
+	get renderPaedsIvEntries() {
+		return renderPaedsIvEntries;
+	},
 };
