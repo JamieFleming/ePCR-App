@@ -790,6 +790,13 @@ select {
 	color: var(--chip-selected-text);
 	font-weight: 700;
 }
+[data-detail-wrap] .radio-chip.selected {
+	background: #fff3cd;
+	border-color: #e6a817;
+	border-width: 2px;
+	color: #7d4e00;
+	font-weight: 700;
+}
 /* Wrapping chip grid — equal-width columns that wrap */
 .radio-chip-group.wrap-grid {
 	display: grid;

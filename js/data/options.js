@@ -1631,13 +1631,15 @@ export const ABCDE = {
 				["No accessory muscle use", "Accessory muscle use"],
 			],
 			notes: "breathingNotes",
+			extras:
+				'<div id="breathingDetailWrap" class="hidden" data-detail-wrap style="margin-top:6px"><input type="hidden" id="breathingDetail"><div class="radio-chip-group" data-radio-group="breathingDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Laboured">Laboured</button><button type="button" class="radio-chip" data-value="Irregular">Irregular</button></div></div>',
 		},
 		{
 			key: "C",
 			title: "Circulation",
 			chips: [
 				["Good colour", "Pale / flushed"],
-				["Normal rate", "Tachycardic / Bradycardic"],
+				["Normal Rate", "Tachycardic / Bradycardic"],
 				["Warm to touch", "Cold / clammy"],
 				["Radial pulse palpable", "Radial pulse weak / absent"],
 				["Regular pulse rhythm", "Irregular pulses"],
@@ -1647,8 +1649,8 @@ export const ABCDE = {
 			],
 			notes: "circulationNotes",
 			extras:
-				'<div id="colourDetailWrap" class="hidden" style="margin-top:6px"><input type="hidden" id="colourDetail"><div class="radio-chip-group" data-radio-group="colourDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Pale">Pale</button><button type="button" class="radio-chip" data-value="Flushed">Flushed</button></div></div>' +
-				'<div id="hrRateDetailWrap" class="hidden" style="margin-top:6px"><input type="hidden" id="hrRateDetail"><div class="radio-chip-group" data-radio-group="hrRateDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Tachycardic">Tachycardic</button><button type="button" class="radio-chip" data-value="Bradycardic">Bradycardic</button></div></div>',
+				'<div id="colourDetailWrap" class="hidden" data-detail-wrap style="margin-top:6px"><input type="hidden" id="colourDetail"><div class="radio-chip-group" data-radio-group="colourDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Pale">Pale</button><button type="button" class="radio-chip" data-value="Flushed">Flushed</button></div></div>' +
+				'<div id="hrRateDetailWrap" class="hidden" data-detail-wrap style="margin-top:6px"><input type="hidden" id="hrRateDetail"><div class="radio-chip-group" data-radio-group="hrRateDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Tachycardic">Tachycardic</button><button type="button" class="radio-chip" data-value="Bradycardic">Bradycardic</button></div></div>',
 		},
 		{
 			key: "D",
@@ -1662,6 +1664,8 @@ export const ABCDE = {
 				["No seizure activity", "Seizure activity"],
 			],
 			notes: "disabilityNotes",
+			extras:
+				'<div id="pupilDetailWrap" class="hidden" data-detail-wrap style="margin-top:6px"><input type="hidden" id="pupilDetail"><div class="radio-chip-group" data-radio-group="pupilDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Pupils unequal">Pupils unequal</button><button type="button" class="radio-chip" data-value="Pupils unreactive">Pupils unreactive</button></div></div>',
 		},
 		{
 			key: "E",
@@ -1734,6 +1738,7 @@ export const ROS = {
 		title: "Respiratory",
 		items: [
 			["breathingRate", "Respiratory Rate Normal", "Respiratory Rate Abnormal"],
+			["regularBreathing", "Regular Breathing", "Irregular / Laboured"],
 			["cyanosis", "No cyanosis", "Cyanosis present"],
 			["wheeze", "No wheeze", "Wheeze noted"],
 			["haemoptysis", "No haemoptysis", "Haemoptysis present"],
@@ -1746,7 +1751,8 @@ export const ROS = {
 			["accessory", "No accessory muscle use", "Accessory muscle use present"],
 		],
 		extras:
-			'<div id="rrDetailWrap" class="hidden" style="margin-top:6px"><input type="hidden" id="rrDetail"><div class="radio-chip-group" data-radio-group="rrDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Tachypnoea">Tachypnoea</button><button type="button" class="radio-chip" data-value="Bradypnoea">Bradypnoea</button><button type="button" class="radio-chip" data-value="Apnoea">Apnoea</button></div></div>' +
+			'<div id="rrDetailWrap" class="hidden" data-detail-wrap style="margin-top:6px"><input type="hidden" id="rrDetail"><div class="radio-chip-group" data-radio-group="rrDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Tachypnoea">Tachypnoea</button><button type="button" class="radio-chip" data-value="Bradypnoea">Bradypnoea</button><button type="button" class="radio-chip" data-value="Apnoea">Apnoea</button></div></div>' +
+				'<div id="breathingRhythmDetailWrap" class="hidden" data-detail-wrap style="margin-top:6px"><input type="hidden" id="breathingRhythmDetail"><div class="radio-chip-group" data-radio-group="breathingRhythmDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Laboured">Laboured</button><button type="button" class="radio-chip" data-value="Irregular">Irregular</button></div></div>' +
 			'<label class="field-label" style="margin-top:10px">Auscultation</label><div id="auscRegionGrid" class="ausc-region-grid"></div><div id="auscFindingPanel" class="ausc-finding-panel hidden"></div><input id="respAus" type="hidden" /><p id="auscPreview" class="ausc-preview field-hint" style="margin-top:6px">Not auscultated</p><label class="field-label" style="margin-top:10px" for="coughType">Cough</label><select id="coughType"><option>No cough</option><option>Dry cough present</option><option>Productive cough present</option></select><div id="sputumWrap" class="hidden" style="margin-top:6px"><label class="field-label" for="sputumDesc">Sputum</label><input id="sputumDesc" list="sputumList" placeholder="e.g. yellow, green, white, blood-stained" /><datalist id="sputumList"><option>Clear</option><option>White / frothy</option><option>Yellow</option><option>Green</option><option>Brown</option><option>Blood-stained (haemoptysis)</option><option>Pink and frothy</option><option>Rust-coloured</option></datalist></div><label class="field-label" for="respNotes">Additional notes</label><textarea id="respNotes" rows="2"></textarea>',
 	},
 	cvs: {
@@ -1760,6 +1766,7 @@ export const ROS = {
 				"Peripheral pulses weak / absent",
 			],
 			["pulseReg", "Regular Pulse", "Irregular Pulse"],
+			["pulseRate", "Normal Rate", "Tachycardic / Bradycardic"],
 			["crt", "CRT <2s", "CRT >=2s"],
 			["chestPain", "No chest pain", "Chest pain present"],
 			["palpitations", "No palpitations", "Palpitations reported"],
@@ -1774,6 +1781,7 @@ export const ROS = {
 			["diaphoresis", "No diaphoresis", "Diaphoretic"],
 		],
 		extras:
+			'<div id="hrDetailWrap" class="hidden" data-detail-wrap style="margin-top:6px"><input type="hidden" id="hrDetail"><div class="radio-chip-group" data-radio-group="hrDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Tachycardic">Tachycardic</button><button type="button" class="radio-chip" data-value="Bradycardic">Bradycardic</button></div></div>' +
 			'<label class="field-label" for="bpStatus">Blood pressure status</label><select id="bpStatus"><option>Normotensive</option><option>Hypotensive</option><option>Hypertensive</option></select><label class="field-label">ECG findings</label><div class="square-grid ecg-grid" id="ecgFindingsGrid"></div><div id="ecgLeadPanel" class="hidden" style="margin-top:10px"><label class="field-label">Affected leads <span class="field-hint" style="display:inline;font-size:11px">(select all that apply)</span></label><div class="ecg-lead-grid" id="ecgLeadsGrid"></div></div><label class="field-label" for="cvsNotes" style="margin-top:10px">Additional notes</label><textarea id="cvsNotes" rows="2"></textarea>',
 	},
 	neuro: {

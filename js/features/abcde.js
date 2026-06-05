@@ -217,6 +217,39 @@ function buildEcgText() {
 	return `ECG: ${parts.join("; ")}.`;
 }
 
+const ABC_TO_ROS = {
+	// B — Breathing
+	"B:Regular":             { stateId: "resp_regularBreathing", section: "resp", detailWrap: "breathingRhythmDetailWrap", detailId: "breathingRhythmDetail" },
+	"B:No cyanosis":         { stateId: "resp_cyanosis",         section: "resp" },
+	"B:No wheeze":           { stateId: "resp_wheeze",           section: "resp" },
+	"B:No accessory muscle use": { stateId: "resp_accessory",   section: "resp" },
+	// C — Circulation
+	"C:Normal Rate": {
+		stateId: "cvs_pulseRate",
+		section: "cvs",
+		detailWrap: "hrDetailWrap",
+		detailId: "hrDetail",
+	},
+	"C:Regular pulse rhythm": { stateId: "cvs_pulseReg", section: "cvs" },
+	"C:CRT <2s": { stateId: "cvs_crt", section: "cvs" },
+	"C:Warm to touch": { stateId: "cvs_warm", section: "cvs" },
+	"C:Well perfused": { stateId: "cvs_perfusion", section: "cvs" },
+	"C:Radial pulse palpable": { stateId: "cvs_pulses", section: "cvs" },
+	// D — Disability
+	"D:GCS 15": { stateId: "neuro_gcs15", section: "neuro" },
+	"D:AOx4": { stateId: "neuro_aox4", section: "neuro" },
+	"D:PEARL": { stateId: "neuro_pearl", section: "neuro" },
+	"D:Speech clear": { stateId: "neuro_speech", section: "neuro" },
+	"D:No seizure activity": { stateId: "neuro_seizure", section: "neuro" },
+	// E — Exposure
+	"E:Apyrexial": { stateId: "integ_fever", section: "integ" },
+	"E:No rigors": { stateId: "integ_rigors", section: "integ" },
+	"E:Normal skin colour": { stateId: "integ_colour", section: "integ" },
+	"E:Not clammy": { stateId: "integ_clammy", section: "integ" },
+	"E:Not diaphoretic": { stateId: "integ_diaphoresis", section: "integ" },
+	"E:No rash": { stateId: "integ_rash", section: "integ" },
+};
+
 function toggleAbc(button) {
 	const isAbnormal = button.dataset.abcState === "abnormal";
 	const next = isAbnormal ? "normal" : "abnormal";
@@ -263,6 +296,61 @@ function toggleAbc(button) {
 					.forEach((c) => c.classList.remove("selected"));
 			}
 		}
+	}
+	if (button.dataset.normal === "Regular") {
+		const wrap = $("#breathingDetailWrap");
+		if (wrap) {
+			wrap.classList.toggle("hidden", next === "normal");
+			if (next === "normal") {
+				const hidden = $("#breathingDetail");
+				if (hidden) hidden.value = "";
+				wrap
+					.querySelectorAll("[data-value]")
+					.forEach((c) => c.classList.remove("selected"));
+			}
+		}
+	}
+	if (button.dataset.normal === "PEARL") {
+		const wrap = $("#pupilDetailWrap");
+		if (wrap) {
+			wrap.classList.toggle("hidden", next === "normal");
+			if (next === "normal") {
+				const hidden = $("#pupilDetail");
+				if (hidden) hidden.value = "";
+				wrap
+					.querySelectorAll("[data-value]")
+					.forEach((c) => c.classList.remove("selected"));
+			}
+		}
+	}
+
+	const rosTarget =
+		ABC_TO_ROS[`${button.dataset.abc}:${button.dataset.normal}`];
+	if (rosTarget) {
+		state.ros[rosTarget.stateId] = next;
+		const rosChip = document.querySelector(
+			`[data-state-id="${rosTarget.stateId}"]`,
+		);
+		if (rosChip) {
+			rosChip.classList.toggle("abnormal", next === "abnormal");
+			rosChip.classList.toggle("selected", next === "normal");
+			rosChip.textContent =
+				next === "abnormal" ? rosChip.dataset.abnormal : rosChip.dataset.normal;
+		}
+		if (rosTarget.detailWrap) {
+			const wrap = $(`#${rosTarget.detailWrap}`);
+			if (wrap) {
+				wrap.classList.toggle("hidden", next === "normal");
+				if (next === "normal") {
+					const hidden = $(`#${rosTarget.detailId}`);
+					if (hidden) hidden.value = "";
+					wrap
+						.querySelectorAll("[data-value]")
+						.forEach((c) => c.classList.remove("selected"));
+				}
+			}
+		}
+		window.CrewMateRos?.updateRosBadge(rosTarget.section);
 	}
 }
 function setAbcChipState(button, state) {

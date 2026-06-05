@@ -294,6 +294,22 @@ function bindEvents() {
 			$("#catheterDetails")?.classList.toggle("hidden", !e.target.checked);
 		if (e.target.id === "stomaPresent")
 			$("#stomaDetails")?.classList.toggle("hidden", !e.target.checked);
+		if (e.target.id === "hrRateDetail") {
+			const inp = $("#hrDetail");
+			if (inp) inp.value = e.target.value;
+			const wrap = $("#hrDetailWrap");
+			if (wrap) wrap.querySelectorAll("[data-value]").forEach((c) =>
+				c.classList.toggle("selected", c.dataset.value === e.target.value),
+			);
+		}
+		if (e.target.id === "breathingDetail") {
+			const inp = $("#breathingRhythmDetail");
+			if (inp) inp.value = e.target.value;
+			const wrap = $("#breathingRhythmDetailWrap");
+			if (wrap) wrap.querySelectorAll("[data-value]").forEach((c) =>
+				c.classList.toggle("selected", c.dataset.value === e.target.value),
+			);
+		}
 	});
 	document.addEventListener("click", (e) => {
 		const toggle = e.target.closest(".gcs-toggle");
@@ -780,23 +796,24 @@ export function toggleConveyChip(button) {
 	}
 }
 
+let _radioChipsBound = false;
 export function bindRadioChipGroups() {
-	$$("[data-radio-group]").forEach((group) => {
-		group.addEventListener("click", (e) => {
-			const chip = e.target.closest("[data-value]");
-			if (!chip || !group.contains(chip)) return;
-			const fieldId = group.dataset.radioGroup;
-			const wasSelected = chip.classList.contains("selected");
-			group
-				.querySelectorAll("[data-value]")
-				.forEach((c) => c.classList.remove("selected"));
-			if (!wasSelected) chip.classList.add("selected");
-			const inp = $(`#${fieldId}`);
-			if (inp) {
-				inp.value = wasSelected ? "" : chip.dataset.value;
-				inp.dispatchEvent(new Event("change"));
-			}
-		});
+	if (_radioChipsBound) return;
+	_radioChipsBound = true;
+	document.addEventListener("click", (e) => {
+		const chip = e.target.closest("[data-radio-group] [data-value]");
+		if (!chip) return;
+		const group = chip.closest("[data-radio-group]");
+		if (!group) return;
+		const fieldId = group.dataset.radioGroup;
+		const wasSelected = chip.classList.contains("selected");
+		group.querySelectorAll("[data-value]").forEach((c) => c.classList.remove("selected"));
+		if (!wasSelected) chip.classList.add("selected");
+		const inp = $(`#${fieldId}`);
+		if (inp) {
+			inp.value = wasSelected ? "" : chip.dataset.value;
+			inp.dispatchEvent(new Event("change"));
+		}
 	});
 }
 

@@ -67,6 +67,34 @@ function toggleRos(button) {
 		}
 	}
 
+	if (button.dataset.stateId === "resp_regularBreathing") {
+		const wrap = $("#breathingRhythmDetailWrap");
+		if (wrap) {
+			wrap.classList.toggle("hidden", next === "normal");
+			if (next === "normal") {
+				const hidden = $("#breathingRhythmDetail");
+				if (hidden) hidden.value = "";
+				wrap
+					.querySelectorAll("[data-value]")
+					.forEach((c) => c.classList.remove("selected"));
+			}
+		}
+	}
+
+	if (button.dataset.stateId === "cvs_pulseRate") {
+		const wrap = $("#hrDetailWrap");
+		if (wrap) {
+			wrap.classList.toggle("hidden", next === "normal");
+			if (next === "normal") {
+				const hidden = $("#hrDetail");
+				if (hidden) hidden.value = "";
+				wrap
+					.querySelectorAll("[data-value]")
+					.forEach((c) => c.classList.remove("selected"));
+			}
+		}
+	}
+
 	if (button.dataset.stateId === "urine_volume") {
 		const wrap = $("#urinaryVolumeWrap");
 		if (wrap) {
@@ -112,6 +140,15 @@ function rosChipsText(section) {
 					const detail = val("rrDetail");
 					if (detail) return detail;
 				}
+				if (section === "resp" && id === "regularBreathing") {
+					const detail = val("breathingRhythmDetail");
+					if (detail) return detail;
+				}
+				if (section === "cvs" && id === "pulseRate") {
+					const detail = val("hrDetail");
+					if (detail) return detail;
+				}
+
 				return abnormal;
 			})
 			.join(". ") + "."
@@ -126,6 +163,15 @@ function rosAbnormalLine(section) {
 				const detail = val("rrDetail");
 				if (detail) return detail;
 			}
+			if (section === "resp" && id === "regularBreathing") {
+				const detail = val("breathingRhythmDetail");
+				if (detail) return detail;
+			}
+			if (section === "cvs" && id === "pulseRate") {
+				const detail = val("hrDetail");
+				if (detail) return detail;
+			}
+
 			return abnormal;
 		});
 	return abnormals.length ? abnormals.join(". ") + "." : "";
@@ -201,18 +247,16 @@ function rosSectionText(section, abnormalOnly = false) {
 }
 
 function abcChipText(button) {
-	if (
-		button.dataset.normal === "Good colour" &&
-		button.dataset.abcState === "abnormal"
-	) {
-		const detail = val("colourDetail");
-		if (detail) return detail;
-	}
-	if (
-		button.dataset.normal === "Normal Rate" &&
-		button.dataset.abcState === "abnormal"
-	) {
-		const detail = val("hrRateDetail");
+	if (button.dataset.abcState !== "abnormal") return button.textContent;
+	const detailMap = {
+		"Good colour":  "colourDetail",
+		"Normal Rate":  "hrRateDetail",
+		"Regular":      "breathingDetail",
+		"PEARL":        "pupilDetail",
+	};
+	const detailId = detailMap[button.dataset.normal];
+	if (detailId) {
+		const detail = val(detailId);
 		if (detail) return detail;
 	}
 	return button.textContent;
