@@ -1,11 +1,12 @@
 import { $, $$, val, isChecked, buildButtonGrid } from "../utils/dom.js";
 import { OPTIONS } from "../data/options.js";
 import { setRadioChip } from "../utils/helpers.js";
+import { state, createListRenderer } from "../app.js";
 
 let pendingManualItems = new Set();
 
 const { render: renderIvEntries, remove: removeIvEntry } =
-	window.CrewMateApp.makeEntryManager(
+	createListRenderer(
 		"ivEntries",
 		"vaEntries",
 		(entry) => {
@@ -21,7 +22,7 @@ const { render: renderIvEntries, remove: removeIvEntry } =
 	);
 
 const { render: renderChangeEntries, remove: removeChangeEntry } =
-	window.CrewMateApp.makeEntryManager(
+	createListRenderer(
 		"clinicalChanges",
 		"changeEntries",
 		(entry) => (entry.time ? `[${entry.time}] ${entry.desc}` : entry.desc),
@@ -91,7 +92,6 @@ function buildTreatmentSection() {
 }
 
 function buildTreatmentText() {
-	const state = window.CrewMateApp.getState();
 	const lines = [];
 	if (state.airwayInterventions.size)
 		lines.push(
@@ -141,7 +141,6 @@ function buildTreatmentText() {
 }
 
 function buildChangesText() {
-	const state = window.CrewMateApp.getState();
 	const lines = [];
 	if (state.clinicalChanges.length) {
 		lines.push("Clinical changes noted during assessment:");
@@ -155,7 +154,6 @@ function buildChangesText() {
 }
 
 function addIvEntry(isPaeds = false) {
-	const state = window.CrewMateApp.getState();
 	const fieldPrefix = isPaeds ? "pVa" : "va";
 	const stateObj = isPaeds ? window.CrewMatePaeds.paedsState : state;
 	const stateKey = isPaeds ? "pIvEntries" : "ivEntries";
@@ -212,7 +210,6 @@ function addIvEntry(isPaeds = false) {
 }
 
 function addDrugEntry(isPaeds = false) {
-	const state = window.CrewMateApp.getState();
 	const fieldPrefix = isPaeds ? "pDrug" : "drug";
 	const nameField = isPaeds ? `${fieldPrefix}Name` : "drugName";
 	const drug =
@@ -256,7 +253,6 @@ function addDrugEntry(isPaeds = false) {
 }
 
 function removeDrugEntry(index, isPaeds = false) {
-	const state = window.CrewMateApp.getState();
 	if (isPaeds) {
 		window.CrewMatePaeds.paedsState.pDrugEntries.splice(index, 1);
 	} else {
@@ -266,7 +262,6 @@ function removeDrugEntry(index, isPaeds = false) {
 }
 
 function repeatDrugEntry(index) {
-	const state = window.CrewMateApp.getState();
 	const entry = state.drugEntries[index];
 	if (!entry) return;
 	const now = new Date();
@@ -301,7 +296,6 @@ function repeatDrugEntry(index) {
 }
 
 function addManualEntry() {
-	const state = window.CrewMateApp.getState();
 	if (!pendingManualItems.size) return;
 	const other = val("manualOther");
 	const items = [...pendingManualItems].map((value) =>
@@ -321,7 +315,6 @@ function addManualEntry() {
 }
 
 function renderDrugEntries(isPaeds = false) {
-	const state = window.CrewMateApp.getState();
 	const entries = isPaeds
 		? window.CrewMatePaeds.paedsState.pDrugEntries
 		: state.drugEntries;
@@ -345,7 +338,6 @@ function renderDrugEntries(isPaeds = false) {
 }
 
 function renderManualEntries() {
-	const state = window.CrewMateApp.getState();
 	const root = $("#manualEntries");
 	if (!root) return;
 	root.innerHTML = "";
@@ -359,7 +351,6 @@ function renderManualEntries() {
 }
 
 function addChangeEntry() {
-	const state = window.CrewMateApp.getState();
 	const desc = val("changeDesc");
 	if (!desc) return;
 	state.clinicalChanges.push({ time: val("changeTime"), desc });

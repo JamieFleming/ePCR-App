@@ -1,6 +1,7 @@
 import { $, val, isChecked, populateChipGroup } from "../utils/dom.js";
 import { OPTIONS } from "../data/options.js";
-import { listSet, listFactors } from "../utils/helpers.js";
+import { formatSet, listFactors } from "../utils/helpers.js";
+import { state } from "../app.js";
 
 function populateFallsPrevCountChips() {
 	populateChipGroup("fallsPreviousCount", OPTIONS.falls.previousCount);
@@ -23,7 +24,6 @@ function populateFallsAnticoagChips() {
 }
 
 function buildFallsText() {
-	const state = window.CrewMateApp.getState();
 	const symptoms = listFactors(
 		state.fallsSymptoms,
 		"fallsSymptomsOther",
@@ -45,7 +45,7 @@ function buildFallsText() {
 		? "Unknown time"
 		: val("fallsTime") || "Not documented";
 	const lieTime = val("fallsLieTime") || "Unknown";
-	const injuries = listSet(state.fallsInjuries, "No injury documented");
+	const injuries = formatSet(state.fallsInjuries, "No injury documented");
 	const prevCount = val("fallsPreviousCount") || "Not asked";
 	const locLine = [loc, surface ? `(${surface})` : ""]
 		.filter(Boolean)

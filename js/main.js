@@ -23,7 +23,9 @@ import { initCapacity } from "./features/capacity.js";
 import { initGynae } from "./features/gynae.js";
 import { initSafeguarding } from "./features/safeguarding.js";
 import { initOutput } from "./features/output.js";
+import { initRedFlags } from "./clinical/redFlags.js";
 import { initStorage } from "./utils/storage.js";
+import { enhanceSectionCards } from "./app.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 	initTheme();
@@ -45,6 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	initGynae();
 	initSafeguarding();
 	initOutput();
-	window.CrewMateApp.enhanceSectionCards();
+	enhanceSectionCards();
+	initRedFlags();
 	initStorage();
 });

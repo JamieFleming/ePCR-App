@@ -1,5 +1,6 @@
 import { $, val, populateChipGroup } from "../utils/dom.js";
 import { OPTIONS } from "../data/options.js";
+import { state } from "../app.js";
 
 function buildCapacitySection() {
 	populateChipGroup("capacityStatus", OPTIONS.mentalCapacity.capacityStatus);
@@ -45,7 +46,6 @@ function handleCapacityDisplay() {
 }
 
 function buildCapacityText() {
-	const state = window.CrewMateApp.getState();
 	const status = val("capacityStatus");
 	if (status === "Not applicable") return "Not applicable.";
 	if (status === "Lacks capacity") {

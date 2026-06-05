@@ -1,6 +1,7 @@
 import { $, $$, val, isChecked, populateChipGroup } from "../utils/dom.js";
 import { OPTIONS } from "../data/options.js";
-import { listSet, getNiceCTCriteria } from "../utils/helpers.js";
+import { formatSet, getNiceCTCriteria } from "../utils/helpers.js";
+import { state } from "../app.js";
 
 let pendingInjuryTypes = new Set();
 let pendingInjuryInterventions = new Set();
@@ -83,7 +84,6 @@ function buildInjurySection() {
 }
 
 function addInjuryEntry() {
-	const state = window.CrewMateApp.getState();
 	const region = val("injuryRegion");
 	if (!region) return;
 
@@ -139,13 +139,11 @@ function addInjuryEntry() {
 }
 
 function removeInjuryEntry(index) {
-	const state = window.CrewMateApp.getState();
 	state.injuryEntries.splice(index, 1);
 	renderInjuryEntries();
 }
 
 function renderInjuryEntries() {
-	const state = window.CrewMateApp.getState();
 	const root = $("#injuryEntries");
 	if (!root) return;
 	root.innerHTML = "";
@@ -170,7 +168,6 @@ function renderInjuryEntries() {
 }
 
 function buildInjuryText() {
-	const state = window.CrewMateApp.getState();
 	if (!state.injuryEntries.length) return "No injuries documented.";
 	return state.injuryEntries
 		.map((entry) => {
@@ -192,8 +189,7 @@ function buildInjuryText() {
 }
 
 function buildHeadInjuryText() {
-	const state = window.CrewMateApp.getState();
-	const mechanism = listSet(state.headMechanism, "Not documented");
+	const mechanism = formatSet(state.headMechanism, "Not documented");
 	const detail = val("headMechanismDetail");
 	const mechanismLine = `Mechanism: ${[mechanism, detail].filter(Boolean).join(" — ")}.`;
 
@@ -222,7 +218,7 @@ function buildHeadInjuryText() {
 		state.headSymptoms.has("Vomiting") && val("headVomitingCount")
 			? ` (${val("headVomitingCount")})`
 			: "";
-	const symptomsLine = `Symptoms: ${listSet(state.headSymptoms, "None reported")}${vomitSuffix}.`;
+	const symptomsLine = `Symptoms: ${formatSet(state.headSymptoms, "None reported")}${vomitSuffix}.`;
 
 	const gcsE = parseInt($("#headGcsEye")?.dataset.gcsSelected || "", 10) || 0;
 	const gcsV =
@@ -234,7 +230,7 @@ function buildHeadInjuryText() {
 		: "";
 	const anticoagSuffix =
 		val("headAnticoag") === "Yes" ? " On anticoagulants." : "";
-	const signsLine = `Clinical findings: ${listSet(state.headSigns, "None identified")}.${gcsSuffix}${anticoagSuffix}`;
+	const signsLine = `Clinical findings: ${formatSet(state.headSigns, "None identified")}.${gcsSuffix}${anticoagSuffix}`;
 
 	const criteria = getNiceCTCriteria();
 	const niceLine = criteria.length

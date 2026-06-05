@@ -1,8 +1,9 @@
 import { $, $$, val, isChecked } from "../utils/dom.js";
 import { OPTIONS, ABCDE, ROS } from "../data/options.js";
+import { buildGcsCalcHTML } from "../utils/gcs.js";
+import { state } from "../app.js";
 
 function buildRos() {
-	const state = window.CrewMateApp.getState();
 	const root = $("#rosContainer");
 	Object.entries(ROS).forEach(([key, section], index) => {
 		if (!section?.items) return;
@@ -30,14 +31,13 @@ function buildRos() {
 		});
 		if (key === "neuro") {
 			const wrap = $(".ros-gcs-wrap", details);
-			if (wrap) wrap.innerHTML = window.CrewMateGcs.buildGcsCalcHTML("rosGcs");
+			if (wrap) wrap.innerHTML = buildGcsCalcHTML("rosGcs");
 		}
 		root.append(details);
 	});
 }
 
 function toggleRos(button) {
-	const state = window.CrewMateApp.getState();
 	const isAbnormal = state.ros[button.dataset.stateId] === "abnormal";
 	const next = isAbnormal ? "normal" : "abnormal";
 	state.ros[button.dataset.stateId] = next;
@@ -94,8 +94,20 @@ function toggleRos(button) {
 	}
 }
 
-function rosBlock(section) {
-	const state = window.CrewMateApp.getState();
+function rosAbnormalLine(section) {
+	const abnormals = ROS[section].items
+		.filter(([id]) => state.ros[`${section}_${id}`] === "abnormal")
+		.map(([id, , abnormal]) => {
+			if (section === "resp" && id === "breathingRate") {
+				const detail = val("rrDetail");
+				if (detail) return detail;
+			}
+			return abnormal;
+		});
+	return abnormals.length ? abnormals.join(". ") + "." : "";
+}
+
+function rosSectionText(section, abnormalOnly = false) {
 	const extras = {
 		resp: () =>
 			`${val("coughType")}${val("sputumDesc") ? ` — sputum: ${val("sputumDesc")}` : ""}. ${val("respAus") ? `Auscultation: ${val("respAus")}.` : ""} ${val("respNotes")}`.trim(),
@@ -158,11 +170,13 @@ function rosBlock(section) {
 			return parts.join(" ");
 		},
 	};
-	return `${rosLine(section)} ${extras[section]?.() || val(`${section}Notes`) || ""}`.trim();
+	const chipLine = abnormalOnly
+		? rosAbnormalLine(section)
+		: rosChipsText(section);
+	return `${chipLine} ${extras[section]?.() || val(`${section}Notes`) || ""}`.trim();
 }
 
 function updateRosBadge(section) {
-	const state = window.CrewMateApp.getState();
 	const hasAbnormal = Object.entries(state.ros).some(
 		([key, value]) => key.startsWith(`${section}_`) && value === "abnormal",
 	);
@@ -171,8 +185,7 @@ function updateRosBadge(section) {
 	badge.classList.toggle("flagged", hasAbnormal);
 }
 
-function rosLine(section) {
-	const state = window.CrewMateApp.getState();
+function rosChipsText(section) {
 	return (
 		ROS[section].items
 			.map(([id, normal, abnormal]) => {
@@ -230,7 +243,6 @@ function abcHandoverSummary() {
 }
 
 function toggleEcgFinding(btn) {
-	const state = window.CrewMateApp.getState();
 	const finding = btn.dataset.finding;
 	if (finding === "Not performed") {
 		state.ecgFindings.clear();
@@ -264,7 +276,6 @@ function toggleEcgFinding(btn) {
 }
 
 function toggleEcgLead(btn) {
-	const state = window.CrewMateApp.getState();
 	const lead = btn.dataset.lead;
 	if (state.ecgLeads.has(lead)) {
 		state.ecgLeads.delete(lead);
@@ -276,7 +287,6 @@ function toggleEcgLead(btn) {
 }
 
 function generateOe() {
-	const state = window.CrewMateApp.getState();
 	window.CrewMateAbcde.syncAuscultationOutput();
 	const L = ROS.oe_label;
 	const oe = [
@@ -284,13 +294,13 @@ function generateOe() {
 		"",
 		ABCDE.sections.map(abcLine).join("\n"),
 		"",
-		`${L.resp}: ${rosLine("resp")} ${val("respAus") ? `Auscultation: ${val("respAus")}.` : ""}`,
+		`${L.resp}: ${rosChipsText("resp")} ${val("respAus") ? `Auscultation: ${val("respAus")}.` : ""}`,
 		`\n`,
-		`${L.cvs}: ${rosLine("cvs")} ${window.CrewMateAbcde.buildEcgText()}`,
+		`${L.cvs}: ${rosChipsText("cvs")} ${window.CrewMateAbcde.buildEcgText()}`,
 		`\n`,
-		`${L.neuro}: ${rosLine("neuro")}`,
+		`${L.neuro}: ${rosChipsText("neuro")}`,
 		`\n`,
-		`${L.gi}: ${rosLine("gi")} ${[
+		`${L.gi}: ${rosChipsText("gi")} ${[
 			Object.entries(state.abdoFindings).filter(([, f]) => f.size > 0).length
 				? `Palpation: ${Object.entries(state.abdoFindings)
 						.filter(([, f]) => f.size > 0)
@@ -304,13 +314,13 @@ function generateOe() {
 			.filter(Boolean)
 			.join(" ")}`.trimEnd(),
 		`\n`,
-		`${L.urine}: ${rosLine("urine")}`,
+		`${L.urine}: ${rosChipsText("urine")}`,
 		`\n`,
-		`${L.integ}: ${rosLine("integ")}`,
+		`${L.integ}: ${rosChipsText("integ")}`,
 		`\n`,
-		`${L.msk}: ${rosLine("msk")}`,
+		`${L.msk}: ${rosChipsText("msk")}`,
 		`\n`,
-		`${L.mh}: ${rosLine("mh")}`,
+		`${L.mh}: ${rosChipsText("mh")}`,
 		`\n`,
 	].join("\n");
 	$("#oeText").value = oe;
@@ -329,7 +339,7 @@ export function initRos() {
 window.CrewMateRos = {
 	toggleRos,
 	updateRosBadge,
-	rosBlock,
+	rosSectionText,
 	generateOe,
 	abcLine,
 	abcHandoverSummary,

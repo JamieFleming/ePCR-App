@@ -1,6 +1,7 @@
 import { $, $$, val } from "./dom.js";
+import { state } from "../app.js";
 
-export function listSet(set, fallback) {
+export function formatSet(set, fallback) {
 	return set.size ? [...set].join(", ") : fallback;
 }
 
@@ -39,7 +40,6 @@ export function getConveyTransferText(isPaeds = false) {
 }
 
 export function getNiceCTCriteria() {
-	const state = window.CrewMateApp.getState();
 	const criteria = [];
 	const gcsE = parseInt($("#headGcsEye")?.dataset.gcsSelected || "", 10) || 0;
 	const gcsV =

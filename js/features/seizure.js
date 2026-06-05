@@ -5,62 +5,63 @@ import {
 	buildButtonGrid,
 	populateChipGroup,
 } from "../utils/dom.js";
+import { OPTIONS } from "../data/options.js";
 
 function buildSeizureSection() {
 	buildButtonGrid(
 		"seizureTypeGrid",
-		window.CrewMateOptions.OPTIONS.seizure.type,
+		OPTIONS.seizure.type,
 		"szGroup",
 		"type",
 		"szValue",
 	);
 	buildButtonGrid(
 		"seizureFeaturesGrid",
-		window.CrewMateOptions.OPTIONS.seizure.features,
+		OPTIONS.seizure.features,
 		"szGroup",
 		"features",
 		"szValue",
 	);
 	buildButtonGrid(
 		"seizureFindingsGrid",
-		window.CrewMateOptions.OPTIONS.seizure.findings,
+		OPTIONS.seizure.findings,
 		"szGroup",
 		"findings",
 		"szValue",
 	);
 	buildButtonGrid(
 		"seizurePrecipitantsGrid",
-		window.CrewMateOptions.OPTIONS.seizure.precipitants,
+		OPTIONS.seizure.precipitants,
 		"szGroup",
 		"precipitants",
 		"szValue",
 	);
 	buildButtonGrid(
 		"aedComplianceGrid",
-		window.CrewMateOptions.OPTIONS.seizure.aedCompliance,
+		OPTIONS.seizure.aedCompliance,
 		"szGroup",
 		"aed",
 		"szValue",
 	);
 	populateChipGroup(
 		"seizureCount",
-		window.CrewMateOptions.OPTIONS.seizure.count,
+		OPTIONS.seizure.count,
 	);
 	populateChipGroup(
 		"seizureWitnessed",
-		window.CrewMateOptions.OPTIONS.seizure.witnessed,
+		OPTIONS.seizure.witnessed,
 	);
 	populateChipGroup(
 		"seizurePostictal",
-		window.CrewMateOptions.OPTIONS.seizure.postictal,
+		OPTIONS.seizure.postictal,
 	);
 	populateChipGroup(
 		"seizureRecovery",
-		window.CrewMateOptions.OPTIONS.seizure.recovery,
+		OPTIONS.seizure.recovery,
 	);
 	const postictalGrid = $("#seizurePostictalFeaturesGrid");
 	if (postictalGrid) {
-		window.CrewMateOptions.OPTIONS.seizure.postictalFeatures.forEach(
+		OPTIONS.seizure.postictalFeatures.forEach(
 			(feature) => {
 				const btn = document.createElement("button");
 				btn.type = "button";
@@ -74,7 +75,6 @@ function buildSeizureSection() {
 }
 
 function buildSeizureText() {
-	const state = window.CrewMateApp.getState();
 	const lines = [];
 	if (state.seizureType.size)
 		lines.push(`Seizure type: ${[...state.seizureType].join(", ")}`);

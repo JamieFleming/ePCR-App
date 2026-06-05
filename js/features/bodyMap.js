@@ -1,7 +1,7 @@
 import { $, $$, val } from "../utils/dom.js";
+import { state, setOtherFactorVisible } from "../app.js";
 
 function setMapMode(mode) {
-	const state = window.CrewMateApp.getState();
 	state.mapMode = mode;
 	$$(".mini-tab").forEach((btn) =>
 		btn.classList.toggle("active", btn.dataset.mapMode === mode),
@@ -9,7 +9,6 @@ function setMapMode(mode) {
 }
 
 function toggleBodyPart(part) {
-	const state = window.CrewMateApp.getState();
 	const targetSet =
 		state.mapMode === "site" ? state.siteParts : state.radiationParts;
 	const otherSet =
@@ -26,7 +25,6 @@ function toggleBodyPart(part) {
 }
 
 function removeBodyPart(id, type) {
-	const state = window.CrewMateApp.getState();
 	const set = type === "site" ? state.siteParts : state.radiationParts;
 	set.delete(id);
 	$(`#${CSS.escape(id)}`)?.classList.remove(type);
@@ -34,7 +32,6 @@ function removeBodyPart(id, type) {
 }
 
 function updateMapTags() {
-	const state = window.CrewMateApp.getState();
 	renderPartTags("siteTags", state.siteParts, "site", "Not selected");
 	renderPartTags(
 		"radiationTags",
@@ -67,7 +64,6 @@ function getSelectedParts(set) {
 }
 
 function clearBodyMap() {
-	const state = window.CrewMateApp.getState();
 	state.siteParts.clear();
 	state.radiationParts.clear();
 	$$(".body-part").forEach((part) =>
@@ -77,7 +73,6 @@ function clearBodyMap() {
 }
 
 function clearPainAssessment() {
-	const state = window.CrewMateApp.getState();
 	state.siteParts.clear();
 	state.radiationParts.clear();
 	state.character.clear();
@@ -107,8 +102,8 @@ function clearPainAssessment() {
 	$$(
 		"#painScoreGrid .pain-score-btn, #painScoreWorstGrid .pain-score-btn",
 	).forEach((b) => b.classList.remove("selected"));
-	window.CrewMateApp.setOtherFactorVisible("exacerbating", false);
-	window.CrewMateApp.setOtherFactorVisible("relieving", false);
+	setOtherFactorVisible("exacerbating", false);
+	setOtherFactorVisible("relieving", false);
 	updateMapTags();
 }
 

@@ -1,3 +1,5 @@
+import { state, updateDemographicVisibility } from "../app.js";
+
 const SAVE_KEY = "crewmate-eprf";
 let _saveTimer = null;
 
@@ -7,7 +9,6 @@ function scheduleSave() {
 }
 
 function serializeState() {
-	const state = window.CrewMateApp.getState();
 	const s = (set) => [...(set instanceof Set ? set : new Set())];
 	return {
 		ros: state.ros,
@@ -115,7 +116,6 @@ function saveFormState() {
 }
 
 function restoreFormState() {
-	const state = window.CrewMateApp.getState();
 	let data;
 	try {
 		const raw = localStorage.getItem(SAVE_KEY);
@@ -249,7 +249,7 @@ function restoreFormState() {
 	window.CrewMateBodyMap.updateMapTags();
 	window.CrewMateAbcde.syncAuscultationOutput();
 	window.CrewMateOutput.handleConveyanceDisplay();
-	window.CrewMateApp.updateDemographicVisibility();
+	updateDemographicVisibility();
 	const pcSelect = document.getElementById("pcSelect");
 	if (pcSelect?.value) pcSelect.dispatchEvent(new Event("change"));
 	if (state.worseningAuto) window.CrewMateOutput.applyWorseningDefault();

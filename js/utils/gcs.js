@@ -71,4 +71,3 @@ export function updateGcsTally(prefix) {
 	}
 }
 
-window.CrewMateGcs = { buildGcsCalcHTML, updateGcsTally };

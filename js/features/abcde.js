@@ -1,6 +1,7 @@
 import { $, $$, val, isChecked } from "../utils/dom.js";
 import { OPTIONS, ABCDE } from "../data/options.js";
 import { buildGcsCalcHTML } from "../utils/gcs.js";
+import { state } from "../app.js";
 
 function buildAbcde() {
 	const root = $("#abcdeContainer");
@@ -53,7 +54,6 @@ function buildAbdoGrid() {
 }
 
 function renderAbdoGrid() {
-	const state = window.CrewMateApp.getState();
 	$$(".abdo-region-btn").forEach((btn) => {
 		const region = btn.dataset.region;
 		const findings = state.abdoFindings[region];
@@ -109,7 +109,6 @@ function buildAuscGrid() {
 }
 
 function renderAuscGrid() {
-	const state = window.CrewMateApp.getState();
 	$$(".ausc-region-btn").forEach((btn) => {
 		const region = btn.dataset.region;
 		const findings = state.auscFindings[region];
@@ -151,7 +150,6 @@ function renderAuscGrid() {
 }
 
 function syncAuscultationOutput() {
-	const state = window.CrewMateApp.getState();
 	const entries = Object.entries(state.auscFindings).filter(
 		([, f]) => f.size > 0,
 	);
@@ -175,7 +173,6 @@ function syncAuscultationOutput() {
 }
 
 function buildEcgSection() {
-	const state = window.CrewMateApp.getState();
 	const findingsGrid = $("#ecgFindingsGrid");
 	const leadsGrid = $("#ecgLeadsGrid");
 	if (!findingsGrid || !leadsGrid) return;
@@ -202,7 +199,6 @@ function buildEcgSection() {
 }
 
 function buildEcgText() {
-	const state = window.CrewMateApp.getState();
 	if (!state.ecgFindings.size) return "";
 	const ecgLeadFindings = OPTIONS.cardiac.ecgLeadFindings;
 	const leadFindings = [...state.ecgFindings].filter((f) =>

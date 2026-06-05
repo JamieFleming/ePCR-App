@@ -1,9 +1,12 @@
 import { $, $$ } from "../utils/dom.js";
+import { OPTIONS, PAEDS } from "../data/options.js";
+import { PAEDS_WORSENING_PC, PAEDS_WORSENING_GENERIC } from "../data/worseningAdvice.js";
 import {
-	listSet,
+	formatSet,
 	getConveyTransferText,
 	setRadioChip,
 } from "../utils/helpers.js";
+import { state, paedsMode, createListRenderer, toggleConveyChip, bindRadioChipGroups } from "../app.js";
 
 let _paedsInited = false;
 let renderPaedsIvEntries, removePaedsIvEntry;
@@ -22,7 +25,7 @@ const paedsState = {
 function buildPaedsAbcdent() {
 	const root = $("#paedsAbcdentContainer");
 	if (!root) return;
-	window.CrewMateOptions.PAEDS.abcdent.forEach((section) => {
+	PAEDS.abcdent.forEach((section) => {
 		const details = document.createElement("details");
 		details.className = "section-card";
 		if (section.icon) details.dataset.sectionIcon = section.icon;
@@ -62,7 +65,7 @@ function buildPaedsAbcdent() {
 function buildPaedsSafeguardingGrid() {
 	const grid = $("#pSgGrid");
 	if (!grid) return;
-	window.CrewMateOptions.PAEDS.safeguarding.forEach((item) => {
+	PAEDS.safeguarding.forEach((item) => {
 		const btn = document.createElement("button");
 		btn.type = "button";
 		btn.className = "square-btn";
@@ -74,8 +77,8 @@ function buildPaedsSafeguardingGrid() {
 }
 
 function buildPaedsTreatmentSection() {
-	const { treatments } = window.CrewMateOptions.PAEDS;
-	const { wound } = window.CrewMateOptions.OPTIONS.treatments;
+	const { treatments } = PAEDS;
+	const { wound } = OPTIONS.treatments;
 
 	const buildPaedsTxGrid = (gridId, items, stateKey) => {
 		const grid = $(`#${gridId}`);
@@ -174,7 +177,7 @@ function updatePaedsAgeRef() {
 	const years = parseInt(val("pAgeYears") || val("ptAge")) || 0;
 	const months = parseInt(val("pAgeMonths")) || 0;
 	const manualGroup = val("pAgeGroup");
-	const { vitalsRef } = window.CrewMateOptions.PAEDS;
+	const { vitalsRef } = PAEDS;
 
 	const wt = aplsWeight(years, months);
 
@@ -241,7 +244,7 @@ function updatePaedsWorseningScript() {
 }
 
 function bindPaedsEvents() {
-	window.CrewMateApp.bindRadioChipGroups();
+	bindRadioChipGroups();
 
 	$("#paedsAbcdentContainer")?.addEventListener("click", (e) => {
 		const chip = e.target.closest("[data-p-abc]");
@@ -385,7 +388,7 @@ function bindPaedsEvents() {
 
 	$("#pConveyTransferGrid")?.addEventListener("click", (e) => {
 		const chip = e.target.closest(".p-convey-chip");
-		if (chip) window.CrewMateApp.toggleConveyChip(chip);
+		if (chip) toggleConveyChip(chip);
 	});
 
 	$("#pPc")?.addEventListener("change", () => {
@@ -420,7 +423,7 @@ function initPaeds() {
 	if (_paedsInited) return;
 	_paedsInited = true;
 
-	const em = window.CrewMateApp.makeEntryManager(
+	const em = createListRenderer(
 		"pIvEntries",
 		"pVaEntries",
 		(e) => {
@@ -518,7 +521,7 @@ function buildPaedsPatientText() {
 		detectAgeGroup(parseInt(yrs) || 0, parseInt(mo) || 0) ||
 		"";
 	const groupLabel =
-		window.CrewMateOptions.PAEDS.vitalsRef[group]?.label || group;
+		PAEDS.vitalsRef[group]?.label || group;
 	return [
 		`Patient: ${ageStr}, ${sex}`,
 		`Weight: ${wt}`,
@@ -585,7 +588,7 @@ function buildPaedsPATText() {
 
 function buildPaedsAbcdentText() {
 	const lines = [];
-	window.CrewMateOptions.PAEDS.abcdent.forEach((section) => {
+	PAEDS.abcdent.forEach((section) => {
 		const chips = $$(`[data-p-abc="${section.key}"]`);
 		if (!chips.length) return;
 		const abnormal = chips
@@ -754,8 +757,8 @@ function buildPaedsConveyText() {
 	]
 		.filter(Boolean)
 		.join("; ");
-	const pReferrals = window.CrewMateApp.getPReferrals();
-	return `${decision || "Not documented"}. Referred/signposted to: ${listSet(pReferrals, "not documented")}. ${val("pFollowUp") ? val("pFollowUp") + ". " : ""}${checks ? `Safety netting: ${checks}.` : ""}${notes ? " " + notes : ""}`.trim();
+	const pReferrals = state.pReferrals;
+	return `${decision || "Not documented"}. Referred/signposted to: ${formatSet(pReferrals, "not documented")}. ${val("pFollowUp") ? val("pFollowUp") + ". " : ""}${checks ? `Safety netting: ${checks}.` : ""}${notes ? " " + notes : ""}`.trim();
 }
 
 function buildPaedsWetflagText() {
@@ -778,10 +781,10 @@ function buildPaedsWetflagText() {
 
 function buildPaedsWorseningScript() {
 	const pc = val("pPc");
-	const pcData = window.CrewMateWorsening.PAEDS_WORSENING_PC[pc];
+	const pcData = PAEDS_WORSENING_PC[pc];
 	const conveyed = val("pConveyDecision") === "Conveyed";
 	const custom = val("pWorseningCustom");
-	const genericLines = window.CrewMateWorsening.PAEDS_WORSENING_GENERIC.map(
+	const genericLines = PAEDS_WORSENING_GENERIC.map(
 		(i) => `• ${i}`,
 	).join("\n");
 

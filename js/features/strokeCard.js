@@ -1,4 +1,5 @@
 import { $, val } from "../utils/dom.js";
+import { OPTIONS } from "../data/options.js";
 
 const strokeState = {
 	strokeFaceFindings: new Set(),
@@ -33,7 +34,7 @@ function buildStrokeCard() {
 	const body = card.querySelector(".section-body");
 	if (!body) return;
 
-	const { stroke } = window.CrewMateOptions.OPTIONS;
+	const { stroke } = OPTIONS;
 
 	function row(label, id, items, stateKey) {
 		const wrap = document.createElement("div");

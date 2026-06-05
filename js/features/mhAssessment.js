@@ -1,5 +1,6 @@
 import { $, $$, val, isChecked, buildButtonGrid } from "../utils/dom.js";
 import { OPTIONS } from "../data/options.js";
+import { state } from "../app.js";
 
 function buildMhSection() {
 	buildButtonGrid(
@@ -137,7 +138,6 @@ function buildMhSection() {
 }
 
 function addMhActEntry() {
-	const state = window.CrewMateApp.getState();
 	const type = val("mhActType");
 	if (!type) return;
 	const entry = {
@@ -191,7 +191,6 @@ function addMhActEntry() {
 }
 
 function renderMhActEntries() {
-	const state = window.CrewMateApp.getState();
 	const root = $("#mhActEntries");
 	if (!root) return;
 	root.innerHTML = "";
@@ -217,7 +216,6 @@ function renderMhActEntries() {
 }
 
 function buildMhAssessmentText() {
-	const state = window.CrewMateApp.getState();
 	const lines = [];
 	if (state.mhIntent.size)
 		lines.push(`Intent: ${[...state.mhIntent].join(", ")}`);

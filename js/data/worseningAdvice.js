@@ -571,9 +571,3 @@ export const PAEDS_WORSENING_PC = {
 	},
 };
 
-window.CrewMateWorsening = {
-	WORSENING_GENERIC,
-	WORSENING_PC,
-	PAEDS_WORSENING_GENERIC,
-	PAEDS_WORSENING_PC,
-};

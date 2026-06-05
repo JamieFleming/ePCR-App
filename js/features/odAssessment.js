@@ -6,6 +6,7 @@ import {
 	populateChipGroup,
 } from "../utils/dom.js";
 import { OPTIONS } from "../data/options.js";
+import { state } from "../app.js";
 
 function buildOdAssessmentSection() {
 	const options = OPTIONS.mentalHealth;
@@ -43,7 +44,6 @@ function buildOdAssessmentSection() {
 }
 
 function buildOdAssessmentText() {
-	const state = window.CrewMateApp.getState();
 	const lines = [];
 	const intent = val("odAssessIntentionality");
 	if (intent) lines.push(`Intentionality: ${intent}`);

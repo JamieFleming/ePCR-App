@@ -1,7 +1,8 @@
 import { $, $$, val, isChecked } from "../utils/dom.js";
 import { OPTIONS, ABCDE, ROS } from "../data/options.js";
+import { WORSENING_GENERIC, WORSENING_PC } from "../data/worseningAdvice.js";
 import {
-	listSet,
+	formatSet,
 	listFactors,
 	getPc,
 	onsetTime,
@@ -10,6 +11,8 @@ import {
 	getConveyTransferText,
 	setRadioChip,
 } from "../utils/helpers.js";
+import { evaluateRedFlags } from "../clinical/redFlags.js";
+import { state, paedsMode } from "../app.js";
 
 const outputSectionTexts = new Map();
 
@@ -54,7 +57,7 @@ function renderConveyanceSuggestion() {
 		},
 		{
 			label: "No active clinical prompts",
-			met: window.CrewMateApp.evaluateRedFlags().length === 0,
+			met: evaluateRedFlags().length === 0,
 		},
 		{
 			label: "Safety netting completed",
@@ -88,7 +91,6 @@ function renderConveyanceSuggestion() {
 }
 
 function applyWorseningDefault() {
-	const state = window.CrewMateApp.getState();
 
 	if (!state.worseningAuto) return;
 	const decision = val("conveyanceDecision");
@@ -99,8 +101,8 @@ function applyWorseningDefault() {
 
 function buildPatientScript(declined) {
 	const pc = getPc();
-	const pcData = window.CrewMateWorsening.WORSENING_PC[pc];
-	const genericLines = window.CrewMateWorsening.WORSENING_GENERIC.map(
+	const pcData = WORSENING_PC[pc];
+	const genericLines = WORSENING_GENERIC.map(
 		(i) => `- ${i}`,
 	).join("\n");
 	const specificLines = pcData?.items.map((i) => `- ${i}`).join("\n") || "";
@@ -136,7 +138,7 @@ function buildWorseningText() {
 	const mode = val("worseningMode");
 	const decision = val("conveyanceDecision");
 	const pc = getPc();
-	const pcData = window.CrewMateWorsening.WORSENING_PC[pc];
+	const pcData = WORSENING_PC[pc];
 	const custom = val("customWorsening");
 
 	if (mode === "Not applicable" || decision === "Conveyed")
@@ -144,7 +146,7 @@ function buildWorseningText() {
 
 	const declined = decision === "Declined conveyance";
 	const allItems = [
-		...window.CrewMateWorsening.WORSENING_GENERIC,
+		...WORSENING_GENERIC,
 		...(pcData?.items || []),
 	];
 	const adviceLine = `Worsening advice given${declined ? " (declined conveyance)" : ""}. Patient${declined ? " and any bystanders" : ""} advised to call 999 for: ${allItems.join("; ")}.`;
@@ -227,7 +229,6 @@ function buildConveyDestination(prefix = "convey") {
 }
 
 function buildConveyanceText() {
-	const state = window.CrewMateApp.getState();
 
 	const decision = val("conveyanceDecision");
 	const notes = val("conveyanceNotes");
@@ -291,7 +292,7 @@ function buildConveyanceText() {
 			: null;
 
 	return [
-		`${decision}. Referred/signposted to: ${listSet(state.referrals, "not documented")}.`,
+		`${decision}. Referred/signposted to: ${formatSet(state.referrals, "not documented")}.`,
 		val("followUp") ? val("followUp") + "." : null,
 		checks ? `Safety netting: ${checks}.` : null,
 		legalLine,
@@ -393,7 +394,6 @@ function buildHandoverText() {
 }
 
 function buildLahSbarText() {
-	const state = window.CrewMateApp.getState();
 
 	const age = val("ptAge");
 	const sex = val("ptSex");
@@ -516,7 +516,7 @@ function buildLahSbarText() {
 		return false;
 	};
 	["resp", "cvs", "neuro", "gi", "urine", "integ", "msk", "mh"].forEach((s) => {
-		const block = window.CrewMateRos.rosBlock(s);
+		const block = window.CrewMateRos.rosSectionText(s);
 		if (!block || !block.trim()) return;
 		const findings = block
 			.split(/\.\s+/)
@@ -547,7 +547,7 @@ function buildLahSbarText() {
 		assessParts.push(`Capacity: ${capacityStatus}`);
 	}
 
-	const referrals = listSet(state.referrals, "none");
+	const referrals = formatSet(state.referrals, "none");
 	const followUp = val("followUp");
 	const checks = [
 		isChecked("riskExplained") && "risks explained",
@@ -595,7 +595,6 @@ function buildLahSbarText() {
 }
 
 function buildOutputSections() {
-	const state = window.CrewMateApp.getState();
 
 	const pc = getPc();
 	const site =
@@ -761,7 +760,7 @@ function buildOutputSections() {
 		...Object.entries(ROS.output_title).map(([section, title]) => ({
 			id: `ros-${section}`,
 			title,
-			body: window.CrewMateRos.rosBlock(section),
+			body: window.CrewMateRos.rosSectionText(section),
 		})),
 		...(val("oeText")
 			? [
@@ -855,7 +854,6 @@ function buildOutputSections() {
 }
 
 function buildEdHandoverText() {
-	const state = window.CrewMateApp.getState();
 
 	const now = new Date();
 	const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
@@ -990,7 +988,9 @@ function buildEdHandoverText() {
 			) || false;
 		const hasNotes = (ROS.notes_field[section] || []).some((f) => val(f));
 		if (hasAbnormal || hasNotes) {
-			assessmentLines.push(`${label}: ${window.CrewMateRos.rosBlock(section)}`);
+			assessmentLines.push(
+				`${label}: ${window.CrewMateRos.rosSectionText(section, true)}`,
+			);
 		}
 	});
 	const oeText = val("oeText");
@@ -1059,7 +1059,7 @@ function renderOutputSections(sections) {
 
 function generateOutput() {
 	window.CrewMateAbcde.syncAuscultationOutput();
-	const sections = window.CrewMateApp.paedsMode
+	const sections = paedsMode
 		? window.CrewMatePaeds.buildPaedsOutputFromAdultForm()
 		: buildOutputSections();
 	renderOutputSections(sections);

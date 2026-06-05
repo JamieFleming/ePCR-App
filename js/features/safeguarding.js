@@ -1,5 +1,6 @@
 import { val, isChecked, buildButtonGrid } from "../utils/dom.js";
 import { OPTIONS } from "../data/options.js";
+import { state } from "../app.js";
 
 function buildSafeguardingSection() {
 	buildButtonGrid(
@@ -12,7 +13,6 @@ function buildSafeguardingSection() {
 }
 
 function buildSafeguardingText() {
-	const state = window.CrewMateApp.getState();
 	const concerns = [...state.safeguardingConcerns].map((c) =>
 		c === "Other" ? val("safeguardingOtherText") || "Other" : c,
 	);

@@ -1,10 +1,8 @@
-import { $, $$, val, isChecked } from "./js/utils/dom.js";
+import { $, $$, val, isChecked } from "./utils/dom.js";
+import { OPTIONS } from "./data/options.js";
+import { updateGcsTally } from "./utils/gcs.js";
 
-function evaluateRedFlags() {
-	return [];
-}
-
-const state = {
+export const state = {
 	mapMode: "site",
 	siteParts: new Set(),
 	radiationParts: new Set(),
@@ -69,11 +67,8 @@ const state = {
 	pReferrals: new Set(),
 };
 
-// Primary Survey - ABCs
-
 document.addEventListener("DOMContentLoaded", () => {
 	init();
-	// initRespCounter();
 });
 
 document.addEventListener("crewmate:leave-paeds", () => {
@@ -97,8 +92,7 @@ document.addEventListener("crewmate:show-paeds", () => {
 	switchTab("history");
 });
 
-let _obsRecInited = false;
-let paedsMode = false;
+export let paedsMode = false;
 
 // App Init
 function init() {
@@ -107,16 +101,10 @@ function init() {
 	window.CrewMateBodyMap.updateMapTags();
 	window.CrewMateOutput.updateWorseningScript();
 	enhanceSectionCards();
-	// bindRedFlagToggle();
-	// document.addEventListener("click", scheduleRedFlags, { passive: true });
-	// document.addEventListener("input", scheduleRedFlags, { passive: true });
-	// document.addEventListener("change", scheduleRedFlags, { passive: true });
 	bindRadioChipGroups();
 }
 
-// Builders
-
-function makeEntryManager(
+export function createListRenderer(
 	stateKey,
 	containerId,
 	formatFn,
@@ -141,22 +129,8 @@ function makeEntryManager(
 	return { render, remove };
 }
 
-window.CrewMateApp = {
-	makeEntryManager,
-	getPReferrals: () => state.pReferrals,
-	getState: () => state,
-	enhanceSectionCards,
-	setOtherFactorVisible,
-	updateDemographicVisibility,
-	toggleConveyChip,
-	bindRadioChipGroups,
-	evaluateRedFlags,
-	get paedsMode() {
-		return paedsMode;
-	},
-};
 
-function updateDemographicVisibility() {
+export function updateDemographicVisibility() {
 	const sex = val("ptSex");
 	const age = parseInt(val("ptAge"), 10);
 	const isFemaleOrOther = sex === "Female" || sex === "Other";
@@ -259,7 +233,7 @@ function bindEvents() {
 		$("#seizureAssessmentCard").classList.toggle("hidden", pc !== "Seizure");
 		$("#strokeAssessmentCard")?.classList.toggle("hidden", pc !== "Stroke");
 		const isMhPc =
-			window.CrewMateOptions.OPTIONS.mentalHealth.presentingComplaint.includes(
+			OPTIONS.mentalHealth.presentingComplaint.includes(
 				pc,
 			);
 		$("#odAssessmentCard")?.classList.toggle(
@@ -452,7 +426,7 @@ function bindEvents() {
 				document.body.append(sentinel);
 			}
 			sentinel.dataset.gcsSelected = gcsScore;
-			window.CrewMateGcs.updateGcsTally(gcsPrefix);
+			updateGcsTally(gcsPrefix);
 			return;
 		}
 
@@ -735,7 +709,7 @@ function bindEvents() {
 	});
 }
 
-// User actuions
+// User actions
 
 function switchTab(tabName) {
 	$$(".tab").forEach((tab) =>
@@ -762,7 +736,7 @@ function toggleMulti(button) {
 	}
 }
 
-function setOtherFactorVisible(stateKey, visible) {
+export function setOtherFactorVisible(stateKey, visible) {
 	const wrapIds = {
 		character: "characterOtherWrap",
 		associated: "associatedOtherWrap",
@@ -776,7 +750,7 @@ function setOtherFactorVisible(stateKey, visible) {
 	if (wrapId) $(`#${wrapId}`)?.classList.toggle("hidden", !visible);
 }
 
-function toggleConveyChip(button) {
+export function toggleConveyChip(button) {
 	const isPaeds = button.classList.contains("p-convey-chip");
 	const changeWrapId = isPaeds ? "pConveyChangeWrap" : "conveyChangeWrap";
 	const escalateWrapId = isPaeds
@@ -806,7 +780,7 @@ function toggleConveyChip(button) {
 	}
 }
 
-function bindRadioChipGroups() {
+export function bindRadioChipGroups() {
 	$$("[data-radio-group]").forEach((group) => {
 		group.addEventListener("click", (e) => {
 			const chip = e.target.closest("[data-value]");
@@ -828,7 +802,7 @@ function bindRadioChipGroups() {
 
 // Output
 
-function enhanceSectionCards() {
+export function enhanceSectionCards() {
 	const descriptions = {
 		"Presenting Complaint": [
 			"pc",

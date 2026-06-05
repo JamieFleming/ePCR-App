@@ -7,6 +7,7 @@ import {
 	buildButtonGrid,
 } from "./dom.js";
 import { OPTIONS } from "../data/options.js";
+import { buildGcsCalcHTML } from "./gcs.js";
 
 function populateGaugeChips(groupId) {
 	const group = $(`[data-radio-group='${groupId}']`);
@@ -189,7 +190,7 @@ function initFormInit() {
 	populateHeadInjuryChips();
 	const headGcsWrap = $("#headGcsCalcWrap");
 	if (headGcsWrap)
-		headGcsWrap.innerHTML = window.CrewMateGcs.buildGcsCalcHTML("headGcs");
+		headGcsWrap.innerHTML = buildGcsCalcHTML("headGcs");
 	buildPainScoreGrids();
 	buildUrinaryChips();
 	buildOptionButtons();
