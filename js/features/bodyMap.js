@@ -107,8 +107,8 @@ function clearPainAssessment() {
 	$$(
 		"#painScoreGrid .pain-score-btn, #painScoreWorstGrid .pain-score-btn",
 	).forEach((b) => b.classList.remove("selected"));
-	setOtherFactorVisible("exacerbating", false);
-	setOtherFactorVisible("relieving", false);
+	window.CrewMateApp.setOtherFactorVisible("exacerbating", false);
+	window.CrewMateApp.setOtherFactorVisible("relieving", false);
 	updateMapTags();
 }
 

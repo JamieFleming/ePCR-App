@@ -54,7 +54,7 @@ function renderConveyanceSuggestion() {
 		},
 		{
 			label: "No active clinical prompts",
-			met: evaluateRedFlags().length === 0,
+			met: window.CrewMateApp.evaluateRedFlags().length === 0,
 		},
 		{
 			label: "Safety netting completed",

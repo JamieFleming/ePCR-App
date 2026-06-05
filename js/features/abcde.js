@@ -221,6 +221,78 @@ function buildEcgText() {
 	return `ECG: ${parts.join("; ")}.`;
 }
 
+function toggleAbc(button) {
+	const isAbnormal = button.dataset.abcState === "abnormal";
+	const next = isAbnormal ? "normal" : "abnormal";
+	setAbcChipState(button, next);
+	if (next === "abnormal") {
+		syncDisabilityLinks(button);
+		const noAbc = $("#oaNoABC");
+		if (noAbc) noAbc.checked = false;
+		const normPres = $("#oaNormalPresentation");
+		if (normPres) normPres.checked = false;
+	} else {
+		const allNormal = !$$("[data-abc]").some(
+			(b) => b.dataset.abcState === "abnormal",
+		);
+		if (allNormal) {
+			const noAbc = $("#oaNoABC");
+			if (noAbc) noAbc.checked = true;
+			const normPres = $("#oaNormalPresentation");
+			if (normPres) normPres.checked = true;
+		}
+	}
+	if (button.dataset.normal === "Good colour") {
+		const wrap = $("#colourDetailWrap");
+		if (wrap) {
+			wrap.classList.toggle("hidden", next === "normal");
+			if (next === "normal") {
+				const hidden = $("#colourDetail");
+				if (hidden) hidden.value = "";
+				wrap
+					.querySelectorAll("[data-value]")
+					.forEach((c) => c.classList.remove("selected"));
+			}
+		}
+	}
+	if (button.dataset.normal === "Normal Rate") {
+		const wrap = $("#hrRateDetailWrap");
+		if (wrap) {
+			wrap.classList.toggle("hidden", next === "normal");
+			if (next === "normal") {
+				const hidden = $("#hrRateDetail");
+				if (hidden) hidden.value = "";
+				wrap
+					.querySelectorAll("[data-value]")
+					.forEach((c) => c.classList.remove("selected"));
+			}
+		}
+	}
+}
+function setAbcChipState(button, state) {
+	const isAbnormal = state === "abnormal";
+	button.dataset.abcState = state;
+	button.classList.toggle("abnormal", isAbnormal);
+	button.classList.toggle("selected", !isAbnormal);
+	button.textContent = isAbnormal
+		? button.dataset.abnormal
+		: button.dataset.normal;
+	button.dataset.value = button.textContent;
+}
+
+function syncDisabilityLinks(button) {
+	if (button.dataset.abc !== "D") return;
+	const normalLabel = button.dataset.normal;
+	ABCDE.dLinks.forEach(([left, right]) => {
+		const linkedNormal =
+			left === normalLabel ? right : right === normalLabel ? left : null;
+		if (!linkedNormal) return;
+		const linked = $(`.abc-chip[data-abc="D"][data-normal="${linkedNormal}"]`);
+		if (linked && linked.dataset.abcState === "normal")
+			setAbcChipState(linked, "abnormal");
+	});
+}
+
 export function initAbcde() {
 	buildAbcde();
 	buildAbdoGrid();
@@ -233,4 +305,7 @@ window.CrewMateAbcde = {
 	renderAuscGrid,
 	buildEcgText,
 	syncAuscultationOutput,
+	toggleAbc,
+	setAbcChipState,
+	syncDisabilityLinks,
 };

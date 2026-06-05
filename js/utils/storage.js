@@ -249,7 +249,7 @@ function restoreFormState() {
 	window.CrewMateBodyMap.updateMapTags();
 	window.CrewMateAbcde.syncAuscultationOutput();
 	window.CrewMateOutput.handleConveyanceDisplay();
-	updateDemographicVisibility();
+	window.CrewMateApp.updateDemographicVisibility();
 	const pcSelect = document.getElementById("pcSelect");
 	if (pcSelect?.value) pcSelect.dispatchEvent(new Event("change"));
 	if (state.worseningAuto) window.CrewMateOutput.applyWorseningDefault();

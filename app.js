@@ -1,12 +1,4 @@
-"use strict";
-
-const $ = (selector, root = document) => root.querySelector(selector);
-
-const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-
-const val = (id) => ($(`#${id}`)?.value || "").trim();
-
-const isChecked = (id) => Boolean($(`#${id}`)?.checked);
+import { $, $$, val, isChecked } from "./js/utils/dom.js";
 
 function evaluateRedFlags() {
 	return [];
@@ -154,6 +146,11 @@ window.CrewMateApp = {
 	getPReferrals: () => state.pReferrals,
 	getState: () => state,
 	enhanceSectionCards,
+	setOtherFactorVisible,
+	updateDemographicVisibility,
+	toggleConveyChip,
+	bindRadioChipGroups,
+	evaluateRedFlags,
 	get paedsMode() {
 		return paedsMode;
 	},
@@ -517,7 +514,7 @@ function bindEvents() {
 		}
 
 		const abc = event.target.closest(".abc-chip");
-		if (abc) return toggleAbc(abc);
+		if (abc) return window.CrewMateAbcde.toggleAbc(abc);
 		const convey = event.target.closest(".convey-chip");
 		if (convey) return toggleConveyChip(convey);
 		const ros = event.target.closest(".ros-chip");
@@ -809,148 +806,6 @@ function toggleConveyChip(button) {
 	}
 }
 
-function toggleAbc(button) {
-	const isAbnormal = button.dataset.abcState === "abnormal";
-	const next = isAbnormal ? "normal" : "abnormal";
-	setAbcChipState(button, next);
-	if (next === "abnormal") {
-		syncDisabilityLinks(button);
-		const noAbc = $("#oaNoABC");
-		if (noAbc) noAbc.checked = false;
-		const normPres = $("#oaNormalPresentation");
-		if (normPres) normPres.checked = false;
-	} else {
-		const allNormal = !$$("[data-abc]").some(
-			(b) => b.dataset.abcState === "abnormal",
-		);
-		if (allNormal) {
-			const noAbc = $("#oaNoABC");
-			if (noAbc) noAbc.checked = true;
-			const normPres = $("#oaNormalPresentation");
-			if (normPres) normPres.checked = true;
-		}
-	}
-	if (button.dataset.normal === "Good colour") {
-		const wrap = $("#colourDetailWrap");
-		if (wrap) {
-			wrap.classList.toggle("hidden", next === "normal");
-			if (next === "normal") {
-				const hidden = $("#colourDetail");
-				if (hidden) hidden.value = "";
-				wrap
-					.querySelectorAll("[data-value]")
-					.forEach((c) => c.classList.remove("selected"));
-			}
-		}
-	}
-	if (button.dataset.normal === "Normal Rate") {
-		const wrap = $("#hrRateDetailWrap");
-		if (wrap) {
-			wrap.classList.toggle("hidden", next === "normal");
-			if (next === "normal") {
-				const hidden = $("#hrRateDetail");
-				if (hidden) hidden.value = "";
-				wrap
-					.querySelectorAll("[data-value]")
-					.forEach((c) => c.classList.remove("selected"));
-			}
-		}
-	}
-}
-
-function setAbcChipState(button, state) {
-	const isAbnormal = state === "abnormal";
-	button.dataset.abcState = state;
-	button.classList.toggle("abnormal", isAbnormal);
-	button.classList.toggle("selected", !isAbnormal);
-	button.textContent = isAbnormal
-		? button.dataset.abnormal
-		: button.dataset.normal;
-	button.dataset.value = button.textContent;
-}
-
-function syncDisabilityLinks(button) {
-	if (button.dataset.abc !== "D") return;
-	const normalLabel = button.dataset.normal;
-	window.CrewMateOptions.ABCDE.dLinks.forEach(([left, right]) => {
-		const linkedNormal =
-			left === normalLabel ? right : right === normalLabel ? left : null;
-		if (!linkedNormal) return;
-		const linked = $(`.abc-chip[data-abc="D"][data-normal="${linkedNormal}"]`);
-		if (linked && linked.dataset.abcState === "normal")
-			setAbcChipState(linked, "abnormal");
-	});
-}
-
-// Pain assessment
-
-function aplsWeight(ageYears, ageMonths) {
-	const totalMonths = (ageYears || 0) * 12 + (ageMonths || 0);
-	const yrs = ageYears || 0;
-	if (totalMonths < 1) return 3.5; // newborn estimate
-	if (totalMonths < 12) return Math.round((totalMonths + 9) / 2);
-	if (yrs < 6) return 2 * (yrs + 4);
-	if (yrs <= 12) return 3 * yrs;
-	return null; // adolescent
-}
-
-function detectAgeGroup(ageYears, ageMonths) {
-	const totalMonths = (ageYears || 0) * 12 + (ageMonths || 0);
-	if (totalMonths < 1) return "neonate";
-	if (totalMonths < 12) return "infant";
-	if (ageYears < 2) return "toddler";
-	if (ageYears < 5) return "preschool";
-	if (ageYears < 12) return "school";
-	return "adolescent";
-}
-
-//  WETFLAG calculator - Currently hidden - need to check alllowed
-function calcWetflag(weight) {
-	if (!weight || weight <= 0) return null;
-	const w = parseFloat(weight);
-	const ageApprox = w < 10 ? Math.round(w / 2) : Math.round(w / 3);
-	const tubeSizeUncuffed = (ageApprox / 4 + 4).toFixed(1);
-	const tubeSizeCuffed = (ageApprox / 4 + 3.5).toFixed(1);
-	return {
-		weight: `${w} kg`,
-		energy: `${(4 * w).toFixed(0)} J (4 J/kg)`,
-		tube: `${tubeSizeUncuffed} mm uncuffed / ${tubeSizeCuffed} mm cuffed`,
-		fluid: `${(10 * w).toFixed(0)}–${(20 * w).toFixed(0)} mL (10–20 mL/kg crystalloid)`,
-		lorazepam: `${(0.1 * w).toFixed(2)} mg IV/IO (0.1 mg/kg, max 4 mg)`,
-		adrenaline: `${(0.1 * w).toFixed(1)} mL of 1:10,000 (10 mcg/kg = 0.1 mL/kg)`,
-		glucose: `${(2 * w).toFixed(0)} mL of 10% dextrose (2 mL/kg)`,
-	};
-}
-
-function updateFlaccTotal() {
-	const ids = [
-		"flaccFace",
-		"flaccLegs",
-		"flaccActivity",
-		"flaccCry",
-		"flaccConsolability",
-	];
-	const total = ids.reduce((sum, id) => sum + (parseInt(val(id)) || 0), 0);
-	const el = $("#flaccTotal");
-	if (!el) return;
-	let label = "No pain / relaxed";
-	let cls = "pain-low";
-	if (total >= 1 && total <= 3) {
-		label = "Mild pain";
-		cls = "pain-low";
-	}
-	if (total >= 4 && total <= 6) {
-		label = "Moderate pain";
-		cls = "pain-mod";
-	}
-	if (total >= 7) {
-		label = "Severe pain";
-		cls = "pain-high";
-	}
-	el.className = `flacc-total ${cls}`;
-	el.textContent = `FLACC total: ${total} / 10 — ${label}`;
-}
-
 function bindRadioChipGroups() {
 	$$("[data-radio-group]").forEach((group) => {
 		group.addEventListener("click", (e) => {
@@ -972,35 +827,6 @@ function bindRadioChipGroups() {
 }
 
 // Output
-
-function buildTmtText() {
-	const lines = ["3 Minute Toolkit (Spotting the Sick Child)"];
-
-	const patImpression = val("patImpression");
-	lines.push(`\nLOOK (PAT across the room)`);
-	if (patImpression) lines.push(`Initial impression: ${patImpression}`);
-	else lines.push(`Initial impression: Not recorded`);
-
-	lines.push(`\nLISTEN & FEEL (hands-on primary survey)`);
-	lines.push(`See primary survey (ABCDE + ENT + T + DEFG) below`);
-
-	const all3 = $$(`#tmtPhase3Grid .tmt-chip`);
-	const done3 = all3
-		.filter((c) => c.classList.contains("selected"))
-		.map((c) => c.dataset.tmtLabel);
-	const skip3 = all3
-		.filter((c) => !c.classList.contains("selected"))
-		.map((c) => c.dataset.tmtLabel);
-	const decision = val("tmtDecision");
-	const notes = val("tmtNotes");
-	lines.push(`\nDECIDE`);
-	if (done3.length) lines.push(`Completed: ${done3.join(", ")}`);
-	if (skip3.length) lines.push(`Not completed: ${skip3.join(", ")}`);
-	if (decision) lines.push(`Management decision: ${decision}`);
-	if (notes) lines.push(`Clinical reasoning: ${notes}`);
-
-	return lines.join("\n");
-}
 
 function enhanceSectionCards() {
 	const descriptions = {

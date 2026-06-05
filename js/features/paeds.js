@@ -241,7 +241,7 @@ function updatePaedsWorseningScript() {
 }
 
 function bindPaedsEvents() {
-	bindRadioChipGroups();
+	window.CrewMateApp.bindRadioChipGroups();
 
 	$("#paedsAbcdentContainer")?.addEventListener("click", (e) => {
 		const chip = e.target.closest("[data-p-abc]");
@@ -385,7 +385,7 @@ function bindPaedsEvents() {
 
 	$("#pConveyTransferGrid")?.addEventListener("click", (e) => {
 		const chip = e.target.closest(".p-convey-chip");
-		if (chip) toggleConveyChip(chip);
+		if (chip) window.CrewMateApp.toggleConveyChip(chip);
 	});
 
 	$("#pPc")?.addEventListener("change", () => {
@@ -944,6 +944,102 @@ function buildPaedsOutputSections() {
 			?.addEventListener("click", async () => await copyText(body));
 		container.append(card);
 	});
+}
+
+function aplsWeight(ageYears, ageMonths) {
+	const totalMonths = (ageYears || 0) * 12 + (ageMonths || 0);
+	const yrs = ageYears || 0;
+	if (totalMonths < 1) return 3.5; // newborn estimate
+	if (totalMonths < 12) return Math.round((totalMonths + 9) / 2);
+	if (yrs < 6) return 2 * (yrs + 4);
+	if (yrs <= 12) return 3 * yrs;
+	return null; // adolescent
+}
+
+function detectAgeGroup(ageYears, ageMonths) {
+	const totalMonths = (ageYears || 0) * 12 + (ageMonths || 0);
+	if (totalMonths < 1) return "neonate";
+	if (totalMonths < 12) return "infant";
+	if (ageYears < 2) return "toddler";
+	if (ageYears < 5) return "preschool";
+	if (ageYears < 12) return "school";
+	return "adolescent";
+}
+
+//  WETFLAG calculator - Currently hidden - need to check alllowed
+function calcWetflag(weight) {
+	if (!weight || weight <= 0) return null;
+	const w = parseFloat(weight);
+	const ageApprox = w < 10 ? Math.round(w / 2) : Math.round(w / 3);
+	const tubeSizeUncuffed = (ageApprox / 4 + 4).toFixed(1);
+	const tubeSizeCuffed = (ageApprox / 4 + 3.5).toFixed(1);
+	return {
+		weight: `${w} kg`,
+		energy: `${(4 * w).toFixed(0)} J (4 J/kg)`,
+		tube: `${tubeSizeUncuffed} mm uncuffed / ${tubeSizeCuffed} mm cuffed`,
+		fluid: `${(10 * w).toFixed(0)}–${(20 * w).toFixed(0)} mL (10–20 mL/kg crystalloid)`,
+		lorazepam: `${(0.1 * w).toFixed(2)} mg IV/IO (0.1 mg/kg, max 4 mg)`,
+		adrenaline: `${(0.1 * w).toFixed(1)} mL of 1:10,000 (10 mcg/kg = 0.1 mL/kg)`,
+		glucose: `${(2 * w).toFixed(0)} mL of 10% dextrose (2 mL/kg)`,
+	};
+}
+
+function updateFlaccTotal() {
+	const ids = [
+		"flaccFace",
+		"flaccLegs",
+		"flaccActivity",
+		"flaccCry",
+		"flaccConsolability",
+	];
+	const total = ids.reduce((sum, id) => sum + (parseInt(val(id)) || 0), 0);
+	const el = $("#flaccTotal");
+	if (!el) return;
+	let label = "No pain / relaxed";
+	let cls = "pain-low";
+	if (total >= 1 && total <= 3) {
+		label = "Mild pain";
+		cls = "pain-low";
+	}
+	if (total >= 4 && total <= 6) {
+		label = "Moderate pain";
+		cls = "pain-mod";
+	}
+	if (total >= 7) {
+		label = "Severe pain";
+		cls = "pain-high";
+	}
+	el.className = `flacc-total ${cls}`;
+	el.textContent = `FLACC total: ${total} / 10 — ${label}`;
+}
+
+function buildTmtText() {
+	const lines = ["3 Minute Toolkit (Spotting the Sick Child)"];
+
+	const patImpression = val("patImpression");
+	lines.push(`\nLOOK (PAT across the room)`);
+	if (patImpression) lines.push(`Initial impression: ${patImpression}`);
+	else lines.push(`Initial impression: Not recorded`);
+
+	lines.push(`\nLISTEN & FEEL (hands-on primary survey)`);
+	lines.push(`See primary survey (ABCDE + ENT + T + DEFG) below`);
+
+	const all3 = $$(`#tmtPhase3Grid .tmt-chip`);
+	const done3 = all3
+		.filter((c) => c.classList.contains("selected"))
+		.map((c) => c.dataset.tmtLabel);
+	const skip3 = all3
+		.filter((c) => !c.classList.contains("selected"))
+		.map((c) => c.dataset.tmtLabel);
+	const decision = val("tmtDecision");
+	const notes = val("tmtNotes");
+	lines.push(`\nDECIDE`);
+	if (done3.length) lines.push(`Completed: ${done3.join(", ")}`);
+	if (skip3.length) lines.push(`Not completed: ${skip3.join(", ")}`);
+	if (decision) lines.push(`Management decision: ${decision}`);
+	if (notes) lines.push(`Clinical reasoning: ${notes}`);
+
+	return lines.join("\n");
 }
 
 window.CrewMatePaeds = {
