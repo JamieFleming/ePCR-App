@@ -94,6 +94,30 @@ function toggleRos(button) {
 	}
 }
 
+function updateRosBadge(section) {
+	const hasAbnormal = Object.entries(state.ros).some(
+		([key, value]) => key.startsWith(`${section}_`) && value === "abnormal",
+	);
+	const badge = $(`#badge-${section}`);
+	badge.textContent = hasAbnormal ? "Findings" : "All normal";
+	badge.classList.toggle("flagged", hasAbnormal);
+}
+
+function rosChipsText(section) {
+	return (
+		ROS[section].items
+			.map(([id, normal, abnormal]) => {
+				if (state.ros[`${section}_${id}`] !== "abnormal") return normal;
+				if (section === "resp" && id === "breathingRate") {
+					const detail = val("rrDetail");
+					if (detail) return detail;
+				}
+				return abnormal;
+			})
+			.join(". ") + "."
+	);
+}
+
 function rosAbnormalLine(section) {
 	const abnormals = ROS[section].items
 		.filter(([id]) => state.ros[`${section}_${id}`] === "abnormal")
@@ -174,30 +198,6 @@ function rosSectionText(section, abnormalOnly = false) {
 		? rosAbnormalLine(section)
 		: rosChipsText(section);
 	return `${chipLine} ${extras[section]?.() || val(`${section}Notes`) || ""}`.trim();
-}
-
-function updateRosBadge(section) {
-	const hasAbnormal = Object.entries(state.ros).some(
-		([key, value]) => key.startsWith(`${section}_`) && value === "abnormal",
-	);
-	const badge = $(`#badge-${section}`);
-	badge.textContent = hasAbnormal ? "Findings" : "All normal";
-	badge.classList.toggle("flagged", hasAbnormal);
-}
-
-function rosChipsText(section) {
-	return (
-		ROS[section].items
-			.map(([id, normal, abnormal]) => {
-				if (state.ros[`${section}_${id}`] !== "abnormal") return normal;
-				if (section === "resp" && id === "breathingRate") {
-					const detail = val("rrDetail");
-					if (detail) return detail;
-				}
-				return abnormal;
-			})
-			.join(". ") + "."
-	);
 }
 
 function abcChipText(button) {

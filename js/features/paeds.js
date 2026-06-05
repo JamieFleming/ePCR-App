@@ -1,4 +1,4 @@
-import { $, $$ } from "../utils/dom.js";
+import { $, $$, val, isChecked } from "../utils/dom.js";
 import { OPTIONS, PAEDS } from "../data/options.js";
 import { PAEDS_WORSENING_PC, PAEDS_WORSENING_GENERIC } from "../data/worseningAdvice.js";
 import {
@@ -723,7 +723,7 @@ function buildPaedsConveyText() {
 	const decision = val("pConveyDecision");
 	const notes = val("pConveyNotes");
 	if (decision === "Conveyed") {
-		const destination = buildConveyDestination("pConvey");
+		const destination = window.CrewMateOutput.buildConveyDestination("pConvey");
 		const transferText = getConveyTransferText(true);
 		const changeDetail = val("pConveyChangeDetail");
 		const escalatedDetail = val("pConveyEscalatedDetail");
@@ -837,7 +837,7 @@ function buildPaedsWorseningText() {
 }
 
 function buildPaedsOutputFromAdultForm() {
-	const adultSections = buildOutputSections();
+	const adultSections = window.CrewMateOutput.buildOutputSections();
 	const withoutPrimary = adultSections.filter((s) => s.id !== "primary");
 	const paedsSections = [
 		{

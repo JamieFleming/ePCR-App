@@ -1,7 +1,4 @@
-import "./utils/gcs.js";
 import "./utils/formInit.js";
-import "./data/options.js";
-import "./data/worseningAdvice.js";
 import "./features/paeds.js";
 import "./features/bodyMap.js";
 import { initTheme } from "./features/theme.js";

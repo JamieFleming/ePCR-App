@@ -67,6 +67,8 @@ export const state = {
 	pReferrals: new Set(),
 };
 
+export let paedsMode = false;
+
 document.addEventListener("DOMContentLoaded", () => {
 	init();
 });
@@ -92,9 +94,7 @@ document.addEventListener("crewmate:show-paeds", () => {
 	switchTab("history");
 });
 
-export let paedsMode = false;
-
-// App Init
+// --- Init ---
 function init() {
 	window.CrewMateFormInit.initFormInit();
 	bindEvents();
@@ -141,7 +141,7 @@ export function updateDemographicVisibility() {
 	);
 }
 
-//Binders
+// --- Events ---
 function bindEvents() {
 	$("#safeguardingReferral")?.addEventListener("change", () => {
 		$("#safeguardingReferralFields")?.classList.toggle(
@@ -709,7 +709,7 @@ function bindEvents() {
 	});
 }
 
-// User actions
+// --- User actions ---
 
 function switchTab(tabName) {
 	$$(".tab").forEach((tab) =>
@@ -800,7 +800,7 @@ export function bindRadioChipGroups() {
 	});
 }
 
-// Output
+// --- Exports ---
 
 export function enhanceSectionCards() {
 	const descriptions = {

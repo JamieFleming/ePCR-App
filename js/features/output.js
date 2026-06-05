@@ -213,6 +213,28 @@ function handleConveyanceDisplay() {
 	);
 }
 
+function handlePConveyanceDisplay() {
+	const decision = val("pConveyDecision");
+	const conveyed = decision === "Conveyed";
+	const notConveyed = decision !== "" && !conveyed;
+	$("#pConveyedFields")?.classList.toggle("hidden", !conveyed);
+	$("#pNonConveyedFields")?.classList.toggle("hidden", !notConveyed);
+	const pWorseningMode = $("#pWorseningMode");
+	if (pWorseningMode) pWorseningMode.value = conveyed ? "na" : "standard";
+	window.CrewMatePaeds?.updatePaedsWorseningScript();
+	if (!conveyed) return;
+	$("#pHospitalOtherWrap")?.classList.toggle(
+		"hidden",
+		val("pConveyHospital") !== "Other hospital",
+	);
+	const dept = val("pConveyDepartment");
+	$("#pWardDetailsWrap")?.classList.toggle("hidden", dept !== "Ward");
+	$("#pDepartmentOtherWrap")?.classList.toggle(
+		"hidden",
+		dept !== "Other department",
+	);
+}
+
 function buildConveyDestination(prefix = "convey") {
 	const hospital =
 		val(`${prefix}Hospital`) === "Other hospital"
@@ -300,97 +322,6 @@ function buildConveyanceText() {
 	]
 		.filter(Boolean)
 		.join(" ");
-}
-
-function buildHandoverText() {
-	const format = val("handoverFormat") || "ASHICE";
-	const age = val("ptAge");
-	const sex = val("ptSex");
-	const sexLabel = sex && sex !== "Not specified" ? sex.toLowerCase() : "";
-	const pt = [age ? `${age}yo` : "", sexLabel].filter(Boolean).join(" ");
-	const pc = getPc();
-	const hpcCaller = val("hpcCaller");
-	const hpcCat = val("hpcCategory");
-	const hpcCatWord = hpcCat === "C4" ? "generated" : "dispatched";
-	const hpcCallLine =
-		hpcCaller && hpcCat
-			? `${hpcCaller}, ${hpcCat} ${hpcCatWord}`
-			: hpcCaller || (hpcCat ? `${hpcCat} ${hpcCatWord}` : "");
-	const hpc = [val("hpcEvents"), hpcCallLine].filter(Boolean).join(". ") || "";
-	const pmh = isChecked("noPmh")
-		? "No significant PMH"
-		: val("pmh") || "Not documented";
-	const meds = isChecked("noMeds")
-		? "No regular medications"
-		: val("medications") || "Not documented";
-	const allergies = isChecked("nkda")
-		? "NKDA"
-		: val("allergies") || "Not documented";
-	const extraNotes = val("handoverNotes");
-
-	const vitalParts = [
-		val("gcsScore")
-			? `GCS ${val("gcsScore")}`
-			: val("avpu")
-				? `AVPU ${val("avpu")}`
-				: "",
-		val("hr") ? `HR ${val("hr")}` : "",
-		val("bp") ? `BP ${val("bp")}` : "",
-		val("spo2") ? `SpO2 ${val("spo2")}%` : "",
-		val("rr") ? `RR ${val("rr")}` : "",
-		val("temp") ? `Temp ${val("temp")}°C` : "",
-	].filter(Boolean);
-	const vitalsLine = vitalParts.length
-		? vitalParts.join(", ")
-		: "Not documented";
-
-	const treatmentParts = ABCDE.sections.flatMap((s) => {
-		const n = val(s.notes);
-		return n ? [n] : [];
-	});
-	const treatment = treatmentParts.length
-		? treatmentParts.join(". ")
-		: "None documented";
-
-	if (format === "ASHICE") {
-		return [
-			`A — Age: ${age || "Not documented"}`,
-			`S — Sex: ${sex || "Not specified"}`,
-			`H — History: ${pc}. ${hpc ? hpc + ". " : ""}PMH: ${pmh}. Medications: ${meds}. Allergies: ${allergies}.`,
-			`I — Illness/Injury: ${pc}${val("onsetType") ? `. Onset: ${val("onsetType")}${onsetTime() ? `, ${onsetTime()}` : ""}${onsetClockSuffix()}` : ""}.`,
-			`C — Condition: ${vitalsLine}.`,
-			`E — ETA: ${val("handoverEta") || "Not given"}`,
-			...(extraNotes ? ["", extraNotes] : []),
-		].join("\n");
-	}
-
-	if (format === "SBAR") {
-		return [
-			`S — Situation: ${pt ? pt + " " : ""}presenting with ${pc.toLowerCase()}${hpc ? `. ${hpc}` : ""}.`,
-			`B — Background: PMH: ${pmh}. Medications: ${meds}. Allergies: ${allergies}.`,
-			`A — Assessment:\n${window.CrewMateRos.abcHandoverSummary()}`,
-			`R — Recommendation: ${buildConveyanceText()}`,
-			...(extraNotes ? ["", extraNotes] : []),
-		].join("\n\n");
-	}
-
-	if (format === "ATMIST") {
-		return [
-			`A — Age: ${age || "Not documented"}`,
-			`T — Time: ${val("incidentTime") || "Not documented"}`,
-			`M — Mechanism: ${hpc || val("onsetType") || "Not documented"}`,
-			`I — Injuries/Illness: ${pc}`,
-			`S — Signs: ${vitalsLine}`,
-			`T — Treatment: ${treatment}`,
-			...(extraNotes ? ["", extraNotes] : []),
-		].join("\n");
-	}
-
-	if (format === "Leave at Home") {
-		return buildLahSbarText();
-	}
-
-	return "";
 }
 
 function buildLahSbarText() {
@@ -592,6 +523,97 @@ function buildLahSbarText() {
 		`A — ASSESSMENT\n${assessParts.join("\n") || "No specific findings documented."}`,
 		`R — RECOMMENDATION\n${recParts.join("\n")}`,
 	].join("\n\n");
+}
+
+function buildHandoverText() {
+	const format = val("handoverFormat") || "ASHICE";
+	const age = val("ptAge");
+	const sex = val("ptSex");
+	const sexLabel = sex && sex !== "Not specified" ? sex.toLowerCase() : "";
+	const pt = [age ? `${age}yo` : "", sexLabel].filter(Boolean).join(" ");
+	const pc = getPc();
+	const hpcCaller = val("hpcCaller");
+	const hpcCat = val("hpcCategory");
+	const hpcCatWord = hpcCat === "C4" ? "generated" : "dispatched";
+	const hpcCallLine =
+		hpcCaller && hpcCat
+			? `${hpcCaller}, ${hpcCat} ${hpcCatWord}`
+			: hpcCaller || (hpcCat ? `${hpcCat} ${hpcCatWord}` : "");
+	const hpc = [val("hpcEvents"), hpcCallLine].filter(Boolean).join(". ") || "";
+	const pmh = isChecked("noPmh")
+		? "No significant PMH"
+		: val("pmh") || "Not documented";
+	const meds = isChecked("noMeds")
+		? "No regular medications"
+		: val("medications") || "Not documented";
+	const allergies = isChecked("nkda")
+		? "NKDA"
+		: val("allergies") || "Not documented";
+	const extraNotes = val("handoverNotes");
+
+	const vitalParts = [
+		val("gcsScore")
+			? `GCS ${val("gcsScore")}`
+			: val("avpu")
+				? `AVPU ${val("avpu")}`
+				: "",
+		val("hr") ? `HR ${val("hr")}` : "",
+		val("bp") ? `BP ${val("bp")}` : "",
+		val("spo2") ? `SpO2 ${val("spo2")}%` : "",
+		val("rr") ? `RR ${val("rr")}` : "",
+		val("temp") ? `Temp ${val("temp")}°C` : "",
+	].filter(Boolean);
+	const vitalsLine = vitalParts.length
+		? vitalParts.join(", ")
+		: "Not documented";
+
+	const treatmentParts = ABCDE.sections.flatMap((s) => {
+		const n = val(s.notes);
+		return n ? [n] : [];
+	});
+	const treatment = treatmentParts.length
+		? treatmentParts.join(". ")
+		: "None documented";
+
+	if (format === "ASHICE") {
+		return [
+			`A — Age: ${age || "Not documented"}`,
+			`S — Sex: ${sex || "Not specified"}`,
+			`H — History: ${pc}. ${hpc ? hpc + ". " : ""}PMH: ${pmh}. Medications: ${meds}. Allergies: ${allergies}.`,
+			`I — Illness/Injury: ${pc}${val("onsetType") ? `. Onset: ${val("onsetType")}${onsetTime() ? `, ${onsetTime()}` : ""}${onsetClockSuffix()}` : ""}.`,
+			`C — Condition: ${vitalsLine}.`,
+			`E — ETA: ${val("handoverEta") || "Not given"}`,
+			...(extraNotes ? ["", extraNotes] : []),
+		].join("\n");
+	}
+
+	if (format === "SBAR") {
+		return [
+			`S — Situation: ${pt ? pt + " " : ""}presenting with ${pc.toLowerCase()}${hpc ? `. ${hpc}` : ""}.`,
+			`B — Background: PMH: ${pmh}. Medications: ${meds}. Allergies: ${allergies}.`,
+			`A — Assessment:\n${window.CrewMateRos.abcHandoverSummary()}`,
+			`R — Recommendation: ${buildConveyanceText()}`,
+			...(extraNotes ? ["", extraNotes] : []),
+		].join("\n\n");
+	}
+
+	if (format === "ATMIST") {
+		return [
+			`A — Age: ${age || "Not documented"}`,
+			`T — Time: ${val("incidentTime") || "Not documented"}`,
+			`M — Mechanism: ${hpc || val("onsetType") || "Not documented"}`,
+			`I — Injuries/Illness: ${pc}`,
+			`S — Signs: ${vitalsLine}`,
+			`T — Treatment: ${treatment}`,
+			...(extraNotes ? ["", extraNotes] : []),
+		].join("\n");
+	}
+
+	if (format === "Leave at Home") {
+		return buildLahSbarText();
+	}
+
+	return "";
 }
 
 function buildOutputSections() {
@@ -1071,28 +1093,6 @@ function generateOutput() {
 	return fullText;
 }
 
-function handlePConveyanceDisplay() {
-	const decision = val("pConveyDecision");
-	const conveyed = decision === "Conveyed";
-	const notConveyed = decision !== "" && !conveyed;
-	$("#pConveyedFields")?.classList.toggle("hidden", !conveyed);
-	$("#pNonConveyedFields")?.classList.toggle("hidden", !notConveyed);
-	const pWorseningMode = $("#pWorseningMode");
-	if (pWorseningMode) pWorseningMode.value = conveyed ? "na" : "standard";
-	window.CrewMatePaeds?.updatePaedsWorseningScript();
-	if (!conveyed) return;
-	$("#pHospitalOtherWrap")?.classList.toggle(
-		"hidden",
-		val("pConveyHospital") !== "Other hospital",
-	);
-	const dept = val("pConveyDepartment");
-	$("#pWardDetailsWrap")?.classList.toggle("hidden", dept !== "Ward");
-	$("#pDepartmentOtherWrap")?.classList.toggle(
-		"hidden",
-		dept !== "Other department",
-	);
-}
-
 async function copyText(text) {
 	try {
 		await navigator.clipboard.writeText(text);
@@ -1136,4 +1136,5 @@ window.CrewMateOutput = {
 	buildConveyanceText,
 	buildWorseningText,
 	buildOutputSections,
+	buildConveyDestination,
 };

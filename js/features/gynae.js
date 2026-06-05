@@ -18,152 +18,126 @@ function buildGynaeSection() {
 
 	populateChipGroup("pvBleedSeverity", OPTIONS.gynae.bleedSeverity);
 
-	const charGrid = $("#pvBleedCharGrid");
-	if (charGrid) {
+	const bleedCharGrid = $("#pvBleedCharGrid");
+	if (bleedCharGrid) {
 		OPTIONS.gynae.bleedChar.forEach(({ key, label }) => {
 			const btn = document.createElement("button");
 			btn.type = "button";
 			btn.className = "square-btn gynae-char";
 			btn.dataset.gynaeChar = key;
 			btn.textContent = label;
-			charGrid.append(btn);
+			bleedCharGrid.append(btn);
 		});
 	}
 
-	const colourGrid = $("#dischargeColourGrid");
-	if (colourGrid) {
-		OPTIONS.gynae.dischargeColour.forEach(({ key, label }) => {
-			const btn = document.createElement("button");
-			btn.type = "button";
-			btn.className = "square-btn gynae-disc";
-			btn.dataset.gynaeDisc = key;
-			btn.textContent = label;
-			colourGrid.append(btn);
-		});
-	}
-
-	const consistencyGrid = $("#dischargeConsistencyGrid");
-	if (consistencyGrid) {
-		OPTIONS.gynae.dischargeConsistency.forEach(({ key, label }) => {
-			const btn = document.createElement("button");
-			btn.type = "button";
-			btn.className = "square-btn gynae-disc";
-			btn.dataset.gynaeDisc = key;
-			btn.textContent = label;
-			consistencyGrid.append(btn);
-		});
-	}
-
-	const odourGrid = $("#dischargeOdourGrid");
-	if (odourGrid) {
-		OPTIONS.gynae.dischargeOdour.forEach(({ key, label }) => {
-			const btn = document.createElement("button");
-			btn.type = "button";
-			btn.className = "square-btn gynae-disc";
-			btn.dataset.gynaeDisc = key;
-			btn.textContent = label;
-			odourGrid.append(btn);
-		});
-	}
+	buildDischargeGrid("dischargeColourGrid", OPTIONS.gynae.dischargeColour);
+	buildDischargeGrid("dischargeConsistencyGrid", OPTIONS.gynae.dischargeConsistency);
+	buildDischargeGrid("dischargeOdourGrid", OPTIONS.gynae.dischargeOdour);
 
 	populateChipGroup("dischargeAmount", OPTIONS.gynae.dischargeAmount);
+}
+
+function buildDischargeGrid(gridId, items) {
+	const grid = $(`#${gridId}`);
+	if (!grid) return;
+	items.forEach(({ key, label }) => {
+		const btn = document.createElement("button");
+		btn.type = "button";
+		btn.className = "square-btn gynae-disc";
+		btn.dataset.gynaeDisc = key;
+		btn.textContent = label;
+		grid.append(btn);
+	});
 }
 
 function buildGynaeOutput() {
 	const lines = [];
 
-	const status = val("pregnancyStatus");
-	if (status) {
-		let line = `Pregnancy status: ${status}`;
-		if (status !== "Not pregnant") {
+	const pregnancyStatus = val("pregnancyStatus");
+	if (pregnancyStatus) {
+		let pregnancyLine = `Pregnancy status: ${pregnancyStatus}`;
+		if (pregnancyStatus !== "Not pregnant") {
 			const gestation = val("gestationWeeks");
 			const edd = val("edd");
 			const gravida = val("gravida");
 			const para = val("para");
-			const details = [
+			const pregnancyDetails = [
 				gestation ? `${gestation} weeks` : null,
 				edd ? `EDD ${edd}` : null,
 				gravida || para ? `G${gravida || "?"}P${para || "?"}` : null,
 			]
 				.filter(Boolean)
 				.join(", ");
-			if (details) line += ` (${details})`;
+			if (pregnancyDetails) pregnancyLine += ` (${pregnancyDetails})`;
 		}
-		lines.push(line);
+		lines.push(pregnancyLine);
 	}
 
 	const lmp = val("lmp");
 	if (lmp) lines.push(`LMP: ${lmp}`);
 
-	const isSymptom = (key) =>
+	const hasSymptom = (key) =>
 		!!document
 			.querySelector(`.gynae-symptom[data-gynae-symptom="${key}"]`)
 			?.classList.contains("selected");
-	const isChar = (key) =>
+	const hasBleedChar = (key) =>
 		!!document
 			.querySelector(`.gynae-char[data-gynae-char="${key}"]`)
 			?.classList.contains("selected");
-	const isDisc = (key) =>
+	const hasDischargeAttr = (key) =>
 		!!document
 			.querySelector(`.gynae-disc[data-gynae-disc="${key}"]`)
 			?.classList.contains("selected");
 
 	const symptoms = [];
-	if (isSymptom("pvBleed")) {
-		let bleed = "PV bleeding";
-		const severity = val("pvBleedSeverity");
-		const chars = [
-			isChar("bright") ? "bright red" : null,
-			isChar("dark") ? "dark/old blood" : null,
-			isChar("clots") ? "clots" : null,
-		].filter(Boolean);
-		const detail = [severity, ...chars].filter(Boolean).join(", ");
-		if (detail) bleed += ` — ${detail}`;
-		symptoms.push(bleed);
-	}
-	if (isSymptom("pelvicPain")) symptoms.push("pelvic pain");
-	if (isSymptom("discharge")) {
-		const discColours = [
-			isDisc("clear") ? "clear/white" : null,
-			isDisc("yellow") ? "yellow" : null,
-			isDisc("green") ? "green" : null,
-			isDisc("grey") ? "grey" : null,
-			isDisc("brown") ? "brown" : null,
-			isDisc("blood") ? "blood-stained" : null,
-		].filter(Boolean);
-		const discConsistency = [
-			isDisc("watery") ? "watery" : null,
-			isDisc("thick") ? "thick" : null,
-			isDisc("cottage") ? "cottage cheese" : null,
-			isDisc("frothy") ? "frothy" : null,
-		].filter(Boolean);
-		const discOdour = [
-			isDisc("no-odour") ? "no odour" : null,
-			isDisc("offensive") ? "offensive odour" : null,
-			isDisc("fishy") ? "fishy odour" : null,
-		].filter(Boolean);
-		const discAmount = val("dischargeAmount");
-		const discDuration = val("dischargeDuration");
 
-		let disc = "Vaginal discharge";
-		const discParts = [
-			discColours.length ? discColours.join("/") : null,
-			discConsistency.length ? discConsistency.join(", ") : null,
-			discOdour.length ? discOdour.join(", ") : null,
-			discAmount ? `${discAmount.toLowerCase()} amount` : null,
-			discDuration ? `onset: ${discDuration}` : null,
-		].filter(Boolean);
-		if (discParts.length) disc += ` — ${discParts.join("; ")}`;
-		symptoms.push(disc);
+	if (hasSymptom("pvBleed")) {
+		const bleedSeverity = val("pvBleedSeverity");
+		const bleedCharacteristics = OPTIONS.gynae.bleedChar
+			.filter(({ key }) => hasBleedChar(key))
+			.map(({ label }) => label.toLowerCase());
+		const bleedDetail = [bleedSeverity, ...bleedCharacteristics]
+			.filter(Boolean)
+			.join(", ");
+		symptoms.push(bleedDetail ? `PV bleeding — ${bleedDetail}` : "PV bleeding");
 	}
+
+	if (hasSymptom("pelvicPain")) symptoms.push("Pelvic pain");
+
+	if (hasSymptom("discharge")) {
+		const selectedColours = OPTIONS.gynae.dischargeColour
+			.filter(({ key }) => hasDischargeAttr(key))
+			.map(({ label }) => label);
+		const selectedConsistency = OPTIONS.gynae.dischargeConsistency
+			.filter(({ key }) => hasDischargeAttr(key))
+			.map(({ label }) => label);
+		const selectedOdour = OPTIONS.gynae.dischargeOdour
+			.filter(({ key }) => hasDischargeAttr(key))
+			.map(({ label }) => label);
+		const dischargeAmount = val("dischargeAmount");
+		const dischargeDuration = val("dischargeDuration");
+
+		const dischargeSummaryParts = [
+			selectedColours.length ? selectedColours.join(" / ") : null,
+			selectedConsistency.length ? selectedConsistency.join(", ") : null,
+			selectedOdour.length ? selectedOdour.join(", ") : null,
+			dischargeAmount ? `${dischargeAmount.toLowerCase()} amount` : null,
+			dischargeDuration ? `onset: ${dischargeDuration}` : null,
+		].filter(Boolean);
+
+		symptoms.push(
+			dischargeSummaryParts.length
+				? `Vaginal discharge — ${dischargeSummaryParts.join("; ")}`
+				: "Vaginal discharge",
+		);
+	}
+
 	if (symptoms.length) lines.push(`Symptoms: ${symptoms.join("; ")}`);
 
 	const notes = val("gynaeNotes");
 	if (notes) lines.push(notes);
 
-	return lines.length
-		? lines.join("\n")
-		: "No gynaecological concerns identified";
+	return lines.length ? lines.join("\n") : "No gynaecological concerns identified";
 }
 
 export function initGynae() {

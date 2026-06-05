@@ -2,6 +2,8 @@ import { $, $$, val } from "../utils/dom.js";
 import { getPc, rfSystolic } from "../utils/helpers.js";
 import { state } from "../app.js";
 
+let _rfTimer;
+
 function rfPc(term) {
 	return getPc().toLowerCase().includes(term.toLowerCase());
 }
@@ -402,7 +404,6 @@ function renderRedFlags() {
 	}
 }
 
-let _rfTimer;
 function scheduleRedFlags() {
 	clearTimeout(_rfTimer);
 	_rfTimer = setTimeout(() => {
@@ -428,10 +429,11 @@ export {
 	scheduleRedFlags,
 	bindRedFlagToggle,
 	evaluateRedFlags,
+	initRedFlags,
 	RED_FLAGS,
 };
 
-export function initRedFlags() {
+function initRedFlags() {
 	bindRedFlagToggle();
 	document.addEventListener("click", scheduleRedFlags, { passive: true });
 	document.addEventListener("input", scheduleRedFlags, { passive: true });
