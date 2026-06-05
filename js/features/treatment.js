@@ -1,4 +1,4 @@
-import { $, $$, val, isChecked } from "../utils/dom.js";
+import { $, $$, val, isChecked, buildButtonGrid } from "../utils/dom.js";
 import { OPTIONS } from "../data/options.js";
 
 let pendingManualItems = new Set();
@@ -195,11 +195,14 @@ function addIvEntry(isPaeds = false) {
 		const el = $(`#${id}`);
 		if (el) el.value = "";
 	});
-	[`${fieldPrefix}GaugeWrap`, `${fieldPrefix}IvSites`, `${fieldPrefix}IoSites`, `${fieldPrefix}FlushWrap`].forEach(
-		(id) => {
-			$(`#${id}`)?.classList.add("hidden");
-		},
-	);
+	[
+		`${fieldPrefix}GaugeWrap`,
+		`${fieldPrefix}IvSites`,
+		`${fieldPrefix}IoSites`,
+		`${fieldPrefix}FlushWrap`,
+	].forEach((id) => {
+		$(`#${id}`)?.classList.add("hidden");
+	});
 	$$(
 		`[data-radio-group='${fieldPrefix}Type'] [data-value], [data-radio-group='${fieldPrefix}Gauge'] [data-value], [data-radio-group='${fieldPrefix}Site'] [data-value], [data-radio-group='${fieldPrefix}Outcome'] [data-value], [data-radio-group='${fieldPrefix}Flushed'] [data-value]`,
 	).forEach((chip) => chip.classList.remove("selected"));
@@ -212,7 +215,9 @@ function addDrugEntry(isPaeds = false) {
 	const fieldPrefix = isPaeds ? "pDrug" : "drug";
 	const nameField = isPaeds ? `${fieldPrefix}Name` : "drugName";
 	const drug =
-		val(nameField) === "Other" ? val(`${fieldPrefix}NameOther`) : val(nameField);
+		val(nameField) === "Other"
+			? val(`${fieldPrefix}NameOther`)
+			: val(nameField);
 	if (!drug) return;
 
 	const entry = {
@@ -308,7 +313,9 @@ function addManualEntry() {
 	const otherEl = $("#manualOther");
 	if (otherEl) otherEl.value = "";
 	$("#manualOtherWrap")?.classList.add("hidden");
-	$$("[data-tx-group='manual']").forEach((btn) => btn.classList.remove("selected"));
+	$$("[data-tx-group='manual']").forEach((btn) =>
+		btn.classList.remove("selected"),
+	);
 	renderManualEntries();
 }
 

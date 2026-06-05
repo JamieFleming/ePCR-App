@@ -1,4 +1,4 @@
-import { $, $$, val, isChecked } from "../utils/dom.js";
+import { $, $$, val, isChecked, buildButtonGrid } from "../utils/dom.js";
 import { OPTIONS } from "../data/options.js";
 
 function buildMhSection() {
@@ -269,7 +269,8 @@ function buildMhAssessmentText() {
 	const mentalStateExamLines = mentalStateExamPairs
 		.filter(([set]) => set.size)
 		.map(([set, label]) => `${label}: ${[...set].join(", ")}`);
-	if (mentalStateExamLines.length) lines.push("MSE — " + mentalStateExamLines.join(" "));
+	if (mentalStateExamLines.length)
+		lines.push("MSE — " + mentalStateExamLines.join(" "));
 	if (val("mhCurrentServices"))
 		lines.push(`Current MH services: ${val("mhCurrentServices")}`);
 	if (val("mhS136")) lines.push(`S136 / MHA: ${val("mhS136")}`);

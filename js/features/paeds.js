@@ -457,7 +457,11 @@ function initPaeds() {
 
 	buildPaedsAbcdent();
 	buildPaedsSafeguardingGrid();
-	buildConveyTransferChips("pConveyTransferGrid", "p-convey-chip");
+	window.CrewMateFormInit.buildConveyTransferChips(
+		"pConveyTransferGrid",
+		"p-convey-chip",
+	);
+
 	buildPaedsTreatmentSection();
 	bindPaedsEvents();
 	updatePaedsAgeRef();

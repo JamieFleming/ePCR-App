@@ -1,4 +1,10 @@
-import { $, val, isChecked } from "../utils/dom.js";
+import {
+	$,
+	val,
+	isChecked,
+	buildButtonGrid,
+	populateChipGroup,
+} from "../utils/dom.js";
 import { OPTIONS } from "../data/options.js";
 
 function buildOdAssessmentSection() {

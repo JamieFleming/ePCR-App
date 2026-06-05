@@ -1,4 +1,4 @@
-import { $, val } from "../utils/dom.js";
+import { $, val, populateChipGroup } from "../utils/dom.js";
 import { OPTIONS } from "../data/options.js";
 
 function buildGynaeSection() {
