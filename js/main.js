@@ -20,6 +20,7 @@ import { initCapacity } from "./features/capacity.js";
 import { initGynae } from "./features/gynae.js";
 import { initSafeguarding } from "./features/safeguarding.js";
 import { initOutput } from "./features/output.js";
+import { initStorage } from "./utils/storage.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 	initTheme();
@@ -40,4 +41,5 @@ document.addEventListener("DOMContentLoaded", () => {
 	initGynae();
 	initSafeguarding();
 	initOutput();
+	initStorage();
 });
