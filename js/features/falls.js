@@ -1,5 +1,6 @@
 import { $, val, isChecked, populateChipGroup } from "../utils/dom.js";
 import { OPTIONS } from "../data/options.js";
+import { listSet, listFactors } from "../utils/helpers.js";
 
 function populateFallsPrevCountChips() {
 	populateChipGroup("fallsPreviousCount", OPTIONS.falls.previousCount);

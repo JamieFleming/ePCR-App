@@ -1,5 +1,15 @@
 import { $, $$, val, isChecked } from "../utils/dom.js";
 import { OPTIONS, ABCDE, ROS } from "../data/options.js";
+import {
+	listSet,
+	listFactors,
+	getPc,
+	onsetTime,
+	onsetClockSuffix,
+	rfSystolic,
+	getConveyTransferText,
+	setRadioChip,
+} from "../utils/helpers.js";
 
 const outputSectionTexts = new Map();
 

@@ -1,5 +1,6 @@
 import { $, $$, val, isChecked, populateChipGroup } from "../utils/dom.js";
 import { OPTIONS } from "../data/options.js";
+import { listSet, getNiceCTCriteria } from "../utils/helpers.js";
 
 let pendingInjuryTypes = new Set();
 let pendingInjuryInterventions = new Set();
