@@ -357,7 +357,7 @@ function buildHandoverText() {
 		return [
 			`S — Situation: ${pt ? pt + " " : ""}presenting with ${pc.toLowerCase()}${hpc ? `. ${hpc}` : ""}.`,
 			`B — Background: PMH: ${pmh}. Medications: ${meds}. Allergies: ${allergies}.`,
-			`A — Assessment:\n${abcHandoverSummary()}`,
+			`A — Assessment:\n${window.CrewMateRos.abcHandoverSummary()}`,
 			`R — Recommendation: ${buildConveyanceText()}`,
 			...(extraNotes ? ["", extraNotes] : []),
 		].join("\n\n");
@@ -429,7 +429,7 @@ function buildLahSbarText() {
 	if (obsText) assessParts.push(`Obs: ${obsText.split("\n").join(", ")}`);
 
 	window.CrewMateAbcde.syncAuscultationOutput();
-	const abcSummary = abcHandoverSummary();
+	const abcSummary = window.CrewMateRos.abcHandoverSummary();
 	if (abcSummary && abcSummary !== "No ABCDE concerns identified.") {
 		assessParts.push(`ABCDE: ${abcSummary.split("\n").join("; ")}`);
 	} else {
@@ -506,7 +506,7 @@ function buildLahSbarText() {
 		return false;
 	};
 	["resp", "cvs", "neuro", "gi", "urine", "integ", "msk", "mh"].forEach((s) => {
-		const block = rosBlock(s);
+		const block = window.CrewMateRos.rosBlock(s);
 		if (!block || !block.trim()) return;
 		const findings = block
 			.split(/\.\s+/)
@@ -642,7 +642,7 @@ function buildOutputSections() {
 			title: "PRIMARY SURVEY",
 			body:
 				`OA: ${val("oaFound")}${val("oaLocation") ? ` at ${val("oaLocation")}` : ""}; ${val("oaMobility").toLowerCase()}. ${val("oaFound") !== "Greeted by patient" && val("oaPatientFoundHow") ? `On reaching patient: ${val("oaPatientFoundHow")}. ` : ""}${isChecked("oaConsent") ? "Consented to assessment. " : ""}${isChecked("oaNoABC") ? "No immediate ABC concerns. " : ""}${isChecked("oaNormalPresentation") ? "Normal presentation on arrival. " : ""}${val("oaNotes")}`.trimEnd() +
-				`\n${ABCDE.sections.map(abcLine).join("\n")}`,
+				`\n${ABCDE.sections.map(window.CrewMateRos.abcLine).join("\n")}`,
 		},
 		{
 			id: "pain",
@@ -751,7 +751,7 @@ function buildOutputSections() {
 		...Object.entries(ROS.output_title).map(([section, title]) => ({
 			id: `ros-${section}`,
 			title,
-			body: rosBlock(section),
+			body: window.CrewMateRos.rosBlock(section),
 		})),
 		...(val("oeText")
 			? [
@@ -980,7 +980,7 @@ function buildEdHandoverText() {
 			) || false;
 		const hasNotes = (ROS.notes_field[section] || []).some((f) => val(f));
 		if (hasAbnormal || hasNotes) {
-			assessmentLines.push(`${label}: ${rosBlock(section)}`);
+			assessmentLines.push(`${label}: ${window.CrewMateRos.rosBlock(section)}`);
 		}
 	});
 	const oeText = val("oeText");

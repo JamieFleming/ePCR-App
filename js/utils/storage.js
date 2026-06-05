@@ -244,7 +244,7 @@ function restoreFormState() {
 	const sections = [
 		...new Set(Object.keys(state.ros).map((k) => k.split("_")[0])),
 	];
-	sections.forEach(updateRosBadge);
+	sections.forEach(window.CrewMateRos.updateRosBadge);
 
 	window.CrewMateBodyMap.updateMapTags();
 	window.CrewMateAbcde.syncAuscultationOutput();

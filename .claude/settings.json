@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sed -n '549,600p' /Users/jamie/Documents/Apps/ePRF/app.js)",
+      "Bash(sed -n '1342,1415p' /Users/jamie/Documents/Apps/ePRF/app.js)",
+      "Bash(sed -n '1460,1570p' /Users/jamie/Documents/Apps/ePRF/app.js)",
+      "Bash(sed -n '1564,1640p' /Users/jamie/Documents/Apps/ePRF/app.js)"
+    ]
+  }
+}
