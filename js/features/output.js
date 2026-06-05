@@ -444,7 +444,7 @@ function buildLahSbarText() {
 	if (aus && aus !== "Not auscultated") assessParts.push(`Ausc: ${aus}`);
 
 	if (!isChecked("noPain")) {
-		const site = getSelectedParts(state.siteParts);
+		const site = window.CrewMateBodyMap.getSelectedParts(state.siteParts);
 		const sev = val("severity")
 			? `${val("severity")}/10${val("severityWorst") ? ` (worst ${val("severityWorst")}/10)` : ""}`
 			: null;
@@ -588,9 +588,11 @@ function buildOutputSections() {
 	const state = window.CrewMateApp.getState();
 
 	const pc = getPc();
-	const site = getSelectedParts(state.siteParts) || "Not localised";
+	const site =
+		window.CrewMateBodyMap.getSelectedParts(state.siteParts) || "Not localised";
 	const radiation =
-		getSelectedParts(state.radiationParts) || "No radiation selected";
+		window.CrewMateBodyMap.getSelectedParts(state.radiationParts) ||
+		"No radiation selected";
 	const worseningText = buildWorseningText();
 	return [
 		{ id: "pc", title: "PRESENTING COMPLAINT", body: pc },
@@ -892,8 +894,10 @@ function buildEdHandoverText() {
 		: abcdeAbnormals.join("\n");
 
 	const hasPain = !isChecked("noPain");
-	const site = getSelectedParts(state.siteParts);
-	const radiation = getSelectedParts(state.radiationParts);
+	const site = window.CrewMateBodyMap.getSelectedParts(state.siteParts);
+	const radiation = window.CrewMateBodyMap.getSelectedParts(
+		state.radiationParts,
+	);
 	const character = listFactors(state.character, "characterOther", "");
 	const associated = listFactors(state.associated, "associatedOther", "");
 	const exacerbating = listFactors(state.exacerbating, "exacerbatingOther", "");

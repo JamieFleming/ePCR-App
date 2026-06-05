@@ -2,6 +2,7 @@ import "./utils/gcs.js";
 import "./data/options.js";
 import "./data/worseningAdvice.js";
 import "./features/paeds.js";
+import "./clinical/bodyMap.js";
 import { initTheme } from "./features/theme.js";
 import { initDashboard } from "./features/dashboard.js";
 import { initRespCounter } from "./features/respCounter.js";

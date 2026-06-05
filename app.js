@@ -427,7 +427,7 @@ function init() {
 	);
 
 	bindEvents();
-	updateMapTags();
+	window.CrewMateBodyMap.updateMapTags();
 	window.CrewMateOutput.updateWorseningScript();
 	enhanceSectionCards();
 	// bindRedFlagToggle();
@@ -792,8 +792,14 @@ function bindEvents() {
 			val("mobilisationToVehicle") !== "Other",
 		);
 	});
-	$("#clearPainButton")?.addEventListener("click", clearPainAssessment);
-	$("#clearBodyMapButton")?.addEventListener("click", clearBodyMap);
+	$("#clearPainButton")?.addEventListener(
+		"click",
+		window.CrewMateBodyMap.clearPainAssessment,
+	);
+	$("#clearBodyMapButton")?.addEventListener(
+		"click",
+		window.CrewMateBodyMap.clearBodyMap,
+	);
 	document.addEventListener("click", (e) => {
 		const btn = e.target.closest(".pain-score-btn");
 		if (!btn) return;
@@ -944,12 +950,16 @@ function bindEvents() {
 		const ros = event.target.closest(".ros-chip");
 		if (ros) return toggleRos(ros);
 		const mapTab = event.target.closest("[data-map-mode]");
-		if (mapTab) return setMapMode(mapTab.dataset.mapMode);
+		if (mapTab)
+			return window.CrewMateBodyMap.setMapMode(mapTab.dataset.mapMode);
 		const part = event.target.closest(".body-part");
-		if (part) return toggleBodyPart(part);
+		if (part) return window.CrewMateBodyMap.toggleBodyPart(part);
 		const remove = event.target.closest("[data-remove-part]");
 		if (remove)
-			return removeBodyPart(remove.dataset.removePart, remove.dataset.partType);
+			return window.CrewMateBodyMap.removeBodyPart(
+				remove.dataset.removePart,
+				remove.dataset.partType,
+			);
 		const injuryTypeBtn = event.target.closest("[data-injury-type]");
 		if (injuryTypeBtn) {
 			const v = injuryTypeBtn.dataset.injuryType;
@@ -1395,68 +1405,6 @@ function updateRosBadge(section) {
 	badge.classList.toggle("flagged", hasAbnormal);
 }
 
-function setMapMode(mode) {
-	state.mapMode = mode;
-	$$(".mini-tab").forEach((btn) =>
-		btn.classList.toggle("active", btn.dataset.mapMode === mode),
-	);
-}
-
-function toggleBodyPart(part) {
-	const targetSet =
-		state.mapMode === "site" ? state.siteParts : state.radiationParts;
-	const otherSet =
-		state.mapMode === "site" ? state.radiationParts : state.siteParts;
-	const id = part.id;
-	if (targetSet.has(id)) targetSet.delete(id);
-	else {
-		targetSet.add(id);
-		otherSet.delete(id);
-	}
-	part.classList.toggle("site", state.siteParts.has(id));
-	part.classList.toggle("radiation", state.radiationParts.has(id));
-	updateMapTags();
-}
-
-function removeBodyPart(id, type) {
-	const set = type === "site" ? state.siteParts : state.radiationParts;
-	set.delete(id);
-	$(`#${CSS.escape(id)}`)?.classList.remove(type);
-	updateMapTags();
-}
-
-function updateMapTags() {
-	renderPartTags("siteTags", state.siteParts, "site", "Not selected");
-	renderPartTags(
-		"radiationTags",
-		state.radiationParts,
-		"radiation",
-		"No radiation selected",
-	);
-}
-
-function renderPartTags(containerId, set, type, emptyText) {
-	const container = $(`#${containerId}`);
-	container.innerHTML = "";
-	if (!set.size) {
-		container.textContent = emptyText;
-		return;
-	}
-	set.forEach((id) => {
-		const part = $(`#${CSS.escape(id)}`);
-		const tag = document.createElement("span");
-		tag.className = `tag ${type}`;
-		tag.innerHTML = `${part?.dataset.label || id}<button type="button" data-remove-part="${id}" data-part-type="${type}" aria-label="Remove ${part?.dataset.label || id}">×</button>`;
-		container.append(tag);
-	});
-}
-
-function getSelectedParts(set) {
-	return [...set]
-		.map((id) => $(`#${CSS.escape(id)}`)?.dataset.label || id)
-		.join(", ");
-}
-
 function rosLine(section) {
 	return (
 		window.CrewMateOptions.ROS[section].items
@@ -1723,50 +1671,6 @@ function listSet(set, fallback) {
 }
 
 // Pain assessment
-
-function clearBodyMap() {
-	state.siteParts.clear();
-	state.radiationParts.clear();
-	$$(".body-part").forEach((part) =>
-		part.classList.remove("site", "radiation"),
-	);
-	updateMapTags();
-}
-
-function clearPainAssessment() {
-	state.siteParts.clear();
-	state.radiationParts.clear();
-	state.character.clear();
-	state.associated.clear();
-	state.exacerbating.clear();
-	state.relieving.clear();
-	$$("#painDetails .multi-group .square-btn").forEach((button) =>
-		button.classList.remove("selected"),
-	);
-	$$(".body-part").forEach((part) =>
-		part.classList.remove("site", "radiation"),
-	);
-	[
-		"onsetType",
-		"onsetDuration",
-		"timingSelect",
-		"severity",
-		"severityWorst",
-		"characterOther",
-		"associatedOther",
-		"exacerbatingOther",
-		"relievingOther",
-	].forEach((id) => {
-		const field = $(`#${id}`);
-		if (field) field.value = "";
-	});
-	$$(
-		"#painScoreGrid .pain-score-btn, #painScoreWorstGrid .pain-score-btn",
-	).forEach((b) => b.classList.remove("selected"));
-	setOtherFactorVisible("exacerbating", false);
-	setOtherFactorVisible("relieving", false);
-	updateMapTags();
-}
 
 function aplsWeight(ageYears, ageMonths) {
 	const totalMonths = (ageYears || 0) * 12 + (ageMonths || 0);
