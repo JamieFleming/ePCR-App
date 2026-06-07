@@ -132,27 +132,25 @@ function updateRosBadge(section) {
 }
 
 function rosChipsText(section) {
-	return (
-		ROS[section].items
-			.map(([id, normal, abnormal]) => {
-				if (state.ros[`${section}_${id}`] !== "abnormal") return normal;
-				if (section === "resp" && id === "breathingRate") {
-					const detail = val("rrDetail");
-					if (detail) return detail;
-				}
-				if (section === "resp" && id === "regularBreathing") {
-					const detail = val("breathingRhythmDetail");
-					if (detail) return detail;
-				}
-				if (section === "cvs" && id === "pulseRate") {
-					const detail = val("hrDetail");
-					if (detail) return detail;
-				}
+	return ROS[section].items
+		.map(([id, normal, abnormal]) => {
+			if (state.ros[`${section}_${id}`] !== "abnormal") return normal;
+			if (section === "resp" && id === "breathingRate") {
+				const detail = val("rrDetail");
+				if (detail) return detail;
+			}
+			if (section === "resp" && id === "regularBreathing") {
+				const detail = val("breathingRhythmDetail");
+				if (detail) return detail;
+			}
+			if (section === "cvs" && id === "pulseRate") {
+				const detail = val("hrDetail");
+				if (detail) return detail;
+			}
 
-				return abnormal;
-			})
-			.join(". ") + "."
-	);
+			return abnormal;
+		})
+		.join("\n");
 }
 
 function rosAbnormalLine(section) {
@@ -174,15 +172,26 @@ function rosAbnormalLine(section) {
 
 			return abnormal;
 		});
-	return abnormals.length ? abnormals.join(". ") + "." : "";
+	return abnormals.length ? abnormals.join("\n") : "";
 }
 
 function rosSectionText(section, abnormalOnly = false) {
 	const extras = {
-		resp: () =>
-			`${val("coughType")}${val("sputumDesc") ? ` — sputum: ${val("sputumDesc")}` : ""}. ${val("respAus") ? `Auscultation: ${val("respAus")}.` : ""} ${val("respNotes")}`.trim(),
-		cvs: () =>
-			`${val("bpStatus")}. ${window.CrewMateAbcde.buildEcgText()} ${val("cvsNotes")}`.trim(),
+		resp: () => {
+			const parts = [];
+			if (val("coughType")) parts.push(val("coughType") + (val("sputumDesc") ? ` — sputum: ${val("sputumDesc")}` : ""));
+			if (val("respAus")) parts.push(`Auscultation: ${val("respAus")}.`);
+			if (val("respNotes")) parts.push(val("respNotes"));
+			return parts.join("\n");
+		},
+		cvs: () => {
+			const parts = [];
+			if (val("bpStatus")) parts.push(val("bpStatus"));
+			const ecg = window.CrewMateAbcde.buildEcgText();
+			if (ecg) parts.push(ecg);
+			if (val("cvsNotes")) parts.push(val("cvsNotes"));
+			return parts.join("\n");
+		},
 		gi: () => {
 			const parts = [];
 			const abdoEntries = Object.entries(state.abdoFindings).filter(
@@ -206,7 +215,7 @@ function rosSectionText(section, abnormalOnly = false) {
 					`Stoma present${type ? ` (${type})` : ""}.${out ? ` Output: ${out}.` : ""}${app ? ` Appearance: ${app}.` : ""}`,
 				);
 			}
-			return parts.join(" ");
+			return parts.join("\n");
 		},
 		urine: () => {
 			const parts = [];
@@ -226,7 +235,7 @@ function rosSectionText(section, abnormalOnly = false) {
 				);
 			}
 			if (val("urineNotes")) parts.push(val("urineNotes"));
-			return parts.join(" ");
+			return parts.join("\n");
 		},
 		mh: () => {
 			const parts = [];
@@ -237,13 +246,14 @@ function rosSectionText(section, abnormalOnly = false) {
 			if (val("psychProtective"))
 				parts.push(`Protective factors: ${val("psychProtective")}.`);
 			if (val("psychNotes")) parts.push(val("psychNotes"));
-			return parts.join(" ");
+			return parts.join("\n");
 		},
 	};
 	const chipLine = abnormalOnly
 		? rosAbnormalLine(section)
 		: rosChipsText(section);
-	return `${chipLine} ${extras[section]?.() || val(`${section}Notes`) || ""}`.trim();
+	const extra = extras[section]?.() || val(`${section}Notes`) || "";
+	return extra ? `${chipLine}\n${extra}` : chipLine;
 }
 
 function abcChipText(button) {
@@ -338,9 +348,9 @@ function generateOe() {
 		"",
 		ABCDE.sections.map(abcLine).join("\n"),
 		"",
-		`${L.resp}: ${rosChipsText("resp")} ${val("respAus") ? `Auscultation: ${val("respAus")}.` : ""}`,
+		`${L.resp}: ${rosChipsText("resp")}${val("respAus") ? `\nAuscultation: ${val("respAus")}.` : ""}`,
 		`\n`,
-		`${L.cvs}: ${rosChipsText("cvs")} ${window.CrewMateAbcde.buildEcgText()}`,
+		`${L.cvs}: ${rosChipsText("cvs")}${window.CrewMateAbcde.buildEcgText() ? `\n${window.CrewMateAbcde.buildEcgText()}` : ""}`,
 		`\n`,
 		`${L.neuro}: ${rosChipsText("neuro")}`,
 		`\n`,
@@ -391,4 +401,4 @@ window.CrewMateRos = {
 	toggleEcgLead,
 };
 
-export { rosChipsText, abcHandoverSummary, rosSectionText };
+export { rosChipsText, rosAbnormalLine, abcHandoverSummary, rosSectionText };

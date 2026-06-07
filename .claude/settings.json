@@ -8,7 +8,10 @@
       "Bash(awk -F: 'NR>1 && $2>87 && $2<420')",
       "Bash(grep -n \"^\t\t</div>$\\\\|^\t\t<!-- \" /Users/jamie/Documents/Apps/ePRF/index.html)",
       "Bash(git -C /Users/jamie/Documents/Apps/ePRF status)",
-      "Bash(git -C /Users/jamie/Documents/Apps/ePRF diff --stat)"
+      "Bash(git -C /Users/jamie/Documents/Apps/ePRF diff --stat)",
+      "Bash(git -C /Users/jamie/Documents/Apps/ePRF log --oneline main..HEAD)",
+      "Bash(git -C /Users/jamie/Documents/Apps/ePRF log --oneline -15)",
+      "Bash(npm test *)"
     ]
   }
 }
