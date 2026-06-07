@@ -1,7 +1,8 @@
-// RED FLAG DETECTION
-// Evaluates the current form state against a rule set and renders highlighted
-// alerts.  Re-evaluated on a short debounce after any user interaction.
-// rf* helper functions each test one specific clinical condition.
+import { $, $$, val } from "../utils/dom.js";
+import { getPc, rfSystolic } from "../utils/helpers.js";
+import { state } from "../app.js";
+
+let _rfTimer;
 
 function rfPc(term) {
 	return getPc().toLowerCase().includes(term.toLowerCase());
@@ -24,10 +25,6 @@ function rfChar(term) {
 }
 function rfEcg(term) {
 	return state.ecgFindings.has(term);
-}
-function rfSystolic() {
-	const m = val("bp").match(/^(\d+)/);
-	return m ? parseInt(m[1]) : null;
 }
 function rfHR() {
 	return parseInt(val("hr"));
@@ -407,12 +404,11 @@ function renderRedFlags() {
 	}
 }
 
-let _rfTimer;
 function scheduleRedFlags() {
 	clearTimeout(_rfTimer);
 	_rfTimer = setTimeout(() => {
 		renderRedFlags();
-		renderConveyanceSuggestion();
+		window.CrewMateOutput.renderConveyanceSuggestion();
 	}, 200);
 }
 
@@ -433,5 +429,13 @@ export {
 	scheduleRedFlags,
 	bindRedFlagToggle,
 	evaluateRedFlags,
+	initRedFlags,
 	RED_FLAGS,
 };
+
+function initRedFlags() {
+	bindRedFlagToggle();
+	document.addEventListener("click", scheduleRedFlags, { passive: true });
+	document.addEventListener("input", scheduleRedFlags, { passive: true });
+	document.addEventListener("change", scheduleRedFlags, { passive: true });
+}

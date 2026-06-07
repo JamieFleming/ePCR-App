@@ -203,7 +203,7 @@
 				<!-- NEWS2 Score -->
 				<div
 					class="feature-card"
-					data-feature="news2"
+					data-feature="newsScore"
 					role="button"
 					tabindex="0">
 					<div class="card-icon purple">
@@ -283,6 +283,29 @@
 					<span class="card-badge live">Live</span>
 				</div>
 
+				<!-- Falls Guide -->
+				<div class="feature-card" data-feature="falls-guide">
+					<div class="card-icon orange">
+						<svg
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.75"
+							stroke-linecap="round"
+							stroke-linejoin="round">
+							<circle cx="12" cy="7" r="4" />
+							<path d="M4 21v-1a8 8 0 0 1 16 0v1" />
+						</svg>
+					</div>
+					<div class="card-body">
+						<h3 class="card-title">Falls Guide</h3>
+						<p class="card-desc">
+							Falls risk assessment guidance and interventions
+						</p>
+					</div>
+					<span class="card-badge live">Live</span>
+				</div>
+
 				<!-- METHANE -->
 				<div class="feature-card coming-soon" data-feature="methane">
 					<div class="card-icon red">
@@ -327,29 +350,6 @@
 						<h3 class="card-title">Scoring Systems</h3>
 						<p class="card-desc">
 							GCS, CPSS, PEARL, APGAR and other clinical scores
-						</p>
-					</div>
-					<span class="card-badge soon">Coming soon</span>
-				</div>
-
-				<!-- Falls Guide -->
-				<div class="feature-card coming-soon" data-feature="falls-guide">
-					<div class="card-icon orange">
-						<svg
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="1.75"
-							stroke-linecap="round"
-							stroke-linejoin="round">
-							<circle cx="12" cy="7" r="4" />
-							<path d="M4 21v-1a8 8 0 0 1 16 0v1" />
-						</svg>
-					</div>
-					<div class="card-body">
-						<h3 class="card-title">Falls Guide</h3>
-						<p class="card-desc">
-							Falls risk assessment guidance and interventions
 						</p>
 					</div>
 					<span class="card-badge soon">Coming soon</span>
@@ -403,24 +403,31 @@
 					omissions, or outcomes arising from its use.
 				</p>
 			</div>
+			<div class="fe-credit">
+				<a href="https://festudios.co.uk" target="_blank" rel="noopener noreferrer" class="fe-credit__link">
+					<img src="footer_template/festudios_logo.png" alt="FE Studios" class="fe-credit__logo" />
+					<span>Designed &amp; developed by <strong>FE Studios</strong></span>
+				</a>
+			</div>
 		</div>
 
-		<!-- Resp Counter -->
+		<!-- Resp Counter Tool -->
 		<div id="resp-tool" class="tool-page hidden">
 			<main class="resp-counter-page">
-				<section class="resp-hero section-card">
-					<div class="resp-hero-content">
-						<div class="resp-icon" aria-hidden="true">
+				<section class="tool-hero section-card">
+					<div class="tool-hero-content">
+						<div class="tool-icon" aria-hidden="true">
 							<svg
 								viewBox="0 0 24 24"
 								fill="none"
 								stroke="currentColor"
-								stroke-width="1.8"
+								stroke-width="1.75"
 								stroke-linecap="round"
 								stroke-linejoin="round">
-								<path d="M12 5v8" />
-								<path d="M8 9c-3 0-5 2-5 5a4 4 0 0 0 4 4c2 0 3.5-1 3.5-3V9" />
-								<path d="M16 9c3 0 5 2 5 5a4 4 0 0 1-4 4c-2 0-3.5-1-3.5-3V9" />
+								<circle cx="12" cy="13.5" r="7.5" />
+								<polyline points="12 10 12 13.5 14.5 16" />
+								<line x1="10" y1="2.5" x2="14" y2="2.5" />
+								<line x1="12" y1="2.5" x2="12" y2="6" />
 							</svg>
 						</div>
 						<div>
@@ -514,11 +521,40 @@
 					</div>
 				</section>
 			</main>
+			<div class="fe-credit">
+				<a href="https://festudios.co.uk" target="_blank" rel="noopener noreferrer" class="fe-credit__link">
+					<img src="footer_template/festudios_logo.png" alt="FE Studios" class="fe-credit__logo" />
+					<span>Designed &amp; developed by <strong>FE Studios</strong></span>
+				</a>
+			</div>
 		</div>
 
 		<!-- Obs Recorder -->
 		<div id="obs-recorder" class="tool-page hidden">
 			<main class="obs-recorder-page">
+				<section class="tool-hero section-card">
+					<div class="tool-hero-content">
+						<div class="tool-icon" aria-hidden="true">
+							<svg
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.75"
+								stroke-linecap="round"
+								stroke-linejoin="round">
+								<polyline
+									points="2 12 5.5 12 7.5 6 10.5 18 13 9 15 14 17 12 22 12" />
+							</svg>
+						</div>
+						<div>
+							<h2>Obs Recorder</h2>
+							<p>
+								Record your observations for quick reference and calculate NEWS2
+								score.
+							</p>
+						</div>
+					</div>
+				</section>
 				<div class="section-card" id="obsRecCard">
 					<summary><span>Observations</span><small>OBS</small></summary>
 					<div class="section-body">
@@ -533,22 +569,52 @@
 					</div>
 				</div>
 			</main>
+			<div class="fe-credit">
+				<a href="https://festudios.co.uk" target="_blank" rel="noopener noreferrer" class="fe-credit__link">
+					<img src="footer_template/festudios_logo.png" alt="FE Studios" class="fe-credit__logo" />
+					<span>Designed &amp; developed by <strong>FE Studios</strong></span>
+				</a>
+			</div>
 		</div>
 
 		<!-- NEWS Score -->
-		<div id="news2-tool" class="tool-page hidden">
+		<div id="news-tool" class="tool-page hidden">
+			<section class="tool-hero section-card">
+				<div class="tool-hero-content">
+					<div class="tool-icon" aria-hidden="true">
+						<svg
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.75"
+							stroke-linecap="round"
+							stroke-linejoin="round">
+							<line x1="3" y1="20" x2="21" y2="20" />
+							<rect x="4" y="14" width="3.5" height="6" rx="0.8" />
+							<rect x="10.25" y="9" width="3.5" height="11" rx="0.8" />
+							<rect x="16.5" y="4" width="3.5" height="16" rx="0.8" />
+						</svg>
+					</div>
+					<div>
+						<h2>NEWS2 Calculator</h2>
+						<p>Quickly calculate NEWS2 score.</p>
+					</div>
+				</div>
+			</section>
 			<!-- Banner -->
 			<div class="n2-banner" id="n2Banner">
 				<div class="n2-banner-inner">
 					<div class="n2-banner-label-group">
 						<span class="n2-banner-label">NEWS2</span>
-						<span class="n2-banner-total" id="n2Total">–</span>
+						<span class="n2-banner-total" id="newsTotal">–</span>
 					</div>
-					<div class="n2-banner-risk" id="n2Risk">Select parameters below</div>
+					<div class="n2-banner-risk" id="newsRiskBanner">
+						Select parameters below
+					</div>
 					<button
 						type="button"
 						class="ghost-button n2-reset-btn"
-						id="n2ResetBtn">
+						id="newsReset">
 						Reset
 					</button>
 				</div>
@@ -594,35 +660,35 @@
 						<div class="radio-chip-group wrap-grid" id="n2RrGroup">
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="rr"
 								data-n2-score="3">
 								≤8<small class="n2-pts n2-pts--3">+3</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="rr"
 								data-n2-score="1">
 								9–11<small class="n2-pts n2-pts--1">+1</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="rr"
 								data-n2-score="0">
 								12–20<small class="n2-pts n2-pts--0">+0</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="rr"
 								data-n2-score="2">
 								21–24<small class="n2-pts n2-pts--2">+2</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="rr"
 								data-n2-score="3">
 								≥25<small class="n2-pts n2-pts--3">+3</small>
@@ -639,31 +705,31 @@
 						>
 
 						<!-- Scale 1 -->
-						<div class="radio-chip-group wrap-grid" id="n2Spo2S1Group">
+						<div class="radio-chip-group wrap-grid" id="satsScale1">
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="3">
 								≤91%<small class="n2-pts n2-pts--3">+3</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="2">
 								92–93%<small class="n2-pts n2-pts--2">+2</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="1">
 								94–95%<small class="n2-pts n2-pts--1">+1</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="0">
 								≥96%<small class="n2-pts n2-pts--0">+0</small>
@@ -671,52 +737,52 @@
 						</div>
 
 						<!-- Scale 2 -->
-						<div class="radio-chip-group wrap-grid hidden" id="n2Spo2S2Group">
+						<div class="radio-chip-group wrap-grid hidden" id="satsScale2">
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="3">
 								≤83%<small class="n2-pts n2-pts--3">+3</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="2">
 								84–85%<small class="n2-pts n2-pts--2">+2</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="1">
 								86–87%<small class="n2-pts n2-pts--1">+1</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="0">
 								88–92%<small class="n2-pts n2-pts--0">+0</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="1">
 								93–94%<small class="n2-pts n2-pts--1">+1 (On O2)</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="2">
 								95–96%<small class="n2-pts n2-pts--2">+2 (On O2)</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="spo2"
 								data-n2-score="3">
 								≥97%<small class="n2-pts n2-pts--3">+3 (On O2)</small>
@@ -732,7 +798,7 @@
 						<div class="radio-chip-group" id="n2O2Group">
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="o2"
 								data-n2-score="0">
 								Room air
@@ -740,7 +806,7 @@
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="o2"
 								data-n2-score="2">
 								Supplemental O₂
@@ -759,35 +825,35 @@
 						<div class="radio-chip-group wrap-grid" id="n2SbpGroup">
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="sbp"
 								data-n2-score="3">
 								≤90<small class="n2-pts n2-pts--3">+3</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="sbp"
 								data-n2-score="2">
 								91–100<small class="n2-pts n2-pts--2">+2</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="sbp"
 								data-n2-score="1">
 								101–110<small class="n2-pts n2-pts--1">+1</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="sbp"
 								data-n2-score="0">
 								111–219<small class="n2-pts n2-pts--0">+0</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="sbp"
 								data-n2-score="3">
 								≥220<small class="n2-pts n2-pts--3">+3</small>
@@ -805,42 +871,42 @@
 						<div class="radio-chip-group wrap-grid" id="n2HrGroup">
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="hr"
 								data-n2-score="3">
 								≤40<small class="n2-pts n2-pts--3">+3</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="hr"
 								data-n2-score="1">
 								41–50<small class="n2-pts n2-pts--1">+1</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="hr"
 								data-n2-score="0">
 								51–90<small class="n2-pts n2-pts--0">+0</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="hr"
 								data-n2-score="1">
 								91–110<small class="n2-pts n2-pts--1">+1</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="hr"
 								data-n2-score="2">
 								111–130<small class="n2-pts n2-pts--2">+2</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="hr"
 								data-n2-score="3">
 								≥131<small class="n2-pts n2-pts--3">+3</small>
@@ -858,35 +924,35 @@
 						<div class="radio-chip-group wrap-grid" id="n2ConsGroup">
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="cons"
 								data-n2-score="0">
 								Alert<small class="n2-pts n2-pts--0">+0</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="cons"
 								data-n2-score="3">
 								Confusion<small class="n2-pts n2-pts--3">+3</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="cons"
 								data-n2-score="3">
 								Voice<small class="n2-pts n2-pts--3">+3</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="cons"
 								data-n2-score="3">
 								Pain<small class="n2-pts n2-pts--3">+3</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="cons"
 								data-n2-score="3">
 								Unresponsive<small class="n2-pts n2-pts--3">+3</small>
@@ -904,35 +970,35 @@
 						<div class="radio-chip-group wrap-grid" id="n2TempGroup">
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="temp"
 								data-n2-score="3">
 								≤35.0°<small class="n2-pts n2-pts--3">+3</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="temp"
 								data-n2-score="1">
 								35.1–36.0°<small class="n2-pts n2-pts--1">+1</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="temp"
 								data-n2-score="0">
 								36.1–38.0°<small class="n2-pts n2-pts--0">+0</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="temp"
 								data-n2-score="1">
 								38.1–39.0°<small class="n2-pts n2-pts--1">+1</small>
 							</button>
 							<button
 								type="button"
-								class="radio-chip n2-chip"
+								class="radio-chip news-chip"
 								data-n2-param="temp"
 								data-n2-score="2">
 								≥39.1°<small class="n2-pts n2-pts--2">+2</small>
@@ -945,17 +1011,17 @@
 				<div class="section-card n2-result-card" id="n2ResultCard">
 					<div class="section-body">
 						<div class="n2-result-row">
-							<div class="n2-result-circle" id="n2ResultCircle">–</div>
+							<div class="n2-result-circle" id="newsResultCircle">–</div>
 							<div class="n2-result-detail">
-								<div class="n2-result-risk-label" id="n2ResultRisk"></div>
-								<div class="n2-result-guidance" id="n2ResultGuidance">
+								<div class="n2-result-risk-label" id="newsResultRisk"></div>
+								<div class="n2-result-guidance" id="newsResultGuidance">
 									Complete the parameters above to calculate your NEWS2 score
 								</div>
 							</div>
 						</div>
-						<div class="n2-breakdown" id="n2Breakdown" style="display: none">
+						<div class="n2-breakdown" id="newsBreakdown" style="display: none">
 							<div class="n2-breakdown-title">Score breakdown</div>
-							<div class="n2-breakdown-grid" id="n2BreakdownGrid"></div>
+							<div class="n2-breakdown-grid" id="newsBreakdownGrid"></div>
 						</div>
 					</div>
 				</div>
@@ -969,10 +1035,70 @@
 					calculator.
 				</p>
 			</main>
+			<div class="fe-credit">
+				<a href="https://festudios.co.uk" target="_blank" rel="noopener noreferrer" class="fe-credit__link">
+					<img src="footer_template/festudios_logo.png" alt="FE Studios" class="fe-credit__logo" />
+					<span>Designed &amp; developed by <strong>FE Studios</strong></span>
+				</a>
+			</div>
+		</div>
+
+		<!-- Falls Tool -->
+		<div id="falls-tool" class="tool-page hidden">
+			<section class="tool-hero section-card">
+				<div class="tool-hero-content">
+					<div class="tool-icon" aria-hidden="true">
+						<svg
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.75"
+							stroke-linecap="round"
+							stroke-linejoin="round">
+							<circle cx="12" cy="7" r="4" />
+							<path d="M4 21v-1a8 8 0 0 1 16 0v1" />
+						</svg>
+					</div>
+					<div>
+						<h2>Falls Guide</h2>
+						<p>
+							Calculate clinical frailty score, check falls risk indicators and
+							resources regarding falls.
+						</p>
+					</div>
+				</div>
+			</section>
+			<div id="fallsGuideContainer"></div>
+			<div class="fe-credit">
+				<a href="https://festudios.co.uk" target="_blank" rel="noopener noreferrer" class="fe-credit__link">
+					<img src="footer_template/festudios_logo.png" alt="FE Studios" class="fe-credit__logo" />
+					<span>Designed &amp; developed by <strong>FE Studios</strong></span>
+				</a>
+			</div>
 		</div>
 
 		<!-- Drug search -->
 		<div id="drug-finder-tool" class="tool-page hidden">
+			<section class="tool-hero section-card">
+				<div class="tool-hero-content">
+					<div class="tool-icon" aria-hidden="true">
+						<svg
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.75"
+							stroke-linecap="round"
+							stroke-linejoin="round">
+							<path d="M10.5 20.5L3.5 13.5a5 5 0 1 1 7-7l7 7a5 5 0 1 1-7 7z" />
+							<line x1="8.5" y1="8.5" x2="15.5" y2="15.5" />
+						</svg>
+					</div>
+					<div>
+						<h2>Drug Finder</h2>
+						<p>Search NICE BNF for drugs, doses, routes and indications</p>
+					</div>
+				</div>
+			</section>
 			<main style="padding: 16px; max-width: 640px; margin: 0 auto">
 				<div class="section-card" style="margin-bottom: 12px">
 					<div class="section-body">
@@ -1124,6 +1250,12 @@
 					</div>
 				</div>
 			</main>
+			<div class="fe-credit">
+				<a href="https://festudios.co.uk" target="_blank" rel="noopener noreferrer" class="fe-credit__link">
+					<img src="footer_template/festudios_logo.png" alt="FE Studios" class="fe-credit__logo" />
+					<span>Designed &amp; developed by <strong>FE Studios</strong></span>
+				</a>
+			</div>
 		</div>
 
 		<!-- ePRF TOOL -->
@@ -1238,6 +1370,39 @@
 						</summary>
 						<div class="section-body">
 							<div class="grid-2">
+								<div>
+									<label class="field-label" for="pAgeYears">Age (years)</label>
+									<input
+										id="pAgeYears"
+										type="number"
+										min="0"
+										max="16"
+										placeholder="e.g. 5"
+										style="margin-top: 4px" />
+								</div>
+								<div>
+									<label class="field-label">Sex / gender</label>
+									<div
+										id="pSexChips"
+										style="
+											display: flex;
+											flex-wrap: wrap;
+											gap: 6px;
+											margin-top: 6px;
+										">
+										<button type="button" class="radio-chip" data-psex="Male">
+											Male
+										</button>
+										<button type="button" class="radio-chip" data-psex="Female">
+											Female
+										</button>
+										<button type="button" class="radio-chip" data-psex="Other">
+											Other
+										</button>
+									</div>
+								</div>
+							</div>
+							<div class="grid-2" style="margin-top: 8px">
 								<div>
 									<label class="field-label" for="pAgeMonths"
 										>Additional months
@@ -2775,6 +2940,65 @@
 						</div>
 					</details>
 
+					<!-- Injury assessment -->
+					<details class="section-card">
+						<summary>
+							<span>Injury Assessment</span><small>Trauma</small>
+						</summary>
+						<div class="section-body">
+							<div class="grid-2">
+								<!-- Injury Location -->
+								<div>
+									<label class="field-label" for="injuryRegion"
+										>Body region</label
+									><select id="injuryRegion">
+										<option value="">Select region</option>
+									</select>
+								</div>
+								<div style="grid-column: 1 / -1">
+									<label class="field-label">Neurovascular status</label>
+									<div class="square-grid" id="injuryNvGrid"></div>
+									<input
+										id="injuryNvNotes"
+										placeholder="Additional NV notes (optional)"
+										style="margin-top: 6px" />
+								</div>
+							</div>
+							<!-- Injury Type -->
+							<label class="field-label">Injury type</label>
+							<div class="square-grid" id="injuryTypeGrid"></div>
+							<div
+								id="injuryTypeOtherWrap"
+								class="hidden"
+								style="margin-top: 6px">
+								<input
+									id="injuryTypeOther"
+									placeholder="Other injury type..." />
+							</div>
+							<!-- Interventions -->
+							<label class="field-label" style="margin-top: 10px"
+								>Interventions</label
+							>
+							<div class="square-grid" id="injuryInterventionGrid"></div>
+							<div
+								id="injuryIntOtherWrap"
+								class="hidden"
+								style="margin-top: 6px">
+								<input
+									id="injuryIntOther"
+									placeholder="Other intervention..." />
+							</div>
+							<button
+								id="addInjuryButton"
+								type="button"
+								class="secondary-action"
+								style="margin-top: 10px">
+								Add injury
+							</button>
+							<div id="injuryEntries"></div>
+						</div>
+					</details>
+
 					<!-- Falls assessment -->
 					<details class="section-card hidden" id="fallsAssessmentCard">
 						<summary>
@@ -3050,6 +3274,72 @@
 						</div>
 					</details>
 
+					<!-- Spinal Assessment -->
+					<details class="section-card hidden" id="spinalAssessmentCard">
+						<summary>
+							<span>Spinal Assessment</span><small>JRCALC</small>
+						</summary>
+						<div class="section-body">
+							<div class="socrates-group">
+								<label class="field-label">C-spine clearance</label>
+								<input type="hidden" id="spinalClearance" />
+								<div
+									class="radio-chip-group"
+									data-radio-group="spinalClearance"
+									style="margin-top: 4px"></div>
+							</div>
+							<div class="socrates-group">
+								<label class="field-label" for="spinalMechanism"
+									>Mechanism of injury</label
+								>
+								<input
+									id="spinalMechanism"
+									placeholder="e.g. axial load, flexion/extension, direct blow" />
+							</div>
+							<div class="socrates-group">
+								<label class="field-label">Midline spinal tenderness</label>
+								<input type="hidden" id="spinalTenderness" />
+								<div
+									class="radio-chip-group"
+									data-radio-group="spinalTenderness"
+									style="margin-top: 4px"></div>
+							</div>
+							<div class="socrates-group">
+								<label class="field-label"
+									>Neurological symptoms below level of injury</label
+								>
+								<input type="hidden" id="spinalNeuro" />
+								<div
+									class="radio-chip-group"
+									data-radio-group="spinalNeuro"
+									style="margin-top: 4px"></div>
+								<div
+									id="spinalNeuroDetailWrap"
+									class="hidden"
+									style="margin-top: 8px">
+									<label class="field-label" for="spinalNeuroDetail"
+										>Describe — type and distribution</label
+									>
+									<input
+										id="spinalNeuroDetail"
+										placeholder="e.g. bilateral leg weakness, paraesthesia in both hands" />
+								</div>
+							</div>
+							<div class="socrates-group">
+								<label class="field-label" for="spinalLevel"
+									>Suspected level of injury</label
+								>
+								<input id="spinalLevel" placeholder="e.g. C5–C6, T4, L1–L2" />
+							</div>
+							<div class="socrates-group">
+								<label class="field-label" for="spinalNotes"
+									>Additional notes</label
+								>
+								<textarea id="spinalNotes" rows="2"></textarea>
+							</div>
+						</div>
+					</details>
+
 					<!-- Seizure Assessment -->
 					<details class="section-card hidden" id="seizureAssessmentCard">
 						<summary>
@@ -3228,6 +3518,156 @@
 						</div>
 					</details>
 
+					<!-- Overdose / Poisoning assessment -->
+					<details class="section-card hidden" id="odAssessmentCard">
+						<summary>
+							<span>Overdose / Poisoning Assessment</span
+							><small>OD / Poisoning</small>
+						</summary>
+						<div class="section-body">
+							<label class="field-label">Intentionality</label>
+							<input type="hidden" id="odAssessIntentionality" />
+							<div
+								class="radio-chip-group"
+								data-radio-group="odAssessIntentionality"
+								style="margin-top: 4px"
+								id="odAssessIntentionalityChips"></div>
+
+							<div
+								id="odAssessCircumstanceWrap"
+								class="hidden"
+								style="margin-top: 10px">
+								<label class="field-label" for="odAssessCircumstance"
+									>Circumstance</label
+								>
+								<select
+									id="odAssessCircumstance"
+									style="margin-top: 4px"></select>
+							</div>
+
+							<label
+								class="field-label"
+								style="margin-top: 12px"
+								for="odAssessSubstance"
+								>Substance(s) taken</label
+							>
+							<input
+								id="odAssessSubstance"
+								placeholder="e.g. Paracetamol, ibuprofen, alcohol" />
+
+							<label
+								class="field-label"
+								style="margin-top: 8px"
+								for="odAssessAmount"
+								>Amount / estimated dose</label
+							>
+							<input
+								id="odAssessAmount"
+								placeholder="e.g. Up to 16 tablets, 500ml" />
+
+							<div class="grid-2" style="margin-top: 8px">
+								<div>
+									<label class="field-label" for="odAssessAtTime"
+										>Time of ingestion</label
+									>
+									<input
+										type="time"
+										id="odAssessAtTime"
+										style="margin-top: 4px" />
+								</div>
+								<div>
+									<label class="field-label" for="odAssessAgoTime"
+										>How long ago</label
+									>
+									<select id="odAssessAgoTime" style="margin-top: 4px">
+										<option value="">Select...</option>
+										<option>Just now</option>
+										<option>&lt; 1 hour ago</option>
+										<option>1 hour ago</option>
+										<option>2 hours ago</option>
+										<option>3 hours ago</option>
+										<option>4 hours ago</option>
+										<option>6 hours ago</option>
+										<option>8 hours ago</option>
+										<option>12 hours ago</option>
+										<option>Earlier today</option>
+										<option>Yesterday</option>
+										<option>Unknown</option>
+									</select>
+								</div>
+							</div>
+
+							<label class="field-label" style="margin-top: 10px">Route</label>
+							<input type="hidden" id="odAssessRoute" />
+							<div
+								class="radio-chip-group"
+								data-radio-group="odAssessRoute"
+								style="margin-top: 4px">
+								<button
+									type="button"
+									class="radio-chip"
+									data-value="Oral (ingested)">
+									Oral / ingested
+								</button>
+								<button
+									type="button"
+									class="radio-chip"
+									data-value="IV / injected">
+									IV / injected
+								</button>
+								<button
+									type="button"
+									class="radio-chip"
+									data-value="Inhalation">
+									Inhalation
+								</button>
+								<button
+									type="button"
+									class="radio-chip"
+									data-value="Topical / transdermal">
+									Topical
+								</button>
+								<button
+									type="button"
+									class="radio-chip"
+									data-value="Other / unknown">
+									Other / unknown
+								</button>
+							</div>
+
+							<label class="check-row" style="margin-top: 10px">
+								<input type="checkbox" id="odAssessAlcohol" /> Alcohol
+								co-ingestion
+							</label>
+
+							<label class="field-label" style="margin-top: 10px"
+								>Medication source</label
+							>
+							<div class="square-grid" id="odAssessSourceGrid"></div>
+
+							<label
+								class="field-label"
+								style="margin-top: 10px"
+								for="odAssessSymptoms"
+								>Current symptoms / presentation</label
+							>
+							<input
+								id="odAssessSymptoms"
+								placeholder="e.g. Drowsy, nausea, vomiting, abdominal pain" />
+
+							<label
+								class="field-label"
+								style="margin-top: 8px"
+								for="odAssessNotes"
+								>Additional notes</label
+							>
+							<textarea
+								id="odAssessNotes"
+								rows="2"
+								placeholder="e.g. Empty packet found, patient's own prescription, TOXBASE consulted"></textarea>
+						</div>
+					</details>
+
 					<!-- Mental health assessment -->
 					<details class="section-card hidden" id="mhAssessmentCard">
 						<summary>
@@ -3260,104 +3700,170 @@
 								rows="2"
 								placeholder="Details of previous episodes..."></textarea>
 
-							<!-- Overdose-specific -->
-							<div id="odDetailsWrap" class="hidden" style="margin-top: 14px">
+							<!-- Harmful acts -->
+							<div style="margin-top: 14px">
 								<p
 									class="field-label"
 									style="font-weight: 600; margin-bottom: 8px">
-									Overdose details
+									Self-harm / harmful acts
 								</p>
-								<label class="field-label" for="odSubstance"
-									>Substance(s) taken</label
-								>
-								<input
-									id="odSubstance"
-									placeholder="e.g. Paracetamol, alcohol, ibuprofen" />
-								<div class="grid-2" style="margin-top: 8px">
-									<div>
-										<label class="field-label" for="odAmount"
-											>Amount / estimated dose</label
-										>
-										<input id="odAmount" placeholder="e.g. Up to 16 tablets" />
-									</div>
-									<div>
-										<label class="field-label" for="odTime">Time taken</label>
-										<input
-											id="odTime"
-											placeholder="e.g. 22:00, approx 2 hours ago" />
-									</div>
+								<input type="hidden" id="mhActsAdmit" value="Denies" />
+								<div
+									class="radio-chip-group"
+									data-radio-group="mhActsAdmit"
+									style="margin-top: 4px">
+									<button
+										type="button"
+										class="radio-chip selected"
+										data-value="Denies">
+										Denies
+									</button>
+									<button type="button" class="radio-chip" data-value="Admits">
+										Admits
+									</button>
 								</div>
-								<div class="grid-2" style="margin-top: 8px">
-									<div>
-										<label class="field-label">Route</label>
-										<input type="hidden" id="odRoute" />
-										<div
-											class="radio-chip-group"
-											data-radio-group="odRoute"
-											style="margin-top: 4px">
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Oral (ingested)">
-												Oral / ingested
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="IV / injected">
-												IV / injected
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Inhalation">
-												Inhalation
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Topical / transdermal">
-												Topical
-											</button>
-											<button
-												type="button"
-												class="radio-chip"
-												data-value="Other / unknown">
-												Other / unknown
-											</button>
+
+								<div id="mhActsPanel" class="hidden" style="margin-top: 12px">
+									<label class="field-label" for="mhActType">Type of act</label>
+									<select id="mhActType" style="margin-top: 4px">
+										<option value="">Select type...</option>
+										<option>Overdose</option>
+										<!-- Self-harm and suicide attempt options added by JS -->
+									</select>
+
+									<div class="grid-2" style="margin-top: 8px">
+										<div>
+											<label class="field-label" for="mhActAtTime"
+												>Time of act</label
+											>
+											<input
+												type="time"
+												id="mhActAtTime"
+												style="margin-top: 4px" />
+										</div>
+										<div>
+											<label class="field-label" for="mhActAgoTime"
+												>How long ago</label
+											>
+											<select id="mhActAgoTime" style="margin-top: 4px">
+												<option value="">Select...</option>
+												<option>Just now</option>
+												<option>&lt; 1 hour ago</option>
+												<option>1 hour ago</option>
+												<option>2 hours ago</option>
+												<option>3 hours ago</option>
+												<option>4 hours ago</option>
+												<option>6 hours ago</option>
+												<option>8 hours ago</option>
+												<option>12 hours ago</option>
+												<option>Earlier today</option>
+												<option>Yesterday</option>
+												<option>Unknown</option>
+											</select>
 										</div>
 									</div>
-									<div
-										style="
-											display: flex;
-											align-items: center;
-											padding-top: 20px;
-										">
-										<label class="check-row">
-											<input type="checkbox" id="odAlcohol" /> Alcohol
-											co-ingestion
-										</label>
-									</div>
-								</div>
-								<label class="field-label" style="margin-top: 8px"
-									>Medication source</label
-								>
-								<div class="square-grid" id="odPrescribedGrid"></div>
-							</div>
 
-							<!-- Self-harm specific -->
-							<div id="shDetailsWrap" class="hidden" style="margin-top: 14px">
-								<p
-									class="field-label"
-									style="font-weight: 600; margin-bottom: 8px">
-									Self-harm details
-								</p>
-								<label class="field-label">Method</label>
-								<div class="square-grid" id="shMethodGrid"></div>
-								<label class="field-label" style="margin-top: 10px"
-									>Wound depth</label
-								>
-								<div class="square-grid" id="shDepthGrid"></div>
+									<div
+										id="odDetailsWrap"
+										class="hidden"
+										style="margin-top: 10px">
+										<label class="field-label" for="odSubstance"
+											>Substance(s) taken</label
+										>
+										<input
+											id="odSubstance"
+											placeholder="e.g. Paracetamol, alcohol, ibuprofen" />
+										<div style="margin-top: 8px">
+											<label class="field-label" for="odAmount"
+												>Amount / estimated dose</label
+											>
+											<input
+												id="odAmount"
+												placeholder="e.g. Up to 16 tablets" />
+										</div>
+										<div class="grid-2" style="margin-top: 8px">
+											<div>
+												<label class="field-label">Route</label>
+												<input type="hidden" id="odRoute" />
+												<div
+													class="radio-chip-group"
+													data-radio-group="odRoute"
+													style="margin-top: 4px">
+													<button
+														type="button"
+														class="radio-chip"
+														data-value="Oral (ingested)">
+														Oral / ingested
+													</button>
+													<button
+														type="button"
+														class="radio-chip"
+														data-value="IV / injected">
+														IV / injected
+													</button>
+													<button
+														type="button"
+														class="radio-chip"
+														data-value="Inhalation">
+														Inhalation
+													</button>
+													<button
+														type="button"
+														class="radio-chip"
+														data-value="Topical / transdermal">
+														Topical
+													</button>
+													<button
+														type="button"
+														class="radio-chip"
+														data-value="Other / unknown">
+														Other / unknown
+													</button>
+												</div>
+											</div>
+											<div
+												style="
+													display: flex;
+													align-items: center;
+													padding-top: 20px;
+												">
+												<label class="check-row">
+													<input type="checkbox" id="odAlcohol" /> Alcohol
+													co-ingestion
+												</label>
+											</div>
+										</div>
+										<label class="field-label" style="margin-top: 8px"
+											>Medication source</label
+										>
+										<div class="square-grid" id="odPrescribedGrid"></div>
+									</div>
+
+									<div
+										id="shDetailsWrap"
+										class="hidden"
+										style="margin-top: 10px">
+										<label class="field-label">Wound depth</label>
+										<div class="square-grid" id="shDepthGrid"></div>
+									</div>
+
+									<div
+										id="mhActOtherWrap"
+										class="hidden"
+										style="margin-top: 10px">
+										<label class="field-label" for="mhActNotes">Details</label>
+										<input id="mhActNotes" placeholder="Describe the act..." />
+									</div>
+
+									<button
+										type="button"
+										id="addMhActButton"
+										class="secondary-action"
+										style="margin-top: 12px; width: 100%">
+										Add
+									</button>
+								</div>
+								<div id="mhActEntries" style="margin-top: 8px"></div>
 							</div>
 
 							<!-- Mental State Examination -->
@@ -3430,72 +3936,13 @@
 						<div id="rosContainer" class="nested-sections"></div>
 					</details>
 
-					<!-- FAST-PASTA Stroke Assessment (shown when FAST+ in neuro ROS) -->
+					<!-- Stroke Assessment -->
 					<details class="section-card hidden" id="strokeAssessmentCard">
 						<summary>
 							<span>FAST-PASTA Stroke Assessment</span>
 							<small style="background: #c0392b; color: #fff">FAST +ve</small>
 						</summary>
 						<div class="section-body"></div>
-					</details>
-
-					<!-- Injury assessment -->
-					<details class="section-card">
-						<summary>
-							<span>Injury Assessment</span><small>Trauma</small>
-						</summary>
-						<div class="section-body">
-							<div class="grid-2">
-								<!-- Injury Location -->
-								<div>
-									<label class="field-label" for="injuryRegion"
-										>Body region</label
-									><select id="injuryRegion">
-										<option value="">Select region</option>
-									</select>
-								</div>
-								<div style="grid-column: 1 / -1">
-									<label class="field-label">Neurovascular status</label>
-									<div class="square-grid" id="injuryNvGrid"></div>
-									<input
-										id="injuryNvNotes"
-										placeholder="Additional NV notes (optional)"
-										style="margin-top: 6px" />
-								</div>
-							</div>
-							<!-- Injury Type -->
-							<label class="field-label">Injury type</label>
-							<div class="square-grid" id="injuryTypeGrid"></div>
-							<div
-								id="injuryTypeOtherWrap"
-								class="hidden"
-								style="margin-top: 6px">
-								<input
-									id="injuryTypeOther"
-									placeholder="Other injury type..." />
-							</div>
-							<!-- Interventions -->
-							<label class="field-label" style="margin-top: 10px"
-								>Interventions</label
-							>
-							<div class="square-grid" id="injuryInterventionGrid"></div>
-							<div
-								id="injuryIntOtherWrap"
-								class="hidden"
-								style="margin-top: 6px">
-								<input
-									id="injuryIntOther"
-									placeholder="Other intervention..." />
-							</div>
-							<button
-								id="addInjuryButton"
-								type="button"
-								class="secondary-action"
-								style="margin-top: 10px">
-								Add injury
-							</button>
-							<div id="injuryEntries"></div>
-						</div>
 					</details>
 
 					<!-- Obstetric / Gynaecological Assessment -->
@@ -3568,7 +4015,7 @@
 							<div style="margin-top: 12px">
 								<label class="field-label">Gynaecological symptoms</label>
 								<div
-									class="chip-multi-group"
+									class="square-grid"
 									id="gynaeSymptomGrid"
 									style="margin-top: 6px"></div>
 							</div>
@@ -3584,7 +4031,7 @@
 									>Character</label
 								>
 								<div
-									class="chip-multi-group"
+									class="square-grid"
 									id="pvBleedCharGrid"
 									style="margin-top: 6px"></div>
 							</div>
@@ -3594,19 +4041,19 @@
 									>Vaginal discharge — colour / appearance</label
 								>
 								<div
-									class="chip-multi-group"
+									class="square-grid"
 									id="dischargeColourGrid"
 									style="margin-top: 6px"></div>
 								<label class="field-label" style="margin-top: 8px"
 									>Consistency</label
 								>
 								<div
-									class="chip-multi-group"
+									class="square-grid"
 									id="dischargeConsistencyGrid"
 									style="margin-top: 6px"></div>
 								<label class="field-label" style="margin-top: 8px">Odour</label>
 								<div
-									class="chip-multi-group"
+									class="square-grid"
 									id="dischargeOdourGrid"
 									style="margin-top: 6px"></div>
 								<label class="field-label" style="margin-top: 8px"
@@ -3813,6 +4260,22 @@
 									placeholder="Describe handling method"
 									style="margin-top: 8px" />
 							</div>
+							<div
+								style="
+									display: flex;
+									gap: 8px;
+									align-items: center;
+									margin-top: 8px;
+								">
+								<input type="time" id="manualTime" />
+								<button
+									type="button"
+									id="addManualButton"
+									class="secondary-action">
+									Add
+								</button>
+							</div>
+							<div id="manualEntries"></div>
 
 							<!-- Other interventions -->
 							<label
@@ -4323,10 +4786,18 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 					endorsed by, or a replacement for JRCALC, NICE, HCPC, NEAS, NHS
 					systems, or any licensed ePCR provider.
 				</div>
+
+				<div class="fe-credit">
+					<a href="https://festudios.co.uk" target="_blank" rel="noopener noreferrer" class="fe-credit__link">
+						<img src="footer_template/festudios_logo.png" alt="FE Studios" class="fe-credit__logo" />
+						<span>Designed &amp; developed by <strong>FE Studios</strong></span>
+					</a>
+				</div>
 			</footer>
 		</div>
 
 		<div class="toast" id="toast">Copied</div>
-		<script src="app.js?v=1780310000"></script>
+		<script type="module" src="js/app.js"></script>
+		<script type="module" src="js/main.js"></script>
 	</body>
 </html>

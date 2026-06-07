@@ -1,0 +1,25 @@
+{
+	"name": "eprf",
+	"version": "1.0.0",
+	"description": "A static, GitHub Pages-ready clinical documentation support tool.",
+	"main": "index.js",
+	"scripts": {
+		"test": "vitest run"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/JamieFleming/ePCR-App.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"type": "commonjs",
+	"bugs": {
+		"url": "https://github.com/JamieFleming/ePCR-App/issues"
+	},
+	"homepage": "https://github.com/JamieFleming/ePCR-App#readme",
+	"devDependencies": {
+		"jsdom": "^29.1.1",
+		"vitest": "^4.1.8"
+	}
+}

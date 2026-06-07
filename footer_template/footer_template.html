@@ -1,0 +1,281 @@
+<!doctype html>
+<!--
+  ============================================================================
+  REUSABLE FOOTER TEMPLATE
+  ============================================================================
+  Self-contained: HTML + CSS + a tiny JS snippet, no frameworks, no build step.
+  Open this file in a browser to preview it, then drop it into any site.
+
+  HOW TO USE IT IN ANOTHER SITE (e.g. MunchSprouts):
+    1. Copy the <footer class="site-footer"> ... </footer> block into your page,
+       just before the closing </body> tag.
+    2. Copy the <style> ... </style> block into your stylesheet (or keep it in
+       the page <head>). Every class is prefixed "site-footer" so it will not
+       collide with your existing CSS.
+    3. Copy the small <script> at the bottom so the year updates automatically.
+    4. Edit the bits marked  <!-- EDIT -->  : brand name, tagline, links, email.
+
+  RE-THEMING:
+    Change the CSS variables in `.site-footer { ... }` (colours, max width,
+    radius). A ready-made dark theme is included lower down — just uncomment it.
+  ============================================================================
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Footer template — preview</title>
+
+    <!-- Optional: Inter for the polished look. The font stack falls back to the
+         system UI font if this is removed, so the template works without it. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- ===================== COPY THIS <style> BLOCK ===================== -->
+    <style>
+      .site-footer {
+        /* ---- Theme tokens: change these to re-skin the footer ---- */
+        --sf-bg: #f7f7f5; /* footer background          */
+        --sf-fg: #0a0a0b; /* primary text / headings    */
+        --sf-muted: #6b6f76; /* secondary text          */
+        --sf-faint: #9aa0a8; /* labels, fine print      */
+        --sf-border: rgba(10, 10, 11, 0.08); /* hairlines */
+        --sf-accent: #3b6cf6; /* link hover accent       */
+        --sf-max: 1180px; /* content max width          */
+        --sf-pad-x: 24px; /* side padding               */
+
+        background: var(--sf-bg);
+        color: var(--sf-fg);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+          BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial,
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .site-footer * {
+        box-sizing: border-box;
+      }
+
+      .site-footer__inner {
+        max-width: var(--sf-max);
+        margin: 0 auto;
+        padding: 64px var(--sf-pad-x) 48px;
+      }
+
+      .site-footer__divider {
+        height: 1px;
+        width: 100%;
+        background: var(--sf-border);
+      }
+
+      /* ---- Top region: brand + link columns ---- */
+      .site-footer__top {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        padding-top: 48px;
+      }
+
+      .site-footer__brand {
+        max-width: 320px;
+      }
+
+      .site-footer__logo {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .site-footer__logo img {
+        height: 32px;
+        width: auto;
+        display: block;
+      }
+
+      /* Text wordmark fallback (used when you don't pass a logo image) */
+      .site-footer__wordmark {
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+
+      .site-footer__tagline {
+        margin: 16px 0 0;
+        font-size: 15px;
+        line-height: 1.6;
+        color: var(--sf-muted);
+      }
+
+      .site-footer__nav {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 32px;
+      }
+
+      .site-footer__col {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .site-footer__label {
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.22em;
+        color: var(--sf-faint);
+      }
+
+      .site-footer__col a {
+        font-size: 15px;
+        color: var(--sf-muted);
+        text-decoration: none;
+        width: fit-content;
+        transition: color 0.25s ease;
+      }
+
+      .site-footer__col a:hover {
+        color: var(--sf-accent);
+      }
+
+      /* ---- Bottom region: copyright + fine print ---- */
+      .site-footer__bottom {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 56px;
+        padding-top: 24px;
+        border-top: 1px solid var(--sf-border);
+        font-size: 14px;
+        color: var(--sf-faint);
+      }
+
+      .site-footer__bottom p {
+        margin: 0;
+      }
+
+      .site-footer__fineprint {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.22em;
+      }
+
+      /* ---- Wider screens: brand and links sit side by side ---- */
+      @media (min-width: 640px) {
+        .site-footer__top {
+          flex-direction: row;
+          align-items: flex-start;
+          justify-content: space-between;
+        }
+        .site-footer__nav {
+          gap: 64px;
+        }
+        .site-footer__bottom {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+      }
+
+      /* ======================================================================
+         OPTIONAL DARK THEME
+         Add class="site-footer site-footer--dark" to the <footer> to use it,
+         or just move these values into the base `.site-footer` rule above.
+      ====================================================================== */
+      .site-footer--dark {
+        --sf-bg: #0a0a0b;
+        --sf-fg: #ffffff;
+        --sf-muted: rgba(255, 255, 255, 0.62);
+        --sf-faint: rgba(255, 255, 255, 0.4);
+        --sf-border: rgba(255, 255, 255, 0.12);
+        --sf-accent: #6b8dff;
+      }
+    </style>
+    <!-- =================== END OF <style> BLOCK ========================== -->
+
+    <!-- Demo-only styles so the preview page has some space above the footer.
+         You do NOT need to copy this into your site. -->
+    <style>
+      body {
+        margin: 0;
+      }
+      .demo-spacer {
+        min-height: 60vh;
+        display: grid;
+        place-items: center;
+        font-family: Inter, system-ui, sans-serif;
+        color: #9aa0a8;
+        font-size: 14px;
+        letter-spacing: 0.04em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Demo content above the footer (not part of the template) -->
+    <div class="demo-spacer">Footer template preview — scroll down</div>
+
+    <!-- ===================== COPY THIS <footer> BLOCK ==================== -->
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <div class="site-footer__divider" aria-hidden="true"></div>
+
+        <div class="site-footer__top">
+          <!-- Brand -->
+          <div class="site-footer__brand">
+            <a href="/" class="site-footer__logo" aria-label="Brand home">
+              <!-- EDIT: swap the wordmark for your logo image when you have one:
+              <img src="assets/logo.png" alt="MunchSprouts" width="160" height="40" />
+              -->
+              <span class="site-footer__wordmark">Brand Name</span><!-- EDIT -->
+            </a>
+            <p class="site-footer__tagline">
+              <!-- EDIT --> One clear line describing what this business does and
+              who it is for.
+            </p>
+          </div>
+
+          <!-- Link columns (add, remove, or rename as needed) -->
+          <nav class="site-footer__nav" aria-label="Footer">
+            <div class="site-footer__col">
+              <span class="site-footer__label">Navigate</span><!-- EDIT -->
+              <a href="#">Home</a>
+              <a href="#">About</a>
+              <a href="#">Features</a>
+              <a href="#">Contact</a>
+            </div>
+            <div class="site-footer__col">
+              <span class="site-footer__label">Connect</span><!-- EDIT -->
+              <a href="mailto:hello@example.com">Email</a><!-- EDIT -->
+              <a href="#">Instagram</a>
+              <a href="#">Privacy</a>
+              <a href="#">Terms</a>
+            </div>
+          </nav>
+        </div>
+
+        <div class="site-footer__bottom">
+          <p>
+            &copy; <span data-footer-year>2026</span> Brand Name. All rights
+            reserved.<!-- EDIT: brand name -->
+          </p>
+          <p class="site-footer__fineprint">Made with care</p><!-- EDIT -->
+        </div>
+      </div>
+    </footer>
+    <!-- =================== END OF <footer> BLOCK ========================= -->
+
+    <!-- ============ COPY THIS <script> (auto-updates the year) =========== -->
+    <script>
+      document.querySelectorAll("[data-footer-year]").forEach(function (el) {
+        el.textContent = new Date().getFullYear();
+      });
+    </script>
+    <!-- ============================ END ================================== -->
+  </body>
+</html>
