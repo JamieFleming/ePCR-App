@@ -1,12 +1,21 @@
 import { $, $$, val, isChecked } from "../utils/dom.js";
 import { OPTIONS, PAEDS } from "../data/options.js";
-import { PAEDS_WORSENING_PC, PAEDS_WORSENING_GENERIC } from "../data/worseningAdvice.js";
+import {
+	PAEDS_WORSENING_PC,
+	PAEDS_WORSENING_GENERIC,
+} from "../data/worseningAdvice.js";
 import {
 	formatSet,
 	getConveyTransferText,
 	setRadioChip,
 } from "../utils/helpers.js";
-import { state, paedsMode, createListRenderer, toggleConveyChip, bindRadioChipGroups } from "../app.js";
+import {
+	state,
+	paedsMode,
+	createListRenderer,
+	toggleConveyChip,
+	bindRadioChipGroups,
+} from "../app.js";
 
 let _paedsInited = false;
 let renderPaedsIvEntries, removePaedsIvEntry;
@@ -520,8 +529,7 @@ function buildPaedsPatientText() {
 		val("pAgeGroup") ||
 		detectAgeGroup(parseInt(yrs) || 0, parseInt(mo) || 0) ||
 		"";
-	const groupLabel =
-		PAEDS.vitalsRef[group]?.label || group;
+	const groupLabel = PAEDS.vitalsRef[group]?.label || group;
 	return [
 		`Patient: ${ageStr}, ${sex}`,
 		`Weight: ${wt}`,
@@ -784,9 +792,7 @@ function buildPaedsWorseningScript() {
 	const pcData = PAEDS_WORSENING_PC[pc];
 	const conveyed = val("pConveyDecision") === "Conveyed";
 	const custom = val("pWorseningCustom");
-	const genericLines = PAEDS_WORSENING_GENERIC.map(
-		(i) => `• ${i}`,
-	).join("\n");
+	const genericLines = PAEDS_WORSENING_GENERIC.map((i) => `• ${i}`).join("\n");
 
 	let script = `"Call 999 immediately if:\n`;
 	if (pcData?.call999?.length) {
@@ -1059,3 +1065,5 @@ window.CrewMatePaeds = {
 		return renderPaedsIvEntries;
 	},
 };
+
+export { aplsWeight, detectAgeGroup, calcWetflag };

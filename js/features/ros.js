@@ -249,10 +249,10 @@ function rosSectionText(section, abnormalOnly = false) {
 function abcChipText(button) {
 	if (button.dataset.abcState !== "abnormal") return button.textContent;
 	const detailMap = {
-		"Good colour":  "colourDetail",
-		"Normal Rate":  "hrRateDetail",
-		"Regular":      "breathingDetail",
-		"PEARL":        "pupilDetail",
+		"Good colour": "colourDetail",
+		"Normal Rate": "hrRateDetail",
+		Regular: "breathingDetail",
+		PEARL: "pupilDetail",
 	};
 	const detailId = detailMap[button.dataset.normal];
 	if (detailId) {
@@ -390,3 +390,5 @@ window.CrewMateRos = {
 	toggleEcgFinding,
 	toggleEcgLead,
 };
+
+export { rosChipsText, abcHandoverSummary, rosSectionText };
