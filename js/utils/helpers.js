@@ -35,6 +35,7 @@ export function rfSystolic() {
 
 export function getConveyTransferText(isPaeds = false) {
 	return $$(isPaeds ? ".p-convey-chip" : ".convey-chip")
+		.filter((chip) => chip.dataset.conveyState !== "unselected")
 		.map((chip) => chip.textContent)
 		.join("; ");
 }

@@ -153,11 +153,11 @@ function buildConveyTransferChips(
 	OPTIONS.conveyance.transferDetails.forEach(([normal, abnormal]) => {
 		const button = document.createElement("button");
 		button.type = "button";
-		button.className = `square-btn ${chipClass} selected`;
+		button.className = `square-btn ${chipClass}`;
 		button.textContent = normal;
 		button.dataset.normal = normal;
 		button.dataset.abnormal = abnormal;
-		button.dataset.conveyState = "normal";
+		button.dataset.conveyState = "unselected";
 		if (abnormal === "Clinical change during conveyance")
 			button.dataset.clinicalChange = "true";
 		if (abnormal === "Care escalated en route")

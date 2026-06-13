@@ -777,11 +777,14 @@ export function toggleConveyChip(button) {
 		? '.p-convey-chip[data-normal="Remained stable throughout"]'
 		: '.convey-chip[data-normal="Remained stable throughout"]';
 
-	const isAbnormal = button.dataset.conveyState === "abnormal";
-	const next = isAbnormal ? "normal" : "abnormal";
+	const current = button.dataset.conveyState;
+	const next =
+		current === "unselected" ? "normal"
+		: current === "normal" ? "abnormal"
+		: "unselected";
 	button.dataset.conveyState = next;
-	button.classList.toggle("abnormal", next === "abnormal");
 	button.classList.toggle("selected", next === "normal");
+	button.classList.toggle("abnormal", next === "abnormal");
 	button.textContent =
 		next === "abnormal" ? button.dataset.abnormal : button.dataset.normal;
 
