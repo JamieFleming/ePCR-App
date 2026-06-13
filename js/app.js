@@ -380,7 +380,8 @@ function bindEvents() {
 	});
 	$("#oaFound").addEventListener("change", () => {
 		const notPatient = $("#oaFound").value !== "Greeted by patient";
-		$("#oaPatientContactWrap").style.display = notPatient ? "" : "none";
+		const wrap = $("#oaPatientContactWrap");
+		if (wrap) wrap.style.display = notPatient ? "" : "none";
 		if (!notPatient) {
 			$("#oaPatientFoundHow").value = "";
 		}

@@ -6,6 +6,7 @@ import {
 	populateChipGroup,
 } from "../utils/dom.js";
 import { OPTIONS } from "../data/options.js";
+import { state } from "../app.js";
 
 function buildSeizureSection() {
 	buildButtonGrid(
