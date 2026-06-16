@@ -1625,6 +1625,7 @@ export const ABCDE = {
 			title: "Breathing",
 			chips: [
 				["Regular", "Laboured / irregular"],
+				["Regular Rate", "Tachypnoeic/Bradypnoeic"],
 				["No cyanosis", "Cyanosis present"],
 				["Full sentences", "Unable to complete full sentences"],
 				["No wheeze", "Wheeze present"],
@@ -1632,7 +1633,8 @@ export const ABCDE = {
 			],
 			notes: "breathingNotes",
 			extras:
-				'<div id="breathingDetailWrap" class="hidden" data-detail-wrap style="margin-top:6px"><input type="hidden" id="breathingDetail"><div class="radio-chip-group" data-radio-group="breathingDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Laboured">Laboured</button><button type="button" class="radio-chip" data-value="Irregular">Irregular</button></div></div>',
+				'<div id="breathingDetailWrap" class="hidden" data-detail-wrap style="margin-top:6px"><input type="hidden" id="breathingDetail"><div class="radio-chip-group" data-radio-group="breathingDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Laboured">Laboured</button><button type="button" class="radio-chip" data-value="Irregular">Irregular</button></div></div>' +
+				'<div id="breathingRateDetailWrap" class="hidden" data-detail-wrap style="margin-top:6px"><input type="hidden" id="breathingRateDetail"><div class="radio-chip-group" data-radio-group="breathingRateDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Tachypnoeic">Tachypnoeic</button><button type="button" class="radio-chip" data-value="Bradypnoeic">Bradypnoeic</button></div></div>',
 		},
 		{
 			key: "C",
@@ -1752,7 +1754,7 @@ export const ROS = {
 		],
 		extras:
 			'<div id="rrDetailWrap" class="hidden" data-detail-wrap style="margin-top:6px"><input type="hidden" id="rrDetail"><div class="radio-chip-group" data-radio-group="rrDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Tachypnoea">Tachypnoea</button><button type="button" class="radio-chip" data-value="Bradypnoea">Bradypnoea</button><button type="button" class="radio-chip" data-value="Apnoea">Apnoea</button></div></div>' +
-				'<div id="breathingRhythmDetailWrap" class="hidden" data-detail-wrap style="margin-top:6px"><input type="hidden" id="breathingRhythmDetail"><div class="radio-chip-group" data-radio-group="breathingRhythmDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Laboured">Laboured</button><button type="button" class="radio-chip" data-value="Irregular">Irregular</button></div></div>' +
+			'<div id="breathingRhythmDetailWrap" class="hidden" data-detail-wrap style="margin-top:6px"><input type="hidden" id="breathingRhythmDetail"><div class="radio-chip-group" data-radio-group="breathingRhythmDetail" style="gap:6px;margin-top:4px"><button type="button" class="radio-chip" data-value="Laboured">Laboured</button><button type="button" class="radio-chip" data-value="Irregular">Irregular</button></div></div>' +
 			'<label class="field-label" style="margin-top:10px">Auscultation</label><div id="auscRegionGrid" class="ausc-region-grid"></div><div id="auscFindingPanel" class="ausc-finding-panel hidden"></div><input id="respAus" type="hidden" /><p id="auscPreview" class="ausc-preview field-hint" style="margin-top:6px">Not auscultated</p><label class="field-label" style="margin-top:10px" for="coughType">Cough</label><select id="coughType"><option>No cough</option><option>Dry cough present</option><option>Productive cough present</option></select><div id="sputumWrap" class="hidden" style="margin-top:6px"><label class="field-label" for="sputumDesc">Sputum</label><input id="sputumDesc" list="sputumList" placeholder="e.g. yellow, green, white, blood-stained" /><datalist id="sputumList"><option>Clear</option><option>White / frothy</option><option>Yellow</option><option>Green</option><option>Brown</option><option>Blood-stained (haemoptysis)</option><option>Pink and frothy</option><option>Rust-coloured</option></datalist></div><label class="field-label" for="respNotes">Additional notes</label><textarea id="respNotes" rows="2"></textarea>',
 	},
 	cvs: {

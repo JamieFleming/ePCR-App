@@ -18,10 +18,10 @@ function buildRos() {
 		const grid = $(".ros-grid", details);
 		section.items.forEach(([id, normal, abnormal]) => {
 			const stateId = `${key}_${id}`;
-			state.ros[stateId] = "normal";
+			state.ros[stateId] = "unselected";
 			const button = document.createElement("button");
 			button.type = "button";
-			button.className = "square-btn ros-chip selected";
+			button.className = "square-btn ros-chip";
 			button.textContent = normal;
 			button.dataset.section = key;
 			button.dataset.stateId = stateId;
@@ -38,26 +38,28 @@ function buildRos() {
 }
 
 function toggleRos(button) {
-	const isAbnormal = state.ros[button.dataset.stateId] === "abnormal";
-	const next = isAbnormal ? "normal" : "abnormal";
+	const current = state.ros[button.dataset.stateId];
+	const next =
+		current === "unselected" ? "normal"
+		: current === "normal" ? "abnormal"
+		: "unselected";
 	state.ros[button.dataset.stateId] = next;
-	button.classList.toggle("abnormal", !isAbnormal);
-	button.classList.toggle("selected", isAbnormal);
-	button.textContent = isAbnormal
-		? button.dataset.normal
-		: button.dataset.abnormal;
+	button.classList.toggle("selected", next === "normal");
+	button.classList.toggle("abnormal", next === "abnormal");
+	button.textContent =
+		next === "abnormal" ? button.dataset.abnormal : button.dataset.normal;
 	updateRosBadge(button.dataset.section);
 
 	if (button.dataset.stateId === "neuro_fast") {
 		const card = $("#strokeAssessmentCard");
-		if (card) card.classList.toggle("hidden", next === "normal");
+		if (card) card.classList.toggle("hidden", next !== "abnormal");
 	}
 
 	if (button.dataset.stateId === "resp_breathingRate") {
 		const wrap = $("#rrDetailWrap");
 		if (wrap) {
-			wrap.classList.toggle("hidden", next === "normal");
-			if (next === "normal") {
+			wrap.classList.toggle("hidden", next !== "abnormal");
+			if (next !== "abnormal") {
 				const hidden = $("#rrDetail");
 				if (hidden) hidden.value = "";
 				wrap
@@ -70,8 +72,8 @@ function toggleRos(button) {
 	if (button.dataset.stateId === "resp_regularBreathing") {
 		const wrap = $("#breathingRhythmDetailWrap");
 		if (wrap) {
-			wrap.classList.toggle("hidden", next === "normal");
-			if (next === "normal") {
+			wrap.classList.toggle("hidden", next !== "abnormal");
+			if (next !== "abnormal") {
 				const hidden = $("#breathingRhythmDetail");
 				if (hidden) hidden.value = "";
 				wrap
@@ -84,8 +86,8 @@ function toggleRos(button) {
 	if (button.dataset.stateId === "cvs_pulseRate") {
 		const wrap = $("#hrDetailWrap");
 		if (wrap) {
-			wrap.classList.toggle("hidden", next === "normal");
-			if (next === "normal") {
+			wrap.classList.toggle("hidden", next !== "abnormal");
+			if (next !== "abnormal") {
 				const hidden = $("#hrDetail");
 				if (hidden) hidden.value = "";
 				wrap
@@ -98,8 +100,8 @@ function toggleRos(button) {
 	if (button.dataset.stateId === "urine_volume") {
 		const wrap = $("#urinaryVolumeWrap");
 		if (wrap) {
-			wrap.classList.toggle("hidden", next === "normal");
-			if (next === "normal") {
+			wrap.classList.toggle("hidden", next !== "abnormal");
+			if (next !== "abnormal") {
 				state.urinaryVolumeFeatures.clear();
 				wrap
 					.querySelectorAll(".square-btn")
@@ -111,8 +113,8 @@ function toggleRos(button) {
 	if (button.dataset.stateId === "urine_colour") {
 		const wrap = $("#urinaryColourWrap");
 		if (wrap) {
-			wrap.classList.toggle("hidden", next === "normal");
-			if (next === "normal") {
+			wrap.classList.toggle("hidden", next !== "abnormal");
+			if (next !== "abnormal") {
 				state.urinaryColourFeatures.clear();
 				wrap
 					.querySelectorAll(".square-btn")
@@ -133,6 +135,7 @@ function updateRosBadge(section) {
 
 function rosChipsText(section) {
 	return ROS[section].items
+		.filter(([id]) => state.ros[`${section}_${id}`] !== "unselected")
 		.map(([id, normal, abnormal]) => {
 			if (state.ros[`${section}_${id}`] !== "abnormal") return normal;
 			if (section === "resp" && id === "breathingRate") {
@@ -261,6 +264,7 @@ function abcChipText(button) {
 	const detailMap = {
 		"Good colour": "colourDetail",
 		"Normal Rate": "hrRateDetail",
+		"Regular Rate": "breathingRateDetail",
 		Regular: "breathingDetail",
 		PEARL: "pupilDetail",
 	};

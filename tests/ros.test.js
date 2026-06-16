@@ -15,6 +15,8 @@ beforeEach(() => {
 
 describe("rosChipsText", () => {
 	it("returns each chip on its own line", () => {
+		state.ros["resp_breathingRate"] = "normal";
+		state.ros["resp_cyanosis"] = "normal";
 		const text = rosChipsText("resp");
 		const lines = text.split("\n");
 		expect(lines.length).toBeGreaterThan(1);
@@ -22,6 +24,8 @@ describe("rosChipsText", () => {
 	});
 
 	it("shows normal label when chip is not flagged", () => {
+		state.ros["resp_breathingRate"] = "normal";
+		state.ros["resp_cyanosis"] = "normal";
 		expect(rosChipsText("resp")).toContain("Respiratory Rate Normal");
 		expect(rosChipsText("resp")).toContain("No cyanosis");
 	});

@@ -297,6 +297,19 @@ function toggleAbc(button) {
 			}
 		}
 	}
+	if (button.dataset.normal === "Regular Rate") {
+		const wrap = $("#breathingRateDetailWrap");
+		if (wrap) {
+			wrap.classList.toggle("hidden", next === "normal");
+			if (next === "normal") {
+				const hidden = $("#breathingRateDetail");
+				if (hidden) hidden.value = "";
+				wrap
+					.querySelectorAll("[data-value]")
+					.forEach((c) => c.classList.remove("selected"));
+			}
+		}
+	}
 	if (button.dataset.normal === "Regular") {
 		const wrap = $("#breathingDetailWrap");
 		if (wrap) {
