@@ -662,6 +662,10 @@ function buildOutputSections() {
 			body: `PMH: ${isChecked("noPmh") ? "No significant past medical history" : val("pmh") || "Not documented"}\nMedications: ${isChecked("noMeds") ? "No regular medications" : val("medications") || "Not documented"}\nAllergies: ${isChecked("nkda") ? "NKDA" : val("allergies") || "Not documented"}\nLast oral intake: ${[val("loiWhat"), val("loiTime")].filter(Boolean).join(" at ") || "Not documented"}\nOther Details: ${val("prevDetails") || "Not documented"}`,
 		},
 		...(() => {
+			const sex = val("ptSex");
+			const age = parseInt(val("ptAge"), 10);
+			const eligible = (sex === "Female" || sex === "Other") && (isNaN(age) || (age >= 10 && age <= 60));
+			if (!eligible) return [];
 			const body = window.CrewMateGynae.buildGynaeOutput();
 			return body ? [{ id: "gynae", title: "OBSTETRIC / GYNAECOLOGICAL", body }] : [];
 		})(),
