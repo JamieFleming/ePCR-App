@@ -1241,7 +1241,7 @@ export const OPTIONS = {
 			},
 			{
 				group: "Other",
-				items: ["Co-Amoxiclav, IV Paracetamol 10mg/ml"],
+				items: ["Co-Amoxiclav, IV Paracetamol 10mg/ml", "Glucose 40%"],
 			},
 		],
 

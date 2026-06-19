@@ -4116,191 +4116,186 @@
 						</div>
 					</details>
 
-					<!-- Treatment -->
-					<details class="section-card" id="treatmentCard">
-						<summary>
-							<span>Treatments &amp; Interventions</span><small>Rx</small>
-						</summary>
-						<div class="section-body">
-							<!-- Airways -->
-							<label class="field-label"
-								>Airway / breathing interventions</label
-							>
-							<div class="square-grid" id="airwayInterventionGrid"></div>
+					<!-- Treatment (split sections, moved to Treatment tab via JS) -->
+					<div id="treatmentCard">
 
-							<!-- Access -->
-							<label class="field-label" style="margin-top: 14px"
-								>Vascular access</label
-							>
-							<div class="grid-2">
-								<div>
-									<label class="field-label">Type</label>
-									<input type="hidden" id="vaType" />
-									<div
-										class="radio-chip-group"
-										data-radio-group="vaType"
-										style="margin-top: 4px"></div>
-								</div>
-								<div id="vaGaugeWrap" class="hidden">
-									<label class="field-label">Gauge</label>
-									<input type="hidden" id="vaGauge" />
-									<div
-										class="radio-chip-group"
-										data-radio-group="vaGauge"
-										style="margin-top: 4px"></div>
-								</div>
+						<!-- Airway & Breathing -->
+						<details class="section-card">
+							<summary><span>Airway &amp; Breathing</span><small>Airway</small></summary>
+							<div class="section-body">
+								<div class="square-grid" id="airwayInterventionGrid"></div>
 							</div>
-							<label class="field-label" style="margin-top: 8px">Site</label>
-							<input type="hidden" id="vaSite" />
-							<div
-								id="vaIvSites"
-								class="radio-chip-group wrap-grid hidden"
-								data-radio-group="vaSite"
-								style="margin-top: 4px"></div>
-							<div
-								id="vaIoSites"
-								class="radio-chip-group wrap-grid hidden"
-								data-radio-group="vaSite"
-								style="margin-top: 4px"></div>
-							<label class="field-label" style="margin-top: 8px">Time</label>
-							<input type="time" id="vaTime" />
-							<div class="grid-2" style="margin-top: 8px">
-								<div>
-									<label class="field-label">Outcome</label>
-									<input type="hidden" id="vaOutcome" />
-									<div
-										class="radio-chip-group"
-										data-radio-group="vaOutcome"
-										style="margin-top: 4px"></div>
+						</details>
+
+						<!-- Vascular Access -->
+						<details class="section-card">
+							<summary><span>Vascular Access</span><small>IV/IO</small></summary>
+							<div class="section-body">
+								<div class="grid-2">
+									<div>
+										<label class="field-label">Type</label>
+										<input type="hidden" id="vaType" />
+										<div
+											class="radio-chip-group"
+											data-radio-group="vaType"
+											style="margin-top: 4px"></div>
+									</div>
+									<div id="vaGaugeWrap" class="hidden">
+										<label class="field-label">Gauge</label>
+										<input type="hidden" id="vaGauge" />
+										<div
+											class="radio-chip-group"
+											data-radio-group="vaGauge"
+											style="margin-top: 4px"></div>
+									</div>
 								</div>
-							</div>
-							<div id="vaFlushWrap" class="hidden" style="margin-top: 8px">
-								<label class="field-label">Flush</label>
-								<input type="hidden" id="vaFlushed" />
+								<label class="field-label" style="margin-top: 8px">Site</label>
+								<input type="hidden" id="vaSite" />
 								<div
-									class="radio-chip-group"
-									data-radio-group="vaFlushed"
-									style="margin-top: 4px">
-									<button
-										type="button"
-										class="radio-chip"
-										data-value="Flushed — 5ml NaCl 0.9%">
-										✓ Flushed (5ml NaCl 0.9%)
-									</button>
-									<button
-										type="button"
-										class="radio-chip"
-										data-value="Not flushed">
-										✗ Not flushed
-									</button>
+									id="vaIvSites"
+									class="radio-chip-group wrap-grid hidden"
+									data-radio-group="vaSite"
+									style="margin-top: 4px"></div>
+								<div
+									id="vaIoSites"
+									class="radio-chip-group wrap-grid hidden"
+									data-radio-group="vaSite"
+									style="margin-top: 4px"></div>
+								<label class="field-label" style="margin-top: 8px">Time</label>
+								<input type="time" id="vaTime" />
+								<div class="grid-2" style="margin-top: 8px">
+									<div>
+										<label class="field-label">Outcome</label>
+										<input type="hidden" id="vaOutcome" />
+										<div
+											class="radio-chip-group"
+											data-radio-group="vaOutcome"
+											style="margin-top: 4px"></div>
+									</div>
 								</div>
-							</div>
-							<button
-								id="addVaButton"
-								type="button"
-								class="secondary-action"
-								style="margin-top: 10px">
-								Add access
-							</button>
-							<div id="vaEntries"></div>
-
-							<!-- Drugs -->
-							<label class="field-label" style="margin-top: 14px"
-								>Medications given</label
-							>
-							<div class="grid-2">
-								<select id="drugName">
-									<option value="">Select a Drug</option>
-								</select>
-								<div>
-									<label class="field-label" for="drugDose">Dose</label>
-									<input id="drugDose" placeholder="e.g. 5mg, 2 puffs" />
-								</div>
-							</div>
-							<div class="grid-2">
-								<div>
-									<label class="field-label">Route</label>
-									<input type="hidden" id="drugRoute" />
+								<div id="vaFlushWrap" class="hidden" style="margin-top: 8px">
+									<label class="field-label">Flush</label>
+									<input type="hidden" id="vaFlushed" />
 									<div
-										class="radio-chip-group wrap-grid"
-										data-radio-group="drugRoute"
-										style="margin-top: 4px"></div>
+										class="radio-chip-group"
+										data-radio-group="vaFlushed"
+										style="margin-top: 4px">
+										<button
+											type="button"
+											class="radio-chip"
+											data-value="Flushed — 5ml NaCl 0.9%">
+											✓ Flushed (5ml NaCl 0.9%)
+										</button>
+										<button
+											type="button"
+											class="radio-chip"
+											data-value="Not flushed">
+											✗ Not flushed
+										</button>
+									</div>
 								</div>
-								<div>
-									<label class="field-label" for="drugTime">Time given</label>
-									<input type="time" id="drugTime" />
-								</div>
-							</div>
-							<button
-								id="addDrugButton"
-								type="button"
-								class="secondary-action"
-								style="margin-top: 10px">
-								Add medication
-							</button>
-							<div id="drugEntries"></div>
-
-							<!-- Wound Management -->
-							<label class="field-label" style="margin-top: 14px"
-								>Wound management</label
-							>
-							<div class="square-grid" id="woundInterventionGrid"></div>
-							<div id="woundOtherWrap" class="hidden">
-								<input
-									id="woundOther"
-									placeholder="Describe wound intervention"
-									style="margin-top: 8px" />
-							</div>
-
-							<!-- Manual Handling -->
-							<label class="field-label" style="margin-top: 14px"
-								>Manual handling</label
-							>
-							<div class="square-grid" id="manualHandlingGrid"></div>
-							<div id="manualOtherWrap" class="hidden">
-								<input
-									id="manualOther"
-									placeholder="Describe handling method"
-									style="margin-top: 8px" />
-							</div>
-							<div
-								style="
-									display: flex;
-									gap: 8px;
-									align-items: center;
-									margin-top: 8px;
-								">
-								<input type="time" id="manualTime" />
 								<button
+									id="addVaButton"
 									type="button"
-									id="addManualButton"
-									class="secondary-action">
-									Add
+									class="secondary-action"
+									style="margin-top: 10px">
+									Add access
 								</button>
+								<div id="vaEntries"></div>
 							</div>
-							<div id="manualEntries"></div>
+						</details>
 
-							<!-- Other interventions -->
-							<label
-								class="field-label"
-								for="otherInterventionsFree"
-								style="margin-top: 14px"
-								>Other interventions</label
-							>
-							<textarea
-								id="otherInterventionsFree"
-								rows="2"
-								placeholder="Describe any other interventions performed…"></textarea>
+						<!-- Medications -->
+						<details class="section-card">
+							<summary><span>Medications</span><small>Drugs</small></summary>
+							<div class="section-body">
+								<div class="grid-2">
+									<select id="drugName">
+										<option value="">Select a Drug</option>
+									</select>
+									<div>
+										<label class="field-label" for="drugDose">Dose</label>
+										<input id="drugDose" placeholder="e.g. 5mg, 2 puffs" />
+									</div>
+								</div>
+								<div class="grid-2">
+									<div>
+										<label class="field-label">Route</label>
+										<input type="hidden" id="drugRoute" />
+										<div
+											class="radio-chip-group wrap-grid"
+											data-radio-group="drugRoute"
+											style="margin-top: 4px"></div>
+									</div>
+									<div>
+										<label class="field-label" for="drugTime">Time given</label>
+										<input type="time" id="drugTime" />
+									</div>
+								</div>
+								<button
+									id="addDrugButton"
+									type="button"
+									class="secondary-action"
+									style="margin-top: 10px">
+									Add medication
+								</button>
+								<div id="drugEntries"></div>
+							</div>
+						</details>
 
-							<label
-								class="field-label"
-								for="treatmentNotes"
-								style="margin-top: 14px"
-								>Treatment notes</label
-							>
-							<textarea id="treatmentNotes" rows="2"></textarea>
-						</div>
-					</details>
+						<!-- Wound Management -->
+						<details class="section-card">
+							<summary><span>Wound Management</span><small>Wounds</small></summary>
+							<div class="section-body">
+								<div class="square-grid" id="woundInterventionGrid"></div>
+								<div id="woundOtherWrap" class="hidden">
+									<input
+										id="woundOther"
+										placeholder="Describe wound intervention"
+										style="margin-top: 8px" />
+								</div>
+							</div>
+						</details>
+
+						<!-- Manual Handling -->
+						<details class="section-card">
+							<summary><span>Manual Handling</span><small>Handling</small></summary>
+							<div class="section-body">
+								<div class="square-grid" id="manualHandlingGrid"></div>
+								<div id="manualOtherWrap" class="hidden">
+									<input
+										id="manualOther"
+										placeholder="Describe handling method"
+										style="margin-top: 8px" />
+								</div>
+								<div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+									<input type="time" id="manualTime" />
+									<button
+										type="button"
+										id="addManualButton"
+										class="secondary-action">
+										Add
+									</button>
+								</div>
+								<div id="manualEntries"></div>
+							</div>
+						</details>
+
+						<!-- Additional Notes -->
+						<details class="section-card">
+							<summary><span>Additional Notes</span><small>Notes</small></summary>
+							<div class="section-body">
+								<label class="field-label" for="otherInterventionsFree">Other interventions</label>
+								<textarea
+									id="otherInterventionsFree"
+									rows="2"
+									placeholder="Describe any other interventions performed…"></textarea>
+								<label class="field-label" for="treatmentNotes" style="margin-top: 10px">Treatment notes</label>
+								<textarea id="treatmentNotes" rows="2"></textarea>
+							</div>
+						</details>
+
+					</div>
 
 					<!-- CLinical changes -->
 					<details class="section-card">
@@ -4388,6 +4383,28 @@
 
 				<!-- TREATMENT TAB -->
 				<section class="panel" id="panel-treatment">
+					<div style="display:flex;align-items:center;gap:14px;padding:4px 0 12px">
+						<div style="width:52px;height:52px;border-radius:14px;background:var(--brand,#1565C0);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+							<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+								<!-- Syringe barrel -->
+								<rect x="4.5" y="9.5" width="12" height="5" rx="1.2"/>
+								<!-- Plunger rod and flange -->
+								<line x1="2" y1="12" x2="4.5" y2="12"/>
+								<line x1="2" y1="10.2" x2="2" y2="13.8"/>
+								<!-- Graduation marks -->
+								<line x1="8.5" y1="9.5" x2="8.5" y2="14.5"/>
+								<line x1="11.5" y1="9.5" x2="11.5" y2="14.5"/>
+								<!-- Needle hub -->
+								<path d="M16.5 10.5 L18.5 11.2 L18.5 12.8 L16.5 13.5 Z"/>
+								<!-- Needle -->
+								<line x1="18.5" y1="12" x2="22" y2="12"/>
+							</svg>
+						</div>
+						<div>
+							<p style="margin:0;font-weight:600;font-size:15px;color:var(--text,inherit)">Treatments &amp; Interventions</p>
+							<p style="margin:3px 0 0;font-size:12px;color:var(--text-muted,#666)">Airway, vascular access, medications, wound care and manual handling</p>
+						</div>
+					</div>
 					<div id="treatmentCardHost"></div>
 				</section>
 
