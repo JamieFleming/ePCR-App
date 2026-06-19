@@ -143,12 +143,7 @@ export function updateDemographicVisibility() {
 
 // --- Events ---
 function bindEvents() {
-	$("#safeguardingReferral")?.addEventListener("change", () => {
-		$("#safeguardingReferralFields")?.classList.toggle(
-			"hidden",
-			!$("#safeguardingReferral").checked,
-		);
-	});
+
 	$$(".tab").forEach((tab) =>
 		tab.addEventListener("click", () => switchTab(tab.dataset.tab)),
 	);
@@ -558,16 +553,16 @@ function bindEvents() {
 		const injuryNvBtn = event.target.closest("[data-injury-nv]");
 		if (injuryNvBtn) {
 			const key = injuryNvBtn.dataset.injuryNv;
-			const isAbnormal =
-				window.CrewMateInjury.pendingInjuryNv[key] === "abnormal";
-			window.CrewMateInjury.pendingInjuryNv[key] = isAbnormal
-				? "normal"
-				: "abnormal";
-			injuryNvBtn.classList.toggle("selected", isAbnormal);
-			injuryNvBtn.classList.toggle("abnormal", !isAbnormal);
-			injuryNvBtn.textContent = isAbnormal
-				? injuryNvBtn.dataset.normal
-				: injuryNvBtn.dataset.abnormal;
+			const current = window.CrewMateInjury.pendingInjuryNv[key];
+			const next = current === "unselected" ? "normal"
+				: current === "normal" ? "abnormal"
+				: "unselected";
+			window.CrewMateInjury.pendingInjuryNv[key] = next;
+			injuryNvBtn.classList.toggle("selected", next === "normal");
+			injuryNvBtn.classList.toggle("abnormal", next === "abnormal");
+			injuryNvBtn.textContent = next === "abnormal"
+				? injuryNvBtn.dataset.abnormal
+				: injuryNvBtn.dataset.normal;
 			return;
 		}
 		const removeInjury = event.target.closest("[data-remove-injury]");

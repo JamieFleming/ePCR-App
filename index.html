@@ -4601,50 +4601,74 @@
 								id="safeguardingDetailWrap"
 								class="hidden"
 								style="margin-top: 12px">
-								<label class="field-label" for="safeguardingDetail"
-									>Details / observations</label
-								>
-								<textarea
-									id="safeguardingDetail"
-									rows="3"
-									placeholder="Describe specific concerns, indicators, or context observed on scene…"></textarea>
-								<label class="check-row" style="margin-top: 10px">
-									<input type="checkbox" id="safeguardingReferral" />
-									Safeguarding referral made
-								</label>
+
+								<label class="field-label" for="whyAmbulanceContact">Why did the ambulance attend</label>
+								<textarea id="whyAmbulanceContact" rows="2" placeholder="e.g. Patient was injured, unwell, fell…"></textarea>
+
+								<label class="field-label" for="whoRaisedConcern" style="margin-top:10px">Who raised the concern</label>
+								<textarea id="whoRaisedConcern" rows="2" placeholder="e.g. Patient, neighbour, carer, crew on scene…"></textarea>
+
+								<label class="field-label" for="whyConcernRaised" style="margin-top:10px">Why was the concern raised</label>
+								<textarea id="whyConcernRaised" rows="2" placeholder="e.g. Struggling at home, unable to leave, unable to feed/water…"></textarea>
+
+								<label class="field-label" style="margin-top:10px">Did the patient consent to referral</label>
+								<input type="hidden" id="safeguardingConsent" />
+								<div class="radio-chip-group" data-radio-group="safeguardingConsent" style="gap:6px;margin-top:4px">
+									<button type="button" class="radio-chip" data-value="Yes">Yes</button>
+									<button type="button" class="radio-chip" data-value="No">No</button>
+									<button type="button" class="radio-chip" data-value="Unable to consent">Unable to consent</button>
+								</div>
+								<div id="consentRationaleWrap" class="hidden" style="margin-top:6px">
+									<label class="field-label" for="consentRationale">Rationale for referral without consent</label>
+									<textarea id="consentRationale" rows="2" placeholder="e.g. Unconscious, confused, unable to communicate…"></textarea>
+								</div>
+
+								<label class="field-label" for="concernsDescription" style="margin-top:10px">What are your concerns</label>
+								<textarea id="concernsDescription" rows="3" placeholder="e.g. Welfare and care needs of the patient…"></textarea>
+
+								<label class="field-label" for="patientWants" style="margin-top:10px">What would the patient like to happen</label>
+								<textarea id="patientWants" rows="2" placeholder="e.g. More support at home, OT assessment…"></textarea>
+
+								<label class="field-label" for="othersPresentWant" style="margin-top:10px">What do others present want (if applicable)</label>
+								<textarea id="othersPresentWant" rows="2" placeholder="e.g. More support, OT assessment…"></textarea>
+
+								<label class="field-label" for="crewWants" style="margin-top:10px">What do you want to happen</label>
+								<textarea id="crewWants" rows="2" placeholder="e.g. More support, OT assessment…"></textarea>
+
+								<label class="field-label" for="safeguardingNotes" style="margin-top:10px">Additional information</label>
+								<textarea id="safeguardingNotes" rows="2" placeholder="Further information…"></textarea>
+
+								<div style="margin-top:12px;padding:8px 10px;background:#fff3e0;border:1px solid #ffb74d;border-radius:6px">
+									<p class="field-hint" style="color:#e65100;margin:0">Do not record patient identifiable information in this tool. Names, addresses, DOB and NHS numbers must be removed at the earliest convenience.</p>
+								</div>
+
+								<label class="field-label" for="clericJobId" style="margin-top:10px">Cleric Job ID</label>
+								<input id="clericJobId" type="text" placeholder="Job ID" />
+
+								<label class="field-label" for="jobInformation" style="margin-top:10px">Job information</label>
+								<textarea id="jobInformation" rows="2" placeholder="e.g. Names, addresses, DOB and NHS numbers…"></textarea>
+
+								<label class="field-label" style="margin-top:12px">Safeguarding referral made</label>
+								<input type="hidden" id="referralMade" />
+								<div class="radio-chip-group" data-radio-group="referralMade" style="gap:6px;margin-top:4px">
+									<button type="button" class="radio-chip" data-value="Yes">Yes</button>
+									<button type="button" class="radio-chip" data-value="No">No</button>
+								</div>
 								<div
 									id="safeguardingReferralFields"
 									class="hidden"
-									style="margin-top: 6px">
+									style="margin-top: 8px">
 									<label class="field-label">Ulysses reference number</label>
-									<div
-										style="
-											display: flex;
-											align-items: center;
-											gap: 4px;
-											margin-top: 4px;
-										">
-										<span
-											style="
-												font-weight: 600;
-												font-size: 0.9rem;
-												white-space: nowrap;
-											"
-											>ULY</span
-										>
+									<div style="display:flex;align-items:center;gap:4px;margin-top:4px">
+										<span style="font-weight:600;font-size:0.9rem;white-space:nowrap">ULY-</span>
 										<input
 											id="ulyssesNumber"
 											type="text"
 											inputmode="numeric"
 											pattern="[0-9]*"
 											placeholder="e.g. 123456"
-											style="flex: 1" />
+											style="flex:1" />
 									</div>
-									<textarea
-										id="safeguardingReferralDetail"
-										rows="2"
-										placeholder="Who was contacted, reference number, outcome of referral…"
-										style="margin-top: 8px"></textarea>
 								</div>
 							</div>
 						</div>

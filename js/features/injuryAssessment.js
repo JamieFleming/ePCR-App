@@ -14,10 +14,10 @@ function buildInjurySection() {
 	const nvGrid = $("#injuryNvGrid");
 	if (nvGrid) {
 		OPTIONS.injury.neurovascular.forEach(({ key, normal, abnormal }) => {
-			pendingInjuryNv[key] = "normal";
+			pendingInjuryNv[key] = "unselected";
 			const btn = document.createElement("button");
 			btn.type = "button";
-			btn.className = "square-btn selected";
+			btn.className = "square-btn";
 			btn.textContent = normal;
 			btn.dataset.injuryNv = key;
 			btn.dataset.normal = normal;
@@ -115,10 +115,10 @@ function addInjuryEntry() {
 	pendingInjuryTypes.clear();
 	pendingInjuryInterventions.clear();
 	OPTIONS.injury.neurovascular.forEach(({ key, normal }) => {
-		pendingInjuryNv[key] = "normal";
+		pendingInjuryNv[key] = "unselected";
 		const btn = $(`[data-injury-nv="${key}"]`);
 		if (btn) {
-			btn.classList.add("selected");
+			btn.classList.remove("selected");
 			btn.classList.remove("abnormal");
 			btn.textContent = normal;
 		}

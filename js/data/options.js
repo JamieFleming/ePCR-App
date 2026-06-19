@@ -1057,14 +1057,21 @@ export const OPTIONS = {
 		concerns: [
 			"None identified on scene",
 			"Child at risk",
+			"Unwitnessed Injury of Non-Mobile Infant",
 			"Vulnerable adult",
 			"Self-neglect indicators",
 			"Domestic abuse indicators",
+			"Sexual Abuse/Exploitation Indicators",
+			"Hoarding",
 			"Poor living conditions",
 			"Carer strain",
 			"Non-accidental injury concern",
 			"Substance misuse concern",
 			"Mental health vulnerability",
+			"Financial/Material Abuse",
+			"Modern Slavery/Human Trafficking Indicators",
+			"FGM Concern",
+			"Radicalisation/Extremeism Concern",
 			"Other",
 		],
 	},
@@ -1231,6 +1238,10 @@ export const OPTIONS = {
 			{
 				group: "Gases",
 				items: ["Oxygen", "Entonox"],
+			},
+			{
+				group: "Other",
+				items: ["Co-Amoxiclav, IV Paracetamol 10mg/ml"],
 			},
 		],
 
