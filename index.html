@@ -1265,12 +1265,10 @@
 				<button class="tab active" data-tab="history" type="button">
 					History
 				</button>
-				<button class="tab" data-tab="primary" type="button">
-					Primary Survey
-				</button>
 				<button class="tab" data-tab="assessment" type="button">
 					Assessment
 				</button>
+				<button class="tab" data-tab="treatment" type="button">Treatment</button>
 				<button class="tab" data-tab="plan" type="button">Plan</button>
 				<button class="tab" data-tab="output" type="button">Generate</button>
 			</nav>
@@ -2272,6 +2270,11 @@
 					<p class="field-hint">
 						All findings are off by default — tap once to confirm <strong>normal</strong>, tap again to mark <strong>abnormal</strong>, tap a third time to deselect.
 					</p>
+					<!-- Primary Survey (content moved here from panel-primary via JS) -->
+					<details class="section-card" id="primarySurveyCard" open>
+						<summary><span>Primary Survey</span><small>ABCDE</small></summary>
+						<div class="section-body" id="primarySurveyBody"></div>
+					</details>
 					<!-- Observations -->
 					<details class="section-card" id="obsCard">
 						<summary><span>Observations</span><small>OBS</small></summary>
@@ -3000,7 +3003,7 @@
 					</details>
 
 					<!-- Falls assessment -->
-					<details class="section-card hidden" id="fallsAssessmentCard">
+					<details class="section-card" id="fallsAssessmentCard">
 						<summary>
 							<span>Falls Assessment</span><small>SPLATT</small>
 						</summary>
@@ -3162,7 +3165,7 @@
 					</details>
 
 					<!-- Head injury assessment -->
-					<details class="section-card hidden" id="headInjuryCard">
+					<details class="section-card" id="headInjuryCard">
 						<summary>
 							<span>Head Injury Assessment</span><small>NICE CG176</small>
 						</summary>
@@ -3275,7 +3278,7 @@
 					</details>
 
 					<!-- Spinal Assessment -->
-					<details class="section-card hidden" id="spinalAssessmentCard">
+					<details class="section-card" id="spinalAssessmentCard">
 						<summary>
 							<span>Spinal Assessment</span><small>JRCALC</small>
 						</summary>
@@ -3341,7 +3344,7 @@
 					</details>
 
 					<!-- Seizure Assessment -->
-					<details class="section-card hidden" id="seizureAssessmentCard">
+					<details class="section-card" id="seizureAssessmentCard">
 						<summary>
 							<span>Seizure Assessment</span><small>Seizure</small>
 						</summary>
@@ -3519,7 +3522,7 @@
 					</details>
 
 					<!-- Overdose / Poisoning assessment -->
-					<details class="section-card hidden" id="odAssessmentCard">
+					<details class="section-card" id="odAssessmentCard">
 						<summary>
 							<span>Overdose / Poisoning Assessment</span
 							><small>OD / Poisoning</small>
@@ -3669,7 +3672,7 @@
 					</details>
 
 					<!-- Mental health assessment -->
-					<details class="section-card hidden" id="mhAssessmentCard">
+					<details class="section-card" id="mhAssessmentCard">
 						<summary>
 							<span>Mental Health Assessment</span><small>MH / OD / SH</small>
 						</summary>
@@ -4114,7 +4117,7 @@
 					</details>
 
 					<!-- Treatment -->
-					<details class="section-card">
+					<details class="section-card" id="treatmentCard">
 						<summary>
 							<span>Treatments &amp; Interventions</span><small>Rx</small>
 						</summary>
@@ -4383,6 +4386,11 @@
 					</details>
 				</section>
 
+				<!-- TREATMENT TAB -->
+				<section class="panel" id="panel-treatment">
+					<div id="treatmentCardHost"></div>
+				</section>
+
 				<!-- PLAN TAB -->
 				<section class="panel" id="panel-plan">
 					<!-- Conveyance information -->
@@ -4504,6 +4512,10 @@
 
 							<!-- Signposting -->
 							<div id="nonConveyedFields" class="hidden">
+								<div id="declineReasonWrap" class="hidden">
+									<label class="field-label" for="declineReason">Reason for declining</label>
+									<textarea id="declineReason" rows="2" placeholder="Document the patient's reason for declining conveyance…"></textarea>
+								</div>
 								<label class="field-label">Referred / signposted to</label>
 								<div
 									class="square-grid multi-group"

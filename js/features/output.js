@@ -161,9 +161,11 @@ function buildWorseningText() {
 }
 
 function handleConveyanceDisplay() {
-	const conveyed = val("conveyanceDecision") === "Conveyed";
+	const decision = val("conveyanceDecision");
+	const conveyed = decision === "Conveyed";
 	$("#conveyedFields")?.classList.toggle("hidden", !conveyed);
 	$("#nonConveyedFields")?.classList.toggle("hidden", conveyed);
+	$("#declineReasonWrap")?.classList.toggle("hidden", !decision.toLowerCase().includes("declin"));
 	$("#worseningSection")?.classList.toggle("hidden", conveyed);
 	updateWorseningScript();
 
@@ -314,7 +316,9 @@ function buildConveyanceText() {
 			: null;
 
 	return [
-		`${decision}. Referred/signposted to: ${formatSet(state.referrals, "not documented")}.`,
+		`${decision}.`,
+		val("declineReason") ? `Reason for declining: ${val("declineReason")}.` : null,
+		`Referred/signposted to: ${formatSet(state.referrals, "not documented")}.`,
 		val("followUp") ? val("followUp") + "." : null,
 		checks ? `Safety netting: ${checks}.` : null,
 		legalLine,
@@ -658,15 +662,8 @@ function buildOutputSections() {
 			body: `PMH: ${isChecked("noPmh") ? "No significant past medical history" : val("pmh") || "Not documented"}\nMedications: ${isChecked("noMeds") ? "No regular medications" : val("medications") || "Not documented"}\nAllergies: ${isChecked("nkda") ? "NKDA" : val("allergies") || "Not documented"}\nLast oral intake: ${[val("loiWhat"), val("loiTime")].filter(Boolean).join(" at ") || "Not documented"}\nOther Details: ${val("prevDetails") || "Not documented"}`,
 		},
 		...(() => {
-			const card = $("#gynaeCard");
-			if (!card || card.classList.contains("hidden")) return [];
-			return [
-				{
-					id: "gynae",
-					title: "OBSTETRIC / GYNAECOLOGICAL",
-					body: window.CrewMateGynae.buildGynaeOutput(),
-				},
-			];
+			const body = window.CrewMateGynae.buildGynaeOutput();
+			return body ? [{ id: "gynae", title: "OBSTETRIC / GYNAECOLOGICAL", body }] : [];
 		})(),
 		{
 			id: "primary",
@@ -701,56 +698,26 @@ function buildOutputSections() {
 						`Severity: ${[val("severity") ? `${val("severity")} now` : null, val("severityWorst") ? `${val("severityWorst")} at worst` : null].filter(Boolean).join(", ") || "Not documented"}`,
 					].join("\n"),
 		},
-		...(val("pcSelect") === "Fall"
-			? [
-					{
-						id: "falls",
-						title: "FALLS ASSESSMENT — SPLATT",
-						body: window.CrewMateFalls.buildFallsText(),
-					},
-				]
+		...(state.fallsSymptoms.size > 0 || state.fallsLocation.size > 0 ||
+			state.fallsActivity.size > 0 || state.fallsInjuries.size > 0 ||
+			val("fallsTime") || val("fallsLieTime")
+			? [{ id: "falls", title: "FALLS ASSESSMENT — SPLATT", body: window.CrewMateFalls.buildFallsText() }]
 			: []),
-		...(val("pcSelect") === "Head injury"
-			? [
-					{
-						id: "headinjury",
-						title: "HEAD INJURY ASSESSMENT — NICE CG176",
-						body: window.CrewMateInjury.buildHeadInjuryText(),
-					},
-				]
+		...(state.headSymptoms.size > 0 || state.headSigns.size > 0 ||
+			state.headMechanism.size > 0 || val("headLOC")
+			? [{ id: "headinjury", title: "HEAD INJURY ASSESSMENT — NICE CG176", body: window.CrewMateInjury.buildHeadInjuryText() }]
 			: []),
-		...(val("pcSelect") === "Seizure"
-			? [
-					{
-						id: "seizure",
-						title: "SEIZURE ASSESSMENT",
-						body: window.CrewMateSeizure.buildSeizureText(),
-					},
-				]
+		...(state.seizureType.size > 0 || val("seizureCount") || val("seizureDuration")
+			? [{ id: "seizure", title: "SEIZURE ASSESSMENT", body: window.CrewMateSeizure.buildSeizureText() }]
 			: []),
-		...(OPTIONS.mentalHealth.presentingComplaint.includes(val("pcSelect"))
-			? [
-					...(val("pcSelect") === "Overdose / poisoning"
-						? (() => {
-								const t = window.CrewMateOd.buildOdAssessmentText();
-								return t
-									? [
-											{
-												id: "odassessment",
-												title: "OVERDOSE / POISONING ASSESSMENT",
-												body: t,
-											},
-										]
-									: [];
-							})()
-						: []),
-					{
-						id: "mhassessment",
-						title: "MENTAL HEALTH ASSESSMENT",
-						body: window.CrewMateMh.buildMhAssessmentText(),
-					},
-				]
-			: []),
+		...(() => {
+			const t = window.CrewMateOd.buildOdAssessmentText();
+			return t ? [{ id: "odassessment", title: "OVERDOSE / POISONING ASSESSMENT", body: t }] : [];
+		})(),
+		...(() => {
+			const t = window.CrewMateMh.buildMhAssessmentText();
+			return t ? [{ id: "mhassessment", title: "MENTAL HEALTH ASSESSMENT", body: t }] : [];
+		})(),
 		...(!$("#strokeAssessmentCard")?.classList.contains("hidden")
 			? [
 					{

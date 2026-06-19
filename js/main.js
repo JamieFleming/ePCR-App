@@ -25,6 +25,21 @@ import { initStorage } from "./utils/storage.js";
 import { enhanceSectionCards } from "./app.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+	// Move primary survey content from its own panel into the details card in Assessment
+	const primaryBody = document.getElementById("primarySurveyBody");
+	const panelPrimary = document.getElementById("panel-primary");
+	if (primaryBody && panelPrimary) {
+		while (panelPrimary.firstChild) primaryBody.appendChild(panelPrimary.firstChild);
+		panelPrimary.remove();
+	}
+
+	// Move treatment card into the Treatment tab
+	const treatmentHost = document.getElementById("treatmentCardHost");
+	const treatmentCard = document.getElementById("treatmentCard");
+	if (treatmentHost && treatmentCard) {
+		treatmentHost.appendChild(treatmentCard);
+	}
+
 	initTheme();
 	initDashboard();
 	initRespCounter();

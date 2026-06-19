@@ -223,19 +223,7 @@ function bindEvents() {
 	$("#pcSelect").addEventListener("change", () => {
 		const pc = val("pcSelect");
 		$("#pcOtherWrap").classList.toggle("hidden", pc !== "Other");
-		$("#fallsAssessmentCard").classList.toggle("hidden", pc !== "Fall");
-		$("#headInjuryCard").classList.toggle("hidden", pc !== "Head injury");
-		$("#seizureAssessmentCard").classList.toggle("hidden", pc !== "Seizure");
-		$("#strokeAssessmentCard")?.classList.toggle("hidden", pc !== "Stroke");
-		const isMhPc =
-			OPTIONS.mentalHealth.presentingComplaint.includes(
-				pc,
-			);
-		$("#odAssessmentCard")?.classList.toggle(
-			"hidden",
-			pc !== "Overdose / poisoning",
-		);
-		$("#mhAssessmentCard").classList.toggle("hidden", !isMhPc);
+		const isMhPc = OPTIONS.mentalHealth.presentingComplaint.includes(pc);
 		$("#ros-mh-section")?.classList.toggle("hidden", !isMhPc);
 		if (state.worseningAuto) window.CrewMateOutput.applyWorseningDefault();
 		else window.CrewMateOutput.updateWorseningScript();

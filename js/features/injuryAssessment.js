@@ -60,17 +60,7 @@ function buildInjurySection() {
 
 	$("#addInjuryButton")?.addEventListener("click", addInjuryEntry);
 	$("#injuryRegion")?.addEventListener("change", () => {
-		const region = val("injuryRegion");
-		const headRegions = ["Head", "Face, Scalp", "Neck"];
-		const spinalRegions = ["Upper back", "Lower back", "Neck"];
-		$("#headInjuryCard")?.classList.toggle(
-			"hidden",
-			!headRegions.includes(region),
-		);
-		$("#spinalAssessmentCard")?.classList.toggle(
-			"hidden",
-			!spinalRegions.includes(region),
-		);
+		// headInjuryCard and spinalAssessmentCard are always visible
 	});
 
 	$$("[data-radio-group='spinalNeuro'] [data-value]").forEach((btn) => {

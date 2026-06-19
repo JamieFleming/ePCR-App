@@ -1807,7 +1807,6 @@ export const ROS = {
 			["confusion", "No confusion", "Confusion noted"],
 			["memory", "No memory impairment", "Memory impairment noted"],
 			["vision", "No visual disturbance", "Visual disturbance"],
-			["ataxia", "No ataxia or gair disturbance", "Ataxia/Gait disturbance"],
 			["photophobia", "No photophobia", "Photophobia"],
 			["neckStiffness", "No neck stiffness", "Neck stiffness noted"],
 			["headache", "No headache", "Headache present"],
@@ -1917,7 +1916,6 @@ export const ROS = {
 				"Able to weight bear",
 				"Unable/reduced ability to weight bear",
 			],
-			["gait", "Gait normal", "Gait disturbance noted"],
 		],
 		extras:
 			'<label class="field-label" for="mskNotes">Additional notes</label><textarea id="mskNotes" rows="2"></textarea>',
