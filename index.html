@@ -117,7 +117,7 @@
 							Full patient documentation — history, assessment, interventions
 							and handover
 						</p>
-						<span class="card-badge live" style="margin-top: 8px">Live</span>
+						<span class="card-badge live mt-8">Live</span>
 					</div>
 					<div class="card-arrow">
 						<svg
@@ -158,7 +158,7 @@
 							Spotting the Sick Child — PAT, ABCDE + ENT + T + DEFG and
 							age-appropriate documentation
 						</p>
-						<span class="card-badge live" style="margin-top: 8px">Live</span>
+						<span class="card-badge live mt-8">Live</span>
 					</div>
 					<div class="card-arrow">
 						<svg
@@ -575,9 +575,8 @@
 						<div id="obsRecContainer"></div>
 						<button
 							type="button"
-							class="secondary-action"
-							id="addObsRecBtn"
-							style="margin-top: 10px">
+							class="secondary-action mt-10"
+							id="addObsRecBtn">
 							+ Add observations
 						</button>
 					</div>
@@ -648,8 +647,8 @@
 					margin: 0 auto;
 					padding-bottom: 40px;
 				">
-				<!-- Respiratory Failire Scale -->
-				<div class="section-card" style="margin-bottom: 12px">
+				<!-- Respiratory Failure Scale -->
+				<div class="section-card mb-12">
 					<div class="section-body">
 						<label class="field-label">SpO₂ Scale</label>
 						<p class="field-hint" style="margin-bottom: 8px">
@@ -673,7 +672,7 @@
 				</div>
 
 				<!-- RR -->
-				<div class="section-card" style="margin-bottom: 12px">
+				<div class="section-card mb-12">
 					<div class="section-body">
 						<label class="field-label"
 							>Respiration Rate <span class="n2-unit">breaths/min</span></label
@@ -719,7 +718,7 @@
 				</div>
 
 				<!-- SpO2 -->
-				<div class="section-card" style="margin-bottom: 12px">
+				<div class="section-card mb-12">
 					<div class="section-body">
 						<label class="field-label"
 							>SpO₂ <span class="n2-unit">%</span></label
@@ -813,7 +812,7 @@
 				</div>
 
 				<!-- Air or O2 -->
-				<div class="section-card" style="margin-bottom: 12px">
+				<div class="section-card mb-12">
 					<div class="section-body">
 						<label class="field-label">Air or O₂</label>
 						<div class="radio-chip-group" id="n2O2Group">
@@ -838,7 +837,7 @@
 				</div>
 
 				<!-- BP -->
-				<div class="section-card" style="margin-bottom: 12px">
+				<div class="section-card mb-12">
 					<div class="section-body">
 						<label class="field-label"
 							>Systolic BP <span class="n2-unit">mmHg</span></label
@@ -884,7 +883,7 @@
 				</div>
 
 				<!-- HR -->
-				<div class="section-card" style="margin-bottom: 12px">
+				<div class="section-card mb-12">
 					<div class="section-body">
 						<label class="field-label"
 							>HR <span class="n2-unit">beats/min</span></label
@@ -937,7 +936,7 @@
 				</div>
 
 				<!-- ACVPU -->
-				<div class="section-card" style="margin-bottom: 12px">
+				<div class="section-card mb-12">
 					<div class="section-body">
 						<label class="field-label"
 							>Consciousness <span class="n2-unit">ACVPU</span></label
@@ -983,7 +982,7 @@
 				</div>
 
 				<!-- Temp -->
-				<div class="section-card" style="margin-bottom: 20px">
+				<div class="section-card mb-20">
 					<div class="section-body">
 						<label class="field-label"
 							>Temperature <span class="n2-unit">°C</span></label
@@ -1135,7 +1134,7 @@
 				</div>
 			</section>
 			<main style="padding: 16px; max-width: 640px; margin: 0 auto">
-				<div class="section-card" style="margin-bottom: 12px">
+				<div class="section-card mb-12">
 					<div class="section-body">
 						<div
 							style="
@@ -1365,24 +1364,8 @@
 			<main>
 				<!-- HISTORY TAB -->
 				<section class="panel active" id="panel-history">
-					<div
-						style="
-							display: flex;
-							align-items: center;
-							gap: 14px;
-							padding: 4px 0 12px;
-						">
-						<div
-							style="
-								width: 52px;
-								height: 52px;
-								border-radius: 14px;
-								background: var(--brand, #1565c0);
-								display: flex;
-								align-items: center;
-								justify-content: center;
-								flex-shrink: 0;
-							">
+					<div class="panel-header">
+						<div class="panel-header-icon">
 							<svg
 								width="30"
 								height="30"
@@ -1401,21 +1384,10 @@
 							</svg>
 						</div>
 						<div>
-							<p
-								style="
-									margin: 0;
-									font-weight: 600;
-									font-size: 15px;
-									color: var(--text, inherit);
-								">
+							<p class="panel-header-title">
 								Patient History
 							</p>
-							<p
-								style="
-									margin: 3px 0 0;
-									font-size: 12px;
-									color: var(--text-muted, #666);
-								">
+							<p class="panel-header-desc">
 								Presenting complaint, background, medications, allergies and
 								social history
 							</p>
@@ -1454,16 +1426,14 @@
 										type="number"
 										min="0"
 										max="120"
-										placeholder="e.g. 72"
-										style="margin-top: 4px" />
+										placeholder="e.g. 72" class="mt-4" />
 								</div>
 								<div>
 									<label class="field-label">Sex</label>
 									<input type="hidden" id="ptSex" />
 									<div
-										class="radio-chip-group"
-										data-radio-group="ptSex"
-										style="margin-top: 4px">
+										class="radio-chip-group mt-4"
+										data-radio-group="ptSex">
 										<button type="button" class="radio-chip" data-value="Male">
 											Male
 										</button>
@@ -1496,8 +1466,7 @@
 										type="number"
 										min="0"
 										max="16"
-										placeholder="e.g. 5"
-										style="margin-top: 4px" />
+										placeholder="e.g. 5" class="mt-4" />
 								</div>
 								<div>
 									<label class="field-label">Sex / gender</label>
@@ -1521,7 +1490,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="grid-2" style="margin-top: 8px">
+							<div class="grid-2 mt-8">
 								<div>
 									<label class="field-label" for="pAgeMonths"
 										>Additional months
@@ -1532,8 +1501,7 @@
 										type="number"
 										min="0"
 										max="23"
-										placeholder="e.g. 8"
-										style="margin-top: 4px" />
+										placeholder="e.g. 8" class="mt-4" />
 								</div>
 								<div>
 									<label class="field-label" for="pWeight">Weight (kg)</label>
@@ -1542,24 +1510,22 @@
 										type="number"
 										min="0"
 										step="0.1"
-										placeholder="Measured or APLS estimate"
-										style="margin-top: 4px" />
+										placeholder="Measured or APLS estimate" class="mt-4" />
 								</div>
 							</div>
-							<div id="paedsAgeRefPanel" style="margin-top: 8px"></div>
-							<div class="grid-2" style="margin-top: 8px">
+							<div id="paedsAgeRefPanel" class="mt-8"></div>
+							<div class="grid-2 mt-8">
 								<div>
 									<label class="field-label" for="pGestation"
 										>Gestation at birth</label
 									>
 									<input
 										id="pGestation"
-										placeholder="e.g. 36/40"
-										style="margin-top: 4px" />
+										placeholder="e.g. 36/40" class="mt-4" />
 								</div>
 								<div>
 									<label class="field-label" for="pImms">Immunisations</label>
-									<select id="pImms" style="margin-top: 4px">
+									<select id="pImms" class="mt-4">
 										<option value="">Unknown / not checked</option>
 										<option>Up to date</option>
 										<option>Not up to date</option>
@@ -1568,22 +1534,19 @@
 								</div>
 							</div>
 							<label
-								class="field-label"
+								class="field-label mt-8"
 								for="pBirthHistory"
-								style="margin-top: 8px"
 								>Birth / neonatal history</label
 							>
 							<input
 								id="pBirthHistory"
-								placeholder="Relevant birth or neonatal history"
-								style="margin-top: 4px" />
-							<label class="field-label" for="pSocial" style="margin-top: 8px"
+								placeholder="Relevant birth or neonatal history" class="mt-4" />
+							<label class="field-label mt-8" for="pSocial"
 								>Social / family context</label
 							>
 							<input
 								id="pSocial"
-								placeholder="Relevant social or family history"
-								style="margin-top: 4px" />
+								placeholder="Relevant social or family history" class="mt-4" />
 						</div>
 					</details>
 
@@ -1633,9 +1596,8 @@
 									<label class="field-label">Response category</label>
 									<input type="hidden" id="hpcCategory" />
 									<div
-										class="radio-chip-group"
-										data-radio-group="hpcCategory"
-										style="margin-top: 4px">
+										class="radio-chip-group mt-4"
+										data-radio-group="hpcCategory">
 										<button type="button" class="radio-chip" data-value="C1">
 											C1
 										</button>
@@ -1677,7 +1639,7 @@
 								<label class="check-row"
 									><input type="checkbox" id="nkda" checked /> NKDA</label
 								><label class="field-label" for="allergies">Allergies</label
-								><textarea id="allergies" row="2"></textarea>
+								><textarea id="allergies" rows="2"></textarea>
 							</div>
 							<div>
 								<label class="field-label">Last oral intake</label>
@@ -1697,8 +1659,56 @@
 					</details>
 				</section>
 
-				<!-- PRIMARY SURVEY TAB -->
-				<section class="panel" id="panel-primary">
+				<!-- ASSESSMENT TAB -->
+				<section class="panel" id="panel-assessment">
+					<div class="panel-header">
+						<div class="panel-header-icon">
+							<svg
+								width="30"
+								height="30"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="white"
+								stroke-width="1.6"
+								stroke-linecap="round"
+								stroke-linejoin="round">
+								<polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+							</svg>
+						</div>
+						<div>
+							<p class="panel-header-title">
+								Assessment
+							</p>
+							<p class="panel-header-desc">
+								Primary survey, observations, pain, specialist assessments and
+								review of systems
+							</p>
+						</div>
+					</div>
+					<p class="field-hint">
+						All findings are off by default — tap once to confirm
+						<strong>normal</strong>, tap again to mark
+						<strong>abnormal</strong>, tap a third time to deselect.
+					</p>
+
+					<!-- Observations -->
+					<details class="section-card" id="obsCard">
+						<summary><span>Observations</span><small>OBS</small></summary>
+						<div class="section-body">
+							<div id="obsContainer"></div>
+							<button
+								type="button"
+								class="secondary-action mt-10"
+								id="addObsBtn">
+								+ Add observations
+							</button>
+						</div>
+					</details>
+
+					<!-- Primary Survey -->
+					<details class="section-card" id="primarySurveyCard">
+						<summary><span>Primary Survey</span><small>ABCDE</small></summary>
+						<div class="section-body" id="primarySurveyBody">
 					<p class="field-hint">
 						Tap a box to toggle between normal and abnormal findings.
 					</p>
@@ -1706,7 +1716,6 @@
 						<summary><span>On Arrival</span><small>OA</small></summary>
 						<div class="section-body">
 							<div class="grid-2">
-								<!-- On arrival  -->
 								<div>
 									<label class="field-label" for="oaFound">On Arrival</label
 									><select id="oaFound">
@@ -1717,14 +1726,12 @@
 									<label class="field-label" for="oaLocation">Location</label
 									><input id="oaLocation" placeholder="e.g. living room" />
 								</div>
-								<!-- Mobility -->
 								<div>
 									<label class="field-label">Mobility</label>
 									<input type="hidden" id="oaMobility" />
 									<div
-										class="radio-chip-group wrap-grid"
-										data-radio-group="oaMobility"
-										style="margin-top: 4px"></div>
+										class="radio-chip-group wrap-grid mt-4"
+										data-radio-group="oaMobility"></div>
 								</div>
 								<div>
 									<label class="field-label" for="oaNotes"
@@ -1828,7 +1835,7 @@
 										</button>
 									</div>
 
-									<p class="tmt-sublabel" style="margin-top: 10px">
+									<p class="tmt-sublabel mt-10">
 										Work of Breathing
 										<span>Visual — no stethoscope needed</span>
 									</p>
@@ -1880,7 +1887,7 @@
 										</button>
 									</div>
 
-									<p class="tmt-sublabel" style="margin-top: 10px">
+									<p class="tmt-sublabel mt-10">
 										Circulation to Skin
 									</p>
 									<div class="square-grid" id="patCircGrid">
@@ -1913,14 +1920,13 @@
 										</button>
 									</div>
 
-									<label class="field-label" style="margin-top: 10px"
+									<label class="field-label mt-10"
 										>Overall PAT impression</label
 									>
 									<input type="hidden" id="patImpression" />
 									<div
-										class="radio-chip-group wrap-grid"
-										data-radio-group="patImpression"
-										style="margin-top: 4px">
+										class="radio-chip-group wrap-grid mt-4"
+										data-radio-group="patImpression">
 										<button
 											type="button"
 											class="radio-chip"
@@ -2026,14 +2032,13 @@
 											Safeguarding reviewed
 										</button>
 									</div>
-									<label class="field-label" style="margin-top: 10px"
+									<label class="field-label mt-10"
 										>Management decision</label
 									>
 									<input type="hidden" id="tmtDecision" />
 									<div
-										class="radio-chip-group wrap-grid"
-										data-radio-group="tmtDecision"
-										style="margin-top: 4px">
+										class="radio-chip-group wrap-grid mt-4"
+										data-radio-group="tmtDecision">
 										<button
 											type="button"
 											class="radio-chip"
@@ -2084,9 +2089,8 @@
 										</button>
 									</div>
 									<label
-										class="field-label"
+										class="field-label mt-8"
 										for="tmtNotes"
-										style="margin-top: 8px"
 										>Clinical reasoning / notes</label
 									>
 									<textarea
@@ -2106,9 +2110,8 @@
 								<label class="field-label">Assessment tool</label>
 								<input type="hidden" id="pPainTool" value="flacc" />
 								<div
-									class="radio-chip-group"
-									data-radio-group="pPainTool"
-									style="margin-top: 4px">
+									class="radio-chip-group mt-4"
+									data-radio-group="pPainTool">
 									<button
 										type="button"
 										class="radio-chip selected"
@@ -2123,7 +2126,7 @@
 									</button>
 								</div>
 
-								<div id="flaccWrap" style="margin-top: 12px">
+								<div id="flaccWrap" class="mt-12">
 									<p class="field-hint">
 										Tap the score for each category — total calculated
 										automatically
@@ -2250,7 +2253,7 @@
 									</div>
 								</div>
 
-								<div id="pNrsWrap" class="hidden" style="margin-top: 12px">
+								<div id="pNrsWrap" class="hidden mt-12">
 									<label class="field-label">Severity now (NRS 0–10)</label>
 									<input type="hidden" id="pSeverity" />
 									<div class="pain-score-grid" id="pPainScoreGrid">
@@ -2291,7 +2294,7 @@
 											10
 										</button>
 									</div>
-									<label class="field-label" style="margin-top: 8px"
+									<label class="field-label mt-8"
 										>Severity at worst (NRS 0–10)</label
 									>
 									<input type="hidden" id="pSeverityWorst" />
@@ -2335,7 +2338,7 @@
 									</div>
 								</div>
 
-								<div id="pFacesWrap" class="hidden" style="margin-top: 12px">
+								<div id="pFacesWrap" class="hidden mt-12">
 									<label class="field-label"
 										>Faces scale — patient points to their score</label
 									>
@@ -2372,9 +2375,8 @@
 								</div>
 
 								<label
-									class="field-label"
+									class="field-label mt-10"
 									for="pPainNotes"
-									style="margin-top: 10px"
 									>Pain notes</label
 								>
 								<input
@@ -2384,86 +2386,7 @@
 						</details>
 					</div>
 					<!-- end #paedsAssessmentCard -->
-				</section>
-
-				<!-- ASSESSMENT TAB -->
-				<section class="panel" id="panel-assessment">
-					<div
-						style="
-							display: flex;
-							align-items: center;
-							gap: 14px;
-							padding: 4px 0 12px;
-						">
-						<div
-							style="
-								width: 52px;
-								height: 52px;
-								border-radius: 14px;
-								background: var(--brand, #1565c0);
-								display: flex;
-								align-items: center;
-								justify-content: center;
-								flex-shrink: 0;
-							">
-							<svg
-								width="30"
-								height="30"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="white"
-								stroke-width="1.6"
-								stroke-linecap="round"
-								stroke-linejoin="round">
-								<polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-							</svg>
-						</div>
-						<div>
-							<p
-								style="
-									margin: 0;
-									font-weight: 600;
-									font-size: 15px;
-									color: var(--text, inherit);
-								">
-								Assessment
-							</p>
-							<p
-								style="
-									margin: 3px 0 0;
-									font-size: 12px;
-									color: var(--text-muted, #666);
-								">
-								Primary survey, observations, pain, specialist assessments and
-								review of systems
-							</p>
-						</div>
-					</div>
-					<p class="field-hint">
-						All findings are off by default — tap once to confirm
-						<strong>normal</strong>, tap again to mark
-						<strong>abnormal</strong>, tap a third time to deselect.
-					</p>
-
-					<!-- Observations -->
-					<details class="section-card" id="obsCard">
-						<summary><span>Observations</span><small>OBS</small></summary>
-						<div class="section-body">
-							<div id="obsContainer"></div>
-							<button
-								type="button"
-								class="secondary-action"
-								id="addObsBtn"
-								style="margin-top: 10px">
-								+ Add observations
-							</button>
-						</div>
-					</details>
-
-					<!-- Primary Survey -->
-					<details class="section-card" id="primarySurveyCard">
-						<summary><span>Primary Survey</span><small>ABCDE</small></summary>
-						<div class="section-body" id="primarySurveyBody"></div>
+				</div>
 					</details>
 
 					<!-- Review of systems -->
@@ -3020,38 +2943,30 @@
 											<input type="time" id="onsetClockTime" />
 										</div>
 									</div>
-									<!-- Onset timing-->
 									<div>
 										<label class="field-label">Onset</label>
 										<input type="hidden" id="onsetType" />
 										<div
-											class="radio-chip-group"
-											data-radio-group="onsetType"
-											style="margin-top: 4px"></div>
+											class="radio-chip-group mt-4"
+											data-radio-group="onsetType"></div>
 									</div>
-									<!-- Duration -->
 									<div>
 										<label class="field-label" for="onsetDuration"
 											>Duration</label
 										><input id="onsetDuration" placeholder="e.g. 30 minutes" />
 									</div>
-									<!-- Timing -->
 									<div>
 										<label class="field-label">Timing</label>
 										<input type="hidden" id="timingSelect" />
 										<div
-											class="radio-chip-group wrap-grid"
-											data-radio-group="timingSelect"
-											style="margin-top: 4px"></div>
+											class="radio-chip-group wrap-grid mt-4"
+											data-radio-group="timingSelect"></div>
 									</div>
-									<!-- Pain score -->
-									<!-- Current -->
 									<div style="grid-column: 1 / -1">
 										<label class="field-label">Severity now (NRS 0–10)</label>
 										<input type="hidden" id="severity" />
 										<div class="pain-score-grid" id="painScoreGrid"></div>
 									</div>
-									<!-- At worst -->
 									<div style="grid-column: 1 / -1; margin-top: 8px">
 										<label class="field-label"
 											>Severity at worst (NRS 0–10)</label
@@ -3061,7 +2976,6 @@
 									</div>
 								</div>
 							</div>
-							<!-- Character -->
 							<div class="socrates-group" id="painCharacterGroup">
 								<label class="field-label">Character</label>
 								<div
@@ -3074,7 +2988,6 @@
 									<input id="characterOther" placeholder="Other" />
 								</div>
 							</div>
-							<!-- Associated symptoms -->
 							<div class="socrates-group">
 								<label class="field-label">Associated symptoms</label>
 								<div
@@ -3087,7 +3000,6 @@
 									<input id="associatedOther" placeholder="Other" />
 								</div>
 							</div>
-							<!-- Exacerbating factors -->
 							<div class="socrates-group">
 								<label class="field-label">Exacerbating factors</label>
 								<div
@@ -3100,7 +3012,6 @@
 									<input id="exacerbatingOther" placeholder="Other" />
 								</div>
 							</div>
-							<!-- Relieving factors -->
 							<div class="socrates-group">
 								<label class="field-label">Relieving factors</label>
 								<div
@@ -3113,7 +3024,6 @@
 									<input id="relievingOther" placeholder="Other" />
 								</div>
 							</div>
-							<!-- Clear button -->
 							<div class="toolbar pain-toolbar">
 								<button
 									id="clearPainButton"
@@ -3149,7 +3059,6 @@
 										style="margin-top: 6px" />
 								</div>
 							</div>
-							<!-- Injury Type -->
 							<label class="field-label">Injury type</label>
 							<div class="square-grid" id="injuryTypeGrid"></div>
 							<div
@@ -3160,8 +3069,7 @@
 									id="injuryTypeOther"
 									placeholder="Other injury type..." />
 							</div>
-							<!-- Interventions -->
-							<label class="field-label" style="margin-top: 10px"
+							<label class="field-label mt-10"
 								>Interventions</label
 							>
 							<div class="square-grid" id="injuryInterventionGrid"></div>
@@ -3176,8 +3084,7 @@
 							<button
 								id="addInjuryButton"
 								type="button"
-								class="secondary-action"
-								style="margin-top: 10px">
+								class="secondary-action mt-10">
 								Add injury
 							</button>
 							<div id="injuryEntries"></div>
@@ -3189,9 +3096,7 @@
 						<summary>
 							<span>Falls Assessment</span><small>SPLATT</small>
 						</summary>
-						<!-- SPLATT assessment -->
 						<div class="section-body">
-							<!-- Symptoms/precipitating factors -->
 							<div class="socrates-group">
 								<label class="field-label"
 									>S — Symptoms / precipitating factors</label
@@ -3207,26 +3112,23 @@
 										id="fallsSymptomsOther"
 										placeholder="Describe other symptom..." />
 								</div>
-								<div class="grid-2" style="margin-top: 12px">
+								<div class="grid-2 mt-12">
 									<div>
 										<label class="field-label">Loss of consciousness</label>
 										<input type="hidden" id="fallsLOC" />
 										<div
-											class="radio-chip-group"
-											data-radio-group="fallsLOC"
-											style="margin-top: 4px"></div>
+											class="radio-chip-group mt-4"
+											data-radio-group="fallsLOC"></div>
 									</div>
 									<div>
 										<label class="field-label">Witnessed</label>
 										<input type="hidden" id="fallsWitnessed" />
 										<div
-											class="radio-chip-group"
-											data-radio-group="fallsWitnessed"
-											style="margin-top: 4px"></div>
+											class="radio-chip-group mt-4"
+											data-radio-group="fallsWitnessed"></div>
 									</div>
 								</div>
 							</div>
-							<!-- Previous falls -->
 							<div class="socrates-group">
 								<label class="field-label">P — Previous falls</label>
 								<div class="grid-2">
@@ -3234,13 +3136,11 @@
 										<label class="field-label">Falls in past year</label>
 										<input type="hidden" id="fallsPreviousCount" />
 										<div
-											class="radio-chip-group"
-											data-radio-group="fallsPreviousCount"
-											style="margin-top: 4px"></div>
+											class="radio-chip-group mt-4"
+											data-radio-group="fallsPreviousCount"></div>
 									</div>
 								</div>
 							</div>
-							<!-- Location -->
 							<div class="socrates-group">
 								<label class="field-label">L — Location</label>
 								<div class="grid-2">
@@ -3270,7 +3170,6 @@
 									</div>
 								</div>
 							</div>
-							<!-- Activity -->
 							<div class="socrates-group">
 								<label class="field-label">A — Activity at time of fall</label>
 								<div
@@ -3285,7 +3184,6 @@
 										placeholder="Describe activity..." />
 								</div>
 							</div>
-							<!-- Time -->
 							<div class="socrates-group">
 								<label class="field-label">T — Time</label>
 								<div class="grid-2">
@@ -3313,28 +3211,24 @@
 										<label class="field-label">Time on floor</label>
 										<input type="hidden" id="fallsLieTime" />
 										<div
-											class="radio-chip-group wrap-grid"
-											data-radio-group="fallsLieTime"
-											style="margin-top: 4px"></div>
+											class="radio-chip-group wrap-grid mt-4"
+											data-radio-group="fallsLieTime"></div>
 									</div>
 								</div>
 							</div>
-							<!-- Trauma/injuries -->
 							<div class="socrates-group">
 								<label class="field-label">T — Trauma / injuries</label>
 								<div
 									class="square-grid multi-group"
 									data-state="fallsInjuries"></div>
-								<div style="margin-top: 12px">
+								<div class="mt-12">
 									<label class="field-label">Anticoagulants</label>
 									<input type="hidden" id="fallsAnticoag" />
 									<div
-										class="radio-chip-group"
-										data-radio-group="fallsAnticoag"
-										style="margin-top: 4px"></div>
+										class="radio-chip-group mt-4"
+										data-radio-group="fallsAnticoag"></div>
 								</div>
 							</div>
-							<!-- Additional notes -->
 							<div class="socrates-group">
 								<label class="field-label" for="fallsNotes"
 									>Additional notes</label
@@ -3352,7 +3246,6 @@
 							<span>Head Injury Assessment</span><small>NICE CG176</small>
 						</summary>
 						<div class="section-body">
-							<!-- Mechanism -->
 							<div class="socrates-group">
 								<label class="field-label">Mechanism</label>
 								<div
@@ -3360,10 +3253,8 @@
 									data-state="headMechanism"></div>
 								<input
 									id="headMechanismDetail"
-									placeholder="e.g. fell 3 metres onto concrete, unrestrained passenger"
-									style="margin-top: 8px" />
+									placeholder="e.g. fell 3 metres onto concrete, unrestrained passenger" class="mt-8" />
 							</div>
-							<!-- Loss of consciousness and amnesia -->
 							<div class="socrates-group">
 								<label class="field-label"
 									>Loss of consciousness &amp; amnesia</label
@@ -3373,84 +3264,71 @@
 										<label class="field-label">Loss of consciousness</label>
 										<input type="hidden" id="headLOC" />
 										<div
-											class="radio-chip-group"
-											data-radio-group="headLOC"
-											style="margin-top: 4px"></div>
+											class="radio-chip-group mt-4"
+											data-radio-group="headLOC"></div>
 										<div
 											id="headLOCDurationWrap"
-											class="hidden"
-											style="margin-top: 8px">
+											class="hidden mt-8">
 											<label class="field-label">Duration of LOC</label>
 											<input type="hidden" id="headLOCDuration" />
 											<div
-												class="radio-chip-group"
-												data-radio-group="headLOCDuration"
-												style="margin-top: 4px"></div>
+												class="radio-chip-group mt-4"
+												data-radio-group="headLOCDuration"></div>
 										</div>
 									</div>
 									<div>
 										<label class="field-label">Retrograde amnesia</label>
 										<input type="hidden" id="headRetrograde" />
 										<div
-											class="radio-chip-group"
-											data-radio-group="headRetrograde"
-											style="margin-top: 4px"></div>
+											class="radio-chip-group mt-4"
+											data-radio-group="headRetrograde"></div>
 										<div
 											id="headRetroDurationWrap"
-											class="hidden"
-											style="margin-top: 8px">
+											class="hidden mt-8">
 											<label class="field-label">Duration</label>
 											<input type="hidden" id="headRetroDuration" />
 											<div
-												class="radio-chip-group"
-												data-radio-group="headRetroDuration"
-												style="margin-top: 4px"></div>
+												class="radio-chip-group mt-4"
+												data-radio-group="headRetroDuration"></div>
 										</div>
-										<div style="margin-top: 12px">
+										<div class="mt-12">
 											<label class="field-label">Anterograde amnesia</label>
 											<input type="hidden" id="headAnterograde" />
 											<div
-												class="radio-chip-group"
-												data-radio-group="headAnterograde"
-												style="margin-top: 4px"></div>
+												class="radio-chip-group mt-4"
+												data-radio-group="headAnterograde"></div>
 										</div>
 									</div>
 								</div>
 							</div>
-							<!-- Symptoms -->
 							<div class="socrates-group">
 								<label class="field-label">Symptoms</label>
 								<div
 									class="square-grid multi-group"
 									data-state="headSymptoms"></div>
-								<div style="margin-top: 10px">
+								<div class="mt-10">
 									<label class="field-label">Vomiting episodes</label>
 									<input type="hidden" id="headVomitingCount" />
 									<div
-										class="radio-chip-group"
-										data-radio-group="headVomitingCount"
-										style="margin-top: 4px"></div>
+										class="radio-chip-group mt-4"
+										data-radio-group="headVomitingCount"></div>
 								</div>
 							</div>
-							<!-- Findings -->
 							<div class="socrates-group">
 								<label class="field-label">Clinical findings</label>
 								<div
 									class="square-grid multi-group"
 									data-state="headSigns"></div>
 								<!-- GCS Calculator — injected by buildGcsCalcHTML("headGcs") in init() -->
-								<div id="headGcsCalcWrap" style="margin-top: 12px"></div>
-								<!-- Anticoagulants -->
-								<div style="margin-top: 12px">
+								<div id="headGcsCalcWrap" class="mt-12"></div>
+								<div class="mt-12">
 									<label class="field-label">Anticoagulants</label>
 									<input type="hidden" id="headAnticoag" />
 									<div
-										class="radio-chip-group"
-										data-radio-group="headAnticoag"
-										style="margin-top: 4px"></div>
+										class="radio-chip-group mt-4"
+										data-radio-group="headAnticoag"></div>
 								</div>
 							</div>
-							<!-- Additional notes -->
 							<div class="socrates-group">
 								<label class="field-label" for="headInjuryNotes"
 									>Additional notes</label
@@ -3469,9 +3347,8 @@
 								<label class="field-label">C-spine clearance</label>
 								<input type="hidden" id="spinalClearance" />
 								<div
-									class="radio-chip-group"
-									data-radio-group="spinalClearance"
-									style="margin-top: 4px"></div>
+									class="radio-chip-group mt-4"
+									data-radio-group="spinalClearance"></div>
 							</div>
 							<div class="socrates-group">
 								<label class="field-label" for="spinalMechanism"
@@ -3485,9 +3362,8 @@
 								<label class="field-label">Midline spinal tenderness</label>
 								<input type="hidden" id="spinalTenderness" />
 								<div
-									class="radio-chip-group"
-									data-radio-group="spinalTenderness"
-									style="margin-top: 4px"></div>
+									class="radio-chip-group mt-4"
+									data-radio-group="spinalTenderness"></div>
 							</div>
 							<div class="socrates-group">
 								<label class="field-label"
@@ -3495,13 +3371,11 @@
 								>
 								<input type="hidden" id="spinalNeuro" />
 								<div
-									class="radio-chip-group"
-									data-radio-group="spinalNeuro"
-									style="margin-top: 4px"></div>
+									class="radio-chip-group mt-4"
+									data-radio-group="spinalNeuro"></div>
 								<div
 									id="spinalNeuroDetailWrap"
-									class="hidden"
-									style="margin-top: 8px">
+									class="hidden mt-8">
 									<label class="field-label" for="spinalNeuroDetail"
 										>Describe — type and distribution</label
 									>
@@ -3532,21 +3406,17 @@
 						</summary>
 
 						<div class="section-body">
-							<!-- Type -->
 							<label class="field-label">Seizure type</label>
 							<div class="square-grid" id="seizureTypeGrid"></div>
 
-							<div class="grid-2" style="margin-top: 12px">
-								<!-- Number of seizures -->
+							<div class="grid-2 mt-12">
 								<div>
 									<label class="field-label">Number of seizures</label>
 									<input type="hidden" id="seizureCount" />
 									<div
-										class="radio-chip-group"
-										data-radio-group="seizureCount"
-										style="margin-top: 4px"></div>
+										class="radio-chip-group mt-4"
+										data-radio-group="seizureCount"></div>
 								</div>
-								<!-- Duration -->
 								<div>
 									<label class="field-label" for="seizureDuration"
 										>Duration of seizure</label
@@ -3557,8 +3427,7 @@
 								</div>
 							</div>
 
-							<div class="grid-2" style="margin-top: 8px">
-								<!-- Onset Time -->
+							<div class="grid-2 mt-8">
 								<div>
 									<label class="field-label">Time of onset</label>
 									<div
@@ -3577,14 +3446,12 @@
 										</button>
 									</div>
 								</div>
-								<!-- Witnessed/Unwitnessed -->
 								<div>
 									<label class="field-label">Witnessed</label>
 									<input type="hidden" id="seizureWitnessed" />
 									<div
-										class="radio-chip-group"
-										data-radio-group="seizureWitnessed"
-										style="margin-top: 4px"></div>
+										class="radio-chip-group mt-4"
+										data-radio-group="seizureWitnessed"></div>
 								</div>
 							</div>
 
@@ -3597,65 +3464,54 @@
 									placeholder="e.g. Family member, bystander, crew" />
 							</div>
 
-							<!-- Features -->
-							<label class="field-label" style="margin-top: 12px"
+							<label class="field-label mt-12"
 								>Features during seizure</label
 							>
 							<div class="square-grid" id="seizureFeaturesGrid"></div>
 
-							<label class="field-label" style="margin-top: 12px"
+							<label class="field-label mt-12"
 								>Post-seizure findings on examination</label
 							>
 							<div class="square-grid" id="seizureFindingsGrid"></div>
 
-							<!-- Post-ictal details -->
-							<div class="grid-2" style="margin-top: 12px">
-								<!-- Post-ictal chip -->
+							<div class="grid-2 mt-12">
 								<div>
 									<label class="field-label">Postictal phase</label>
 									<input type="hidden" id="seizurePostictal" />
 									<div
-										class="radio-chip-group"
-										data-radio-group="seizurePostictal"
-										style="margin-top: 4px"></div>
+										class="radio-chip-group mt-4"
+										data-radio-group="seizurePostictal"></div>
 								</div>
-								<!-- Recovery -->
 								<div>
 									<label class="field-label">Recovery to baseline</label>
 									<input type="hidden" id="seizureRecovery" />
 									<div
-										class="radio-chip-group"
-										data-radio-group="seizureRecovery"
-										style="margin-top: 4px"></div>
+										class="radio-chip-group mt-4"
+										data-radio-group="seizureRecovery"></div>
 								</div>
 							</div>
-							<!-- Post-ictal details -->
 							<div
 								id="seizurePostictalDetailsWrap"
-								class="hidden"
-								style="margin-top: 10px">
+								class="hidden mt-10">
 								<label class="field-label">Postictal duration</label>
 								<input
 									id="seizurePostictalDuration"
-									placeholder="e.g. 10 minutes"
-									style="margin-top: 4px" />
-								<label class="field-label" style="margin-top: 10px"
+									placeholder="e.g. 10 minutes" class="mt-4" />
+								<label class="field-label mt-10"
 									>Postictal features</label
 								>
 								<div
-									class="square-grid"
-									id="seizurePostictalFeaturesGrid"
-									style="margin-top: 4px"></div>
+									class="square-grid mt-4"
+									id="seizurePostictalFeaturesGrid"></div>
 							</div>
 
-							<!-- Seizure hx -->
 							<div style="margin-top: 14px">
 								<label class="check-row">
 									<input type="checkbox" id="seizureKnownEpileptic" /> Known
 									epileptic
 								</label>
 							</div>
-							<div id="seizureEpilepsyWrap" style="margin-top: 8px">
+							<div id="seizureEpilepsyWrap" class="mt-8">
 								<div class="grid-2">
 									<div>
 										<label class="field-label" for="seizureEpilepsyDiagnosis"
@@ -3674,7 +3530,7 @@
 											placeholder="e.g. 3 weeks ago" />
 									</div>
 								</div>
-								<div style="margin-top: 8px">
+								<div class="mt-8">
 									<label class="field-label" for="seizureUsualPattern"
 										>Usual seizure pattern</label
 									>
@@ -3682,7 +3538,7 @@
 										id="seizureUsualPattern"
 										placeholder="e.g. Same as usual / atypical — more prolonged" />
 								</div>
-								<label class="field-label" style="margin-top: 10px"
+								<label class="field-label mt-10"
 									>Anti-Epileptic compliance</label
 								>
 								<div class="square-grid" id="aedComplianceGrid"></div>
@@ -3694,9 +3550,8 @@
 							<div class="square-grid" id="seizurePrecipitantsGrid"></div>
 
 							<label
-								class="field-label"
+								class="field-label mt-12"
 								for="seizureNotes"
-								style="margin-top: 12px"
 								>Notes</label
 							>
 							<textarea id="seizureNotes" rows="2"></textarea>
@@ -3713,26 +3568,22 @@
 							<label class="field-label">Intentionality</label>
 							<input type="hidden" id="odAssessIntentionality" />
 							<div
-								class="radio-chip-group"
+								class="radio-chip-group mt-4"
 								data-radio-group="odAssessIntentionality"
-								style="margin-top: 4px"
 								id="odAssessIntentionalityChips"></div>
 
 							<div
 								id="odAssessCircumstanceWrap"
-								class="hidden"
-								style="margin-top: 10px">
+								class="hidden mt-10">
 								<label class="field-label" for="odAssessCircumstance"
 									>Circumstance</label
 								>
 								<select
-									id="odAssessCircumstance"
-									style="margin-top: 4px"></select>
+									id="odAssessCircumstance" class="mt-4"></select>
 							</div>
 
 							<label
-								class="field-label"
-								style="margin-top: 12px"
+								class="field-label mt-12"
 								for="odAssessSubstance"
 								>Substance(s) taken</label
 							>
@@ -3741,8 +3592,7 @@
 								placeholder="e.g. Paracetamol, ibuprofen, alcohol" />
 
 							<label
-								class="field-label"
-								style="margin-top: 8px"
+								class="field-label mt-8"
 								for="odAssessAmount"
 								>Amount / estimated dose</label
 							>
@@ -3750,21 +3600,20 @@
 								id="odAssessAmount"
 								placeholder="e.g. Up to 16 tablets, 500ml" />
 
-							<div class="grid-2" style="margin-top: 8px">
+							<div class="grid-2 mt-8">
 								<div>
 									<label class="field-label" for="odAssessAtTime"
 										>Time of ingestion</label
 									>
 									<input
 										type="time"
-										id="odAssessAtTime"
-										style="margin-top: 4px" />
+										id="odAssessAtTime" class="mt-4" />
 								</div>
 								<div>
 									<label class="field-label" for="odAssessAgoTime"
 										>How long ago</label
 									>
-									<select id="odAssessAgoTime" style="margin-top: 4px">
+									<select id="odAssessAgoTime" class="mt-4">
 										<option value="">Select...</option>
 										<option>Just now</option>
 										<option>&lt; 1 hour ago</option>
@@ -3782,12 +3631,11 @@
 								</div>
 							</div>
 
-							<label class="field-label" style="margin-top: 10px">Route</label>
+							<label class="field-label mt-10">Route</label>
 							<input type="hidden" id="odAssessRoute" />
 							<div
-								class="radio-chip-group"
-								data-radio-group="odAssessRoute"
-								style="margin-top: 4px">
+								class="radio-chip-group mt-4"
+								data-radio-group="odAssessRoute">
 								<button
 									type="button"
 									class="radio-chip"
@@ -3820,19 +3668,18 @@
 								</button>
 							</div>
 
-							<label class="check-row" style="margin-top: 10px">
+							<label class="check-row mt-10">
 								<input type="checkbox" id="odAssessAlcohol" /> Alcohol
 								co-ingestion
 							</label>
 
-							<label class="field-label" style="margin-top: 10px"
+							<label class="field-label mt-10"
 								>Medication source</label
 							>
 							<div class="square-grid" id="odAssessSourceGrid"></div>
 
 							<label
-								class="field-label"
-								style="margin-top: 10px"
+								class="field-label mt-10"
 								for="odAssessSymptoms"
 								>Current symptoms / presentation</label
 							>
@@ -3841,8 +3688,7 @@
 								placeholder="e.g. Drowsy, nausea, vomiting, abdominal pain" />
 
 							<label
-								class="field-label"
-								style="margin-top: 8px"
+								class="field-label mt-8"
 								for="odAssessNotes"
 								>Additional notes</label
 							>
@@ -3862,12 +3708,12 @@
 							<label class="field-label">Intent</label>
 							<div class="square-grid" id="mhIntentGrid"></div>
 
-							<label class="field-label" style="margin-top: 12px"
+							<label class="field-label mt-12"
 								>Nature of act</label
 							>
 							<div class="square-grid" id="mhPlanningGrid"></div>
 
-							<div style="margin-top: 12px">
+							<div class="mt-12">
 								<label class="field-label" for="mhTriggers"
 									>Triggers / precipitants</label
 								>
@@ -3876,7 +3722,7 @@
 									placeholder="e.g. Relationship breakdown, financial stress, bereavement" />
 							</div>
 
-							<label class="check-row" style="margin-top: 12px">
+							<label class="check-row mt-12">
 								<input type="checkbox" id="mhPrevious" /> Previous episodes of
 								self-harm / overdose
 							</label>
@@ -3885,7 +3731,6 @@
 								rows="2"
 								placeholder="Details of previous episodes..."></textarea>
 
-							<!-- Harmful acts -->
 							<div style="margin-top: 14px">
 								<p
 									class="field-label"
@@ -3894,9 +3739,8 @@
 								</p>
 								<input type="hidden" id="mhActsAdmit" value="Denies" />
 								<div
-									class="radio-chip-group"
-									data-radio-group="mhActsAdmit"
-									style="margin-top: 4px">
+									class="radio-chip-group mt-4"
+									data-radio-group="mhActsAdmit">
 									<button
 										type="button"
 										class="radio-chip selected"
@@ -3908,29 +3752,28 @@
 									</button>
 								</div>
 
-								<div id="mhActsPanel" class="hidden" style="margin-top: 12px">
+								<div id="mhActsPanel" class="hidden mt-12">
 									<label class="field-label" for="mhActType">Type of act</label>
-									<select id="mhActType" style="margin-top: 4px">
+									<select id="mhActType" class="mt-4">
 										<option value="">Select type...</option>
 										<option>Overdose</option>
 										<!-- Self-harm and suicide attempt options added by JS -->
 									</select>
 
-									<div class="grid-2" style="margin-top: 8px">
+									<div class="grid-2 mt-8">
 										<div>
 											<label class="field-label" for="mhActAtTime"
 												>Time of act</label
 											>
 											<input
 												type="time"
-												id="mhActAtTime"
-												style="margin-top: 4px" />
+												id="mhActAtTime" class="mt-4" />
 										</div>
 										<div>
 											<label class="field-label" for="mhActAgoTime"
 												>How long ago</label
 											>
-											<select id="mhActAgoTime" style="margin-top: 4px">
+											<select id="mhActAgoTime" class="mt-4">
 												<option value="">Select...</option>
 												<option>Just now</option>
 												<option>&lt; 1 hour ago</option>
@@ -3950,15 +3793,14 @@
 
 									<div
 										id="odDetailsWrap"
-										class="hidden"
-										style="margin-top: 10px">
+										class="hidden mt-10">
 										<label class="field-label" for="odSubstance"
 											>Substance(s) taken</label
 										>
 										<input
 											id="odSubstance"
 											placeholder="e.g. Paracetamol, alcohol, ibuprofen" />
-										<div style="margin-top: 8px">
+										<div class="mt-8">
 											<label class="field-label" for="odAmount"
 												>Amount / estimated dose</label
 											>
@@ -3966,14 +3808,13 @@
 												id="odAmount"
 												placeholder="e.g. Up to 16 tablets" />
 										</div>
-										<div class="grid-2" style="margin-top: 8px">
+										<div class="grid-2 mt-8">
 											<div>
 												<label class="field-label">Route</label>
 												<input type="hidden" id="odRoute" />
 												<div
-													class="radio-chip-group"
-													data-radio-group="odRoute"
-													style="margin-top: 4px">
+													class="radio-chip-group mt-4"
+													data-radio-group="odRoute">
 													<button
 														type="button"
 														class="radio-chip"
@@ -4018,7 +3859,7 @@
 												</label>
 											</div>
 										</div>
-										<label class="field-label" style="margin-top: 8px"
+										<label class="field-label mt-8"
 											>Medication source</label
 										>
 										<div class="square-grid" id="odPrescribedGrid"></div>
@@ -4026,16 +3867,14 @@
 
 									<div
 										id="shDetailsWrap"
-										class="hidden"
-										style="margin-top: 10px">
+										class="hidden mt-10">
 										<label class="field-label">Wound depth</label>
 										<div class="square-grid" id="shDepthGrid"></div>
 									</div>
 
 									<div
 										id="mhActOtherWrap"
-										class="hidden"
-										style="margin-top: 10px">
+										class="hidden mt-10">
 										<label class="field-label" for="mhActNotes">Details</label>
 										<input id="mhActNotes" placeholder="Describe the act..." />
 									</div>
@@ -4048,10 +3887,9 @@
 										Add
 									</button>
 								</div>
-								<div id="mhActEntries" style="margin-top: 8px"></div>
+								<div id="mhActEntries" class="mt-8"></div>
 							</div>
 
-							<!-- Mental State Examination -->
 							<div style="margin-top: 16px">
 								<p
 									class="field-label"
@@ -4062,37 +3900,37 @@
 								<label class="field-label">A — Appearance</label>
 								<div class="square-grid" id="mseAppearanceGrid"></div>
 
-								<label class="field-label" style="margin-top: 10px"
+								<label class="field-label mt-10"
 									>B — Behaviour</label
 								>
 								<div class="square-grid" id="mseBehaviourGrid"></div>
 
-								<label class="field-label" style="margin-top: 10px"
+								<label class="field-label mt-10"
 									>C — Communication / speech</label
 								>
 								<div class="square-grid" id="mseSpeechGrid"></div>
 
-								<label class="field-label" style="margin-top: 10px"
+								<label class="field-label mt-10"
 									>D — Delusions / thought content</label
 								>
 								<div class="square-grid" id="mseThoughtContentGrid"></div>
 
-								<label class="field-label" style="margin-top: 10px"
+								<label class="field-label mt-10"
 									>E — Emotion / affect</label
 								>
 								<div class="square-grid" id="mseAffectGrid"></div>
 
-								<label class="field-label" style="margin-top: 10px"
+								<label class="field-label mt-10"
 									>F — Form of thought</label
 								>
 								<div class="square-grid" id="mseThoughtFormGrid"></div>
 
-								<label class="field-label" style="margin-top: 10px"
+								<label class="field-label mt-10"
 									>H — Hallucinations / perception</label
 								>
 								<div class="square-grid" id="msePerceptionGrid"></div>
 
-								<label class="field-label" style="margin-top: 10px"
+								<label class="field-label mt-10"
 									>I — Insight</label
 								>
 								<div class="square-grid" id="mseInsightGrid"></div>
@@ -4106,7 +3944,7 @@
 									id="mhCurrentServices"
 									placeholder="e.g. CMHT, Crisis team, Psychiatry — Dr Smith" />
 							</div>
-							<div style="margin-top: 8px">
+							<div class="mt-8">
 								<label class="field-label" for="mhNotes"
 									>Additional notes</label
 								>
@@ -4115,7 +3953,6 @@
 						</div>
 					</details>
 
-					<!-- Stroke Assessment -->
 					<details class="section-card hidden" id="strokeAssessmentCard">
 						<summary>
 							<span>FAST-PASTA Stroke Assessment</span>
@@ -4124,7 +3961,6 @@
 						<div class="section-body"></div>
 					</details>
 
-					<!-- Obstetric / Gynaecological Assessment -->
 					<details class="section-card hidden" id="gynaeCard">
 						<summary>
 							<span>Obstetric / Gynaecological</span><small>OB/GYN</small>
@@ -4135,9 +3971,8 @@
 									<label class="field-label">Pregnancy status</label>
 									<input type="hidden" id="pregnancyStatus" />
 									<div
-										class="radio-chip-group"
-										data-radio-group="pregnancyStatus"
-										style="margin-top: 4px"></div>
+										class="radio-chip-group mt-4"
+										data-radio-group="pregnancyStatus"></div>
 								</div>
 								<div>
 									<label class="field-label" for="lmp"
@@ -4145,12 +3980,11 @@
 									>
 									<input
 										id="lmp"
-										placeholder="e.g. 2 weeks ago"
-										style="margin-top: 4px" />
+										placeholder="e.g. 2 weeks ago" class="mt-4" />
 								</div>
 							</div>
 
-							<div id="pregnancyDetails" class="hidden" style="margin-top: 8px">
+							<div id="pregnancyDetails" class="hidden mt-8">
 								<div class="grid-2">
 									<div>
 										<label class="field-label" for="gestationWeeks"
@@ -4161,14 +3995,13 @@
 											type="number"
 											min="1"
 											max="45"
-											placeholder="e.g. 28"
-											style="margin-top: 4px" />
+											placeholder="e.g. 28" class="mt-4" />
 									</div>
 									<div>
 										<label class="field-label" for="edd"
 											>Estimated due date (EDD)</label
 										>
-										<input id="edd" type="date" style="margin-top: 4px" />
+										<input id="edd" type="date" class="mt-4" />
 									</div>
 									<div>
 										<label class="field-label" for="gravida">Gravida</label>
@@ -4176,8 +4009,7 @@
 											id="gravida"
 											type="number"
 											min="0"
-											placeholder="e.g. 2"
-											style="margin-top: 4px" />
+											placeholder="e.g. 2" class="mt-4" />
 									</div>
 									<div>
 										<label class="field-label" for="para">Para</label>
@@ -4185,13 +4017,12 @@
 											id="para"
 											type="number"
 											min="0"
-											placeholder="e.g. 1"
-											style="margin-top: 4px" />
+											placeholder="e.g. 1" class="mt-4" />
 									</div>
 								</div>
 							</div>
 
-							<div style="margin-top: 12px">
+							<div class="mt-12">
 								<label class="field-label">Gynaecological symptoms</label>
 								<div
 									class="square-grid"
@@ -4199,14 +4030,13 @@
 									style="margin-top: 6px"></div>
 							</div>
 
-							<div id="pvBleedDetail" class="hidden" style="margin-top: 10px">
+							<div id="pvBleedDetail" class="hidden mt-10">
 								<label class="field-label">PV bleeding — severity</label>
 								<input type="hidden" id="pvBleedSeverity" />
 								<div
-									class="radio-chip-group"
-									data-radio-group="pvBleedSeverity"
-									style="margin-top: 4px"></div>
-								<label class="field-label" style="margin-top: 8px"
+									class="radio-chip-group mt-4"
+									data-radio-group="pvBleedSeverity"></div>
+								<label class="field-label mt-8"
 									>Character</label
 								>
 								<div
@@ -4215,7 +4045,7 @@
 									style="margin-top: 6px"></div>
 							</div>
 
-							<div id="dischargeDetail" class="hidden" style="margin-top: 10px">
+							<div id="dischargeDetail" class="hidden mt-10">
 								<label class="field-label"
 									>Vaginal discharge — colour / appearance</label
 								>
@@ -4223,278 +4053,44 @@
 									class="square-grid"
 									id="dischargeColourGrid"
 									style="margin-top: 6px"></div>
-								<label class="field-label" style="margin-top: 8px"
+								<label class="field-label mt-8"
 									>Consistency</label
 								>
 								<div
 									class="square-grid"
 									id="dischargeConsistencyGrid"
 									style="margin-top: 6px"></div>
-								<label class="field-label" style="margin-top: 8px">Odour</label>
+								<label class="field-label mt-8">Odour</label>
 								<div
 									class="square-grid"
 									id="dischargeOdourGrid"
 									style="margin-top: 6px"></div>
-								<label class="field-label" style="margin-top: 8px"
+								<label class="field-label mt-8"
 									>Amount</label
 								>
 								<input type="hidden" id="dischargeAmount" />
 								<div
-									class="radio-chip-group"
-									data-radio-group="dischargeAmount"
-									style="margin-top: 4px"></div>
-								<label class="field-label" style="margin-top: 8px"
+									class="radio-chip-group mt-4"
+									data-radio-group="dischargeAmount"></div>
+								<label class="field-label mt-8"
 									>Duration / onset</label
 								>
 								<input
 									id="dischargeDuration"
-									placeholder="e.g. 3 days, started this morning"
-									style="margin-top: 4px" />
+									placeholder="e.g. 3 days, started this morning" class="mt-4" />
 							</div>
 
 							<label
-								class="field-label"
-								style="margin-top: 12px"
+								class="field-label mt-12"
 								for="gynaeNotes"
 								>Additional notes</label
 							>
 							<textarea
 								id="gynaeNotes"
 								rows="2"
-								placeholder="Any additional obstetric or gynaecological details..."
-								style="margin-top: 4px"></textarea>
+								placeholder="Any additional obstetric or gynaecological details..." class="mt-4"></textarea>
 						</div>
 					</details>
-
-					<!-- Secondary Survey - Auto-Generates from given info -->
-					<!-- <details class="section-card">
-						<summary>
-							<span>Secondary Survey / On Examination</span><small>OE</small>
-						</summary>
-						<div class="section-body">
-							<div class="toolbar">
-								<button
-									id="generateOeButton"
-									class="primary-action"
-									type="button">
-									Generate OE from findings</button
-								><button
-									id="clearOeButton"
-									class="secondary-action"
-									type="button">
-									Clear
-								</button>
-							</div>
-							<textarea
-								id="oeText"
-								rows="10"
-								placeholder="On examination / secondary survey..."></textarea>
-						</div>
-					</details> -->
-
-					<!-- Treatment  -->
-					<div id="treatmentCard">
-						<!-- Airway & Breathing -->
-						<details class="section-card">
-							<summary>
-								<span>Airway &amp; Breathing</span><small>Airway</small>
-							</summary>
-							<div class="section-body">
-								<div class="square-grid" id="airwayInterventionGrid"></div>
-							</div>
-						</details>
-
-						<!-- Vascular Access -->
-						<details class="section-card">
-							<summary>
-								<span>Vascular Access</span><small>IV/IO</small>
-							</summary>
-							<div class="section-body">
-								<div class="grid-2">
-									<div>
-										<label class="field-label">Type</label>
-										<input type="hidden" id="vaType" />
-										<div
-											class="radio-chip-group"
-											data-radio-group="vaType"
-											style="margin-top: 4px"></div>
-									</div>
-									<div id="vaGaugeWrap" class="hidden">
-										<label class="field-label">Gauge</label>
-										<input type="hidden" id="vaGauge" />
-										<div
-											class="radio-chip-group"
-											data-radio-group="vaGauge"
-											style="margin-top: 4px"></div>
-									</div>
-								</div>
-								<label class="field-label" style="margin-top: 8px">Site</label>
-								<input type="hidden" id="vaSite" />
-								<div
-									id="vaIvSites"
-									class="radio-chip-group wrap-grid hidden"
-									data-radio-group="vaSite"
-									style="margin-top: 4px"></div>
-								<div
-									id="vaIoSites"
-									class="radio-chip-group wrap-grid hidden"
-									data-radio-group="vaSite"
-									style="margin-top: 4px"></div>
-								<label class="field-label" style="margin-top: 8px">Time</label>
-								<input type="time" id="vaTime" />
-								<div class="grid-2" style="margin-top: 8px">
-									<div>
-										<label class="field-label">Outcome</label>
-										<input type="hidden" id="vaOutcome" />
-										<div
-											class="radio-chip-group"
-											data-radio-group="vaOutcome"
-											style="margin-top: 4px"></div>
-									</div>
-								</div>
-								<div id="vaFlushWrap" class="hidden" style="margin-top: 8px">
-									<label class="field-label">Flush</label>
-									<input type="hidden" id="vaFlushed" />
-									<div
-										class="radio-chip-group"
-										data-radio-group="vaFlushed"
-										style="margin-top: 4px">
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Flushed — 5ml NaCl 0.9%">
-											✓ Flushed (5ml NaCl 0.9%)
-										</button>
-										<button
-											type="button"
-											class="radio-chip"
-											data-value="Not flushed">
-											✗ Not flushed
-										</button>
-									</div>
-								</div>
-								<button
-									id="addVaButton"
-									type="button"
-									class="secondary-action"
-									style="margin-top: 10px">
-									Add access
-								</button>
-								<div id="vaEntries"></div>
-							</div>
-						</details>
-
-						<!-- Medications -->
-						<details class="section-card">
-							<summary><span>Medications</span><small>Drugs</small></summary>
-							<div class="section-body">
-								<div class="grid-2">
-									<select id="drugName">
-										<option value="">Select a Drug</option>
-									</select>
-									<div>
-										<label class="field-label" for="drugDose">Dose</label>
-										<input id="drugDose" placeholder="e.g. 5mg, 2 puffs" />
-									</div>
-								</div>
-								<div class="grid-2">
-									<div>
-										<label class="field-label">Route</label>
-										<input type="hidden" id="drugRoute" />
-										<div
-											class="radio-chip-group wrap-grid"
-											data-radio-group="drugRoute"
-											style="margin-top: 4px"></div>
-									</div>
-									<div>
-										<label class="field-label" for="drugTime">Time given</label>
-										<input type="time" id="drugTime" />
-									</div>
-								</div>
-								<button
-									id="addDrugButton"
-									type="button"
-									class="secondary-action"
-									style="margin-top: 10px">
-									Add medication
-								</button>
-								<div id="drugEntries"></div>
-							</div>
-						</details>
-
-						<!-- Wound Management -->
-						<details class="section-card">
-							<summary>
-								<span>Wound Management</span><small>Wounds</small>
-							</summary>
-							<div class="section-body">
-								<div class="square-grid" id="woundInterventionGrid"></div>
-								<div id="woundOtherWrap" class="hidden">
-									<input
-										id="woundOther"
-										placeholder="Describe wound intervention"
-										style="margin-top: 8px" />
-								</div>
-							</div>
-						</details>
-
-						<!-- Manual Handling -->
-						<details class="section-card">
-							<summary>
-								<span>Manual Handling</span><small>Handling</small>
-							</summary>
-							<div class="section-body">
-								<div class="square-grid" id="manualHandlingGrid"></div>
-								<div id="manualOtherWrap" class="hidden">
-									<input
-										id="manualOther"
-										placeholder="Describe handling method"
-										style="margin-top: 8px" />
-								</div>
-								<div
-									style="
-										display: flex;
-										gap: 8px;
-										align-items: center;
-										margin-top: 8px;
-									">
-									<input type="time" id="manualTime" />
-									<button
-										type="button"
-										id="addManualButton"
-										class="secondary-action">
-										Add
-									</button>
-								</div>
-								<div id="manualEntries"></div>
-							</div>
-						</details>
-
-						<!-- Additional Notes -->
-						<details class="section-card">
-							<summary>
-								<span>Additional Notes</span><small>Notes</small>
-							</summary>
-							<div class="section-body">
-								<label class="field-label" for="otherInterventionsFree"
-									>Other interventions</label
-								>
-								<textarea
-									id="otherInterventionsFree"
-									rows="2"
-									placeholder="Describe any other interventions performed…"></textarea>
-								<label
-									class="field-label"
-									for="treatmentNotes"
-									style="margin-top: 10px"
-									>Treatment notes</label
-								>
-								<textarea id="treatmentNotes" rows="2"></textarea>
-							</div>
-						</details>
-					</div>
-
-					<!-- CLinical changes -->
 					<details class="section-card">
 						<summary>
 							<span>Clinical Changes &amp; Additional Information</span
@@ -4538,7 +4134,6 @@
 						</div>
 					</details>
 
-					<!-- Mental Capacity -->
 					<details class="section-card">
 						<summary>
 							<span>Mental Capacity and Consent</span><small>MCA</small>
@@ -4547,22 +4142,19 @@
 							<label class="field-label">Capacity status</label>
 							<input type="hidden" id="capacityStatus" value="Has capacity" />
 							<div
-								class="radio-chip-group"
-								data-radio-group="capacityStatus"
-								style="margin-top: 4px"></div>
+								class="radio-chip-group mt-4"
+								data-radio-group="capacityStatus"></div>
 							<div
 								id="capacityChecks"
-								class="square-grid"
-								style="margin-top: 8px"></div>
-							<div id="lacksCapReasons" class="hidden" style="margin-top: 8px">
+								class="square-grid mt-8"></div>
+							<div id="lacksCapReasons" class="hidden mt-8">
 								<label class="field-label"
 									>Unable to (select all that apply)</label
 								>
 								<div class="square-grid" id="lacksCapGrid"></div>
 								<label
-									class="field-label"
+									class="field-label mt-8"
 									for="lacksCausation"
-									style="margin-top: 8px"
 									>Reason for incapacity</label
 								>
 								<input
@@ -4578,26 +4170,9 @@
 					</details>
 				</section>
 
-				<!-- TREATMENT TAB -->
 				<section class="panel" id="panel-treatment">
-					<div
-						style="
-							display: flex;
-							align-items: center;
-							gap: 14px;
-							padding: 4px 0 12px;
-						">
-						<div
-							style="
-								width: 52px;
-								height: 52px;
-								border-radius: 14px;
-								background: var(--brand, #1565c0);
-								display: flex;
-								align-items: center;
-								justify-content: center;
-								flex-shrink: 0;
-							">
+					<div class="panel-header">
+						<div class="panel-header-icon">
 							<svg
 								width="30"
 								height="30"
@@ -4622,49 +4197,202 @@
 							</svg>
 						</div>
 						<div>
-							<p
-								style="
-									margin: 0;
-									font-weight: 600;
-									font-size: 15px;
-									color: var(--text, inherit);
-								">
+							<p class="panel-header-title">
 								Treatments &amp; Interventions
 							</p>
-							<p
-								style="
-									margin: 3px 0 0;
-									font-size: 12px;
-									color: var(--text-muted, #666);
-								">
+							<p class="panel-header-desc">
 								Airway, vascular access, medications, wound care and manual
 								handling
 							</p>
 						</div>
 					</div>
-					<div id="treatmentCardHost"></div>
+					<div id="treatmentCard">
+						<details class="section-card">
+							<summary>
+								<span>Airway &amp; Breathing</span><small>Airway</small>
+							</summary>
+							<div class="section-body">
+								<div class="square-grid" id="airwayInterventionGrid"></div>
+							</div>
+						</details>
+
+						<details class="section-card">
+							<summary>
+								<span>Vascular Access</span><small>IV/IO</small>
+							</summary>
+							<div class="section-body">
+								<div class="grid-2">
+									<div>
+										<label class="field-label">Type</label>
+										<input type="hidden" id="vaType" />
+										<div
+											class="radio-chip-group mt-4"
+											data-radio-group="vaType"></div>
+									</div>
+									<div id="vaGaugeWrap" class="hidden">
+										<label class="field-label">Gauge</label>
+										<input type="hidden" id="vaGauge" />
+										<div
+											class="radio-chip-group mt-4"
+											data-radio-group="vaGauge"></div>
+									</div>
+								</div>
+								<label class="field-label mt-8">Site</label>
+								<input type="hidden" id="vaSite" />
+								<div
+									id="vaIvSites"
+									class="radio-chip-group wrap-grid hidden mt-4"
+									data-radio-group="vaSite"></div>
+								<div
+									id="vaIoSites"
+									class="radio-chip-group wrap-grid hidden mt-4"
+									data-radio-group="vaSite"></div>
+								<label class="field-label mt-8">Time</label>
+								<input type="time" id="vaTime" />
+								<div class="grid-2 mt-8">
+									<div>
+										<label class="field-label">Outcome</label>
+										<input type="hidden" id="vaOutcome" />
+										<div
+											class="radio-chip-group mt-4"
+											data-radio-group="vaOutcome"></div>
+									</div>
+								</div>
+								<div id="vaFlushWrap" class="hidden mt-8">
+									<label class="field-label">Flush</label>
+									<input type="hidden" id="vaFlushed" />
+									<div
+										class="radio-chip-group mt-4"
+										data-radio-group="vaFlushed">
+										<button
+											type="button"
+											class="radio-chip"
+											data-value="Flushed — 5ml NaCl 0.9%">
+											✓ Flushed (5ml NaCl 0.9%)
+										</button>
+										<button
+											type="button"
+											class="radio-chip"
+											data-value="Not flushed">
+											✗ Not flushed
+										</button>
+									</div>
+								</div>
+								<button
+									id="addVaButton"
+									type="button"
+									class="secondary-action mt-10">
+									Add access
+								</button>
+								<div id="vaEntries"></div>
+							</div>
+						</details>
+
+						<details class="section-card">
+							<summary><span>Medications</span><small>Drugs</small></summary>
+							<div class="section-body">
+								<div class="grid-2">
+									<select id="drugName">
+										<option value="">Select a Drug</option>
+									</select>
+									<div>
+										<label class="field-label" for="drugDose">Dose</label>
+										<input id="drugDose" placeholder="e.g. 5mg, 2 puffs" />
+									</div>
+								</div>
+								<div class="grid-2">
+									<div>
+										<label class="field-label">Route</label>
+										<input type="hidden" id="drugRoute" />
+										<div
+											class="radio-chip-group wrap-grid mt-4"
+											data-radio-group="drugRoute"></div>
+									</div>
+									<div>
+										<label class="field-label" for="drugTime">Time given</label>
+										<input type="time" id="drugTime" />
+									</div>
+								</div>
+								<button
+									id="addDrugButton"
+									type="button"
+									class="secondary-action mt-10">
+									Add medication
+								</button>
+								<div id="drugEntries"></div>
+							</div>
+						</details>
+
+						<details class="section-card">
+							<summary>
+								<span>Wound Management</span><small>Wounds</small>
+							</summary>
+							<div class="section-body">
+								<div class="square-grid" id="woundInterventionGrid"></div>
+								<div id="woundOtherWrap" class="hidden">
+									<input
+										id="woundOther"
+										placeholder="Describe wound intervention" class="mt-8" />
+								</div>
+							</div>
+						</details>
+
+						<details class="section-card">
+							<summary>
+								<span>Manual Handling</span><small>Handling</small>
+							</summary>
+							<div class="section-body">
+								<div class="square-grid" id="manualHandlingGrid"></div>
+								<div id="manualOtherWrap" class="hidden">
+									<input
+										id="manualOther"
+										placeholder="Describe handling method" class="mt-8" />
+								</div>
+								<div
+									style="
+										display: flex;
+										gap: 8px;
+										align-items: center;
+										margin-top: 8px;
+									">
+									<input type="time" id="manualTime" />
+									<button
+										type="button"
+										id="addManualButton"
+										class="secondary-action">
+										Add
+									</button>
+								</div>
+								<div id="manualEntries"></div>
+							</div>
+						</details>
+
+						<details class="section-card">
+							<summary>
+								<span>Additional Notes</span><small>Notes</small>
+							</summary>
+							<div class="section-body">
+								<label class="field-label" for="otherInterventionsFree"
+									>Other interventions</label
+								>
+								<textarea
+									id="otherInterventionsFree"
+									rows="2"
+									placeholder="Describe any other interventions performed…"></textarea>
+								<label
+									class="field-label mt-10"
+									for="treatmentNotes"
+									>Treatment notes</label
+								>
+								<textarea id="treatmentNotes" rows="2"></textarea>
+							</div>
+						</details>
+					</div>
 				</section>
 
-				<!-- PLAN TAB -->
 				<section class="panel" id="panel-plan">
-					<div
-						style="
-							display: flex;
-							align-items: center;
-							gap: 14px;
-							padding: 4px 0 12px;
-						">
-						<div
-							style="
-								width: 52px;
-								height: 52px;
-								border-radius: 14px;
-								background: var(--brand, #1565c0);
-								display: flex;
-								align-items: center;
-								justify-content: center;
-								flex-shrink: 0;
-							">
+					<div class="panel-header">
+						<div class="panel-header-icon">
 							<svg
 								width="30"
 								height="30"
@@ -4682,27 +4410,15 @@
 							</svg>
 						</div>
 						<div>
-							<p
-								style="
-									margin: 0;
-									font-weight: 600;
-									font-size: 15px;
-									color: var(--text, inherit);
-								">
+							<p class="panel-header-title">
 								Clinical Plan
 							</p>
-							<p
-								style="
-									margin: 3px 0 0;
-									font-size: 12px;
-									color: var(--text-muted, #666);
-								">
+							<p class="panel-header-desc">
 								Conveyance decision, capacity, worsening advice, safeguarding
 								and handover
 							</p>
 						</div>
 					</div>
-					<!-- Conveyance information -->
 					<details class="section-card">
 						<summary><span>Conveyance</span><small>Plan</small></summary>
 						<div class="section-body">
@@ -4710,13 +4426,11 @@
 								id="conveyanceSuggestion"
 								class="convey-suggest hidden"></div>
 
-							<!-- Conveyance Decision -->
 							<label class="field-label">Conveyance decision</label>
 							<input type="hidden" id="conveyanceDecision" value="Conveyed" />
 							<div
-								class="radio-chip-group"
-								data-radio-group="conveyanceDecision"
-								style="margin-top: 4px"></div>
+								class="radio-chip-group mt-4"
+								data-radio-group="conveyanceDecision"></div>
 
 							<div id="conveyedFields">
 								<p class="field-hint">
@@ -4724,14 +4438,12 @@
 									local policy, JRCALC+ transfer guidance, and HCPC
 									record-keeping standards.
 								</p>
-								<!-- Mobilisation -->
-								<div style="margin-top: 4px">
+								<div class="mt-4">
 									<label class="field-label">Mobilisation to vehicle</label>
 									<input type="hidden" id="mobilisationToVehicle" />
 									<div
-										class="radio-chip-group wrap-grid"
-										data-radio-group="mobilisationToVehicle"
-										style="margin-top: 4px"></div>
+										class="radio-chip-group wrap-grid mt-4"
+										data-radio-group="mobilisationToVehicle"></div>
 									<div
 										id="mobilisationOtherWrap"
 										class="hidden"
@@ -4742,8 +4454,8 @@
 									</div>
 								</div>
 
-								<!-- Recieving Hospital -->
-								<div class="grid-2" style="margin-top: 12px">
+								<!-- Receiving Hospital -->
+								<div class="grid-2 mt-12">
 									<div>
 										<label class="field-label" for="conveyHospital"
 											>Receiving hospital</label
@@ -4756,9 +4468,8 @@
 										<label class="field-label">Receiving department</label>
 										<input type="hidden" id="conveyDepartment" />
 										<div
-											class="radio-chip-group wrap-grid"
-											data-radio-group="conveyDepartment"
-											style="margin-top: 4px"></div>
+											class="radio-chip-group wrap-grid mt-4"
+											data-radio-group="conveyDepartment"></div>
 									</div>
 								</div>
 								<div id="hospitalOtherWrap" class="hidden">
@@ -4786,7 +4497,6 @@
 										placeholder="e.g. CDU, maternity, paediatric ED" />
 								</div>
 
-								<!-- Conveyance information -->
 								<label class="field-label">Transfer and handover</label>
 								<p class="field-hint">
 									All findings are off by default — tap once to confirm
@@ -4821,7 +4531,6 @@
 									placeholder="e.g. observations during transfer, concerns discussed, belongings, infection precautions, safeguarding flags passed on..."></textarea>
 							</div>
 
-							<!-- Signposting -->
 							<div id="nonConveyedFields" class="hidden">
 								<div id="declineReasonWrap" class="hidden">
 									<label class="field-label" for="declineReason"
@@ -4840,10 +4549,8 @@
 									>Follow-up arrangements</label
 								>
 								<input id="followUp" />
-								<!-- Risks advised -->
 								<div class="grid-2 compact" id="riskChecksGrid"></div>
-								<!-- Capacity considerations -->
-								<label class="field-label" style="margin-top: 12px"
+								<label class="field-label mt-12"
 									>Legal / capacity considerations</label
 								>
 								<div
@@ -4873,9 +4580,8 @@
 							<label class="field-label">Advice</label>
 							<input type="hidden" id="worseningMode" value="Standard" />
 							<div
-								class="radio-chip-group"
-								data-radio-group="worseningMode"
-								style="margin-top: 4px">
+								class="radio-chip-group mt-4"
+								data-radio-group="worseningMode">
 								<button
 									type="button"
 									class="radio-chip selected"
@@ -4889,7 +4595,6 @@
 									N/A
 								</button>
 							</div>
-							<!-- Worsening scripts -->
 							<div id="worseningScriptWrap">
 								<p class="field-label" style="margin-top: 16px">
 									What to say to the patient
@@ -4927,8 +4632,7 @@
 							</div>
 							<div
 								id="safeguardingDetailWrap"
-								class="hidden"
-								style="margin-top: 12px">
+								class="hidden mt-12">
 								<label class="field-label" for="whyAmbulanceContact"
 									>Why did the ambulance attend</label
 								>
@@ -4938,9 +4642,8 @@
 									placeholder="e.g. Patient was injured, unwell, fell…"></textarea>
 
 								<label
-									class="field-label"
+									class="field-label mt-10"
 									for="whoRaisedConcern"
-									style="margin-top: 10px"
 									>Who raised the concern</label
 								>
 								<textarea
@@ -4949,9 +4652,8 @@
 									placeholder="e.g. Patient, neighbour, carer, crew on scene…"></textarea>
 
 								<label
-									class="field-label"
+									class="field-label mt-10"
 									for="whyConcernRaised"
-									style="margin-top: 10px"
 									>Why was the concern raised</label
 								>
 								<textarea
@@ -4959,7 +4661,7 @@
 									rows="2"
 									placeholder="e.g. Struggling at home, unable to leave, unable to feed/water…"></textarea>
 
-								<label class="field-label" style="margin-top: 10px"
+								<label class="field-label mt-10"
 									>Did the patient consent to referral</label
 								>
 								<input type="hidden" id="safeguardingConsent" />
@@ -4994,9 +4696,8 @@
 								</div>
 
 								<label
-									class="field-label"
+									class="field-label mt-10"
 									for="concernsDescription"
-									style="margin-top: 10px"
 									>What are your concerns</label
 								>
 								<textarea
@@ -5005,9 +4706,8 @@
 									placeholder="e.g. Welfare and care needs of the patient…"></textarea>
 
 								<label
-									class="field-label"
+									class="field-label mt-10"
 									for="patientWants"
-									style="margin-top: 10px"
 									>What would the patient like to happen</label
 								>
 								<textarea
@@ -5016,9 +4716,8 @@
 									placeholder="e.g. More support at home, OT assessment…"></textarea>
 
 								<label
-									class="field-label"
+									class="field-label mt-10"
 									for="othersPresentWant"
-									style="margin-top: 10px"
 									>What do others present want (if applicable)</label
 								>
 								<textarea
@@ -5027,9 +4726,8 @@
 									placeholder="e.g. More support, OT assessment…"></textarea>
 
 								<label
-									class="field-label"
+									class="field-label mt-10"
 									for="crewWants"
-									style="margin-top: 10px"
 									>What do you want to happen</label
 								>
 								<textarea
@@ -5038,9 +4736,8 @@
 									placeholder="e.g. More support, OT assessment…"></textarea>
 
 								<label
-									class="field-label"
+									class="field-label mt-10"
 									for="safeguardingNotes"
-									style="margin-top: 10px"
 									>Additional information</label
 								>
 								<textarea
@@ -5064,17 +4761,15 @@
 								</div>
 
 								<label
-									class="field-label"
+									class="field-label mt-10"
 									for="clericJobId"
-									style="margin-top: 10px"
 									>Cleric Job ID</label
 								>
 								<input id="clericJobId" type="text" placeholder="Job ID" />
 
 								<label
-									class="field-label"
+									class="field-label mt-10"
 									for="jobInformation"
-									style="margin-top: 10px"
 									>Job information</label
 								>
 								<textarea
@@ -5082,7 +4777,7 @@
 									rows="2"
 									placeholder="e.g. Names, addresses, DOB and NHS numbers…"></textarea>
 
-								<label class="field-label" style="margin-top: 12px"
+								<label class="field-label mt-12"
 									>Safeguarding referral made</label
 								>
 								<input type="hidden" id="referralMade" />
@@ -5099,8 +4794,7 @@
 								</div>
 								<div
 									id="safeguardingReferralFields"
-									class="hidden"
-									style="margin-top: 8px">
+									class="hidden mt-8">
 									<label class="field-label">Ulysses reference number</label>
 									<div
 										style="
@@ -5130,16 +4824,14 @@
 						</div>
 					</details>
 
-					<!-- Handover -->
 					<details class="section-card">
 						<summary><span>Handover</span><small>HO</small></summary>
 						<div class="section-body">
 							<label class="field-label">Handover</label>
 							<input type="hidden" id="handoverFormat" value="ASHICE" />
 							<div
-								class="radio-chip-group"
-								data-radio-group="handoverFormat"
-								style="margin-top: 4px"></div>
+								class="radio-chip-group mt-4"
+								data-radio-group="handoverFormat"></div>
 							<div id="handoverEtaWrap">
 								<label class="field-label" for="handoverEta">ETA</label
 								><input id="handoverEta" placeholder="e.g. 10 minutes" />
@@ -5159,26 +4851,9 @@
 					</details>
 				</section>
 
-				<!-- GENERATE TAB -->
 				<section class="panel" id="panel-output">
-					<div
-						style="
-							display: flex;
-							align-items: center;
-							gap: 14px;
-							padding: 4px 0 12px;
-						">
-						<div
-							style="
-								width: 52px;
-								height: 52px;
-								border-radius: 14px;
-								background: var(--brand, #1565c0);
-								display: flex;
-								align-items: center;
-								justify-content: center;
-								flex-shrink: 0;
-							">
+					<div class="panel-header">
+						<div class="panel-header-icon">
 							<svg
 								width="30"
 								height="30"
@@ -5196,21 +4871,10 @@
 							</svg>
 						</div>
 						<div>
-							<p
-								style="
-									margin: 0;
-									font-weight: 600;
-									font-size: 15px;
-									color: var(--text, inherit);
-								">
+							<p class="panel-header-title">
 								Generate Report
 							</p>
-							<p
-								style="
-									margin: 3px 0 0;
-									font-size: 12px;
-									color: var(--text-muted, #666);
-								">
+							<p class="panel-header-desc">
 								Preview, copy and share your completed patient report
 							</p>
 						</div>
@@ -5236,7 +4900,6 @@ Tap “Refresh preview” or “Generate and copy”.</pre
 				</section>
 			</main>
 
-			<!-- Footer -->
 			<footer class="site-footer" role="contentinfo">
 				<div class="footer-brand">
 					<img src="assets/logo.jpg" alt="CrewMate logo" class="footer-logo" />

@@ -4029,3 +4029,22 @@ html[data-theme="dark"] .n2-risk--high {
 html[data-theme="dark"] .n2-bd-item {
 	background: var(--surface-2, #1e293b);
 }
+
+/* Margin utilities */
+.mt-4  { margin-top: 4px; }
+.mt-8  { margin-top: 8px; }
+.mt-10 { margin-top: 10px; }
+.mt-12 { margin-top: 12px; }
+.mb-12 { margin-bottom: 12px; }
+.mb-20 { margin-bottom: 20px; }
+
+/* Panel headers */
+.panel-header { display: flex; align-items: center; gap: 14px; padding: 4px 0 12px; }
+.panel-header-icon { width: 52px; height: 52px; border-radius: 14px; background: var(--primary, #1565c0); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.panel-header-title { margin: 0; font-weight: 600; font-size: 15px; color: var(--text, inherit); }
+.panel-header-desc { margin: 3px 0 0; font-size: 12px; color: var(--text-muted, #666); }
+
+.tab[data-tab="treatment"]::before,
+.tab[data-paeds-tab="treatment"]::before {
+    display: none;
+}
