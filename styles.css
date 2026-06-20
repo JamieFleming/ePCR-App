@@ -797,6 +797,24 @@ select {
 	color: #7d4e00;
 	font-weight: 700;
 }
+/* Response category chips — coloured when selected */
+[data-radio-group="hpcCategory"] [data-value="C1"].selected,
+[data-radio-group="hpcCategory"] [data-value="C4"].selected {
+	background: #6a1b9a;
+	border-color: #4a148c;
+	color: #fff;
+}
+[data-radio-group="hpcCategory"] [data-value="C2"].selected {
+	background: #c62828;
+	border-color: #b71c1c;
+	color: #fff;
+}
+[data-radio-group="hpcCategory"] [data-value="C3"].selected {
+	background: #e65100;
+	border-color: #bf360c;
+	color: #fff;
+}
+
 /* Wrapping chip grid — equal-width columns that wrap */
 .radio-chip-group.wrap-grid {
 	display: grid;
