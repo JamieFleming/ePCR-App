@@ -569,7 +569,7 @@
 						</div>
 					</div>
 				</section>
-				<div class="section-card" id="obsRecCard">
+				<details class="section-card" id="obsRecCard" open>
 					<summary><span>Observations</span><small>OBS</small></summary>
 					<div class="section-body">
 						<div id="obsRecContainer"></div>
@@ -580,7 +580,7 @@
 							+ Add observations
 						</button>
 					</div>
-				</div>
+				</details>
 			</main>
 			<div class="fe-credit">
 				<a
@@ -1168,7 +1168,7 @@
 							</div>
 						</div>
 
-						<form id="bnfSearchForm" style="display: flex; gap: 8px">
+						<form id="bnfSearchForm" class="flex-row gap-8">
 							<input
 								id="bnfSearchInput"
 								type="search"
@@ -1621,36 +1621,26 @@
 						<summary><span>Background</span><small>Hx</small></summary>
 						<div class="section-body grid-2">
 							<div>
-								<label class="check-row"
-									><input type="checkbox" id="noPmh" checked /> No significant
-									PMH</label
-								><label class="field-label" for="pmh"
-									>Past medical history</label
-								><textarea id="pmh" rows="2"></textarea>
+								<input type="checkbox" id="noPmh" checked hidden />
+								<button type="button" class="square-btn selected" data-toggle-checkbox="noPmh">No significant PMH</button>
+								<label class="field-label mt-8" for="pmh">Past medical history</label>
+								<textarea id="pmh" rows="2"></textarea>
 							</div>
 							<div>
-								<label class="check-row"
-									><input type="checkbox" id="noMeds" checked /> No regular
-									medications</label
-								><label class="field-label" for="medications">Medications</label
-								><textarea id="medications" rows="2"></textarea>
+								<input type="checkbox" id="noMeds" checked hidden />
+								<button type="button" class="square-btn selected" data-toggle-checkbox="noMeds">No regular medications</button>
+								<label class="field-label mt-8" for="medications">Medications</label>
+								<textarea id="medications" rows="2"></textarea>
 							</div>
 							<div>
-								<label class="check-row"
-									><input type="checkbox" id="nkda" checked /> NKDA</label
-								><label class="field-label" for="allergies">Allergies</label
-								><textarea id="allergies" rows="2"></textarea>
+								<input type="checkbox" id="nkda" checked hidden />
+								<button type="button" class="square-btn selected" data-toggle-checkbox="nkda">NKDA</button>
+								<label class="field-label mt-8" for="allergies">Allergies</label>
+								<textarea id="allergies" rows="2"></textarea>
 							</div>
 							<div>
-								<label class="field-label">Last oral intake</label>
-								<div class="split">
-									<input id="loiWhat" placeholder="Food / fluid" /><input
-										id="loiTime"
-										type="time" />
-								</div>
-								<label class="field-label" for="prevDetails"
-									>Other Details</label
-								><textarea
+								<label class="field-label" for="prevDetails">Other Details</label>
+								<textarea
 									id="prevDetails"
 									rows="2"
 									placeholder="Family history, social history, etc."></textarea>
@@ -2346,7 +2336,7 @@
 									<div
 										class="faces-chip-group"
 										data-radio-group="pFacesScore"
-										style="margin-top: 6px">
+										class="mt-6">
 										<button type="button" class="faces-chip" data-value="0">
 											<span class="faces-score">0</span
 											><span class="faces-label">No hurt</span>
@@ -2927,7 +2917,7 @@
 											id="onsetTimeOther"
 											class="hidden"
 											placeholder="e.g. 3–4 days ago, last week, etc."
-											style="margin-top: 6px" />
+											class="mt-6" />
 										<div
 											style="
 												margin-top: 6px;
@@ -3056,7 +3046,7 @@
 									<input
 										id="injuryNvNotes"
 										placeholder="Additional NV notes (optional)"
-										style="margin-top: 6px" />
+										class="mt-6" />
 								</div>
 							</div>
 							<label class="field-label">Injury type</label>
@@ -3064,7 +3054,7 @@
 							<div
 								id="injuryTypeOtherWrap"
 								class="hidden"
-								style="margin-top: 6px">
+								class="mt-6">
 								<input
 									id="injuryTypeOther"
 									placeholder="Other injury type..." />
@@ -3076,7 +3066,7 @@
 							<div
 								id="injuryIntOtherWrap"
 								class="hidden"
-								style="margin-top: 6px">
+								class="mt-6">
 								<input
 									id="injuryIntOther"
 									placeholder="Other intervention..." />
@@ -3107,7 +3097,7 @@
 								<div
 									id="fallsSymptomsOtherWrap"
 									class="hidden"
-									style="margin-top: 6px">
+									class="mt-6">
 									<input
 										id="fallsSymptomsOther"
 										placeholder="Describe other symptom..." />
@@ -3178,7 +3168,7 @@
 								<div
 									id="fallsActivityOtherWrap"
 									class="hidden"
-									style="margin-top: 6px">
+									class="mt-6">
 									<input
 										id="fallsActivityOther"
 										placeholder="Describe activity..." />
@@ -3196,7 +3186,7 @@
 												align-items: center;
 												margin-top: 4px;
 											">
-											<input type="time" id="fallsTime" style="flex: 1" />
+											<input type="time" id="fallsTime" class="flex-1" />
 											<button
 												type="button"
 												class="radio-chip"
@@ -3437,7 +3427,7 @@
 											gap: 8px;
 											margin-top: 4px;
 										">
-										<input type="time" id="seizureTime" style="flex: 1" />
+										<input type="time" id="seizureTime" class="flex-1" />
 										<button
 											type="button"
 											class="radio-chip"
@@ -3505,7 +3495,7 @@
 									id="seizurePostictalFeaturesGrid"></div>
 							</div>
 
-							<div style="margin-top: 14px">
+							<div class="mt-14">
 								<label class="check-row">
 									<input type="checkbox" id="seizureKnownEpileptic" /> Known
 									epileptic
@@ -3544,7 +3534,7 @@
 								<div class="square-grid" id="aedComplianceGrid"></div>
 							</div>
 
-							<label class="field-label" style="margin-top: 14px"
+							<label class="field-label mt-14"
 								>Precipitating factors</label
 							>
 							<div class="square-grid" id="seizurePrecipitantsGrid"></div>
@@ -3731,7 +3721,7 @@
 								rows="2"
 								placeholder="Details of previous episodes..."></textarea>
 
-							<div style="margin-top: 14px">
+							<div class="mt-14">
 								<p
 									class="field-label"
 									style="font-weight: 600; margin-bottom: 8px">
@@ -3936,7 +3926,7 @@
 								<div class="square-grid" id="mseInsightGrid"></div>
 							</div>
 
-							<div style="margin-top: 14px">
+							<div class="mt-14">
 								<label class="field-label" for="mhCurrentServices"
 									>Current MH services / care team</label
 								>
@@ -4027,7 +4017,7 @@
 								<div
 									class="square-grid"
 									id="gynaeSymptomGrid"
-									style="margin-top: 6px"></div>
+									class="mt-6"></div>
 							</div>
 
 							<div id="pvBleedDetail" class="hidden mt-10">
@@ -4042,7 +4032,7 @@
 								<div
 									class="square-grid"
 									id="pvBleedCharGrid"
-									style="margin-top: 6px"></div>
+									class="mt-6"></div>
 							</div>
 
 							<div id="dischargeDetail" class="hidden mt-10">
@@ -4052,19 +4042,19 @@
 								<div
 									class="square-grid"
 									id="dischargeColourGrid"
-									style="margin-top: 6px"></div>
+									class="mt-6"></div>
 								<label class="field-label mt-8"
 									>Consistency</label
 								>
 								<div
 									class="square-grid"
 									id="dischargeConsistencyGrid"
-									style="margin-top: 6px"></div>
+									class="mt-6"></div>
 								<label class="field-label mt-8">Odour</label>
 								<div
 									class="square-grid"
 									id="dischargeOdourGrid"
-									style="margin-top: 6px"></div>
+									class="mt-6"></div>
 								<label class="field-label mt-8"
 									>Amount</label
 								>
@@ -4447,7 +4437,7 @@
 									<div
 										id="mobilisationOtherWrap"
 										class="hidden"
-										style="margin-top: 6px">
+										class="mt-6">
 										<input
 											id="mobilisationOther"
 											placeholder="Describe how patient mobilised to vehicle" />
@@ -4555,13 +4545,13 @@
 								>
 								<div
 									class="chip-multi-group"
-									style="margin-top: 6px"
+									class="mt-6"
 									id="legalConsiderationsChips"></div>
 								<textarea
 									id="legalConsiderationsDetail"
 									rows="2"
 									placeholder="e.g. EHCP reference, LPA holder name, advance decision details, family / carer present and in agreement..."
-									style="margin-top: 6px"></textarea>
+									class="mt-6"></textarea>
 							</div>
 
 							<label class="field-label" for="conveyanceNotes"
@@ -4625,7 +4615,7 @@
 							<div
 								id="safeguardingOtherWrap"
 								class="hidden"
-								style="margin-top: 6px">
+								class="mt-6">
 								<input
 									id="safeguardingOtherText"
 									placeholder="Describe other safeguarding concern..." />
@@ -4685,7 +4675,7 @@
 								<div
 									id="consentRationaleWrap"
 									class="hidden"
-									style="margin-top: 6px">
+									class="mt-6">
 									<label class="field-label" for="consentRationale"
 										>Rationale for referral without consent</label
 									>

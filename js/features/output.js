@@ -91,7 +91,6 @@ function renderConveyanceSuggestion() {
 }
 
 function applyWorseningDefault() {
-
 	if (!state.worseningAuto) return;
 	const decision = val("conveyanceDecision");
 	const newMode = decision === "Conveyed" ? "Not applicable" : "Standard";
@@ -102,9 +101,7 @@ function applyWorseningDefault() {
 function buildPatientScript(declined) {
 	const pc = getPc();
 	const pcData = WORSENING_PC[pc];
-	const genericLines = WORSENING_GENERIC.map(
-		(i) => `- ${i}`,
-	).join("\n");
+	const genericLines = WORSENING_GENERIC.map((i) => `- ${i}`).join("\n");
 	const specificLines = pcData?.items.map((i) => `- ${i}`).join("\n") || "";
 	const redFlags = pcData?.redFlags
 		? `\nImportant — call 999 immediately for:\n${pcData.redFlags}`
@@ -145,10 +142,7 @@ function buildWorseningText() {
 		return "Patient conveyed to hospital; community worsening advice not applicable.";
 
 	const declined = decision === "Declined conveyance";
-	const allItems = [
-		...WORSENING_GENERIC,
-		...(pcData?.items || []),
-	];
+	const allItems = [...WORSENING_GENERIC, ...(pcData?.items || [])];
 	const adviceLine = `Worsening advice given${declined ? " (declined conveyance)" : ""}. Patient${declined ? " and any bystanders" : ""} advised to call 999 for: ${allItems.join("; ")}.`;
 	const redFlagLine = pcData?.redFlags ? ` ${pcData.redFlags}` : "";
 	const extraLine = pcData?.extra ? ` ${pcData.extra}` : "";
@@ -165,7 +159,10 @@ function handleConveyanceDisplay() {
 	const conveyed = decision === "Conveyed";
 	$("#conveyedFields")?.classList.toggle("hidden", !conveyed);
 	$("#nonConveyedFields")?.classList.toggle("hidden", conveyed);
-	$("#declineReasonWrap")?.classList.toggle("hidden", !decision.toLowerCase().includes("declin"));
+	$("#declineReasonWrap")?.classList.toggle(
+		"hidden",
+		!decision.toLowerCase().includes("declin"),
+	);
 	$("#worseningSection")?.classList.toggle("hidden", conveyed);
 	updateWorseningScript();
 
@@ -253,7 +250,6 @@ function buildConveyDestination(prefix = "convey") {
 }
 
 function buildConveyanceText() {
-
 	const decision = val("conveyanceDecision");
 	const notes = val("conveyanceNotes");
 	if (decision === "Conveyed") {
@@ -317,7 +313,9 @@ function buildConveyanceText() {
 
 	return [
 		`${decision}.`,
-		val("declineReason") ? `Reason for declining: ${val("declineReason")}.` : null,
+		val("declineReason")
+			? `Reason for declining: ${val("declineReason")}.`
+			: null,
 		`Referred/signposted to: ${formatSet(state.referrals, "not documented")}.`,
 		val("followUp") ? val("followUp") + "." : null,
 		checks ? `Safety netting: ${checks}.` : null,
@@ -329,7 +327,6 @@ function buildConveyanceText() {
 }
 
 function buildLahSbarText() {
-
 	const age = val("ptAge");
 	const sex = val("ptSex");
 	const pc = getPc();
@@ -359,12 +356,10 @@ function buildLahSbarText() {
 	const pmh = isChecked("noPmh") ? "Nil significant" : val("pmh") || "—";
 	const meds = isChecked("noMeds") ? "None" : val("medications") || "—";
 	const allergies = isChecked("nkda") ? "NKDA" : val("allergies") || "—";
-	const loi = [val("loiWhat"), val("loiTime")].filter(Boolean).join(" at ");
 	const backgroundParts = [
 		`PMH: ${pmh}`,
 		`Meds: ${meds}`,
 		`Allergies: ${allergies}`,
-		loi ? `LOI: ${loi}` : null,
 		val("prevDetails") ? `Prev: ${val("prevDetails")}` : null,
 	].filter(Boolean);
 
@@ -621,7 +616,6 @@ function buildHandoverText() {
 }
 
 function buildOutputSections() {
-
 	const pc = getPc();
 	const site =
 		window.CrewMateBodyMap.getSelectedParts(state.siteParts) || "Not localised";
@@ -659,15 +653,19 @@ function buildOutputSections() {
 		{
 			id: "background",
 			title: "BACKGROUND",
-			body: `PMH: ${isChecked("noPmh") ? "No significant past medical history" : val("pmh") || "Not documented"}\nMedications: ${isChecked("noMeds") ? "No regular medications" : val("medications") || "Not documented"}\nAllergies: ${isChecked("nkda") ? "NKDA" : val("allergies") || "Not documented"}\nLast oral intake: ${[val("loiWhat"), val("loiTime")].filter(Boolean).join(" at ") || "Not documented"}\nOther Details: ${val("prevDetails") || "Not documented"}`,
+			body: `PMH: ${isChecked("noPmh") ? "No significant past medical history" : val("pmh") || "Not documented"}\nMedications: ${isChecked("noMeds") ? "No regular medications" : val("medications") || "Not documented"}\nAllergies: ${isChecked("nkda") ? "NKDA" : val("allergies") || "Not documented"}\nOther Details: ${val("prevDetails") || "Not documented"}`,
 		},
 		...(() => {
 			const sex = val("ptSex");
 			const age = parseInt(val("ptAge"), 10);
-			const eligible = (sex === "Female" || sex === "Other") && (isNaN(age) || (age >= 10 && age <= 60));
+			const eligible =
+				(sex === "Female" || sex === "Other") &&
+				(isNaN(age) || (age >= 10 && age <= 60));
 			if (!eligible) return [];
 			const body = window.CrewMateGynae.buildGynaeOutput();
-			return body ? [{ id: "gynae", title: "OBSTETRIC / GYNAECOLOGICAL", body }] : [];
+			return body
+				? [{ id: "gynae", title: "OBSTETRIC / GYNAECOLOGICAL", body }]
+				: [];
 		})(),
 		{
 			id: "primary",
@@ -702,25 +700,65 @@ function buildOutputSections() {
 						`Severity: ${[val("severity") ? `${val("severity")} now` : null, val("severityWorst") ? `${val("severityWorst")} at worst` : null].filter(Boolean).join(", ") || "Not documented"}`,
 					].join("\n"),
 		},
-		...(state.fallsSymptoms.size > 0 || state.fallsLocation.size > 0 ||
-			state.fallsActivity.size > 0 || state.fallsInjuries.size > 0 ||
-			val("fallsTime") || val("fallsLieTime")
-			? [{ id: "falls", title: "FALLS ASSESSMENT — SPLATT", body: window.CrewMateFalls.buildFallsText() }]
+		...Object.entries(ROS.output_title).map(([section, title]) => ({
+			id: `ros-${section}`,
+			title,
+			body: window.CrewMateRos.rosSectionText(section),
+		})),
+		...(state.fallsSymptoms.size > 0 ||
+		state.fallsLocation.size > 0 ||
+		state.fallsActivity.size > 0 ||
+		state.fallsInjuries.size > 0 ||
+		val("fallsTime") ||
+		val("fallsLieTime")
+			? [
+					{
+						id: "falls",
+						title: "FALLS ASSESSMENT — SPLATT",
+						body: window.CrewMateFalls.buildFallsText(),
+					},
+				]
 			: []),
-		...(state.headSymptoms.size > 0 || state.headSigns.size > 0 ||
-			state.headMechanism.size > 0 || val("headLOC")
-			? [{ id: "headinjury", title: "HEAD INJURY ASSESSMENT — NICE CG176", body: window.CrewMateInjury.buildHeadInjuryText() }]
+		...(state.headSymptoms.size > 0 ||
+		state.headSigns.size > 0 ||
+		state.headMechanism.size > 0 ||
+		val("headLOC")
+			? [
+					{
+						id: "headinjury",
+						title: "HEAD INJURY ASSESSMENT — NICE CG176",
+						body: window.CrewMateInjury.buildHeadInjuryText(),
+					},
+				]
 			: []),
-		...(state.seizureType.size > 0 || val("seizureCount") || val("seizureDuration")
-			? [{ id: "seizure", title: "SEIZURE ASSESSMENT", body: window.CrewMateSeizure.buildSeizureText() }]
+		...(state.seizureType.size > 0 ||
+		val("seizureCount") ||
+		val("seizureDuration")
+			? [
+					{
+						id: "seizure",
+						title: "SEIZURE ASSESSMENT",
+						body: window.CrewMateSeizure.buildSeizureText(),
+					},
+				]
 			: []),
 		...(() => {
 			const t = window.CrewMateOd.buildOdAssessmentText();
-			return t ? [{ id: "odassessment", title: "OVERDOSE / POISONING ASSESSMENT", body: t }] : [];
+			return t
+				? [
+						{
+							id: "odassessment",
+							title: "OVERDOSE / POISONING ASSESSMENT",
+							body: t,
+						},
+					]
+				: [];
 		})(),
 		...(() => {
 			const t = window.CrewMateMh.buildMhAssessmentText();
-			return t ? [{ id: "mhassessment", title: "MENTAL HEALTH ASSESSMENT", body: t }] : [];
+			return t
+				? [{ id: "mhassessment", title: "MENTAL HEALTH ASSESSMENT", body: t }]
+				: [];
 		})(),
 		...(!$("#strokeAssessmentCard")?.classList.contains("hidden")
 			? [
@@ -750,11 +788,6 @@ function buildOutputSections() {
 				? [{ id: "spinal", title: "SPINAL ASSESSMENT", body: spinal }]
 				: [];
 		})(),
-		...Object.entries(ROS.output_title).map(([section, title]) => ({
-			id: `ros-${section}`,
-			title,
-			body: window.CrewMateRos.rosSectionText(section),
-		})),
 		...(val("oeText")
 			? [
 					{
@@ -847,7 +880,6 @@ function buildOutputSections() {
 }
 
 function buildEdHandoverText() {
-
 	const now = new Date();
 	const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 	const pc = getPc();

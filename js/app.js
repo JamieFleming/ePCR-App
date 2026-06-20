@@ -356,6 +356,15 @@ function bindEvents() {
 			$("#" + inputId).value = "";
 		}
 	});
+	document.addEventListener("click", (e) => {
+		const btn = e.target.closest("[data-toggle-checkbox]");
+		if (!btn) return;
+		const cb = $(`#${btn.dataset.toggleCheckbox}`);
+		if (!cb) return;
+		cb.checked = !cb.checked;
+		btn.classList.toggle("selected", cb.checked);
+		cb.dispatchEvent(new Event("change"));
+	});
 	$("#noPain").addEventListener("change", () => {
 		const noPain = $("#noPain").checked;
 		$("#painBodyMapWrap").classList.toggle("hidden", noPain);
@@ -383,11 +392,11 @@ function bindEvents() {
 		$("#handoverEtaWrap")?.classList.toggle("hidden", fmt !== "ASHICE");
 		$("#incidentTimeWrap")?.classList.toggle("hidden", fmt !== "ATMIST");
 	});
-	$("#generateOeButton").addEventListener(
+	$("#generateOeButton")?.addEventListener(
 		"click",
 		window.CrewMateRos.generateOe,
 	);
-	$("#clearOeButton").addEventListener(
+	$("#clearOeButton")?.addEventListener(
 		"click",
 		() => ($("#oeText").value = ""),
 	);

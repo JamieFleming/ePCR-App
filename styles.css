@@ -4030,13 +4030,25 @@ html[data-theme="dark"] .n2-bd-item {
 	background: var(--surface-2, #1e293b);
 }
 
-/* Margin utilities */
+/* Margin / spacing utilities */
 .mt-4  { margin-top: 4px; }
+.mt-6  { margin-top: 6px; }
 .mt-8  { margin-top: 8px; }
 .mt-10 { margin-top: 10px; }
 .mt-12 { margin-top: 12px; }
+.mt-14 { margin-top: 14px; }
 .mb-12 { margin-bottom: 12px; }
 .mb-20 { margin-bottom: 20px; }
+
+/* Flex utilities */
+.flex-row        { display: flex; }
+.flex-row-center { display: flex; align-items: center; }
+.gap-4  { gap: 4px; }
+.gap-6  { gap: 6px; }
+.gap-8  { gap: 8px; }
+.flex-1 { flex: 1; }
+.nowrap { white-space: nowrap; }
+.w-full { width: 100%; }
 
 /* Panel headers */
 .panel-header { display: flex; align-items: center; gap: 14px; padding: 4px 0 12px; }
