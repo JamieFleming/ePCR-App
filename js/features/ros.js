@@ -11,10 +11,6 @@ function buildRos() {
 		details.className = "section-card";
 
 		details.innerHTML = `<summary><span>${section.title}</span><small id="badge-${key}" class="status-pill">All normal</small></summary><div class="section-body"><div class="square-grid ros-grid"></div>${section.extras || ""}</div>`;
-		if (key === "mh") {
-			details.id = "ros-mh-section";
-			details.classList.add("hidden");
-		}
 		const grid = $(".ros-grid", details);
 		section.items.forEach(([id, normal, abnormal]) => {
 			const stateId = `${key}_${id}`;
@@ -240,17 +236,6 @@ function rosSectionText(section, abnormalOnly = false) {
 			if (val("urineNotes")) parts.push(val("urineNotes"));
 			return parts.join("\n");
 		},
-		mh: () => {
-			const parts = [];
-			if (val("psychBehaviour"))
-				parts.push(`Appearance/behaviour: ${val("psychBehaviour")}.`);
-			if (val("psychSpeech")) parts.push(`Speech: ${val("psychSpeech")}.`);
-			if (val("psychRisk")) parts.push(`Risk level: ${val("psychRisk")}.`);
-			if (val("psychProtective"))
-				parts.push(`Protective factors: ${val("psychProtective")}.`);
-			if (val("psychNotes")) parts.push(val("psychNotes"));
-			return parts.join("\n");
-		},
 	};
 	const chipLine = abnormalOnly
 		? rosAbnormalLine(section)
@@ -377,8 +362,6 @@ function generateOe() {
 		`${L.integ}: ${rosChipsText("integ")}`,
 		`\n`,
 		`${L.msk}: ${rosChipsText("msk")}`,
-		`\n`,
-		`${L.mh}: ${rosChipsText("mh")}`,
 		`\n`,
 	].join("\n");
 	$("#oeText").value = oe;

@@ -98,10 +98,12 @@ export const OPTIONS = {
 			group: "Emergency",
 			items: [
 				"Patient called 999",
+				"Partner called 999",
 				"Passerby called 999",
 				"Carer called 999",
 				"Relative called 999",
 				"Patient called 111",
+				"Partner called 111",
 				"Carer called 111",
 				"Relative called 111",
 			],
@@ -1050,6 +1052,22 @@ export const OPTIONS = {
 		],
 
 		insight: ["Full insight", "Partial insight", "No insight"],
+
+		riskIndicators: [
+			"No suicidal ideation expressed",
+			"Passive suicidal ideation",
+			"Active suicidal ideation",
+			"Active suicidal plan",
+			"Means available",
+			"No HI expressed",
+			"Thoughts of harming others",
+			"No intoxication",
+			"Intoxication suspected",
+			"Orientated",
+			"Disoriented",
+			"No sleep disturbance",
+			"Sleep disturbance",
+		],
 	},
 
 	// Safeguarding
@@ -1709,7 +1727,6 @@ export const ROS = {
 		urine: "Urinary",
 		integ: "Integumentary",
 		msk: "Musculoskeletal",
-		mh: "Mental health",
 	},
 	oe_label: {
 		resp: "Resp",
@@ -1719,7 +1736,6 @@ export const ROS = {
 		urine: "Urinary",
 		integ: "Skin",
 		msk: "MSK",
-		mh: "Mental health",
 	},
 	output_title: {
 		resp: "ASSESSMENT — RESPIRATORY",
@@ -1729,7 +1745,6 @@ export const ROS = {
 		urine: "ASSESSMENT — URINARY",
 		integ: "ASSESSMENT — INTEGUMENTARY",
 		msk: "ASSESSMENT — MUSCULOSKELETAL",
-		mh: "ASSESSMENT — MENTAL HEALTH (MSE)",
 	},
 	notes_field: {
 		resp: ["respNotes", "sputumDesc"],
@@ -1739,13 +1754,6 @@ export const ROS = {
 		urine: ["urineNotes"],
 		integ: ["integNotes"],
 		msk: ["mskNotes"],
-		mh: [
-			"psychNotes",
-			"psychBehaviour",
-			"psychSpeech",
-			"psychRisk",
-			"psychProtective",
-		],
 	},
 	resp: {
 		title: "Respiratory",
@@ -1919,53 +1927,6 @@ export const ROS = {
 		],
 		extras:
 			'<label class="field-label" for="mskNotes">Additional notes</label><textarea id="mskNotes" rows="2"></textarea>',
-	},
-	mh: {
-		title: "Mental Health",
-		items: [
-			["moodAppropriate", "Mood appropriate", "Mood low or elevated"],
-			["anxiety", "No significant anxiety", "Anxiety evident"],
-			["paranoia", "No paranoia expressed", "Paranoia expressed"],
-			["withdrawn", "Engaged appropriately", "Withdrawn/socially isolated"],
-			["agitation", "Not agitated", "Agitation/restlessness noted"],
-			["sleep", "No sleep disturbance reported", "Sleep disturbance reported"],
-			["affectAppropriate", "Affect appropriate", "Flat or blunted affect"],
-			[
-				"thoughtCoherent",
-				"Thought process coherent",
-				"Disorganised / tangential thinking",
-			],
-			[
-				"noHallucinations",
-				"No hallucinations reported",
-				"Hallucinations reported",
-			],
-			["noDelusions", "No delusions expressed", "Delusions expressed"],
-			["oriented", "Oriented to person, place and time", "Disoriented"],
-			["insight", "Insight present", "Impaired insight"],
-			[
-				"noSuicidalIdeation",
-				"No suicidal ideation expressed",
-				"Suicidal ideation expressed",
-			],
-			[
-				"noSelfHarmEvident",
-				"No self-harm evident on examination",
-				"Self-harm evident on examination",
-			],
-			[
-				"noHI",
-				"No thoughts of harming others expressed",
-				"Thoughts of harming others expressed",
-			],
-			[
-				"intoxication",
-				"No intoxication evident",
-				"Alcohol/drug intoxication suspected",
-			],
-		],
-		extras:
-			'<label class="field-label" for="psychBehaviour">Appearance and behaviour</label><input id="psychBehaviour" type="text" placeholder="e.g. Appropriately dressed, cooperative"><label class="field-label" for="psychSpeech">Speech</label><input id="psychSpeech" type="text" placeholder="e.g. Normal rate and volume"><label class="field-label" for="psychRisk">Risk level</label><select id="psychRisk"><option value="">Not assessed</option><option>Low</option><option>Medium</option><option>High</option><option>Very high</option></select><label class="field-label" for="psychProtective">Protective factors</label><input id="psychProtective" type="text" placeholder="e.g. Family support, future plans, engagement with services"><label class="field-label" for="psychNotes">Notes</label><textarea id="psychNotes" rows="2"></textarea>',
 	},
 };
 

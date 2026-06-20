@@ -59,6 +59,7 @@ function serializeState() {
 		mseThoughtForm: s(state.mseThoughtForm),
 		msePerception: s(state.msePerception),
 		mseInsight: s(state.mseInsight),
+		mhRiskIndicators: s(state.mhRiskIndicators),
 		safeguardingConcerns: s(state.safeguardingConcerns),
 		mcaAbilities: s(state.mcaAbilities),
 		lacksCapAbilities: s(state.lacksCapAbilities),
@@ -180,6 +181,7 @@ function restoreFormState() {
 	state.mseThoughtForm = toSet(d.mseThoughtForm);
 	state.msePerception = toSet(d.msePerception);
 	state.mseInsight = toSet(d.mseInsight);
+	state.mhRiskIndicators = toSet(d.mhRiskIndicators);
 	state.safeguardingConcerns = toSet(d.safeguardingConcerns);
 	state.mcaAbilities = toSet(d.mcaAbilities);
 	state.lacksCapAbilities = toSet(d.lacksCapAbilities);

@@ -46,6 +46,7 @@ export const state = {
 	mseThoughtForm: new Set(),
 	msePerception: new Set(),
 	mseInsight: new Set(),
+	mhRiskIndicators: new Set(),
 	safeguardingConcerns: new Set(),
 	mcaAbilities: new Set([
 		"Understands",
@@ -223,8 +224,6 @@ function bindEvents() {
 	$("#pcSelect").addEventListener("change", () => {
 		const pc = val("pcSelect");
 		$("#pcOtherWrap").classList.toggle("hidden", pc !== "Other");
-		const isMhPc = OPTIONS.mentalHealth.presentingComplaint.includes(pc);
-		$("#ros-mh-section")?.classList.toggle("hidden", !isMhPc);
 		if (state.worseningAuto) window.CrewMateOutput.applyWorseningDefault();
 		else window.CrewMateOutput.updateWorseningScript();
 	});
@@ -600,6 +599,7 @@ function bindEvents() {
 				mseThoughtForm: "mseThoughtForm",
 				msePerception: "msePerception",
 				mseInsight: "mseInsight",
+				riskIndicators: "mhRiskIndicators",
 			};
 			const set = state[map[mhChip.dataset.mhGroup]];
 			if (!set) return;

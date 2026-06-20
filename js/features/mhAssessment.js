@@ -94,6 +94,13 @@ function buildMhSection() {
 		"mseInsight",
 		"mhValue",
 	);
+	buildButtonGrid(
+		"mhRiskIndicatorsGrid",
+		OPTIONS.mentalHealth.riskIndicators,
+		"mhGroup",
+		"riskIndicators",
+		"mhValue",
+	);
 
 	const actTypeEl = $("#mhActType");
 	if (actTypeEl) {
@@ -217,6 +224,7 @@ function renderMhActEntries() {
 
 function buildMhAssessmentText() {
 	const lines = [];
+
 	if (state.mhIntent.size)
 		lines.push(`Intent: ${[...state.mhIntent].join(", ")}`);
 	if (state.mhPlanning.size)
@@ -228,6 +236,7 @@ function buildMhAssessmentText() {
 			`Previous episodes: ${val("mhPreviousDetails") || "Yes — details not documented"}`,
 		);
 	}
+
 	const actsAdmit = val("mhActsAdmit");
 	if (state.mhActs.length) {
 		lines.push("Patient admits to:");
@@ -253,26 +262,43 @@ function buildMhAssessmentText() {
 	} else if (actsAdmit === "Denies") {
 		lines.push("Patient denies any self-harm, overdose, or harmful acts.");
 	}
-	// MSE = Mental State Examination
-	const mentalStateExamPairs = [
-		[state.mseAppearance, "Appearance"],
-		[state.mseBehaviour, "Behaviour"],
-		[state.mseSpeech, "Communication"],
-		[state.mseThoughtContent, "Delusions"],
-		[state.mseAffect, "Emotion/affect"],
-		[state.mseThoughtForm, "Form of thought"],
-		[state.msePerception, "Hallucination/Perception"],
-		[state.mseInsight, "Insight"],
-	];
-	const mentalStateExamLines = mentalStateExamPairs
-		.filter(([set]) => set.size)
-		.map(([set, label]) => `${label}: ${[...set].join(", ")}`);
-	if (mentalStateExamLines.length)
-		lines.push("MSE — " + mentalStateExamLines.join(" "));
+
+	const mseLine = (label, set, notesId) => {
+		const chips = [...set].join(", ");
+		const notes = notesId ? val(notesId) : "";
+		if (!chips && !notes) return null;
+		return `${label}: ${[chips, notes].filter(Boolean).join(". ")}`;
+	};
+
+	const mseLines = [
+		mseLine("A — Appearance", state.mseAppearance, "mseAppearanceNotes"),
+		mseLine("B — Behaviour", state.mseBehaviour, "mseBehaviourNotes"),
+		mseLine("C — Communication", state.mseSpeech, "mseSpeechNotes"),
+		(() => {
+			const chips = [...state.mseThoughtContent, ...state.msePerception].join(", ");
+			const notes = val("mseDelNotes");
+			if (!chips && !notes) return null;
+			return `D — Delusions/Perceptions: ${[chips, notes].filter(Boolean).join(". ")}`;
+		})(),
+		mseLine("E — Emotion/Affect", state.mseAffect, "mseAffectNotes"),
+		mseLine("F — Form of thought", state.mseThoughtForm, "mseThoughtFormNotes"),
+		mseLine("I — Insight", state.mseInsight, "mseInsightNotes"),
+	].filter(Boolean);
+
+	if (mseLines.length) {
+		lines.push("MSE:");
+		mseLines.forEach((l) => lines.push(`  ${l}`));
+	}
+
+	if (state.mhRiskIndicators.size)
+		lines.push(`Risk indicators: ${[...state.mhRiskIndicators].join(", ")}`);
+	if (val("psychProtective"))
+		lines.push(`Protective factors: ${val("psychProtective")}`);
 	if (val("mhCurrentServices"))
 		lines.push(`Current MH services: ${val("mhCurrentServices")}`);
 	if (val("mhS136")) lines.push(`S136 / MHA: ${val("mhS136")}`);
 	if (val("mhNotes")) lines.push(val("mhNotes"));
+
 	return lines.length
 		? lines.join("\n")
 		: "No MH assessment details documented.";

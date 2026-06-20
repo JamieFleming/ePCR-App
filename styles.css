@@ -4058,5 +4058,6 @@ html[data-theme="dark"] .n2-bd-item {
 
 .tab[data-tab="treatment"]::before,
 .tab[data-paeds-tab="treatment"]::before {
-    display: none;
+	mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='4.5' y='9.5' width='12' height='5' rx='1.2'/%3E%3Cline x1='2' y1='12' x2='4.5' y2='12'/%3E%3Cline x1='2' y1='10.2' x2='2' y2='13.8'/%3E%3Cline x1='8.5' y1='9.5' x2='8.5' y2='14.5'/%3E%3Cline x1='11.5' y1='9.5' x2='11.5' y2='14.5'/%3E%3Cpath d='M16.5 10.5 L18.5 11.2 L18.5 12.8 L16.5 13.5 Z'/%3E%3Cline x1='18.5' y1='12' x2='22' y2='12'/%3E%3C/svg%3E");
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='4.5' y='9.5' width='12' height='5' rx='1.2'/%3E%3Cline x1='2' y1='12' x2='4.5' y2='12'/%3E%3Cline x1='2' y1='10.2' x2='2' y2='13.8'/%3E%3Cline x1='8.5' y1='9.5' x2='8.5' y2='14.5'/%3E%3Cline x1='11.5' y1='9.5' x2='11.5' y2='14.5'/%3E%3Cpath d='M16.5 10.5 L18.5 11.2 L18.5 12.8 L16.5 13.5 Z'/%3E%3Cline x1='18.5' y1='12' x2='22' y2='12'/%3E%3C/svg%3E");
 }

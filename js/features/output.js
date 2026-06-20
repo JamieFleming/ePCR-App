@@ -445,7 +445,7 @@ function buildLahSbarText() {
 			return true;
 		return false;
 	};
-	["resp", "cvs", "neuro", "gi", "urine", "integ", "msk", "mh"].forEach((s) => {
+	["resp", "cvs", "neuro", "gi", "urine", "integ", "msk"].forEach((s) => {
 		const block = window.CrewMateRos.rosSectionText(s);
 		if (!block || !block.trim()) return;
 		const findings = block

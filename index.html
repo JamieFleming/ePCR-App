@@ -1309,30 +1309,7 @@
 				<button class="tab" data-tab="assessment" type="button">
 					Assessment
 				</button>
-				<button
-					class="tab"
-					data-tab="treatment"
-					type="button"
-					style="display: inline-flex; align-items: center; gap: 5px">
-					<svg
-						width="14"
-						height="14"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="1.9"
-						stroke-linecap="round"
-						stroke-linejoin="round">
-						<rect x="4.5" y="9.5" width="12" height="5" rx="1.2" />
-						<line x1="2" y1="12" x2="4.5" y2="12" />
-						<line x1="2" y1="10.2" x2="2" y2="13.8" />
-						<line x1="8.5" y1="9.5" x2="8.5" y2="14.5" />
-						<line x1="11.5" y1="9.5" x2="11.5" y2="14.5" />
-						<path d="M16.5 10.5 L18.5 11.2 L18.5 12.8 L16.5 13.5 Z" />
-						<line x1="18.5" y1="12" x2="22" y2="12" />
-					</svg>
-					Treatment
-				</button>
+				<button class="tab" data-tab="treatment" type="button">Treatment</button>
 				<button class="tab" data-tab="plan" type="button">Plan</button>
 				<button class="tab" data-tab="output" type="button">Generate</button>
 			</nav>
@@ -1621,22 +1598,22 @@
 						<summary><span>Background</span><small>Hx</small></summary>
 						<div class="section-body grid-2">
 							<div>
-								<input type="checkbox" id="noPmh" checked hidden />
-								<button type="button" class="square-btn selected" data-toggle-checkbox="noPmh">No significant PMH</button>
-								<label class="field-label mt-8" for="pmh">Past medical history</label>
+								<label class="field-label" for="pmh">Past medical history</label>
 								<textarea id="pmh" rows="2"></textarea>
+								<input type="checkbox" id="noPmh" hidden />
+								<button type="button" class="square-btn mt-8" data-toggle-checkbox="noPmh">No significant PMH</button>
 							</div>
 							<div>
-								<input type="checkbox" id="noMeds" checked hidden />
-								<button type="button" class="square-btn selected" data-toggle-checkbox="noMeds">No regular medications</button>
-								<label class="field-label mt-8" for="medications">Medications</label>
+								<label class="field-label" for="medications">Medications</label>
 								<textarea id="medications" rows="2"></textarea>
+								<input type="checkbox" id="noMeds" hidden />
+								<button type="button" class="square-btn mt-8" data-toggle-checkbox="noMeds">No regular medications</button>
 							</div>
 							<div>
-								<input type="checkbox" id="nkda" checked hidden />
-								<button type="button" class="square-btn selected" data-toggle-checkbox="nkda">NKDA</button>
-								<label class="field-label mt-8" for="allergies">Allergies</label>
+								<label class="field-label" for="allergies">Allergies</label>
 								<textarea id="allergies" rows="2"></textarea>
+								<input type="checkbox" id="nkda" hidden />
+								<button type="button" class="square-btn mt-8" data-toggle-checkbox="nkda">NKDA</button>
 							</div>
 							<div>
 								<label class="field-label" for="prevDetails">Other Details</label>
@@ -3692,54 +3669,34 @@
 					<!-- Mental health assessment -->
 					<details class="section-card" id="mhAssessmentCard">
 						<summary>
-							<span>Mental Health Assessment</span><small>MH / OD / SH</small>
+							<span>Mental Health Assessment</span><small>MH / MSE</small>
 						</summary>
 						<div class="section-body">
+
+							<!-- Context: Intent, Nature, Triggers, Previous episodes -->
 							<label class="field-label">Intent</label>
 							<div class="square-grid" id="mhIntentGrid"></div>
 
-							<label class="field-label mt-12"
-								>Nature of act</label
-							>
+							<label class="field-label mt-12">Nature of act</label>
 							<div class="square-grid" id="mhPlanningGrid"></div>
 
 							<div class="mt-12">
-								<label class="field-label" for="mhTriggers"
-									>Triggers / precipitants</label
-								>
-								<input
-									id="mhTriggers"
-									placeholder="e.g. Relationship breakdown, financial stress, bereavement" />
+								<label class="field-label" for="mhTriggers">Triggers / precipitants</label>
+								<input id="mhTriggers" placeholder="e.g. Relationship breakdown, financial stress, bereavement" />
 							</div>
 
 							<label class="check-row mt-12">
-								<input type="checkbox" id="mhPrevious" /> Previous episodes of
-								self-harm / overdose
+								<input type="checkbox" id="mhPrevious" /> Previous episodes of self-harm / overdose
 							</label>
-							<textarea
-								id="mhPreviousDetails"
-								rows="2"
-								placeholder="Details of previous episodes..."></textarea>
+							<textarea id="mhPreviousDetails" rows="2" placeholder="Details of previous episodes..."></textarea>
 
+							<!-- Self-harm / harmful acts -->
 							<div class="mt-14">
-								<p
-									class="field-label"
-									style="font-weight: 600; margin-bottom: 8px">
-									Self-harm / harmful acts
-								</p>
+								<p class="field-label" style="font-weight: 600; margin-bottom: 8px">Self-harm / harmful acts</p>
 								<input type="hidden" id="mhActsAdmit" value="Denies" />
-								<div
-									class="radio-chip-group mt-4"
-									data-radio-group="mhActsAdmit">
-									<button
-										type="button"
-										class="radio-chip selected"
-										data-value="Denies">
-										Denies
-									</button>
-									<button type="button" class="radio-chip" data-value="Admits">
-										Admits
-									</button>
+								<div class="radio-chip-group mt-4" data-radio-group="mhActsAdmit">
+									<button type="button" class="radio-chip selected" data-value="Denies">Denies</button>
+									<button type="button" class="radio-chip" data-value="Admits">Admits</button>
 								</div>
 
 								<div id="mhActsPanel" class="hidden mt-12">
@@ -3752,17 +3709,11 @@
 
 									<div class="grid-2 mt-8">
 										<div>
-											<label class="field-label" for="mhActAtTime"
-												>Time of act</label
-											>
-											<input
-												type="time"
-												id="mhActAtTime" class="mt-4" />
+											<label class="field-label" for="mhActAtTime">Time of act</label>
+											<input type="time" id="mhActAtTime" class="mt-4" />
 										</div>
 										<div>
-											<label class="field-label" for="mhActAgoTime"
-												>How long ago</label
-											>
+											<label class="field-label" for="mhActAgoTime">How long ago</label>
 											<select id="mhActAgoTime" class="mt-4">
 												<option value="">Select...</option>
 												<option>Just now</option>
@@ -3781,163 +3732,152 @@
 										</div>
 									</div>
 
-									<div
-										id="odDetailsWrap"
-										class="hidden mt-10">
-										<label class="field-label" for="odSubstance"
-											>Substance(s) taken</label
-										>
-										<input
-											id="odSubstance"
-											placeholder="e.g. Paracetamol, alcohol, ibuprofen" />
+									<div id="odDetailsWrap" class="hidden mt-10">
+										<label class="field-label" for="odSubstance">Substance(s) taken</label>
+										<input id="odSubstance" placeholder="e.g. Paracetamol, alcohol, ibuprofen" />
 										<div class="mt-8">
-											<label class="field-label" for="odAmount"
-												>Amount / estimated dose</label
-											>
-											<input
-												id="odAmount"
-												placeholder="e.g. Up to 16 tablets" />
+											<label class="field-label" for="odAmount">Amount / estimated dose</label>
+											<input id="odAmount" placeholder="e.g. Up to 16 tablets" />
 										</div>
 										<div class="grid-2 mt-8">
 											<div>
 												<label class="field-label">Route</label>
 												<input type="hidden" id="odRoute" />
-												<div
-													class="radio-chip-group mt-4"
-													data-radio-group="odRoute">
-													<button
-														type="button"
-														class="radio-chip"
-														data-value="Oral (ingested)">
-														Oral / ingested
-													</button>
-													<button
-														type="button"
-														class="radio-chip"
-														data-value="IV / injected">
-														IV / injected
-													</button>
-													<button
-														type="button"
-														class="radio-chip"
-														data-value="Inhalation">
-														Inhalation
-													</button>
-													<button
-														type="button"
-														class="radio-chip"
-														data-value="Topical / transdermal">
-														Topical
-													</button>
-													<button
-														type="button"
-														class="radio-chip"
-														data-value="Other / unknown">
-														Other / unknown
-													</button>
+												<div class="radio-chip-group mt-4" data-radio-group="odRoute">
+													<button type="button" class="radio-chip" data-value="Oral (ingested)">Oral / ingested</button>
+													<button type="button" class="radio-chip" data-value="IV / injected">IV / injected</button>
+													<button type="button" class="radio-chip" data-value="Inhalation">Inhalation</button>
+													<button type="button" class="radio-chip" data-value="Topical / transdermal">Topical</button>
+													<button type="button" class="radio-chip" data-value="Other / unknown">Other / unknown</button>
 												</div>
 											</div>
-											<div
-												style="
-													display: flex;
-													align-items: center;
-													padding-top: 20px;
-												">
+											<div class="flex-row-center" style="padding-top: 20px">
 												<label class="check-row">
-													<input type="checkbox" id="odAlcohol" /> Alcohol
-													co-ingestion
+													<input type="checkbox" id="odAlcohol" /> Alcohol co-ingestion
 												</label>
 											</div>
 										</div>
-										<label class="field-label mt-8"
-											>Medication source</label
-										>
+										<label class="field-label mt-8">Medication source</label>
 										<div class="square-grid" id="odPrescribedGrid"></div>
 									</div>
 
-									<div
-										id="shDetailsWrap"
-										class="hidden mt-10">
+									<div id="shDetailsWrap" class="hidden mt-10">
 										<label class="field-label">Wound depth</label>
 										<div class="square-grid" id="shDepthGrid"></div>
 									</div>
 
-									<div
-										id="mhActOtherWrap"
-										class="hidden mt-10">
+									<div id="mhActOtherWrap" class="hidden mt-10">
 										<label class="field-label" for="mhActNotes">Details</label>
 										<input id="mhActNotes" placeholder="Describe the act..." />
 									</div>
 
-									<button
-										type="button"
-										id="addMhActButton"
-										class="secondary-action"
-										style="margin-top: 12px; width: 100%">
-										Add
-									</button>
+									<button type="button" id="addMhActButton" class="secondary-action mt-12 w-full">Add</button>
 								</div>
 								<div id="mhActEntries" class="mt-8"></div>
 							</div>
 
-							<div style="margin-top: 16px">
-								<p
-									class="field-label"
-									style="font-weight: 600; margin-bottom: 8px">
-									Mental State Examination (MSE)
-								</p>
+							<!-- ABCDE Mental State Examination -->
+							<p class="field-label mt-14" style="font-weight: 600; margin-bottom: 2px">Mental State Examination (ABCDE)</p>
+							<p class="field-hint">Tap chips to record findings, then add free-text notes for each section.</p>
 
-								<label class="field-label">A — Appearance</label>
-								<div class="square-grid" id="mseAppearanceGrid"></div>
+							<div class="nested-sections">
 
-								<label class="field-label mt-10"
-									>B — Behaviour</label
-								>
-								<div class="square-grid" id="mseBehaviourGrid"></div>
+								<details class="section-card">
+									<summary><span>A — Appearance</span></summary>
+									<div class="section-body">
+										<p class="field-hint">How does the patient present? Consider dress, hygiene, grooming and self-care.</p>
+										<div class="square-grid" id="mseAppearanceGrid"></div>
+										<label class="field-label mt-8" for="mseAppearanceNotes">Notes</label>
+										<input id="mseAppearanceNotes" placeholder="e.g. Appropriately dressed, good eye contact" />
+									</div>
+								</details>
 
-								<label class="field-label mt-10"
-									>C — Communication / speech</label
-								>
-								<div class="square-grid" id="mseSpeechGrid"></div>
+								<details class="section-card">
+									<summary><span>B — Behaviour</span></summary>
+									<div class="section-body">
+										<p class="field-hint">How is the patient acting? Consider cooperation, psychomotor activity, agitation and social response.</p>
+										<div class="square-grid" id="mseBehaviourGrid"></div>
+										<label class="field-label mt-8" for="mseBehaviourNotes">Notes</label>
+										<input id="mseBehaviourNotes" placeholder="e.g. Cooperative, appropriate psychomotor activity" />
+									</div>
+								</details>
 
-								<label class="field-label mt-10"
-									>D — Delusions / thought content</label
-								>
-								<div class="square-grid" id="mseThoughtContentGrid"></div>
+								<details class="section-card">
+									<summary><span>C — Communication</span></summary>
+									<div class="section-body">
+										<p class="field-hint">How is the patient speaking? Consider rate, volume, tone, clarity and spontaneity of speech.</p>
+										<div class="square-grid" id="mseSpeechGrid"></div>
+										<label class="field-label mt-8" for="mseSpeechNotes">Notes</label>
+										<input id="mseSpeechNotes" placeholder="e.g. Normal rate and volume, clear articulation" />
+									</div>
+								</details>
 
-								<label class="field-label mt-10"
-									>E — Emotion / affect</label
-								>
-								<div class="square-grid" id="mseAffectGrid"></div>
+								<details class="section-card">
+									<summary><span>D — Delusions &amp; Perceptions</span></summary>
+									<div class="section-body">
+										<p class="field-hint">What is the patient thinking about? Consider thought content, fixed beliefs and any perceptual disturbance (hallucinations).</p>
+										<label class="field-label">Thought content</label>
+										<div class="square-grid" id="mseThoughtContentGrid"></div>
+										<label class="field-label mt-8">Perceptual disturbance</label>
+										<div class="square-grid" id="msePerceptionGrid"></div>
+										<label class="field-label mt-8" for="mseDelNotes">Notes</label>
+										<input id="mseDelNotes" placeholder="e.g. No perceptual disturbance, no fixed delusions evident" />
+									</div>
+								</details>
 
-								<label class="field-label mt-10"
-									>F — Form of thought</label
-								>
-								<div class="square-grid" id="mseThoughtFormGrid"></div>
+								<details class="section-card">
+									<summary><span>E — Emotion &amp; Affect</span></summary>
+									<div class="section-body">
+										<p class="field-hint">How is the patient feeling? Consider subjective mood, observed affect, range of emotion and congruence.</p>
+										<div class="square-grid" id="mseAffectGrid"></div>
+										<label class="field-label mt-8" for="mseAffectNotes">Notes</label>
+										<input id="mseAffectNotes" placeholder="e.g. Mood reported as low, affect congruent with speech" />
+									</div>
+								</details>
 
-								<label class="field-label mt-10"
-									>H — Hallucinations / perception</label
-								>
-								<div class="square-grid" id="msePerceptionGrid"></div>
+								<details class="section-card">
+									<summary><span>F — Form of Thought</span></summary>
+									<div class="section-body">
+										<p class="field-hint">Is the patient's thinking organised and logical? Consider flow, structure and coherence of thought.</p>
+										<div class="square-grid" id="mseThoughtFormGrid"></div>
+										<label class="field-label mt-8" for="mseThoughtFormNotes">Notes</label>
+										<input id="mseThoughtFormNotes" placeholder="e.g. Thinking coherent and goal-directed" />
+									</div>
+								</details>
 
-								<label class="field-label mt-10"
-									>I — Insight</label
-								>
-								<div class="square-grid" id="mseInsightGrid"></div>
+								<details class="section-card">
+									<summary><span>I — Insight</span></summary>
+									<div class="section-body">
+										<p class="field-hint">Does the patient have awareness of their mental health difficulties and need for help?</p>
+										<div class="square-grid" id="mseInsightGrid"></div>
+										<label class="field-label mt-8" for="mseInsightNotes">Notes</label>
+										<input id="mseInsightNotes" placeholder="e.g. Patient acknowledges need for support" />
+									</div>
+								</details>
+
+								<details class="section-card">
+									<summary><span>Risk indicators</span></summary>
+									<div class="section-body">
+										<p class="field-hint">Key risk-relevant observations. Tap to flag findings that are present.</p>
+										<div class="square-grid" id="mhRiskIndicatorsGrid"></div>
+										<label class="field-label mt-8" for="psychProtective">Protective factors</label>
+										<input id="psychProtective" placeholder="e.g. Family support, future plans, engagement with services" />
+									</div>
+								</details>
+
 							</div>
 
+							<!-- Services, MHA and notes -->
 							<div class="mt-14">
-								<label class="field-label" for="mhCurrentServices"
-									>Current MH services / care team</label
-								>
-								<input
-									id="mhCurrentServices"
-									placeholder="e.g. CMHT, Crisis team, Psychiatry — Dr Smith" />
+								<label class="field-label" for="mhCurrentServices">Current MH services / care team</label>
+								<input id="mhCurrentServices" placeholder="e.g. CMHT, Crisis team, Psychiatry — Dr Smith" />
 							</div>
 							<div class="mt-8">
-								<label class="field-label" for="mhNotes"
-									>Additional notes</label
-								>
+								<label class="field-label" for="mhS136">S136 / Mental Health Act</label>
+								<input id="mhS136" placeholder="e.g. S136 invoked — conveying to Place of Safety" />
+							</div>
+							<div class="mt-8">
+								<label class="field-label" for="mhNotes">Additional notes</label>
 								<textarea id="mhNotes" rows="2"></textarea>
 							</div>
 						</div>
