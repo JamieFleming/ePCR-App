@@ -125,6 +125,7 @@ function updateRosBadge(section) {
 		([key, value]) => key.startsWith(`${section}_`) && value === "abnormal",
 	);
 	const badge = $(`#badge-${section}`);
+	if (!badge) return;
 	badge.textContent = hasAbnormal ? "Findings" : "All normal";
 	badge.classList.toggle("flagged", hasAbnormal);
 }
